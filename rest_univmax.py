@@ -117,7 +117,7 @@ class rest_functions():
         """Creates a new storage group with supplied specifications,
         given in dictionary form for json formatting
 
-        :param new_sg_data: the json payload
+        :param new_sg_data: the payload of the request
         :return: message
         """
         target_uri = "%s/sloprovisioning/symmetrix/%s/storagegroup" % (base_url, self.array_id)
@@ -186,7 +186,7 @@ class rest_functions():
         """Edits an existing storage group
 
         :param sg_id: the name of the storage group
-        :param edit_sg_data: the json payload
+        :param edit_sg_data: the payload of the request
         :return: message
         """
         target_uri = "%s/83/sloprovisioning/symmetrix/%s/storagegroup/%s" \
