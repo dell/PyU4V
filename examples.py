@@ -1,0 +1,96 @@
+from rest_univmax import rest_functions
+
+# define variables
+ru = rest_functions()
+array_id = ''
+
+sg_id = "test-1"
+sg_id2 = "Test_SG"
+ig_id = "test-host"
+vol_id = "00123"
+snap_name = "new_snap"
+gen_snap = "new_gen_snap"
+initiator1 = "111111111111g444444"
+initiator2 = ""
+SRP = "SRP_1"
+SLO = "Diamond"
+volume_identifier = "test"
+workload = None
+PG = "os-tests-pg"
+PG_iscsi = "os-fakeport-pg"
+jobID="1467022150377"
+maskingviewId = "test_MV"
+host_name = "test-host"
+link_sg_name = "test_link_sg"
+
+
+def main():
+
+    ru.set_array(array_id)
+
+    ''' sg function calls '''
+    ru.get_sg()
+
+    ru.create_empty_sg(SRP, sg_id, SLO, workload)
+    ru.create_vols_in_new_SG(srpID=SRP, sg_id=sg_id, slo=SLO, workload="None", num_vols=2, capUnit="GB", vol_size="1")
+    ru.add_new_vol_to_sg(sg_id=sg_id2, num_vols=1, capUnit="GB", vol_size="1")
+    ru.get_sg(sg_id)
+    ru.delete_sg(sg_id)
+
+    ''' host and masking view calls'''
+    ru.get_mvs_from_ig(ig_id)
+    ru.get_hwIDs_from_ig(ig_id)
+    ru.create_ig("new_host_name", initiator_list=[initiator1])
+    ru.create_masking_view(PG, maskingviewId, host_name, sg_id)
+    print(ru.get_mv_connections(maskingviewId))
+
+main()
+
+# Example function where a given SLO and workload are checked on the array
+def verify_slo_workload(slo, workload, array):
+    """Check if SLO and workload values are valid.
+
+    :param slo: Service Level Object e.g bronze
+    :param workload: workload e.g DSS
+    :param array: Symm array id e.g 1901876178
+    :returns: boolean
+    """
+    ru.set_array(array)
+    isValidSLO = False
+    isValidWorkload = False
+    validWorkloads = ru.get_workload()['workloadId']
+    validSLOs = ru.get_SLO()['sloId']
+
+    if (workload in validWorkloads) or (workload is None):
+        isValidWorkload = True
+    else:
+        print(("Workload: %s is not valid. Valid values are "
+               "%s") % (workload, validWorkloads))
+    if (slo in validSLOs) or (slo is None):
+        isValidSLO = True
+    else:
+        print(("SLO: %s is not valid. Valid values are "
+               "%s" % (slo, validSLOs)))
+    print(isValidSLO, isValidWorkload)
+
+verify_slo_workload(SLO, workload, array_id)
+
+
+# example function to get the physical port identifiers from a portgroup
+def get_port_identifier(portgroup):
+    """Given a portgroup, get the physical port identifiers,
+    e.g. wwn or iqn
+
+    :return: list of identifiers
+    """
+    identifier_list = []
+    portkeylist = ru.extract_directorId_pg(portgroup)
+    for portkey in portkeylist:
+        try:
+            director = portkey["directorId"]
+            port = portkey["portId"]
+            identifier = ru.get_port_identifier(director, port)
+            identifier_list.append(identifier)
+        except KeyError:
+            pass
+    return identifier_list
