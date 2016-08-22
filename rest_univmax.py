@@ -1,9 +1,9 @@
 from rest_requests import Restful
 
 # connection and array details
-base_url = "https://10.73.28.137:8443/univmax/restapi"
-user_name = "smc"
-password = "smc"
+base_url = "https://{ip_add}:{portNo}/univmax/restapi"
+user_name = ""
+password = ""
 
 SRP = "SRP_1"
 SLO = "Optimized"
