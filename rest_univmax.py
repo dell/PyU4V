@@ -46,9 +46,8 @@ class rest_functions():
         return self.rest_client.get(target_uri)
 
     def get_uni_version(self):
-        # not working on 8.3
         target_uri = "%s/system/version" % (base_url)
-        return self.rest_client.post(target_uri)
+        return self.rest_client.get(target_uri)
 
     def get_system_info(self):
         target_uri = "%s/system/symmetrix/%s" % (base_url, self.array_id)
