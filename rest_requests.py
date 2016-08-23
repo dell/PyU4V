@@ -231,3 +231,9 @@ class Restful:
             except requests.ConnectionError:
                 # print('Connection Error: ', error)
                 raise
+            
+    def close_session(self):
+        """
+        Close the current rest session
+        """
+        return self.session.close()
