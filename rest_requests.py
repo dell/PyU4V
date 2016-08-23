@@ -47,15 +47,15 @@ class Restful:
                 try:
                     # if there is no additional GET parameters
                     if request_object == None:
-                        response = self.session.get(headers=self.headers,
-                                                    auth=self.auth,
-                                                    verify=self.verify,
+                        response = self.session.get(headers=self.session.headers,
+                                                    auth=self.session.auth,
+                                                    verify=self.session.verify,
                                                     url=target_uri)
 
                     else:  # included GET parameters in request_object
-                        response = self.session.get(headers=self.headers,
-                                                    auth=self.auth,
-                                                    verify=self.verify,
+                        response = self.session.get(headers=self.session.headers,
+                                                    auth=self.session.auth,
+                                                    verify=self.session.verify,
                                                     url=target_uri,
                                                     data=json.dumps(request_object,
                                                                     sort_keys=True,
@@ -110,9 +110,9 @@ class Restful:
             try:
                 try:
                     response = self.session.post(url=target_uri,
-                                                 headers=self.headers,
-                                                 auth=self.auth,
-                                                 verify=self.verify,
+                                                 headers=self.session.headers,
+                                                 auth=self.session.auth,
+                                                 verify=self.session.verify,
                                                  data=json.dumps(request_object,
                                                                  sort_keys=True,
                                                                  indent=4))
@@ -155,9 +155,9 @@ class Restful:
                 try:
                     response = self.session.put(url=target_uri,
                                                 stream=True,
-                                                headers=self.headers,
-                                                auth=self.auth,
-                                                verify=self.verify,
+                                                headers=self.session.headers,
+                                                auth=self.session.auth,
+                                                verify=self.session.verify,
                                                 data=json.dumps(request_object,
                                                                 sort_keys=True,
                                                                 indent=4))
@@ -192,8 +192,6 @@ class Restful:
                 # print('Connection Error: ', error)
                 raise
 
-    """THIS CALL IS CURRENTLY BROKEN, SEE REST TEAM FOR INFO"""
-
     def delete(self, target_uri):
 
         tries = 3
@@ -202,9 +200,9 @@ class Restful:
                 try:
                     response = self.session.delete(url=target_uri,
                                                    stream=True,
-                                                   headers=self.headers,
-                                                   auth=self.auth,
-                                                   verify=self.verify,
+                                                   headers=self.session.headers,
+                                                   auth=self.session.auth,
+                                                   verify=self.session.verify,
                                                    timeout=100)
 
                     return response.status_code
