@@ -1,17 +1,18 @@
 import requests
 import json
+import time
 from requests.auth import HTTPBasicAuth
 
 # Disable warnings from untrusted server certificates
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 except Exception:
     print("Ignore messages related to insecure SSL certificates")
 
 
 class Restful:
-
     def __init__(self, username, password, verifySSL=False, cert=None):
 
         self.session = requests.session()
@@ -22,101 +23,211 @@ class Restful:
         self.session.cert = cert
 
     def print_json(self, json_obj):
+        """Takes a REST response and formats the output for
+        ease of reading
+
+        :param json_obj: the unformatted json response object
+        :returns formatted and printed json object
+        """
         print(json.dumps(json_obj, sort_keys=False, indent=2))
 
-    def get(self, target_url, request_object=None):
-        """Call the get request on the given url resource
+    def get(self, target_uri, request_object=None):
+        """Performs a GET request on the target URI, if there is
+        an associated payload for the GET request, process params
+        for inclusion in request payload
 
-        :param target_url: the target url
-        :param request_object: the payload for the request, optional
-        :return: response object, or None
+        :param target_uri: the REST targeted resource
+        :param request_object: (optional) if included, the JSON
+        request body which included additional filter params
+        :returns: targeted resource JSON object
         """
-        response = None
-        try:
-            if request_object == None:
-                response = self.session.get(url=target_url)
-            else: # request_object is something
-                response = self.session.get(url=target_url,
-                                            data=json.dumps(request_object,
-                                                            sort_keys=True,
-                                                            indent=4))
-
-        except Exception:
-            print ("Can't GET to API server URL:  " + target_url)
-            exit(1)
-
-        #take the raw response text and deserialize it into a python object.
-        try:
-            response_object = json.loads(response.text)
-        except Exception:
-            response_object =None
-
-        return response_object
-
-    def post(self, target_url, request_object):
-        """Call the post (create) request on the given url resource
-
-        :param target_url: the target url
-        :param request_object: the payload for the request
-        :return: response object, or None
-        """
-        try:
-            response = self.session.post(url=target_url,
-                                        data=json.dumps(request_object,
-                                                        sort_keys=True,
-                                                        indent=4))
-
-            #take the raw response text and deserialize it into a python object.
+        tries = 3
+        while tries >= 0:
             try:
-                response_object = json.loads(response.text)
-            except Exception:
-                response_object = None
-            return response_object
+                try:
+                    # if there is no additional GET parameters
+                    if request_object == None:
+                        response = self.session.get(headers=self.headers,
+                                                    auth=self.auth,
+                                                    verify=self.verify,
+                                                    url=target_uri)
 
-        except Exception:
-            print("Exception: Can't POST to API server URL:  " + target_url)
-            exit(1)
+                    else:  # included GET parameters in request_object
+                        response = self.session.get(headers=self.headers,
+                                                    auth=self.auth,
+                                                    verify=self.verify,
+                                                    url=target_uri,
+                                                    data=json.dumps(request_object,
+                                                                    sort_keys=True,
+                                                                    indent=4))
 
-    def put(self, target_url, request_object):
-        """Call the put (edit) request on the given url resource
+                    # deserialize response object to a python object
+                    try:
+                        response_object = json.loads(response.text)
+                        return response_object
 
-        :param target_url: the target url
-        :param request_object: the payload for the request
-        :return: response, if one returned
+                    # if response cannot be deserialized, return dict
+                    except:
+                        print('DICT EXCEPTION')
+                        return dict()
+
+                except:
+                    if tries == 0:
+                        # If we keep failing, raise the exception for the outer exception
+                        # handling to deal with
+                        print('3 attempts unsuccessful - error')
+                        raise
+                    else:
+                        # Wait a few seconds before retrying and hope the problem goes away
+                        print('Attempt', tries)
+                        time.sleep(2)
+                        tries -= 1
+                        continue
+
+            except requests.HTTPError as error:
+                # print('HTTP Error: ', error)
+                raise
+            except requests.URLRequired as error:
+                # print('URL Error: ', error)
+                raise
+            except requests.ConnectionError as error:
+                # print('Connection Error: ', error)
+                raise
+
+    def post(self, target_uri, request_object):
+        """Performs a POST request on the target URI, if there is
+        an associated payload for the GET request, process params
+        for inclusion in request payload
+
+        :param target_uri: the REST targeted resource
+        :param request_object: the JSON request body
+        which included additional filter params
+        :returns: JSON object containing success message or
+        failure message
         """
-        try:
-            response = self.session.put(url=target_url,
-                                        stream=True,
-                                        data=json.dumps(request_object,
-                                                        sort_keys=True,
-                                                        indent=4))
-            if response.status_code == 204:
-                return None
+        tries = 3
+        while tries >= 0:
+            try:
+                try:
+                    response = self.session.post(url=target_uri,
+                                                 headers=self.headers,
+                                                 auth=self.auth,
+                                                 verify=self.verify,
+                                                 data=json.dumps(request_object,
+                                                                 sort_keys=True,
+                                                                 indent=4))
 
-            else:
-                # take the raw response text and deserialize it into a python object.
-                response = json.loads(response.text)
-                return response
+                    # deserialize response object to a python object
+                    try:
+                        response_object = json.loads(response.text)
+                        return response_object
+                    except:
+                        print("API POST did not return JSON response")
 
-        except Exception as e:
-            print (e)
+                except:
+                    if tries == 0:
+                        # If we keep failing, raise the exception for the outer exception
+                        # handling to deal with
+                        print('3 attempts unsuccessful - error')
+                        raise
+                    else:
+                        # Wait a few seconds before retrying and hope the problem goes away
+                        print('Attempt', tries)
+                        time.sleep(2)
+                        tries -= 1
+                        continue
 
-    def delete(self, target_url):
-        """Call the delete request on the given url resource
+            except requests.HTTPError as error:
+                # print('HTTP Error: ', error)
+                raise
+            except requests.URLRequired as error:
+                # print('URL Error: ', error)
+                raise
+            except requests.ConnectionError as error:
+                # print('Connection Error: ', error)
+                raise
 
-        :param target_url: the target url
-        :return: status code - 204 if successful
-        """
-        try:
-            response = self.session.delete(url=target_url,
-                                           stream=True)
-            return response.status_code
+    def put(self, target_uri, request_object=None):
 
-        except Exception as e:
-            print(e)
+        tries = 3
+        while tries >= 0:
+            try:
+                try:
+                    response = self.session.put(url=target_uri,
+                                                stream=True,
+                                                headers=self.headers,
+                                                auth=self.auth,
+                                                verify=self.verify,
+                                                data=json.dumps(request_object,
+                                                                sort_keys=True,
+                                                                indent=4))
 
-    def close_session(self):
-        """Close the current rest session
-        """
-        return self.session.close()
+                    # deserialize response object to a python object
+                    try:
+                        response_object = json.loads(response.text)
+                        return response_object
+                    except:
+                        print("API POST did not return JSON response")
 
+                except:
+                    if tries == 0:
+                        # If we keep failing, raise the exception for the outer exception
+                        # handling to deal with
+                        print('3 attempts unsuccessful - error')
+                        raise
+                    else:
+                        # Wait a few seconds before retrying and hope the problem goes away
+                        print('Attempt', tries)
+                        time.sleep(2)
+                        tries -= 1
+                        continue
+
+            except requests.HTTPError as error:
+                # print('HTTP Error: ', error)
+                raise
+            except requests.URLRequired as error:
+                # print('URL Error: ', error)
+                raise
+            except requests.ConnectionError as error:
+                # print('Connection Error: ', error)
+                raise
+
+    """THIS CALL IS CURRENTLY BROKEN, SEE REST TEAM FOR INFO"""
+
+    def delete(self, target_uri):
+
+        tries = 3
+        while tries >= 0:
+            try:
+                try:
+                    response = self.session.delete(url=target_uri,
+                                                   stream=True,
+                                                   headers=self.headers,
+                                                   auth=self.auth,
+                                                   verify=self.verify,
+                                                   timeout=100)
+
+                    return response.status_code
+
+                except:
+                    if tries == 0:
+                        # If we keep failing, raise the exception for the outer exception
+                        # handling to deal with
+                        print('3 attempts unsuccessful - error')
+                        raise
+                    else:
+                        # Wait a few seconds before retrying and hope the problem goes away
+                        print('Attempt', tries)
+                        time.sleep(2)
+                        tries -= 1
+                        continue
+
+            except requests.HTTPError:
+                # print('HTTP Error: ', error)
+                raise
+            except requests.URLRequired:
+                # print('URL Error: ', error)
+                raise
+            except requests.ConnectionError:
+                # print('Connection Error: ', error)
+                raise
