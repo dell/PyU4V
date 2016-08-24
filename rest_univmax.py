@@ -8,8 +8,6 @@ password = ""
 SRP = "SRP_1"
 SLO = "Optimized"
 
-# creates a self.rest_client for all CRUD requests
-
 
 class rest_functions():
     def __init__(self):
@@ -352,7 +350,10 @@ class rest_functions():
 
     def get_snap_sg_generation(self, sg_id, snap_name):
         """Gets a snapshot and its generation count information for a Storage Group.
-        To access most recent snapshot, gen number = gen 0. oldest, gen number = genCount - 1
+        The most recent snapshot will have a gen number of 0.
+        The oldest snapshot will have a gen number = genCount - 1
+        (i.e. if there are 4 generations of particular snapshot,
+        the oldest will have a gen num of 3)
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
@@ -382,10 +383,11 @@ class rest_functions():
         """
         target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation" \
                     % (base_url, self.array_id, sg_id, snap_name)
-        return self.rest_client.post(target_uri)
+        data = ({})
+        return self.rest_client.post(target_uri, data)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num):
-        """Restorae a storage group to it's snapshot
+        """Restore a storage group to its snapshot
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
@@ -409,7 +411,7 @@ class rest_functions():
         target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation/%d" \
                     % (base_url, self.array_id, sg_id, snap_name, gen_num)
         snap_data = ({"rename": {"newSnapshotName": new_name},
-                        "action": "Rename"})
+                      "action": "Rename"})
         return self.rest_client.put(target_uri, snap_data)
 
     def link_gen_snapshot(self, sg_id, snap_name, gen_num, link_sg_name):
