@@ -41,48 +41,34 @@ class Restful:
         request body which included additional filter params
         :returns: targeted resource JSON object
         """
-        tries = 3
-        while tries >= 0:
+        attempts = 3
+        while attempts >= 0:
             try:
                 try:
                     # if there is no additional GET parameters
-                    if request_object == None:
-                        response = self.session.get(headers=self.session.headers,
-                                                    auth=self.session.auth,
-                                                    verify=self.session.verify,
-                                                    url=target_uri)
-
-                    else:  # included GET parameters in request_object
-                        response = self.session.get(headers=self.session.headers,
-                                                    auth=self.session.auth,
-                                                    verify=self.session.verify,
-                                                    url=target_uri,
+                    if not request_object:
+                        response = self.session.get(url=target_uri)
+                    else:  # include GET parameters in request_object
+                        response = self.session.get(url=target_uri,
                                                     data=json.dumps(request_object,
                                                                     sort_keys=True,
                                                                     indent=4))
-
-                    # deserialize response object to a python object
+                    # deserialize json response object to a python object
                     try:
                         response_object = json.loads(response.text)
                         return response_object
-
-                    # if response cannot be deserialized, return dict
                     except:
-                        print('DICT EXCEPTION')
-                        return dict()
-
+                        print(("API GET did not return JSON response, the "
+                               "status code is %s") % response.status_code)
                 except:
-                    if tries == 0:
+                    if attempts is 0:
                         # If we keep failing, raise the exception for the outer exception
                         # handling to deal with
                         print('3 attempts unsuccessful - error')
                         raise
                     else:
-                        # Wait a few seconds before retrying and hope the problem goes away
-                        print('Attempt', tries)
-                        time.sleep(2)
-                        tries -= 1
-                        continue
+                        attempts -= 1
+                        print('Attempts remaining: %d' % attempts)
 
             except requests.HTTPError as error:
                 # print('HTTP Error: ', error)
@@ -95,24 +81,17 @@ class Restful:
                 raise
 
     def post(self, target_uri, request_object):
-        """Performs a POST request on the target URI, if there is
-        an associated payload for the GET request, process params
-        for inclusion in request payload
+        """Performs a POST request on the target URI.
 
         :param target_uri: the REST targeted resource
         :param request_object: the JSON request body
-        which included additional filter params
-        :returns: JSON object containing success message or
-        failure message
+        :returns: JSON object
         """
-        tries = 3
-        while tries >= 0:
+        attempts = 3
+        while attempts >= 0:
             try:
                 try:
                     response = self.session.post(url=target_uri,
-                                                 headers=self.session.headers,
-                                                 auth=self.session.auth,
-                                                 verify=self.session.verify,
                                                  data=json.dumps(request_object,
                                                                  sort_keys=True,
                                                                  indent=4))
@@ -122,20 +101,17 @@ class Restful:
                         response_object = json.loads(response.text)
                         return response_object
                     except:
-                        print("API POST did not return JSON response")
-
+                        print(("API POST did not return JSON response, the "
+                               "status code is %s") % response.status_code)
                 except:
-                    if tries == 0:
+                    if attempts is 0:
                         # If we keep failing, raise the exception for the outer exception
                         # handling to deal with
                         print('3 attempts unsuccessful - error')
                         raise
                     else:
-                        # Wait a few seconds before retrying and hope the problem goes away
-                        print('Attempt', tries)
-                        time.sleep(2)
-                        tries -= 1
-                        continue
+                        attempts -= 1
+                        print('Attempts remaining: %d' % attempts)
 
             except requests.HTTPError as error:
                 # print('HTTP Error: ', error)
@@ -148,16 +124,18 @@ class Restful:
                 raise
 
     def put(self, target_uri, request_object=None):
+        """Performs a PUT request on the target uri
 
-        tries = 3
-        while tries >= 0:
+        :param target_uri: the REST targeted resource
+        :param request_object: the JSON request body
+        :returns: JSON object or status code
+        """
+        attempts = 3
+        while attempts >= 0:
             try:
                 try:
                     response = self.session.put(url=target_uri,
                                                 stream=True,
-                                                headers=self.session.headers,
-                                                auth=self.session.auth,
-                                                verify=self.session.verify,
                                                 data=json.dumps(request_object,
                                                                 sort_keys=True,
                                                                 indent=4))
@@ -167,20 +145,19 @@ class Restful:
                         response_object = json.loads(response.text)
                         return response_object
                     except:
-                        print("API POST did not return JSON response")
+                        print(("API POST did not return JSON response, the status code "
+                              "is %s") % response.status_code)
 
                 except:
-                    if tries == 0:
+                    if attempts is 0:
                         # If we keep failing, raise the exception for the outer exception
                         # handling to deal with
                         print('3 attempts unsuccessful - error')
                         raise
                     else:
                         # Wait a few seconds before retrying and hope the problem goes away
-                        print('Attempt', tries)
-                        time.sleep(2)
-                        tries -= 1
-                        continue
+                        attempts -= 1
+                        print('Attempts remaining: %d' % attempts)
 
             except requests.HTTPError as error:
                 # print('HTTP Error: ', error)
@@ -193,32 +170,32 @@ class Restful:
                 raise
 
     def delete(self, target_uri):
+        """Delete from the target uri.
 
-        tries = 3
-        while tries >= 0:
+        :param target_uri: the REST targeted resource
+        :return: status_code
+        """
+
+        attempts = 3
+        while attempts >= 0:
             try:
                 try:
                     response = self.session.delete(url=target_uri,
                                                    stream=True,
-                                                   headers=self.session.headers,
-                                                   auth=self.session.auth,
-                                                   verify=self.session.verify,
                                                    timeout=100)
 
                     return response.status_code
 
                 except:
-                    if tries == 0:
+                    if attempts is 0:
                         # If we keep failing, raise the exception for the outer exception
                         # handling to deal with
                         print('3 attempts unsuccessful - error')
                         raise
                     else:
                         # Wait a few seconds before retrying and hope the problem goes away
-                        print('Attempt', tries)
-                        time.sleep(2)
-                        tries -= 1
-                        continue
+                        attempts -= 1
+                        print('Attempts remaining: %d' % attempts)
 
             except requests.HTTPError:
                 # print('HTTP Error: ', error)
