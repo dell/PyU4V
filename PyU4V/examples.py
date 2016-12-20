@@ -2,23 +2,23 @@ from rest_univmax import rest_functions
 
 # define variables
 ru = rest_functions()
-array_id = ''
+array_id = '000197800128'
 
 sg_id = "test-1"
-sg_id2 = "Test_SG"
+sg_id2 = "test-2"
 ig_id = "test-host"
 vol_id = "00123"
 snap_name = "new_snap"
 gen_snap = "new_gen_snap"
-initiator1 = "111111111111g444444"
+initiator1 = "10000000c123456"
 initiator2 = ""
 SRP = "SRP_1"
 SLO = "Diamond"
 volume_identifier = "test"
 workload = None
-PG = "os-tests-pg"
+PG = "os-test-pg"
 PG_iscsi = "os-fakeport-pg"
-jobID="1467022150377"
+jobID = "1467022150377"
 maskingviewId = "test_MV"
 host_name = "test-host"
 link_sg_name = "test_link_sg"
@@ -26,25 +26,28 @@ link_sg_name = "test_link_sg"
 
 def main():
 
-    ru.set_array(array_id)
+    #ru.set_array(array_id)
 
     ''' sg function calls '''
-    ru.get_sg()
+    print(ru.get_sg())
 
     ru.create_empty_sg(SRP, sg_id, SLO, workload)
-    ru.create_vols_in_new_SG(srpID=SRP, sg_id=sg_id, slo=SLO, workload="None", num_vols=2, capUnit="GB", vol_size="1")
+    ru.create_vols_in_new_SG(
+        srpID=SRP, sg_id=sg_id2, slo=SLO, workload="None",
+        num_vols=2, capUnit="GB", vol_size="1")
     ru.add_new_vol_to_sg(sg_id=sg_id2, num_vols=1, capUnit="GB", vol_size="1")
     ru.get_sg(sg_id)
     ru.delete_sg(sg_id)
 
     ''' host and masking view calls'''
-    ru.get_mvs_from_ig(ig_id)
-    ru.get_hwIDs_from_ig(ig_id)
-    ru.create_ig("new_host_name", initiator_list=[initiator1])
-    ru.create_masking_view(PG, maskingviewId, host_name, sg_id)
-    print(ru.get_mv_connections(maskingviewId))
+    #ru.get_mvs_from_ig(ig_id)
+    #ru.get_hwIDs_from_ig(ig_id)
+    #ru.create_ig("new_host_name", initiator_list=[initiator1])
+    #ru.create_masking_view(PG, maskingviewId, 'new_host_name', sg_id2)
+    #print(ru.get_mv_connections(maskingviewId))
 
 main()
+
 
 # Example function where a given SLO and workload are checked on the array
 def verify_slo_workload(slo, workload, array):

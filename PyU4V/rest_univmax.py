@@ -1,25 +1,39 @@
+try:
+    import ConfigParser as Config
+except ImportError:
+    import configparser as Config
+import logging.config
 from rest_requests import Restful
 
-# connection and array details
-base_url = "https://{ip_add}:{portNo}/univmax/restapi"
-user_name = ""
-password = ""
+# register configuration file
+LOG = logging.getLogger('PyU4V')
+CONF_FILE = 'PyU4V.conf'
+logging.config.fileConfig(CONF_FILE)
+CFG = Config.ConfigParser()
+CFG.read(CONF_FILE)
 
-SRP = "SRP_1"
-SLO = "Optimized"
+# HTTP constants
+GET = 'GET'
+POST = 'POST'
+PUT = 'PUT'
+DELETE = 'DELETE'
 
 
-class rest_functions():
+class rest_functions:
     def __init__(self):
         """ constructor"""
-        self.array_id = None
-        self.rest_client = Restful(user_name, password)
+        self.array_id = CFG.get('setup', 'array')
+        self.rest_client = Restful()
 
     ###############################
     # system functions
     ###############################
 
     def set_array(self, array):
+        """Change to a different array.
+
+        :param array: The VMAX serial number
+        """
         self.array_id = array
 
     def get_jobList(self, jobID=None, name=None, status=None):
@@ -27,9 +41,10 @@ class rest_functions():
         call queries for a list of Job ids for the specified symmetrix.
         :param jobID: specific ID of the job (optional)
         :param name: specific name of the job (optional)
-        :param status: filter by status (optional). Options are: CREATED, SCHEDULED, RETRIEVING_PICTURE, RUNNING,
-                                                    SUCCEEDED, FAILED, ABORTED, UNKNOWN, VALIDATING, VALIDATED,
-                                                    VALIDATE_FAILED, INVALID
+        :param status: filter by status (optional).
+                       Options are: CREATED, SCHEDULED, RETRIEVING_PICTURE, RUNNING,
+                       SUCCEEDED, FAILED, ABORTED, UNKNOWN, VALIDATING, VALIDATED,
+                       VALIDATE_FAILED, INVALID
         :return: server response (dict)
         """
         if jobID:
@@ -40,16 +55,16 @@ class rest_functions():
             url_add += "/?name=" + name
         if status:
             url_add += "/?status=" + status
-        target_uri = "%s/system/symmetrix/%s/job%s" % (base_url, self.array_id, url_add)
-        return self.rest_client.get(target_uri)
+        target_uri = "/system/symmetrix/%s/job%s" % (self.array_id, url_add)
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_uni_version(self):
-        target_uri = "%s/system/version" % (base_url)
-        return self.rest_client.get(target_uri)
+        target_uri = "/system/version"
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_system_info(self):
-        target_uri = "%s/system/symmetrix/%s" % (base_url, self.array_id)
-        return self.rest_client.get(target_uri)
+        target_uri = "/system/symmetrix/%s" % self.array_id
+        return self.rest_client.rest_request(target_uri, GET)
 
     #############################
     ### SRP & SLO functions
@@ -66,8 +81,9 @@ class rest_functions():
             url_add = "/" + SRP
         else:
             url_add = ""
-        target_uri = "%s/sloprovisioning/symmetrix/%s/srp%s" % (base_url, self.array_id, url_add)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/srp%s"
+                      % (self.array_id, url_add))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_SLO(self, SLO_Id=None):
         """Gets a list of available SLO's on a given array, or returns
@@ -80,16 +96,18 @@ class rest_functions():
             url_add = "/" + SLO_Id
         else:
             url_add = ""
-        target_uri = "%s/sloprovisioning/symmetrix/%s/slo%s" % (base_url, self.array_id, url_add)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/slo%s"
+                      % (self.array_id, url_add))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_workload(self):
         """Gets details of all available workload types.
 
         :return: workload details
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/workloadtype" % (base_url, self.array_id)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/workloadtype"
+                      % self.array_id)
+        return self.rest_client.rest_request(target_uri, GET)
 
     ###########################
     ### storage group functions.
@@ -107,18 +125,21 @@ class rest_functions():
             url_add = "/" + sg_id
         else:
             url_add = ""
-        target_uri = "%s/sloprovisioning/symmetrix/%s/storagegroup%s" % (base_url, self.array_id, url_add)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup%s"
+                      % (self.array_id, url_add))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def create_sg(self, new_sg_data):
         """Creates a new storage group with supplied specifications,
         given in dictionary form for json formatting
 
         :param new_sg_data: the payload of the request
-        :return: message
+        :return: response - dict
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/storagegroup" % (base_url, self.array_id)
-        return self.rest_client.post(target_uri, new_sg_data)
+        target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
+                      % (self.array_id))
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=new_sg_data)
 
     def get_mv_from_sg(self, storageGroup):
         """Get the associated masking view(s) from a given storage group
@@ -169,14 +190,14 @@ class rest_functions():
         :return: message
         """
         new_sg_data = ({"srpId": srpID, "storageGroupId": sg_id,
-                         "sloBasedStorageGroupParam": [{
+                        "sloBasedStorageGroupParam": [{
                                             "num_of_vols": 1,
                                             "sloId": slo,
                                             "workloadSelection": workload,
                                             "volumeAttribute": {
                                                 "volume_size": "0",
                                                 "capacityUnit": "GB"}}],
-                         "create_empty_storage_group": "true"})
+                        "create_empty_storage_group": "true"})
         return self.create_sg(new_sg_data)
 
     def edit_sg(self, sg_id, edit_sg_data):
@@ -186,9 +207,10 @@ class rest_functions():
         :param edit_sg_data: the payload of the request
         :return: message
         """
-        target_uri = "%s/83/sloprovisioning/symmetrix/%s/storagegroup/%s" \
-                    % (base_url, self.array_id, sg_id)
-        return self.rest_client.put(target_uri, edit_sg_data)
+        target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup/%s"
+                      % (self.array_id, sg_id))
+        return self.rest_client.rest_request(
+            target_uri, PUT, request_object=edit_sg_data)
 
     def add_existing_vol_to_sg(self, sg_id, vol_id):
         """Edit an existing storage group to add an existing volume to it
@@ -238,15 +260,15 @@ class rest_functions():
 
     def delete_sg(self, sg_id):
         """Delete a given storage group.
+
         A storage group cannot be deleted if it
         is associated with a masking view
-
         :param sg_id: the name of the storage group
-        :return: message
+        :return: status code
         """
-        target_uri = "%s/83/sloprovisioning/symmetrix/%s/storagegroup/%s" \
-                    % (base_url, self.array_id, sg_id)
-        return self.rest_client.delete(target_uri)
+        target_uri = "/83/sloprovisioning/symmetrix/%s/storagegroup/%s" \
+                     % (self.array_id, sg_id)
+        return self.rest_client.rest_request(target_uri, DELETE)
 
     #####################
     ### volume functions (except create)
@@ -258,8 +280,8 @@ class rest_functions():
         :param volID: the device ID of the volume
         :return: volume details
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/volume/%s" % (base_url, self.array_id, volID)
-        return self.rest_client.get(target_uri)
+        target_uri = "/sloprovisioning/symmetrix/%s/volume/%s" % (self.array_id, volID)
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_vols_from_array(self, filters=None):
         """Gets details of volumes from array
@@ -267,12 +289,9 @@ class rest_functions():
         :param filters: can be eg storage group, vol ID etc. Optional.
         :return: volume details
         """
-        if filters:
-            url_add = "/?" + filters
-        else:
-            url_add = ""
-        target_uri = "%s/sloprovisioning/symmetrix/%s/volume%s" % (base_url, self.array_id, url_add)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/volume"
+                      % self.array_id)
+        return self.rest_client.rest_request(target_uri, GET, params=filters)
 
     def get_deviceId_from_volume(self, vol_identifier):
         """Given the volume identifier (name), return the device ID
@@ -280,7 +299,7 @@ class rest_functions():
         :param vol_identifier: the identifier of the volume
         :return: the device ID of the volume
         """
-        response = self.get_vols_from_array("volume_identifier=%s" % vol_identifier)
+        response = self.get_vols_from_array({'volume_identifier': vol_identifier})
         result = response['resultList']['result'][0]
         return result['volumeId']
 
@@ -291,7 +310,7 @@ class rest_functions():
         :return: list of device IDs of associated volumes
         """
         vols = []
-        response = self.get_vols_from_array("storageGroupId=%s" % sgID)
+        response = self.get_vols_from_array({'storageGroupId': sgID})
         vol_list = response['resultList']['result']
         for vol in vol_list:
             vol_id = vol['volumeId']
@@ -322,10 +341,9 @@ class rest_functions():
                               and that there is no additional content
                               to send in the response payload body.)
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/volume/%s" \
-                 % (base_url, self.array_id, vol_id)
-        return self.rest_client.delete(target_uri)
-
+        target_uri = ("/sloprovisioning/symmetrix/%s/volume/%s"
+                      % (self.array_id, vol_id))
+        return self.rest_client.rest_request(target_uri, DELETE)
 
     ###########################
     #   snapshot functions
@@ -336,8 +354,8 @@ class rest_functions():
 
         :return: Replication information
         """
-        target_uri = "%s/replication/capabilities/symmetrix" % (base_url)
-        return self.rest_client.get(target_uri)
+        target_uri = "/replication/capabilities/symmetrix"
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_snap_sg(self, sg_id):
         """get snapshot information on a particular sg
@@ -345,8 +363,9 @@ class rest_functions():
         :param sg_id: the name of the storage group
         :return: snapshot information
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot" % (base_url, self.array_id, sg_id)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot"
+                      % (self.array_id, sg_id))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_snap_sg_generation(self, sg_id, snap_name):
         """Gets a snapshot and its generation count information for a Storage Group.
@@ -359,8 +378,9 @@ class rest_functions():
         :param snap_name: the name of the snapshot
         :return: snapshot information
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s" % (base_url, self.array_id, sg_id, snap_name)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot/%s"
+                      % (self.array_id, sg_id, snap_name))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def create_sg_snapshot(self, sg_id, snap_name):
         """Creates a new snapshot of a specified sg
@@ -369,22 +389,25 @@ class rest_functions():
         :param snap_name: the name of the snapshot
         :return: message
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot" \
-                    % (base_url, self.array_id, sg_id)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot"
+                      % (self.array_id, sg_id))
         snap_data = ({"snapshotName": snap_name})
-        return self.rest_client.post(target_uri, snap_data)
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=snap_data)
 
     def create_new_gen_snap(self, sg_id, snap_name):
-        """Establish a new generation of a SnapVX snapshot for a particular source SG
+        """Establish a new generation of a SnapVX snapshot for a source SG
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the existing snapshot
         :return: message
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation" \
-                    % (base_url, self.array_id, sg_id, snap_name)
+        target_uri = (
+            "/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation"
+            % (self.array_id, sg_id, snap_name))
         data = ({})
-        return self.rest_client.post(target_uri, data)
+        return self.rest_client.rest_request(target_uri, POST,
+                                             request_object=data)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num):
         """Restore a storage group to its snapshot
@@ -394,10 +417,12 @@ class rest_functions():
         :param gen_num: the generation number of the snapshot
         :return: message
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation/%d" \
-                    % (base_url, self.array_id, sg_id, snap_name, gen_num)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/"
+                      "%s/snapshot/%s/generation/%d"
+                      % (self.array_id, sg_id, snap_name, gen_num))
         snap_data = ({"action": "Restore"})
-        return self.rest_client.put(target_uri, snap_data)
+        return self.rest_client.rest_request(target_uri, PUT,
+                                             request_object=snap_data)
 
     def rename_gen_snapshot(self, sg_id, snap_name, gen_num, new_name):
         """Rename an existing storage group snapshot
@@ -408,11 +433,13 @@ class rest_functions():
         :param new_name: the new name of the snapshot
         :return: message
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation/%d" \
-                    % (base_url, self.array_id, sg_id, snap_name, gen_num)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
+                      "snapshot/%s/generation/%d"
+                      % (self.array_id, sg_id, snap_name, gen_num))
         snap_data = ({"rename": {"newSnapshotName": new_name},
                       "action": "Rename"})
-        return self.rest_client.put(target_uri, snap_data)
+        return self.rest_client.rest_request(target_uri, PUT,
+                                             request_object=snap_data)
 
     def link_gen_snapshot(self, sg_id, snap_name, gen_num, link_sg_name):
         """Link a snapshot to another storage group
@@ -423,12 +450,14 @@ class rest_functions():
         :param link_sg_name:  the target storage group name
         :return: message
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation/%d" \
-                     % (base_url, self.array_id, sg_id, snap_name, gen_num)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
+                      "snapshot/%s/generation/%d"
+                      % (self.array_id, sg_id, snap_name, gen_num))
         snap_data = ({{"action": "Link",
                        "link": {"linkStorageGroupName": link_sg_name},
                        }})
-        return self.rest_client.put(target_uri, snap_data)
+        return self.rest_client.rest_request(target_uri, PUT,
+                                             request_object=snap_data)
 
     def delete_sg_snapshot(self, sg_id, snap_name, gen_num):
         """Deletes a specified snapshot.
@@ -437,22 +466,23 @@ class rest_functions():
         :param sg_id: name of the storage group
         :param snap_name: name of the snapshot
         :param gen_num: the generation number of the snapshot
-        :return:
+        :return: status code
         """
-        target_uri = "%s/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation/%d" \
-                     % (base_url, self.array_id, sg_id, snap_name, gen_num)
-        return self.rest_client.delete(target_uri)
+        target_uri = ("/replication/symmetrix/%s/storagegroup/"
+                      "%s/snapshot/%s/generation/%d"
+                      % (self.array_id, sg_id, snap_name, gen_num))
+        return self.rest_client.rest_request(target_uri, DELETE)
 
     def is_clone_licensed(self, array):
         """Check if the snapVx feature is licensed and enabled.
 
         :param session: the current rest session object
         :param array: the Symm array serial number
-        :return: True if licensed and enabled; False otherwise; None if cannot be found
+        :return: True if licensed and enabled; False otherwise
         """
         snapCapability = False
-        target_uri = "%s/replication/capabilities/symmetrix" % base_url
-        response = self.rest_client.get(target_uri)
+        target_uri = "/replication/capabilities/symmetrix"
+        response = self.rest_client.rest_request(target_uri, GET)
         try:
             symmList = response['symmetrixCapability']
             for symm in symmList:
@@ -460,7 +490,7 @@ class rest_functions():
                     snapCapability = symm['snapVxCapable']
                     break
         except KeyError:
-            return None
+            LOG.error("Cannot access replication capabilities")
         return snapCapability
 
     ######################################
@@ -473,22 +503,22 @@ class rest_functions():
         :param portgroup: the name of the portgroup
         :return: portgroup details
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/portgroup/%s" %(base_url, self.array_id, portgroup)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/portgroup/%s"
+                      % (self.array_id, portgroup))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def extract_directorId_pg(self, portgroup):
         """Get the symm director information from the port group
 
         :param portgroup: the name of the portgroup
-        :return: the director information, or error message
+        :return: the director information
         """
         info = self.get_pg(portgroup)
         try:
             portKey = info["portGroup"][0]["symmetrixPortKey"]
             return portKey
         except KeyError:
-            message = "Cannot find port key information from given portgroup"
-            return message
+            LOG.error("Cannot find port key information from given portgroup")
 
     def get_port_info(self, director, portNo):
         """Get details of the symmetrix port
@@ -497,8 +527,9 @@ class rest_functions():
         :param portNo: the port number e.g. 1
         :return: the port information
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/director/%s/port/%s" %(base_url, self.array_id, director, portNo)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/director/%s/port/%s"
+                      % (self.array_id, director, portNo))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_port_identifier(self, director, portNo):
         """Get the identifier (if FC - wwn; if iscsi - iqn) of the physical port
@@ -512,6 +543,7 @@ class rest_functions():
             identifier = info["symmetrixPort"][0]["identifier"]
             return identifier
         except KeyError:
+            LOG.error("Cannot retrieve port information")
             return None
 
     def get_ig_list(self, host_id=None):
@@ -525,12 +557,12 @@ class rest_functions():
             url_add = "/" + host_id
         else:
             url_add = ""
-        target_uri = ("%s/sloprovisioning/symmetrix/%s/host%s"
-                      % (base_url, self.array_id, url_add))
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/host%s"
+                      % (self.array_id, url_add))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_mvs_from_ig(self, host_id):
-        """retrieve masking view information for a specified host
+        """Retrieve masking view information for a specified host.
 
         :param host_id: the name of the host
         :return: list of masking views or None
@@ -540,10 +572,11 @@ class rest_functions():
             mv_list = response["host"][0]["maskingview"]
             return mv_list
         except KeyError:
+            LOG.debug("No masking views found for host %s." % host_id)
             return None
 
     def get_hwIDs_from_ig(self, host_id):
-        """Get initiator details from a host
+        """Get initiator details from a host.
 
         :param host_id: the name of the host
         :return: list of initiator IDs, or None
@@ -557,16 +590,17 @@ class rest_functions():
 
     def create_ig(self, hostName, initiator_list):
         """Create a host with the given initiators.
-        The initiators must not be associated with another host.
 
+        The initiators must not be associated with another host.
         :param hostName: the name of the new host
         :param initiator_list: list of initiators
         :return: message
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/host" \
-                    % (base_url, self.array_id)
+        target_uri = ("/sloprovisioning/symmetrix/%s/host"
+                      % self.array_id)
         new_ig_data = ({"hostId": hostName, "initiatorId": initiator_list})
-        return self.rest_client.post(target_uri, new_ig_data)
+        return self.rest_client.rest_request(target_uri, POST,
+                                             request_object=new_ig_data)
 
     def modify_ig(self, ig_id, ig_data):
         """Edit an existing host
@@ -575,9 +609,10 @@ class rest_functions():
         :param ig_data: the json payload
         :return: message
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/host/%s" \
-                    % (base_url, self.array_id, ig_id)
-        return self.rest_client.put(target_uri, ig_data)
+        target_uri = "/sloprovisioning/symmetrix/%s/host/%s" \
+                     % (self.array_id, ig_id)
+        return self.rest_client.rest_request(target_uri, PUT,
+                                             request_object=ig_data)
 
     def delete_ig(self, ig_id):
         """Delete a given host.
@@ -586,9 +621,9 @@ class rest_functions():
         :param ig_id: name of the host
         :return: status code
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/host/%s" \
-                    % (base_url, self.array_id, ig_id)
-        return self.rest_client.delete(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/host/%s"
+                      % (self.array_id, ig_id))
+        return self.rest_client.rest_request(target_uri, DELETE)
 
     # add initiator to existing ig
     def add_initiator_to_ig(self, hostId, initiatorId_list):
@@ -599,7 +634,9 @@ class rest_functions():
         :param initiatorId_list: the list of initiators
         :return: message
         """
-        edit_ig_data = ({"editHostActionParam": {"addInitiatorParam": {"initiator": initiatorId_list}}})
+        edit_ig_data = ({"editHostActionParam":
+                            {"addInitiatorParam":
+                                {"initiator": initiatorId_list}}})
         return self.modify_ig(hostId, edit_ig_data)
 
     def remove_initiators_from_ig(self, hostId, initiator_list):
@@ -609,7 +646,9 @@ class rest_functions():
         :param initiatorId_list: the list of initiators
         :return: message
         """
-        edit_ig_data = ({"editHostActionParam": {"removeInitiatorParam": {"initiator": initiator_list}}})
+        edit_ig_data = ({"editHostActionParam":
+                             {"removeInitiatorParam":
+                                  {"initiator": initiator_list}}})
         return self.modify_ig(hostId, edit_ig_data)
 
     def get_mv_connections(self, mv_name):
@@ -618,17 +657,18 @@ class rest_functions():
         :param mv_name: the name of the masking view
         :return: connection information
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/maskingview/%s/connections" % (base_url, self.array_id, mv_name)
-        return self.rest_client.get(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s/connections"
+                      % (self.array_id, mv_name))
+        return self.rest_client.rest_request(target_uri, GET)
 
     def list_initiators(self, filters=None):
         """Lists initiators on a given array
 
-        :param filters: Optional filters e.g. ?in_a_host=true
+        :param filters: Optional filters e.g. {'in_a_host': 'true'}
         :return: initiator list
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/initiator%s" % (base_url, self.array_id, filters)
-        return self.rest_client.get(target_uri)
+        target_uri = "/sloprovisioning/symmetrix/%s/initiator" % self.array_id
+        return self.rest_client.rest_request(target_uri, GET, params=filters)
 
     def is_initiator_in_host(self, initiator):
         """Check to see if a given initiator is already assigned to a host
@@ -636,9 +676,8 @@ class rest_functions():
         :param initiator: the initiator ID
         :return: bool
         """
-        filter = "?in_a_host=true&initiator_hba=%s" %(initiator)
-        response = self.list_initiators(filter)
-        print(response)
+        param = {'in_a_host': 'true', 'initiator_hba': initiator}
+        response = self.list_initiators(param)
         try:
             if response['message'] == 'No Initiators Found':
                 return False
@@ -655,10 +694,14 @@ class rest_functions():
         :param masking_view_id: the name of the masking view
         :return:
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/maskingview/%s" \
-                     % (base_url, self.array_id, masking_view_id)
-        response = self.rest_client.get(target_uri)
-        return response['maskingView'][0]['hostId']
+        target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
+                      % (self.array_id, masking_view_id))
+        response = self.rest_client.rest_request(target_uri, GET)
+        try:
+            hostId = response['maskingView'][0]['hostId']
+            return hostId
+        except KeyError:
+            LOG.error("Error retrieving host ID from masking view")
 
     def delete_masking_view(self, masking_view_id):
         """Delete a given masking view.
@@ -666,9 +709,9 @@ class rest_functions():
         :param masking_view_id: the name of the masking view
         :return: status code
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/maskingview/%s" \
-                     % (base_url, self.array_id, masking_view_id)
-        return self.rest_client.delete(target_uri)
+        target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
+                      % (self.array_id, masking_view_id))
+        return self.rest_client.rest_request(target_uri, DELETE)
 
     def get_sg_from_mv(self, masking_view_id):
         """Given a masking view, get the associated storage group
@@ -676,10 +719,9 @@ class rest_functions():
         :param masking_view_id:
         :return: the name of the storage group, or None
         """
-        target_uri = "%s/sloprovisioning/symmetrix/%s/maskingview/%s" \
-                     % (base_url, self.array_id, masking_view_id)
-        response = self.rest_client.get(target_uri)
-        print(response)
+        target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
+                      % (self.array_id, masking_view_id))
+        response = self.rest_client.rest_request(target_uri, GET)
         try:
             for r in response["maskingView"]:
                 return r["storageGroupId"]
@@ -687,7 +729,7 @@ class rest_functions():
             return None
 
     def create_masking_view(self, port_group_name, masking_view_name,
-                                    host_name, storage_group_name):
+                            host_name, storage_group_name):
         """Create a new masking view using existing/
         pre-created portgroup, host, and storage group
 
@@ -695,7 +737,7 @@ class rest_functions():
         :param masking_view_name: name of the new masking view
         :param host_name: name of the host (initiator group)
         :param storage_group_name: name of the storage group
-        :return: message
+        :return: response - dict
         """
         info = ""
         target_uri = "%s/sloprovisioning/symmetrix/%s/maskingview" \
@@ -713,14 +755,15 @@ class rest_functions():
                     "storageGroupId": storage_group_name}}
         }
 
-        response = self.rest_client.post(target_uri, mv_payload)
+        response = self.rest_client.rest_request(target_uri, POST,
+                                                 request_object=mv_payload)
         if 'success' in response:
-            info = ("Masking View Created Successfully. "
-                       "Masking View ID: %s" % masking_view_name)
+            LOG.info("Masking View Created Successfully. "
+                     "Masking View ID: %s" % masking_view_name)
         elif 'message' in response:
-            info = ("There was an error creating the Masking View."
-                    "The message is: %s") % response['message']
-        return info
+            LOG.info("There was an error creating the Masking View."
+                     "The message is: %s") % response['message']
+        return response
 
     def close_session(self):
         """Close the current rest session
