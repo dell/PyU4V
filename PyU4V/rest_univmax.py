@@ -739,7 +739,6 @@ class rest_functions:
         :param storage_group_name: name of the storage group
         :return: response - dict
         """
-        info = ""
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview"
                       % self.array_id)
 

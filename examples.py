@@ -1,4 +1,4 @@
-from rest_univmax import rest_functions
+from PyU4V.rest_univmax import rest_functions
 
 # define variables
 ru = rest_functions()

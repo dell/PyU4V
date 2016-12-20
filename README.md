@@ -1,15 +1,20 @@
 # PyU4V
-A library showing some of the functionality possible using the ReST API of EMC's UniSphere for VMAX.
-A lot of the heavy lifting was done for me; this code has been adapted from https://github.com/scottbri/PyVMAX
+A library showing some of the functionality possible using the ReST API of Dell EMC's UniSphere for VMAX.
+A lot of the heavy lifting was done for me; this code has been adapted from https://github.com/scottbri/PyVMAX.
+Also see the Dell EMC Rest documentation by navigating to URL/univmax/restapi/docs
+eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
 To give it a try, download the files and add your server and array details to the top of the PyU4V.conf
 configuration file, under the [setup] heading.
+Requires the 'requests' library (can be installed using pip).
 Password, username, server_ip, port, and array MUST be set. Cert and verify can be left as is.
 
-Then use the example.py file as, well, an example, and start calling functions!
-
-The rest_univmax file could also be used as the backend for a script, or a menu etc.
+# USAGE
+example.py can be run directly, just make sure to assign the variables. PyU4V could also be used as the backend
+for a script, or a menu etc. Just move the PyU4V package into your working directory and import like so
+'from PyU4V.rest_univmax import rest_functions' and you're good to go. Be sure to bring the configuration file with you.
 
 If you wish to query another array without changing the configuration file, call the set_array() function.
 
-This is still a work in progress, I'll be working on it (and corresponding documentation!) whenever I get the chance!
+This is still a work in progress, and it's far from polished.
+I'll be working on it (and corresponding documentation!) whenever I get the chance!
