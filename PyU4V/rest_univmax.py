@@ -740,8 +740,8 @@ class rest_functions:
         :return: response - dict
         """
         info = ""
-        target_uri = "%s/sloprovisioning/symmetrix/%s/maskingview" \
-                     % (base_url, self.array_id)
+        target_uri = ("/sloprovisioning/symmetrix/%s/maskingview"
+                      % self.array_id)
 
         mv_payload = {"portGroupSelection": {
             "useExistingPortGroupParam": {
