@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016, Dell EMC
+# Copyright (c) 2016 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -36,20 +36,16 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 CONF_FILE = "PyU4V.conf"
 LOG = logging.getLogger("PyU4V")
 logging.config.fileConfig(CONF_FILE)
-CFG = Config.ConfigParser()
-CFG.read(CONF_FILE)
 
 
-class Restful:
+class RestRequests:
 
-    def __init__(self):
-        self.username = CFG.get('setup', 'username')
-        self.password = CFG.get('setup', 'password')
-        server_ip = CFG.get('setup', 'server_ip')
-        port = CFG.get('setup', 'port')
-        self.verifySSL = CFG.getboolean('setup', 'verify')
-        self.cert = CFG.get('setup', 'cert')
-        self.base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
+    def __init__(self, username, password, verify, cert, base_url):
+        self.username = username
+        self.password = password
+        self.verifySSL = verify
+        self.cert = cert
+        self.base_url = base_url
         self.headers = {'content-type': 'application/json',
                         'accept': 'application/json'}
         self.session = self.establish_rest_session()
@@ -88,7 +84,10 @@ class Restful:
                {'self.base_url': self.base_url,
                 'target_url': target_url})
         try:
-            if request_object:
+            if method == 'DELETE':
+                # Delete response hangs forever unless stream=True
+                return self.session.delete(url=url, stream=True)
+            elif request_object:
                 response = self.session.request(
                     method=method, url=url, timeout=60,
                     data=json.dumps(request_object, sort_keys=True,

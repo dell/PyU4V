@@ -4,24 +4,34 @@ A lot of the heavy lifting was done for me; this code has been adapted from http
 Also see the Dell EMC Rest documentation by navigating to URL/univmax/restapi/docs
 eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
+# WHAT'S SUPPORTED
+We support VMAX3 and VMAX All-Flash
+
 # INSTALLATION
 To give it a try, download the files and add your server and array details to the top of the PyU4V.conf
-configuration file, under the [setup] heading.
+configuration file, under the [setup] heading. Alternatively, you can pass some or all of these details
+on initialisation.
 Requires the 'requests' library (can be installed using pip).
-Password, username, server_ip, port, and array MUST be set. Cert and verify can be left as is.
+Password, username, server_ip, port, and array MUST be set (either in the config file or on initialisation).
+Cert and verify can be left as is.
 
 # USAGE
-example.py can be run directly, just make sure to assign the variables. PyU4V could also be used as the backend
-for a script, or a menu etc. Just move the PyU4V package into your working directory and import like so
-'from PyU4V.rest_univmax import rest_functions' and you're good to go. Be sure to bring the configuration file with you.
+PyU4V could also be used as the backend for a script, or a menu etc. Just move the PyU4V package into your working
+directory and import it into your script ('from PyU4V.rest_univmax import rest_functions'), create an instance of
+rest_functions, and you're good to go. Be sure to bring the configuration file with you.
 
 If you wish to query another array without changing the configuration file, call the set_array() function.
 
 # FUTURE
 This is still a work in progress, and it's far from polished.
 I'll be working on it (and corresponding documentation!) whenever I get the chance!
-I will keep expanding the rest_functions library, and also try and keep on top of any code changes in the ReST API
-itself.
+- I will keep expanding the rest_functions library, and also try and keep on top of any code changes in the ReST API
+    itself.
+- I plan on making this a proper package, but that is still a work in progress.
+- Ideally, the password won't have to be stored in, or passed in, plain text.
+- Exception handling and logging still leave a lot to be desired
+- I will create unit tests one of these fine days...
+So far I've more to do than has been done, but I'll get there!
 
 # CONTRIBUTION
 Please do! Create a fork of the project into your own reposity. Make all your necessary changes and create a pull
