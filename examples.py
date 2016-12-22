@@ -32,19 +32,20 @@ def main():
     print(ru.get_sg())
 
     ru.create_empty_sg(SRP, sg_id, SLO, workload)
-    ru.create_vols_in_new_SG(
+    ru.create_non_empty_storagegroup(
         srpID=SRP, sg_id=sg_id2, slo=SLO, workload="None",
         num_vols=2, capUnit="GB", vol_size="1")
-    ru.add_new_vol_to_sg(sg_id=sg_id2, num_vols=1, capUnit="GB", vol_size="1")
+    ru.add_new_vol_to_storagegroup(sg_id=sg_id2, num_vols=1,
+                                   capUnit="GB", vol_size="1")
     ru.get_sg(sg_id)
     ru.delete_sg(sg_id)
 
     ''' host and masking view calls'''
-    #ru.get_mvs_from_ig(ig_id)
-    #ru.get_hwIDs_from_ig(ig_id)
-    #ru.create_ig("new_host_name", initiator_list=[initiator1])
-    #ru.create_masking_view(PG, maskingviewId, 'new_host_name', sg_id2)
-    #print(ru.get_mv_connections(maskingviewId))
+    ru.get_mvs_from_host(ig_id)
+    ru.create_host("new_host_name", initiator_list=[initiator1])
+    ru.create_masking_view_existing_components(
+        PG, maskingviewId, 'new_host_name', sg_id2)
+    print(ru.get_mv_connections(maskingviewId))
 
 main()
 
