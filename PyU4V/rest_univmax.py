@@ -540,7 +540,7 @@ class rest_functions:
             "useExistingPortGroupParam": {
                 "portGroupId": port_group_name}},
             "maskingViewId": masking_view_name,
-            "hostOrHostGroupSelection": {host_details},
+            "hostOrHostGroupSelection": host_details,
             "storageGroupSelection": {
                 "useExistingStorageGroupParam": {
                     "storageGroupId": storage_group_name}}}
@@ -790,8 +790,7 @@ class rest_functions:
 
     def create_non_empty_storagegroup(
             self, srpID, sg_id, slo, workload, num_vols, vol_size,
-            capUnit, allocate_capacity='false',
-            persist_preallocated='false'):
+            capUnit):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the
@@ -810,10 +809,6 @@ class rest_functions:
                         "sloBasedStorageGroupParam": [{
                             "sloId": slo, "workloadSelection": workload,
                             "num_of_vols": num_vols,
-                            "persist_preallocated_capacity_through_"
-                            "reclaim_or_copy": persist_preallocated,
-                            "allocate_capacity_for_each_vol":
-                                allocate_capacity,
                             "volumeAttribute": {
                                 "volume_size": vol_size,
                                 "capacityUnit": capUnit}}]})
@@ -1150,7 +1145,7 @@ class rest_functions:
         :param array:
         :return:
         """
-        target_uri = "/replication/capabilities/symmetrix"
+        target_uri = "/replication/capabilities/symmetrix/%s" % array
         return self.rest_client.rest_request(target_uri, GET)
 
     def is_snapvX_licensed(self, array):
