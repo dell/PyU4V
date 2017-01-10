@@ -929,6 +929,23 @@ class rest_functions:
         else:
             return None
 
+    def set_hostIO_limit_IOPS(self, storageGroup, IOPS, dynamicDistribution):
+        """Set the HOSTIO Limits on an existing storage group.
+
+        :param storageGroup: String up to 32 Characters
+        :param dynamicDistribution: valid vaules Always, Never, OnFailure
+        :param IOPS: integer value, or NOLIMIT  IOPS value must be in multiples
+                     of 100 and lowest value is 100
+        :return: Status Code
+        """
+        target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
+                      % (self.array_id, storageGroup))
+        iolimits = {"editStorageGroupActionParam": {
+                        "setHostIOLimitsParam": {
+                            "host_io_limit_io_sec": IOPS,
+                            "dynamicDistribution": dynamicDistribution}}}
+        return self.rest_client.rest_request(target_uri, PUT, request_object=iolimits)
+
     # volume
 
     def get_volumes(self, volID=None, filters=None):
