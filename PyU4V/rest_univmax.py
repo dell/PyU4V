@@ -933,9 +933,9 @@ class rest_functions:
         """Set the HOSTIO Limits on an existing storage group.
 
         :param storageGroup: String up to 32 Characters
-        :param dynamicDistribution: valid vaules Always, Never, OnFailure
-        :param IOPS: integer value, or NOLIMIT  IOPS value must be in multiples
-                     of 100 and lowest value is 100
+        :param dynamicDistribution: valid values Always, Never, OnFailure
+        :param IOPS: integer value. Min Value 100, must be specified to 
+                     nearest 100, e.g.202 is not a valid value
         :return: Status Code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
