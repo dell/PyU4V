@@ -788,13 +788,16 @@ class rest_functions:
         :return: message
         """
         new_sg_data = ({"srpId": srpID, "storageGroupId": sg_id,
+                        "emulation": "FBA",
                         "sloBasedStorageGroupParam": [{
                             "sloId": slo, "workloadSelection": workload,
-                            "noCompression": false,
+                            "noCompression": False,
                             "num_of_vols": num_vols,
                                 "volumeAttribute": {
                                 "volume_size": vol_size,
                                 "capacityUnit": capUnit}}]})
+     
+
         return self._create_compressed_sg(new_sg_data)
 
 
