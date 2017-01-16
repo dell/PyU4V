@@ -771,6 +771,33 @@ class rest_functions:
                                 "capacityUnit": capUnit}}]})
         return self._create_sg(new_sg_data)
 
+    def create_non_empty_compressed_storagegroup(
+            self, srpID, sg_id, slo, workload, num_vols, vol_size,
+            capUnit):
+        """Create a new storage group with the specified volumes.
+        Generates a dictionary for json formatting and calls the
+        create_sg function to create a new storage group with the
+        specified volumes.
+        :param srpID: the storage resource pool
+        :param sg_id: the name of the new storage group
+        :param slo: the service level agreement (e.g. Gold)
+        :param workload: the workload (e.g. DSS)
+        :param num_vols: the amount of volumes to be created
+        :param vol_size: the size of each volume
+        :param capUnit: the capacity unit (MB, GB)
+        :return: message
+        """
+        new_sg_data = ({"srpId": srpID, "storageGroupId": sg_id,
+                        "sloBasedStorageGroupParam": [{
+                            "sloId": slo, "workloadSelection": workload,
+                            "noCompression": false,
+                            "num_of_vols": num_vols,
+                                "volumeAttribute": {
+                                "volume_size": vol_size,
+                                "capacityUnit": capUnit}}]})
+        return self._create_compressed_sg(new_sg_data)
+
+
     # create an empty storage group
     def create_empty_sg(self, srpID, sg_id, slo, workload):
         """Generates a dictionary for json formatting and calls the create_sg function
@@ -799,6 +826,17 @@ class rest_functions:
         :return: response - dict
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
+                      % self.array_id)
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=new_sg_data)
+
+    def _create_compressed_sg(self, new_sg_data):
+        """Creates a new storage group with supplied specifications,
+        given in dictionary form for json formatting
+        :param new_sg_data: the payload of the request
+        :return: response - dict
+        """
+        target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
         return self.rest_client.rest_request(
             target_uri, POST, request_object=new_sg_data)
