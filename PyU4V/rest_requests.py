@@ -58,16 +58,6 @@ class RestRequests:
         session.cert = self.cert
         return session
 
-    @staticmethod
-    def print_json(json_obj):
-        """Takes a REST response and formats the output for
-        ease of reading
-
-        :param json_obj: the unformatted json response object
-        :returns formatted and printed json object
-        """
-        print(json.dumps(json_obj, sort_keys=False, indent=2))
-
     def rest_request(self, target_url, method,
                      params=None, request_object=None):
         """Sends a request (GET, POST, PUT, DELETE) to the target api.
@@ -89,15 +79,15 @@ class RestRequests:
                 return self.session.delete(url=url, stream=True)
             elif request_object:
                 response = self.session.request(
-                    method=method, url=url, timeout=60,
+                    method=method, url=url, timeout=120,
                     data=json.dumps(request_object, sort_keys=True,
                                     indent=4))
             elif params:
                 response = self.session.request(method=method, url=url,
-                                                params=params, timeout=30)
+                                                params=params, timeout=60)
             else:
                 response = self.session.request(method=method, url=url,
-                                                timeout=30)
+                                                timeout=60)
             status_code = response.status_code
             try:
                 response = response.json()
@@ -112,7 +102,7 @@ class RestRequests:
                         'status_code': status_code})
             return response
 
-        except (requests.Timeout, requests.ConnectionError):
+        except requests.Timeout:
             LOG.error(("The %(method)s request to URL %(url)s "
                        "timed-out, but may have been successful."
                        "Please check the array. ")
