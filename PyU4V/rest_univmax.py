@@ -790,12 +790,14 @@ class rest_functions:
 
     def create_non_empty_storagegroup(
             self, srpID, sg_id, slo, workload, num_vols, vol_size,
-            capUnit):
+            capUnit, disable_compression=False):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the
         create_sg function to create a new storage group with the
-        specified volumes.
+        specified volumes. Set the disable_compression flag for
+        disabling compression on an All Flash array (where compression
+        is on by default).
         :param srpID: the storage resource pool
         :param sg_id: the name of the new storage group
         :param slo: the service level agreement (e.g. Gold)
@@ -803,36 +805,48 @@ class rest_functions:
         :param num_vols: the amount of volumes to be created
         :param vol_size: the size of each volume
         :param capUnit: the capacity unit (MB, GB)
+        :param disable_compression: Flag for disabling compression (AF only)
         :return: message
         """
-        new_sg_data = ({"srpId": srpID, "storageGroupId": sg_id,
-                        "sloBasedStorageGroupParam": [{
-                            "sloId": slo, "workloadSelection": workload,
-                            "num_of_vols": num_vols,
-                            "volumeAttribute": {
-                                "volume_size": vol_size,
-                                "capacityUnit": capUnit}}]})
+        sg_params = {"sloId": slo, "workloadSelection": workload,
+                     "volumeAttribute": {
+                         "volume_size": vol_size,
+                         "capacityUnit": capUnit},
+                     "num_of_vols": num_vols, }
+        if disable_compression:
+            sg_params.update({"noCompression": 'true'})
+        new_sg_data = ({"srpId": srpID,
+                        "storageGroupId": sg_id,
+                        "emulation": "FBA",
+                        "sloBasedStorageGroupParam": [sg_params]})
         return self._create_sg(new_sg_data)
 
     # create an empty storage group
-    def create_empty_sg(self, srpID, sg_id, slo, workload):
-        """Generates a dictionary for json formatting and calls the create_sg function
-        to create an empty storage group
-
+    def create_empty_sg(self, srpID, sg_id, slo, workload,
+                        disable_compression=False):
+        """Generates a dictionary for json formatting and calls
+        the create_sg function to create an empty storage group
+        Set the disable_compression flag for
+        disabling compression on an All Flash array (where compression
+        is on by default).
         :param srpID: the storage resource pool
         :param sg_id: the name of the new storage group
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
+        :param disable_compression: flag for disabling compression (AF only)
         :return: message
         """
-        new_sg_data = ({"srpId": srpID, "storageGroupId": sg_id,
-                        "sloBasedStorageGroupParam": [{
-                                            "num_of_vols": 1,
-                                            "sloId": slo,
-                                            "workloadSelection": workload,
-                                            "volumeAttribute": {
-                                                "volume_size": "0",
-                                                "capacityUnit": "GB"}}],
+        sg_params = {"sloId": slo, "workloadSelection": workload,
+                     "volumeAttribute": {
+                         "volume_size": "0",
+                         "capacityUnit": "GB"},
+                     "num_of_vols": 1, }
+        if disable_compression:
+            sg_params.update({"noCompression": "true"})
+        new_sg_data = ({"srpId": srpID,
+                        "storageGroupId": sg_id,
+                        "emulation": "FBA",
+                        "sloBasedStorageGroupParam": [sg_params],
                         "create_empty_storage_group": "true"})
         return self._create_sg(new_sg_data)
 
@@ -843,7 +857,7 @@ class rest_functions:
         :param new_sg_data: the payload of the request
         :return: response - dict
         """
-        target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
+        target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
         return self.rest_client.rest_request(
             target_uri, POST, request_object=new_sg_data)
