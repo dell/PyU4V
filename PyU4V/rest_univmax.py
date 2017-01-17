@@ -817,9 +817,12 @@ class rest_functions:
             sg_params.update({"noCompression": 'true'})
         new_sg_data = ({"srpId": srpID,
                         "storageGroupId": sg_id,
-                        "emulation": "FBA",
                         "sloBasedStorageGroupParam": [sg_params]})
-        return self._create_sg(new_sg_data)
+        if disable_compression:
+            new_sg_data.update({"emulation": "FBA"})
+            return self._create_sg_83(new_sg_data)
+        else:
+            return self._create_sg(new_sg_data)
 
     # create an empty storage group
     def create_empty_sg(self, srpID, sg_id, slo, workload,
@@ -845,10 +848,25 @@ class rest_functions:
             sg_params.update({"noCompression": "true"})
         new_sg_data = ({"srpId": srpID,
                         "storageGroupId": sg_id,
-                        "emulation": "FBA",
                         "sloBasedStorageGroupParam": [sg_params],
                         "create_empty_storage_group": "true"})
-        return self._create_sg(new_sg_data)
+        if disable_compression:
+            new_sg_data.update({"emulation": "FBA"})
+            return self._create_sg_83(new_sg_data)
+        else:
+            return self._create_sg(new_sg_data)
+
+    def _create_sg_83(self, new_sg_data):
+        """Creates a new storage group with supplied specifications,
+        given in dictionary form for json formatting
+
+        :param new_sg_data: the payload of the request
+        :return: response - dict
+        """
+        target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup"
+                      % self.array_id)
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=new_sg_data)
 
     def _create_sg(self, new_sg_data):
         """Creates a new storage group with supplied specifications,
@@ -857,7 +875,7 @@ class rest_functions:
         :param new_sg_data: the payload of the request
         :return: response - dict
         """
-        target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup"
+        target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
         return self.rest_client.rest_request(
             target_uri, POST, request_object=new_sg_data)

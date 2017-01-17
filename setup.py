@@ -1,5 +1,8 @@
 from distutils.core import setup
 
+
+# WORK IN PROGRESS...
+"""
 version = '1.0'
 
 setup(
@@ -27,3 +30,4 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
+"""
