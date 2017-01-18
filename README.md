@@ -38,7 +38,7 @@ The Rest API is undergoing substantial transformation for the 8.4 release. With 
 new 84 version when that is released.
 
 # CONTRIBUTION
-Please do! Create a fork of the project into your own reposity. Make all your necessary changes and create a pull
+Please do! Create a fork of the project into your own repository. Make all your necessary changes and create a pull
 request with a description on what was added or removed and details explaining the changes in lines of code.
 If it all looks good, I'll merge it.
 
