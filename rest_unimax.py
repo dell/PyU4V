@@ -771,10 +771,10 @@ class rest_functions:
                                 "capacityUnit": capUnit}}]})
         return self._create_sg(new_sg_data)
 
-    def create_non_empty_compressed_storagegroup(
+    def create_non_empty_noncompressed_storagegroup(
             self, srpID, sg_id, slo, workload, num_vols, vol_size,
             capUnit):
-        """Create a new storage group with the specified volumes.
+        """Create a new storage group with the specified volumes that will not be compressed.
         Generates a dictionary for json formatting and calls the
         create_sg function to create a new storage group with the
         specified volumes.
@@ -791,14 +791,14 @@ class rest_functions:
                         "emulation": "FBA",
                         "sloBasedStorageGroupParam": [{
                             "sloId": slo, "workloadSelection": workload,
-                            "noCompression": False,
+                            "noCompression": True,
                             "num_of_vols": num_vols,
                                 "volumeAttribute": {
                                 "volume_size": vol_size,
                                 "capacityUnit": capUnit}}]})
 
 
-        return self._create_compressed_sg(new_sg_data)
+        return self._create_noncompressed_sg(new_sg_data)
 
 
     # create an empty storage group
@@ -833,7 +833,7 @@ class rest_functions:
         return self.rest_client.rest_request(
             target_uri, POST, request_object=new_sg_data)
 
-    def _create_compressed_sg(self, new_sg_data):
+    def _create_noncompressed_sg(self, new_sg_data):
         """Creates a new storage group with supplied specifications,
         given in dictionary form for json formatting
         :param new_sg_data: the payload of the request
