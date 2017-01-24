@@ -32,7 +32,7 @@ ru = rest_functions() #Sets up Session with Unisphere Server
 sglist=ru.get_sg()
 
 
-#print("This is the full json dictionary returned from the REST Call %s  " %(sglist))
+print("This is the full json dictionary returned from the REST Call %s  " %(sglist))
 print()
 print()
 print ("This line parses the JSON to list only the storage group ids from the returned JSON %s" %(sglist["storageGroupId"]))
