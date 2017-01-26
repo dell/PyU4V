@@ -1129,7 +1129,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :param gen_num: the generation number of the snapshot
+        :param gen_num: the generation number of the snapshot (int)
         :return: message
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/"
@@ -1144,7 +1144,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :param gen_num: the generation number of the snapshot
+        :param gen_num: the generation number of the snapshot (int)
         :param new_name: the new name of the snapshot
         :return: message
         """
@@ -1161,7 +1161,7 @@ class rest_functions:
 
         :param sg_id: Source storage group name
         :param snap_name: name of the snapshot
-        :param gen_num: generation number of a snapshot
+        :param gen_num: generation number of a snapshot (int)
         :param link_sg_name:  the target storage group name
         :return: message
         """
@@ -1180,7 +1180,7 @@ class rest_functions:
 
         :param sg_id: name of the storage group
         :param snap_name: name of the snapshot
-        :param gen_num: the generation number of the snapshot
+        :param gen_num: the generation number of the snapshot (int)
         :return: status code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/"
@@ -1191,8 +1191,8 @@ class rest_functions:
     def get_replication_capabilities(self, array):
         """Check what replication features are licensed and enabled.
 
-        :param array:
-        :return:
+        :param array: the Symm array serial number
+        :return: server response
         """
         target_uri = "/replication/capabilities/symmetrix/%s" % array
         return self.rest_client.rest_request(target_uri, GET)
@@ -1214,3 +1214,27 @@ class rest_functions:
         except KeyError:
             LOG.error("Cannot access replication capabilities")
         return snapCapability
+
+    # admissibility checks
+
+    def get_wlp_timestamp(self):
+        """Get the latest timestamp from WLP for processing New Worlkloads
+        :return: JSON Payload
+        """
+        target_uri = ("/82/wlp/symmetrix/%s" % self.array_id)
+        return self.rest_client.rest_request(target_uri, GET)
+
+    def get_headroom(self,workload):
+        """Get the Remaining Headroom Capacity
+        :param workload:
+        :return: JSON Payload, sample
+            {'headroom': [{'workloadType': 'OLTP',
+            'headroomCapacity': 29076.34, 'processingDetails':
+                {'lastProcessedSpaTimestamp': 1485302100000,
+                'nextUpdate': 1670}, 'sloName': 'Diamond',
+                'srp': 'SRP_1', 'emulation': 'FBA'}]}
+        """
+        target_uri = ("/82/wlp/symmetrix/%s/headroom?emulation=FBA&slo="
+                      "Diamond&workloadtype=%s&srp=SRP_1"
+                      % (self.array_id, workload))
+        return self.rest_client.rest_request(target_uri, GET)
