@@ -62,8 +62,8 @@ def verify_slo_workload(slo, workload, array):
     ru.set_array(array)
     isValidSLO = False
     isValidWorkload = False
-    validWorkloads = ru.get_workload()['workloadId']
-    validSLOs = ru.get_SLO()['sloId']
+    validWorkloads, sc = ru.get_workload()['workloadId']
+    validSLOs, sc = ru.get_SLO()['sloId']
 
     if (workload in validWorkloads) or (workload is None):
         isValidWorkload = True

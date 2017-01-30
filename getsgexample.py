@@ -29,7 +29,7 @@ from PyU4V.rest_univmax import rest_functions
 ru = rest_functions()  # Sets up Session with Unisphere Server
 
 
-sglist = ru.get_sg()
+sglist, sc = ru.get_sg()
 
 
 print("This is the full json dictionary returned from the REST Call %s  "

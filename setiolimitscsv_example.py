@@ -65,7 +65,7 @@ def calculate_io_density(sgname, policy):
     IO Limit based on the Policy Specified get current IOLimits and Capacity for storage group
     Requires that existing
     """
-    sg_current_attributes = ru.get_sg(sg_id=sgname)
+    sg_current_attributes, sc = ru.get_sg(sg_id=sgname)
     sg_current_capacity = sg_current_attributes["storageGroup"][0]["cap_gb"]
     if policy == "Diamond":
         ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS="NOLIMIT", dynamicDistribution="Never")

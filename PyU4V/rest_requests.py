@@ -95,12 +95,12 @@ class RestRequests:
                 LOG.info("No response received from API. Status code "
                          "received is: %(status_code)s" %
                          {'status_code': status_code})
-                response = status_code
+                response = None
             LOG.info("%(method)s request to %(url)s has returned with "
                      "a status code of: %(status_code)s"
                      % {'method': method, 'url': url,
                         'status_code': status_code})
-            return response
+            return response, status_code
 
         except requests.Timeout:
             LOG.error(("The %(method)s request to URL %(url)s "

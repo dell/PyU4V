@@ -71,8 +71,7 @@ class rest_functions:
     def close_session(self):
         """Close the current rest session
         """
-        response = self.rest_client.close_session()
-        return response
+        self.rest_client.close_session()
 
     ###############################
     # system functions
@@ -220,7 +219,7 @@ class rest_functions:
         :param port_no: the number of the port
         :return: wwn (FC) or iqn (iscsi), or None
         """
-        info = self.get_director_port(director, port_no)
+        info, sc = self.get_director_port(director, port_no)
         try:
             identifier = info["symmetrixPort"][0]["identifier"]
             return identifier
@@ -314,7 +313,7 @@ class rest_functions:
         :param host_id: the name of the host
         :return: list of masking views or None
         """
-        response = self.get_hosts(host_id=host_id)
+        response, sc = self.get_hosts(host_id=host_id)
         try:
             mv_list = response["host"][0]["maskingview"]
             return mv_list
@@ -328,7 +327,7 @@ class rest_functions:
         :param host_id: the name of the host
         :return: list of initiator IDs, or None
         """
-        response = self.get_hosts(host_id=host_id)
+        response, sc = self.get_hosts(host_id=host_id)
         try:
             initiator_list = response["host"][0]["initiator"]
             return initiator_list
@@ -483,7 +482,7 @@ class rest_functions:
         :return: bool
         """
         param = {'in_a_host': 'true', 'initiator_hba': initiator}
-        response = self.get_initiators(filters=param)
+        response, sc = self.get_initiators(filters=param)
         try:
             if response['message'] == 'No Initiators Found':
                 return False
@@ -578,7 +577,7 @@ class rest_functions:
         :param masking_view_id: the name of the masking view
         :return:
         """
-        response = self.get_masking_views(masking_view_id=masking_view_id)
+        response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
             hostId = response['maskingView'][0]['hostId']
             return hostId
@@ -591,7 +590,7 @@ class rest_functions:
         :param masking_view_id: the masking view name
         :return: the name of the storage group
         """
-        response = self.get_masking_views(masking_view_id=masking_view_id)
+        response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
             for r in response["maskingView"]:
                 return r["storageGroupId"]
@@ -604,7 +603,7 @@ class rest_functions:
         :param masking_view_id: the masking view name
         :return: the name of the port group
         """
-        response = self.get_masking_views(masking_view_id=masking_view_id)
+        response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
             for r in response["maskingView"]:
                 return r["portGroupId"]
@@ -717,7 +716,7 @@ class rest_functions:
         :param portgroup: the name of the portgroup
         :return: the director information
         """
-        info = self.get_portgroups(portgroup_id=portgroup)
+        info, sc = self.get_portgroups(portgroup_id=portgroup)
         try:
             portKey = info["portGroup"][0]["symmetrixPortKey"]
             return portKey
@@ -954,7 +953,7 @@ class rest_functions:
         :param storageGroup: the name of the storage group
         :return: Masking view list, or None
         """
-        response = self.get_sg(storageGroup)
+        response, sc = self.get_sg(storageGroup)
         mvlist = response["storageGroup"][0]["maskingview"]
         if len(mvlist) > 1:
             return mvlist
@@ -1013,7 +1012,7 @@ class rest_functions:
         :param vol_identifier: the identifier of the volume
         :return: the device ID of the volume
         """
-        response = self.get_volumes(filters=(
+        response, sc = self.get_volumes(filters=(
             {'volume_identifier': vol_identifier}))
         result = response['resultList']['result'][0]
         return result['volumeId']
@@ -1025,7 +1024,7 @@ class rest_functions:
         :return: list of device IDs of associated volumes
         """
         vols = []
-        response = self.get_volumes(filters={'storageGroupId': sgID})
+        response, sc = self.get_volumes(filters={'storageGroupId': sgID})
         vol_list = response['resultList']['result']
         for vol in vol_list:
             vol_id = vol['volumeId']
@@ -1040,7 +1039,7 @@ class rest_functions:
         :param vol_id: the device ID of the volume
         :return: list of storage groups, or None
         """
-        response = self.get_volumes(volID=vol_id)
+        response, sc = self.get_volumes(volID=vol_id)
         try:
             sglist = response["volume"][0]["storageGroupId"]
             return sglist
@@ -1204,7 +1203,7 @@ class rest_functions:
         :return: True if licensed and enabled; False otherwise
         """
         snapCapability = False
-        response = self.get_replication_capabilities(array)
+        response, sc = self.get_replication_capabilities(array)
         try:
             symmList = response['symmetrixCapability']
             for symm in symmList:
