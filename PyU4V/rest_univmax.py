@@ -83,7 +83,7 @@ class rest_functions:
         Optionally can be filtered by: create_date_milliseconds(=<>),
         description(=<>), type, severity, state, created_date, acknowledged.
         :param filters: dict of filters - optional
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "univmax/restapi/system/alert"
         return self.rest_client.rest_request(target_uri, GET, filters)
@@ -97,7 +97,7 @@ class rest_functions:
         completed_date_milliseconds (all params including =,<, or >),
         status (=).
         :param filters: dict of filters - optional
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "univmax/restapi/system/job"
         return self.rest_client.rest_request(target_uri, GET, params=filters)
@@ -106,7 +106,7 @@ class rest_functions:
         """Returns a list of arrays, or details on a specific array.
 
         :param array_id: the array serial number
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "univmax/restapi/system/symmetrix"
         if array_id:
@@ -123,7 +123,7 @@ class rest_functions:
         status (=).
         :param jobID: specific ID of the job (optional)
         :param filters: dict of filters - optional
-        :return: server response (dict)
+        :return: dict, status_code
         """
         target_uri = "/system/symmetrix/%s/job" % self.array_id
         if jobID:
@@ -140,7 +140,7 @@ class rest_functions:
         description(=<>), type, severity, state, created_date, acknowledged.
         :param alert_id: specific id of the alert - optional
         :param filters: dict of filters - optional
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/system/symmetrix/%s/alert" % self.array_id
         if alert_id:
@@ -155,7 +155,7 @@ class rest_functions:
 
         Acknowledge is the only "PUT" (edit) option available.
         :param alert_id: the alert id - string
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = ("/system/symmetrix/%s/alert/%s" %
                       (self.array_id, alert_id))
@@ -167,7 +167,7 @@ class rest_functions:
         """Delete a specified alert.
 
         :param alert_id: the alert id - string
-        :return: status code
+        :return: None, status code
         """
         target_uri = ("/system/symmetrix/%s/alert/%s" %
                       (self.array_id, alert_id))
@@ -187,7 +187,7 @@ class rest_functions:
         """Queries for details of Symmetrix directors for a symmetrix
 
         :param director: the director ID e.g. FA-1D - optional
-        :return: the server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/director" % self.array_id
         if director:
@@ -201,7 +201,7 @@ class rest_functions:
         :param director: the director ID e.g. FA-1D
         :param port_no: the port number e.g. 1 - optional
         :param filters: optional filters - dict
-        :return: the server response - dict
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/director/%s/port"
                       % (self.array_id, director))
@@ -236,7 +236,7 @@ class rest_functions:
         if no host is specified.
         :param host_id: the name of the host, optional
         :param filters: optional list of filters - dict
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/host" % self.array_id
         if host_id:
@@ -253,7 +253,7 @@ class rest_functions:
         :param host_name: the name of the new host
         :param initiator_list: list of initiators
         :param host_flags: dictionary of optional host flags to apply
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/host" % self.array_id
         new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
@@ -272,7 +272,7 @@ class rest_functions:
         :param remove_init_list: list of initiators to be removed
         :param add_init_list: list of initiators to be added
         :param new_name: new host name
-        :return: server response - dict
+        :return: dict, status_code
         """
         if host_flag_dict:
             edit_host_data = ({"editHostActionParam": {
@@ -301,7 +301,7 @@ class rest_functions:
 
         Cannot delete if associated with a masking view
         :param host_id: name of the host
-        :return: status code
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/host/%s"
                       % (self.array_id, host_id))
@@ -343,7 +343,7 @@ class rest_functions:
         if no host is specified.
         :param hostgroup_id: the name of the hostgroup, optional
         :param filters: optional list of filters - dict
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/hostgroup" % self.array_id
         if hostgroup_id:
@@ -360,7 +360,7 @@ class rest_functions:
         :param hostgroup_id: the name of the new hostgroup
         :param host_list: list of hosts
         :param host_flags: dictionary of optional host flags to apply
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/hostgroup" % self.array_id
         new_ig_data = ({"hostId": host_list, "hostGroupId": hostgroup_id})
@@ -380,7 +380,7 @@ class rest_functions:
         :param remove_host_list: list of hosts to be removed
         :param add_host_list: list of hosts to be added
         :param new_name: new name of the hostgroup
-        :return: server response - dict
+        :return: dict, status_code
         """
         if host_flag_dict:
             edit_host_data = ({"editHostGroupActionParam": {
@@ -409,7 +409,7 @@ class rest_functions:
 
         Cannot delete if associated with a masking view
         :param hostgroup_id: name of the hostgroup
-        :return: status code
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/hostgroup/%s"
                       % (self.array_id, hostgroup_id))
@@ -445,7 +445,7 @@ class rest_functions:
         :param rename_alias: tuple ('new node name', 'new port name')
         :param set_fcid: set fcid value - string
         :param initiator_flags: dictionary of initiator flags to set
-        :return: server response - dict
+        :return: dict, status_code
         """
         if removeMaskingEntry:
             edit_init_data = ({"editInitiatorActionParam": {
@@ -498,7 +498,7 @@ class rest_functions:
         Either masking_view_id or filters can be set
         :param masking_view_id: the name of the masking view
         :param filters: dictionary of filters
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview"
                       % self.array_id)
@@ -522,7 +522,7 @@ class rest_functions:
         :param storage_group_name: name of the storage group
         :param host_name: name of the host (initiator group)
         :param host_group_name: name of host group
-        :return: server response - dict
+        :return: dict, status_code
         """
         if host_name:
             host_details = {"useExistingHostParam": {"hostId": host_name}}
@@ -552,7 +552,7 @@ class rest_functions:
         Currently, the only supported modification is "rename".
         :param masking_view_id: the current name of the masking view
         :param new_name: the new name of the masking view
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
                       % self.array_id, masking_view_id)
@@ -565,7 +565,7 @@ class rest_functions:
         """Delete a given masking view.
 
         :param masking_view_id: the name of the masking view
-        :return: status code
+        :return: None, status code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
                       % (self.array_id, masking_view_id))
@@ -575,7 +575,7 @@ class rest_functions:
         """Given a masking view, get the associated host.
 
         :param masking_view_id: the name of the masking view
-        :return:
+        :return: host ID
         """
         response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
@@ -614,7 +614,7 @@ class rest_functions:
         """Get all connection information for a given masking view.
 
         :param mv_name: the name of the masking view
-        :return: connection information
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s/"
                       "connections" % (self.array_id, mv_name))
@@ -628,7 +628,7 @@ class rest_functions:
         Note a mixture of Front end, back end and RDF port specific values
         are not allowed. See UniSphere documentation for possible values.
         :param filters: dictionary of filters e.g. {'vnx_attached': 'true'}
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/port" % self.array_id
         return self.rest_client.rest_request(target_uri, GET, params=filters)
@@ -640,7 +640,7 @@ class rest_functions:
 
         :param portgroup_id: the name of the portgroup
         :param filters: dictionary of filters
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
                       % self.array_id)
@@ -657,7 +657,7 @@ class rest_functions:
         :param portgroup_id: the name of the new port group
         :param director_id: the directoy id
         :param port_id: the port id
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
                       % self.array_id)
@@ -671,9 +671,9 @@ class rest_functions:
         """Create a new portgroup.
 
         :param portgroup_id: the name of the new port group
-        :param director_id: the directoy id
-        :param port_id: the port id
-        :return: server response - dict
+        :param ports: list of port dicts - {"directorId": director_id,
+                                            "portId": port_id}
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
                       % self.array_id)
@@ -681,6 +681,38 @@ class rest_functions:
                        "symmetrixPortKey": ports})
         return self.rest_client.rest_request(target_uri, POST,
                                              request_object=pg_payload)
+
+    def create_list_from_file(self, file_name):
+        """Given a file, create a list from its contents.
+
+        :param file_name: the path to the file
+        :return: list of contents
+        """
+        with open(file_name) as f:
+            list_item = f.readlines()
+        raw_list = map(lambda s: s.strip(), list_item)
+        return list(raw_list)
+
+    def create_portgroup_from_file(self, file_name, portgroup_id):
+        """Given a file with director:port pairs, create a portgroup.
+
+        e.g. FA-1D:4
+             FA-1D:6
+        Each director:port pair must be on a new line
+        :param file_name: the path to the file
+        :param portgroup_id: the name for the portgroup
+        :return: dict, status_code
+        """
+        port_list = self.create_list_from_file(file_name)
+        combined_payload = []
+        for i in port_list:
+            current_directorId, current_portId = i.split(":")
+            temp_list = {}
+            temp_list['directorId'] = current_directorId
+            temp_list['portId'] = current_portId
+            combined_payload.append(temp_list)
+
+        return self.create_multiport_portgroup(portgroup_id, combined_payload)
 
     def modify_portgroup(self, portgroup_id, remove_port=None, add_port=None,
                          rename_portgroup=None):
@@ -691,7 +723,7 @@ class rest_functions:
         :param remove_port: tuple of port details ($director_id, $portId)
         :param add_port: tuple of port details ($director_id, $portId)
         :param rename_portgroup: new portgroup name
-        :return: server response - dict
+        :return: dict, status_code
         """
         if remove_port:
             edit_pg_data = ({"editPortGroupActionParam": {"removePortParam": {
@@ -719,7 +751,7 @@ class rest_functions:
         """Delete a portgroup.
 
         :param portgroup_id: the name of the portgroup
-        :return: server response
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup/%s"
                       % self.array_id, portgroup_id)
@@ -745,7 +777,7 @@ class rest_functions:
         details on a specific SLO if one is passed in in the parameters.
 
         :param SLO_Id: the service level agreement, optional
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/slo" % self.array_id
         if SLO_Id:
@@ -758,7 +790,7 @@ class rest_functions:
         Currently, the only modification permitted is renaming.
         :param SLO_Id: the current name of the slo
         :param new_name: the new name for the slo
-        :return: server response - dict
+        :return: dict, status_code
         """
         edit_slo_data = ({"editSloActionParam": {
             "renameSloParam": {"sloId": new_name}}})
@@ -774,7 +806,7 @@ class rest_functions:
         details on a specific SRP if one is passed in in the parameters.
 
         :param SRP: the storage resource pool, optional
-        :return: SRP details
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/srp" % self.array_id
         if SRP:
@@ -791,7 +823,7 @@ class rest_functions:
         :param sg_id: the storage group name, optional
         :param filters: dictionary of filters e.g.
                        {'child': 'true', 'srp_name': '=SRP_1'}
-        :return: sg details
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
@@ -820,7 +852,7 @@ class rest_functions:
         :param vol_size: the size of each volume
         :param capUnit: the capacity unit (MB, GB)
         :param disable_compression: Flag for disabling compression (AF only)
-        :return: message
+        :return: dict, status_code
         """
         sg_params = {"sloId": slo, "workloadSelection": workload,
                      "volumeAttribute": {
@@ -851,7 +883,7 @@ class rest_functions:
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
         :param disable_compression: flag for disabling compression (AF only)
-        :return: message
+        :return: dict, status_code
         """
         sg_params = {"sloId": slo, "workloadSelection": workload,
                      "volumeAttribute": {
@@ -875,7 +907,7 @@ class rest_functions:
         given in dictionary form for json formatting
 
         :param new_sg_data: the payload of the request
-        :return: response - dict
+        :return: dict, status_code
         """
         target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
@@ -887,7 +919,7 @@ class rest_functions:
         given in dictionary form for json formatting
 
         :param new_sg_data: the payload of the request
-        :return: response - dict
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
@@ -899,7 +931,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param edit_sg_data: the payload of the request
-        :return: message
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
                       % (self.array_id, sg_id))
@@ -911,7 +943,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume
-        :return: message
+        :return: dict, status_code
         """
         addVolData = {"editStorageGroupActionParam": {
                                     "addVolumeParam": {
@@ -925,7 +957,7 @@ class rest_functions:
         :param num_vols: the number of volumes
         :param vol_size: the size of the volumes
         :param capUnit: the capacity unit
-        :return: message
+        :return: dict, status_code
         """
         expand_sg_data = ({"editStorageGroupActionParam": {
             "expandStorageGroupParam": {
@@ -940,7 +972,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param volID: the device id of the volume
-        :return: message
+        :return: dict, status_code
         """
         del_vol_data = ({"editStorageGroupActionParam": {
             "removeVolumeParam": {
@@ -953,7 +985,7 @@ class rest_functions:
         A storage group cannot be deleted if it
         is associated with a masking view
         :param sg_id: the name of the storage group
-        :return: server response
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
                      % (self.array_id, sg_id))
@@ -979,7 +1011,7 @@ class rest_functions:
         :param dynamicDistribution: valid values Always, Never, OnFailure
         :param IOPS: integer value. Min Value 100, must be specified to 
                      nearest 100, e.g.202 is not a valid value
-        :return: Status Code
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
                       % (self.array_id, storageGroup))
@@ -996,7 +1028,7 @@ class rest_functions:
 
         :param volID: the volume's device ID
         :param filters: dictionary of filters
-        :return: server response - dict
+        :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/volume" % self.array_id
         if volID:
@@ -1012,7 +1044,7 @@ class rest_functions:
         Note that you cannot delete volumes with any associations/ allocations
 
         :param vol_id: the device ID of the volume
-        :return: server response
+        :return: None, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/volume/%s"
                       % (self.array_id, vol_id))
@@ -1063,7 +1095,7 @@ class rest_functions:
     def get_workload(self):
         """Gets details of all available workload types.
 
-        :return: workload details
+        :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/workloadtype"
                       % self.array_id)
@@ -1078,7 +1110,7 @@ class rest_functions:
     def check_snap_capabilities(self):
         """Check what replication facilities are available
 
-        :return: Replication information
+        :return: dict, status_code
         """
         target_uri = "/replication/capabilities/symmetrix"
         return self.rest_client.rest_request(target_uri, GET)
@@ -1087,7 +1119,7 @@ class rest_functions:
         """get snapshot information on a particular sg
 
         :param sg_id: the name of the storage group
-        :return: snapshot information
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot"
                       % (self.array_id, sg_id))
@@ -1102,7 +1134,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: snapshot information
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot/%s"
                       % (self.array_id, sg_id, snap_name))
@@ -1113,7 +1145,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: message
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot"
                       % (self.array_id, sg_id))
@@ -1126,7 +1158,7 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the existing snapshot
-        :return: message
+        :return: dict, status_code
         """
         target_uri = (
             "/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation"
@@ -1141,7 +1173,7 @@ class rest_functions:
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
-        :return: message
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/"
                       "%s/snapshot/%s/generation/%d"
@@ -1157,7 +1189,7 @@ class rest_functions:
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
         :param new_name: the new name of the snapshot
-        :return: message
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
                       "snapshot/%s/generation/%d"
@@ -1174,7 +1206,7 @@ class rest_functions:
         :param snap_name: name of the snapshot
         :param gen_num: generation number of a snapshot (int)
         :param link_sg_name:  the target storage group name
-        :return: message
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
                       "snapshot/%s/generation/%d"
@@ -1192,7 +1224,7 @@ class rest_functions:
         :param sg_id: name of the storage group
         :param snap_name: name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
-        :return: status code
+        :return: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/"
                       "%s/snapshot/%s/generation/%d"
@@ -1203,7 +1235,7 @@ class rest_functions:
         """Check what replication features are licensed and enabled.
 
         :param array: the Symm array serial number
-        :return: server response
+        :return: dict, status_code
         """
         target_uri = "/replication/capabilities/symmetrix/%s" % array
         return self.rest_client.rest_request(target_uri, GET)
@@ -1230,7 +1262,7 @@ class rest_functions:
 
     def get_wlp_timestamp(self):
         """Get the latest timestamp from WLP for processing New Worlkloads
-        :return: JSON Payload
+        :return: dict, status_code
         """
         target_uri = ("/82/wlp/symmetrix/%s" % self.array_id)
         return self.rest_client.rest_request(target_uri, GET)
@@ -1238,12 +1270,12 @@ class rest_functions:
     def get_headroom(self,workload):
         """Get the Remaining Headroom Capacity
         :param workload:
-        :return: JSON Payload, sample
+        :return: dict, status_code (sample response
             {'headroom': [{'workloadType': 'OLTP',
             'headroomCapacity': 29076.34, 'processingDetails':
                 {'lastProcessedSpaTimestamp': 1485302100000,
                 'nextUpdate': 1670}, 'sloName': 'Diamond',
-                'srp': 'SRP_1', 'emulation': 'FBA'}]}
+                'srp': 'SRP_1', 'emulation': 'FBA'}]})
         """
         target_uri = ("/82/wlp/symmetrix/%s/headroom?emulation=FBA&slo="
                       "Diamond&workloadtype=%s&srp=SRP_1"
