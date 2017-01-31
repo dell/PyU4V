@@ -667,6 +667,21 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, POST,
                                              request_object=pg_payload)
 
+    def create_multiport_portgroup(self, portgroup_id, ports):
+        """Create a new portgroup.
+
+        :param portgroup_id: the name of the new port group
+        :param director_id: the directoy id
+        :param port_id: the port id
+        :return: server response - dict
+        """
+        target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
+                      % self.array_id)
+        pg_payload = ({"portGroupId": portgroup_id,
+                       "symmetrixPortKey": ports})
+        return self.rest_client.rest_request(target_uri, POST,
+                                             request_object=pg_payload)
+
     def modify_portgroup(self, portgroup_id, remove_port=None, add_port=None,
                          rename_portgroup=None):
         """Modify an existing portgroup.
@@ -914,13 +929,10 @@ class rest_functions:
         """
         expand_sg_data = ({"editStorageGroupActionParam": {
             "expandStorageGroupParam": {
-                "num_of_vols": num_vols,
-                "emulation": "FBA",
-                "volumeAttribute": {
-                    "volume_size": vol_size,
-                    "capacityUnit": capUnit
-                },
-                "create_new_volumes": "true"},}})
+                "num_of_vols": num_vols, "volumeAttribute": {
+                    "volume_size": vol_size, "capacityUnit": capUnit},
+                "create_new_volumes": "true"
+            }}})
         return self.modify_storagegroup(sg_id, expand_sg_data)
 
     def remove_vol_from_storagegroup(self, sg_id, volID):
