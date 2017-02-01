@@ -70,7 +70,7 @@ ARGS = PARSER.parse_args()
 #SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 
 SGNAME = ARGS.sgname
-FNAME = ARGS.igfile
+host = ARGS.igfile
 PORTS = ARGS.ports
 appname = ("REST_")+SGNAME
 sg_id=appname+("_SG")
@@ -84,42 +84,22 @@ ru = rest_functions()
 # there may be an easier way to do this but this way seems to work well.                       #
 ################################################################################################
 
-def create_json_list(file_name):
-    with open(file_name) as f:
-       listItem = f.readlines()
-    raw_list = map(lambda s: s.strip(), listItem)
-    json_list=list(raw_list)
-    return json_list
 
-# Creating a list of Port list from file.
-
-initiator_list=(create_json_list(FNAME))
-port_list=(create_json_list(PORTS))
-payload=[]
-
-
-# Dynamically build a JSON payload from the port file.
-
-combined_payload = []
-for i in port_list:
-    current_directorId, current_portId = i.split(":")
-    temp_list = {}
-    temp_list['directorId'] = current_directorId
-    temp_list['portId'] = current_portId
-    combined_payload.append(temp_list)
+initiator_list=ru.create_list_from_file(file_name=host)
 
 # Actual REST calls to build up the function
 
-if 'success' in ru.create_non_empty_storagegroup(srpID="SRP_1",sg_id=sg_id,slo="Diamond", workload="OLTP", num_vols="1",vol_size="125", capUnit="GB"):
+if 200 in ru.create_non_empty_storagegroup(srpID="SRP_1",sg_id=sg_id,slo="Diamond", workload="OLTP", num_vols="1",vol_size="125", capUnit="GB"):
     print ("Storage Group %s Created " %(sg_id))
-    #add additional volumes of various sizes
+    #add additional volumes of various sizes you could loop this
     ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=2, capUnit="GB", vol_size="8")
     ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=1, capUnit="GB", vol_size="40")
 
 else:  # If statement above fails then we are cleaning up the array rolling back.
-    print("Storage Group already exists, Please check the name and try again")
+    print("Storage Group %s already exists" % sg_id)
     exit()
-if 'success' in ru.create_host(ig_id,initiator_list):
+
+if 200 in ru.create_host(ig_id,initiator_list):
     print ("Host Created")
 else:
     print("Something went wrong, deleting storage group and empty initiator group, Please check the symapi log file on the Unisphere Server for more details" )
@@ -128,7 +108,7 @@ else:
     ru.delete_sg(sg_id)
     exit()
 
-if 'success' in ru.create_multiport_portgroup(pg_id,combined_payload):
+if 200 in ru.create_portgroup_from_file(file_name=PORTS,portgroup_id=pg_id):
     print("PortGroup Created")
 else:
     print("Something went wrong creating portgroup, deleting storage group and empty initiator group, Please check the symapi log file on the Unisphere Server for more details")
@@ -138,7 +118,7 @@ else:
     ru.delete_portgroup(pg_id)
     exit()
 
-if 'success' in ru.create_masking_view_existing_components(masking_view_name=mv_id,port_group_name=pg_id,storage_group_name=sg_id,host_name=ig_id):
+if 200 in ru.create_masking_view_existing_components(masking_view_name=mv_id,port_group_name=pg_id,storage_group_name=sg_id,host_name=ig_id):
     print("Masking view created Sucessfully ", mv_id)
 else:
     print("Something went wrong creating the masking view, deleting storage group and empty initiator group, Please check the symapi log file on the Unisphere Server for more details")
@@ -147,4 +127,3 @@ else:
     ru.delete_sg(sg_id)
     ru.delete_portgroup(pg_id)
     exit()
-
