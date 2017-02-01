@@ -25,7 +25,7 @@ try:
 except ImportError:
     import configparser as Config
 import logging.config
-from rest_requests import RestRequests
+from PyU4V.rest_requests import RestRequests
 
 # register configuration file
 LOG = logging.getLogger('PyU4V')
