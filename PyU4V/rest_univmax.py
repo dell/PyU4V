@@ -1153,6 +1153,21 @@ class rest_functions:
         return self.rest_client.rest_request(
             target_uri, POST, request_object=snap_data)
 
+    def create_sg_snapshot83(self, sg_id, snap_name):
+        """Creates a new snapshot of a specified sg
+
+        :param sg_id: the name of the storage group
+        :param snap_name: the name of the snapshot
+        :return: dict, status_code
+        """
+        target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/snapshot"
+                      % (self.array_id, sg_id))
+        snap_data = ({"snapshotName": snap_name,
+                      "daysToLive": 1
+                      })
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=snap_data)
+
     def create_new_gen_snap(self, sg_id, snap_name):
         """Establish a new generation of a SnapVX snapshot for a source SG
 

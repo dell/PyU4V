@@ -21,11 +21,11 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-# Lab2.py
+#
 This python scrtipt will create a snapvx snapshot on the specified storage group and timestamp the name.  Each snapshot is preserved
 for 24 hours.
 
-REST call create_new_snap from
+REST call create_new_snap for a storage group.
 """
 import argparse
 from PyU4V.rest_univmax import rest_functions
@@ -53,7 +53,7 @@ ru = rest_functions()
 
 snap_name=("REST_Snap_")+strftime ("%d%m%Y%H%M%S")  #assign name to snap with date and time appended to name
 
-if 200 in ru.create_sg_snapshot(sg_id,snap_name):
+if 200 or 201 in ru.create_sg_snapshot83(sg_id,snap_name):
     print("Snapshot has been created for storage group %s with the name %s" %(sg_id, snap_name))
 else:
     print ("There was a problem creating the snapshot please check the symapi log file on the Unipshere server for more information")
