@@ -1281,3 +1281,24 @@ class rest_functions:
                       "Diamond&workloadtype=%s&srp=SRP_1"
                       % (self.array_id, workload))
         return self.rest_client.rest_request(target_uri, GET)
+
+
+    def srdf_protect_sg(self,symmetrix_id, sg_id, remote_sid, srdfmode):
+        """
+
+        :param symmetrix_id: Type Integer 12 digit VMAX ID e.g. 000197000008
+        :param sg_id: Unique string up to 32 Characters
+        :param remote_sid: Type Integer 12 digit VMAX ID e.g. 000197000008
+        :param mode: String, values can be Active, AdaptiveCopyDisk,Synchronous,Asynchronous
+        :return: message and status Type JSON
+        """
+        target_uri = "/83/replication/symmetrix/%s/storagegroup/%s/rdf_group" \
+                     % (symmetrix_id, sg_id)
+        rdf_payload = ({
+                          "replicationMode": srdfmode,
+                          "remoteSymmId": remote_sid,
+                          "remoteStorageGroupName": sg_id,
+                          "establish": "True"
+                            })
+
+        return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
