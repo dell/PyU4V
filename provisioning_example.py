@@ -65,7 +65,7 @@ RFLAGS.add_argument('-igfile', required=True, help='Filename containing initiato
 RFLAGS.add_argument('-ports', required=True, help='Filename containing list of ports one per line, e.g. FA1d:25')
 ARGS = PARSER.parse_args()
 
-#Variables are initiated to appent REST to the Storage Group and Initiator this can all be customized to match your individual
+#Variables are initiated to append REST to the Storage Group and Initiator this can all be customized to match your individual
 #requirements
 #SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 
@@ -79,24 +79,29 @@ pg_id=appname+("_PG")
 mv_id=appname+("_MV")
 ru = rest_functions()
 
-################################################################################################
-# The create_list function below simply strips any special characters off the end of the file. #
-# there may be an easier way to do this but this way seems to work well.                       #
-################################################################################################
-
-
 initiator_list=ru.create_list_from_file(file_name=host)
 
-# Actual REST calls to build up the function
+# Actual REST calls to build up the function, script is checking for Return code of 200 in each of the rest calls if that fails it will display error message and Roll Back.
 
 if 200 in ru.create_non_empty_storagegroup(srpID="SRP_1",sg_id=sg_id,slo="Diamond", workload="OLTP", num_vols="1",vol_size="125", capUnit="GB"):
     print ("Storage Group %s Created " %(sg_id))
     #add additional volumes of various sizes you could loop this
-    ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=2, capUnit="GB", vol_size="8")
-    ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=1, capUnit="GB", vol_size="40")
-
-else:  # If statement above fails then we are cleaning up the array rolling back.
-    print("Storage Group %s already exists" % sg_id)
+    if 200 in ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=2, capUnit="GB", vol_size="8"):
+        print("Added first set of additional volumes")
+    else:
+        print("Problem adding additional volumes to %s please check logs" % sg_id)
+        ru.delete_sg(sg_id)
+        print("Deleting SG %s" % sg_id)
+        exit()
+    if 200 in ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=1, capUnit="GB", vol_size="40"):
+        print("Added second set of additional volumes")
+    else:
+        print("Problem adding additional volumes to %s please check logs" % sg_id)
+        ru.delete_sg(sg_id)
+        print("Deleting SG %s" % sg_id)
+        exit()
+else:
+    print("Problem Creating Storage Group %s, Possibly a storage group of the same name already exists, please check logs" % sg_id)
     exit()
 
 if 200 in ru.create_host(ig_id,initiator_list):
