@@ -30,36 +30,23 @@ from PyU4V.rest_univmax import rest_functions
 PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe used for creating and provisioning storage for an Oracle Database.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
 RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. REST_TEST_SG')
-#RFLAGS.add_argument('-pg', required=True, help='Port group name, typically the application name e.g. REST_TEST_PG')
-#RFLAGS.add_argument('-host', required=True, help='Port group name, typically the application name e.g. REST_TEST_PG')
+RFLAGS.add_argument('-lnsg', required=True, help='Storage group name you want to link to, if name does not exist the storage group will be greated with all required volumes')
 ARGS = PARSER.parse_args()
 
 #Variables are initiated to append REST to the Storage Group and Initiator this can all be customized to match your individual
 #requirements
 #SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 
-sgname = ARGS.sg
-#mountHost = ARGS.ig
-#portgroup = ARGS.pg
-
+sg_id = ARGS.sg
+ln_sg_id=ARGS.lnsg
 ru = rest_functions()
-
-def set_snapshot_id():
-    #simple function to parse a list of snaps for storage group and select from menu
-    snaplist = ru.get_snap_sg(sgname)
-    print(snaplist)
-    i = 0
-    for elem in snaplist[0]["name"]:
-        print(i, " ", elem, "\n")
-        i = int(i + 1)
-    snapselection = input("Select the snapshot you want from the List \n")
-    snapshot_id = (snaplist[0]["name"][int(snapselection)])
-
-    return snapshot_id
-mysnap=set_snapshot_id()
+mysnap = ru.set_snapshot_id(sg_id)
 print("You Chose Snap %s" % mysnap)
+mvname=ln_sg_id +("_MV")
 
-#TODO link snapshot method, Call to create the Masking view, update arguments to accept host details, port and LinkSG group.
+ru.link_gen_snapsthot_83(sg_id,mysnap,generation=0,link_sg_name=ln_sg_id)
+ru.create_masking_view_existing_components(port_group_name="REST_TEST_PG",masking_view_name=mvname, host_name="REST_TEST_IG", storage_group_name=ln_sg_id)
+
 
 
 

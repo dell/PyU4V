@@ -1140,6 +1140,7 @@ class rest_functions:
                       % (self.array_id, sg_id, snap_name))
         return self.rest_client.rest_request(target_uri, GET)
 
+
     def create_sg_snapshot(self, sg_id, snap_name):
         """Creates a new snapshot of a specified sg
 
@@ -1153,7 +1154,7 @@ class rest_functions:
         return self.rest_client.rest_request(
             target_uri, POST, request_object=snap_data)
 
-    def create_sg_snapshot83(self, sg_id, snap_name):
+    def create_sg_snapshot_83(self, sg_id, snap_name):
         """Creates a new snapshot of a specified sg
 
         :param sg_id: the name of the storage group
@@ -1167,6 +1168,7 @@ class rest_functions:
                       })
         return self.rest_client.rest_request(
             target_uri, POST, request_object=snap_data)
+
 
     def create_new_gen_snap(self, sg_id, snap_name):
         """Establish a new generation of a SnapVX snapshot for a source SG
@@ -1231,6 +1233,40 @@ class rest_functions:
                        }})
         return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=snap_data)
+
+    def set_snapshot_id(self,sgname):
+        # simple function to parse a list of snaps for storage group and select from menu
+        """
+        :return:String returned with the name of the selected snapshot
+        """
+        snaplist = self.get_snap_sg(sgname)
+        print(snaplist)
+        i = 0
+        for elem in snaplist[0]["name"]:
+            print(i, " ", elem, "\n")
+            i = int(i + 1)
+        snapselection = input("Select the snapshot you want from the List \n")
+        snapshot_id = (snaplist[0]["name"][int(snapselection)])
+        return snapshot_id
+
+    def link_gen_snapsthot_83(self, sg_id, snap_name, generation,link_sg_name ):
+        """Creates a new snapshot of a specified sg
+        83 version will automatically create linked SG if one of the specified name doesn't exist
+        :param sg_id: Source storage group name
+        :param snap_name: name of the snapshot
+        :param gen_num: generation number of a snapshot (int)
+        :param link_sg_name:  the target storage group name
+        :return: dict, status_code
+        """
+        target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation/%s"
+                      % (self.array_id, sg_id, snap_name, generation))
+        snap_data = ({"link": {
+            "linkStorageGroupName": link_sg_name
+        },
+            "action": "Link"})
+        return self.rest_client.rest_request(
+            target_uri, PUT, request_object=snap_data)
+
 
     def delete_sg_snapshot(self, sg_id, snap_name, gen_num):
         """Deletes a specified snapshot.
