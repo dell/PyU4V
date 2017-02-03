@@ -102,7 +102,7 @@ class RestRequests:
                         'status_code': status_code})
             return response, status_code
 
-        except requests.Timeout:
+        except (requests.Timeout, requests.ConnectionError):
             LOG.error(("The %(method)s request to URL %(url)s "
                        "timed-out, but may have been successful."
                        "Please check the array. ")
