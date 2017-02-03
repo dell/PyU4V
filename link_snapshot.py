@@ -44,11 +44,6 @@ mysnap = ru.set_snapshot_id(sg_id)
 print("You Chose Snap %s" % mysnap)
 mvname=ln_sg_id +("_MV")
 
-ru.link_gen_snapsthot_83(sg_id,mysnap,generation=0,link_sg_name=ln_sg_id)
-ru.create_masking_view_existing_components(port_group_name="REST_TEST_PG",masking_view_name=mvname, host_name="REST_TEST_IG", storage_group_name=ln_sg_id)
-
-
-
-
-
+ru.link_gen_snapsthot_83(sg_id,mysnap,generation=0,link_sg_name=ln_sg_id)  #Currently getting a timeout issue if storage group doesn't already exist, this has been addressed in 84.  Method will be updated to use 84 endpoint when GA
+ru.create_masking_view_existing_components(port_group_name="REST_Paul_PG",masking_view_name=mvname, host_name="REST_Paul_IG", storage_group_name=ln_sg_id)
 
