@@ -1353,4 +1353,4 @@ class rest_functions:
                             })
 
         return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
-#Test comment
+#Test comment added
