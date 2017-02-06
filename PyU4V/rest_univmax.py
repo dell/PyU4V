@@ -1334,23 +1334,47 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, GET)
 
 
-    def srdf_protect_sg(self,symmetrix_id, sg_id, remote_sid, srdfmode):
+    def srdf_protect_sg(self, sg_id, remote_sid, srdfmode, establish=None):
         """
 
         :param symmetrix_id: Type Integer 12 digit VMAX ID e.g. 000197000008
         :param sg_id: Unique string up to 32 Characters
         :param remote_sid: Type Integer 12 digit VMAX ID e.g. 000197000008
         :param mode: String, values can be Active, AdaptiveCopyDisk,Synchronous,Asynchronous
+        :param establish default is none, if passed value then we will use different
         :return: message and status Type JSON
         """
         target_uri = "/83/replication/symmetrix/%s/storagegroup/%s/rdf_group" \
-                     % (symmetrix_id, sg_id)
+                     % (self.array_id, sg_id)
+        if establish :
+            establish_sg="True"
+        else:
+            establish_sg="False"
+        print(establish_sg)
         rdf_payload = ({
                           "replicationMode": srdfmode,
                           "remoteSymmId": remote_sid,
                           "remoteStorageGroupName": sg_id,
-                          "establish": "False"
+                          "establish": establish_sg
                             })
-
+        print(rdf_payload)
         return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
-#Test comment added
+
+    def list_srdf_groups(self,sg_id):
+        """
+
+        :param sg_id: Storage Group Name of replicated group.
+        :return:JSON dictionary Message and Status Sample returned
+        {
+          "storageGroupName": "REST_TEST_SG",
+          "symmetrixId": "0001970xxxxx",
+          "rdfgs": [
+            4
+          ]
+        }
+        """
+        target_uri = "/83/replication/symmetrix/%s/storagegroup/%s/rdf_group" \
+                     % (symmetrix_id, sg_id)
+
+        return self.rest_client.rest_request(target_uri,GET)
+
