@@ -1349,7 +1349,7 @@ class rest_functions:
                           "replicationMode": srdfmode,
                           "remoteSymmId": remote_sid,
                           "remoteStorageGroupName": sg_id,
-                          "establish": "True"
+                          "establish": "False"
                             })
 
         return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
