@@ -37,7 +37,7 @@ from time import strftime
 
 PARSER = argparse.ArgumentParser(description='Example implementation of a Python REST client for EMC Unisphere Taking SnapVX Snapshots.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
-RFLAGS.add_argument('-sgname', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
+RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
 ARGS = PARSER.parse_args()
 
 #Variables are initiated to appent REST to the Storage Group and Initiator

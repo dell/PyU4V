@@ -35,7 +35,6 @@ ARGS = PARSER.parse_args()
 
 #Variables are initiated to append REST to the Storage Group and Initiator this can all be customized to match your individual
 #requirements
-#SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 
 sg_id = ARGS.sg
 ln_sg_id=ARGS.lnsg

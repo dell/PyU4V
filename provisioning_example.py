@@ -60,9 +60,9 @@ from PyU4V.rest_univmax import rest_functions
 
 PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe used for creating and provisioning storage for an Oracle Database.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
-RFLAGS.add_argument('-sgname', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
-RFLAGS.add_argument('-igfile', required=True, help='Filename containing initiators,one per line e.g. 10000000c9873cae')
-RFLAGS.add_argument('-ports', required=True, help='Filename containing list of ports one per line, e.g. FA1d:25')
+RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
+RFLAGS.add_argument('-ig', required=True, help='Filename containing initiators,one per line e.g. 10000000c9873cae')
+RFLAGS.add_argument('-pg', required=True, help='Filename containing list of ports one per line, e.g. FA1d:25')
 ARGS = PARSER.parse_args()
 
 #Variables are initiated to append REST to the Storage Group and Initiator this can all be customized to match your individual
@@ -82,18 +82,20 @@ ru = rest_functions()
 initiator_list=ru.create_list_from_file(file_name=host)
 
 # Actual REST calls to build up the function, script is checking for Return code of 200 in each of the rest calls if that fails it will display error message and Roll Back.
+#Return code of 200 indicates sucessful completion of REST call.   Note all calls are simply calling functions from rest_fucntions, the functions are imported as ru which
+#saves some typing.
 
-if 200 in ru.create_non_empty_storagegroup(srpID="SRP_1",sg_id=sg_id,slo="Diamond", workload="OLTP", num_vols="1",vol_size="125", capUnit="GB"):
+if 200 in ru.create_non_empty_storagegroup(srpID="SRP_1",sg_id=sg_id,slo="Diamond", workload="OLTP", num_vols="1",vol_size="1", capUnit="GB"):
     print ("Storage Group %s Created " %(sg_id))
     #add additional volumes of various sizes you could loop this
-    if 200 in ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=2, capUnit="GB", vol_size="8"):
+    if 200 in ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=2, capUnit="GB", vol_size="2"):
         print("Added first set of additional volumes")
     else:
         print("Problem adding additional volumes to %s please check logs" % sg_id)
         ru.delete_sg(sg_id)
         print("Deleting SG %s" % sg_id)
         exit()
-    if 200 in ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=1, capUnit="GB", vol_size="40"):
+    if 200 in ru.add_new_vol_to_storagegroup(sg_id=sg_id, num_vols=1, capUnit="GB", vol_size="3"):
         print("Added second set of additional volumes")
     else:
         print("Problem adding additional volumes to %s please check logs" % sg_id)
