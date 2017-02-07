@@ -1360,7 +1360,7 @@ class rest_functions:
         print(rdf_payload)
         return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
 
-    def list_srdf_groups(self,sg_id):
+    def get_srdf_groups(self,sg_id):
         """
 
         :param sg_id: Storage Group Name of replicated group.
@@ -1374,7 +1374,28 @@ class rest_functions:
         }
         """
         target_uri = "/83/replication/symmetrix/%s/storagegroup/%s/rdf_group" \
-                     % (symmetrix_id, sg_id)
-
+                     % (self.array_id, sg_id)
         return self.rest_client.rest_request(target_uri,GET)
 
+    def change_srdf_state (self, sg_id, action, rdfg=None):
+        """
+
+        :param sg_id: name of storage group
+        :param action
+        :param rdfg: Optional Parameter if SRDF group is known
+        :return:
+        """
+        #Get a list of SRDF groups for storage group
+
+        rdfg_list=self.get_srdf_groups(sg_id)[0]["rdfgs"]
+        if len(rdfg_list) <2 : #Check to see if RDF is cascaded.
+            rdfg_num=rdfg_list[0] #Sets the RDFG for the Put call to
+        else:
+            print("Group is cascaded, functionality not yest added in this python library")
+
+        target_uri = "/83/replication/symmetrix/%s/storagegroup/%s/rdf_group/%s" \
+                         % (self.array_id, sg_id,rdfg_num)
+        action_payload=({
+                         "action": action
+                        })
+        return self.rest_client.rest_request(target_uri, PUT, request_object=action_payload)
