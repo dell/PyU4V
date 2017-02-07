@@ -45,6 +45,12 @@ sg_id = ARGS.sg
 action=ARGS.action
 ru = rest_functions()
 
-ru.change_srdf_state(sg_id, action)
+currentstate=ru.get_srdf_state(sg_id)[0]["states"] #Gets the Current SRDF State
+print(currentstate)
+ru.change_srdf_state(sg_id, action) #Note this call may run for a long time depending on the size of the group,  change RDF stat will by updated to async call when supported in 8.4
+
+
+#newstate=ru.get_srdf_state(sg_id)[0]["states"]
+#print(newstate)  #Note NewState will return failed over if volumes are not in masking group on Remote Side
 
 
