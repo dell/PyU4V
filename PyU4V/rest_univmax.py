@@ -1379,7 +1379,8 @@ class rest_functions:
 
     def change_srdf_state (self, sg_id, action, rdfg=None):
         """
-
+        This may be a long running task depending on the size of the SRDF group,  will switch to Async call when supported
+        in 8.4 version of Unisphere.
         :param sg_id: name of storage group
         :param action
         :param rdfg: Optional Parameter if SRDF group is known
