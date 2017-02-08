@@ -71,9 +71,9 @@ ARGS = PARSER.parse_args()
 #requirements
 #SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 
-SGNAME = ARGS.sgname
-host = ARGS.igfile
-PORTS = ARGS.ports
+SGNAME = ARGS.sg
+host = ARGS.ig
+PORTS = ARGS.pg
 appname = ("REST_")+SGNAME
 sg_id=appname+("_SG")
 ig_id=appname+("_IG")
