@@ -38,11 +38,11 @@ RFLAGS.add_argument('-remote_sid', required=True, help='Please Supply symmetrix 
 RFLAGS.add_argument('-mode', required=True, help='Valid inputs are Active, AdaptiveCopyDisk,Synchronous,Asynchronous This is CASE sensitive')
 ARGS = PARSER.parse_args()
 
-SGNAME = ARGS.sg
+sg_id = ARGS.sg
 remote_sid=ARGS.remote_sid
 srdfmode=ARGS.mode
 ru = rest_functions()
-sg_id=SGNAME
+
 
 #Call to protect Storage Group and Protect with SRDF, default action is not to start the copy, see full function
 #srdf_protect_sg in rest_univmax.py, call can also be made adding optional parameter establish=True
