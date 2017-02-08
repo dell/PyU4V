@@ -27,11 +27,13 @@ case we provision 4 devices to the specified host 125 GB for DATA, 8 For TEMP, 8
 This is just a sample configuration and can be modified to support the needs of your company.
 The procedure is called by running the command as follows
 
-python Lab1.py -ip IPADDRESS -user smc -pass smc -sgname test -igfile initiators.txt -ports ports.txt
+python provisioning_example.py -sg test -igfile initiators.txt -ports ports.txt
 
 sample format for the texts files used
 
 Initiators.txt
+10000000c9873cae
+10000000c9873caf
 
 ports.txt
 FA-1D:24
