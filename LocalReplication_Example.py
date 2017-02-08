@@ -45,8 +45,8 @@ ARGS = PARSER.parse_args()
 
 
 
-SGNAME = ARGS.sgname
-sg_id=SGNAME
+sgname = ARGS.sg
+sg_id=sgname
 
 ru = rest_functions()
 
@@ -57,3 +57,4 @@ if 200 or 201 in ru.create_sg_snapshot83(sg_id,snap_name):
     print("Snapshot has been created for storage group %s with the name %s" %(sg_id, snap_name))
 else:
     print ("There was a problem creating the snapshot please check the symapi log file on the Unipshere server for more information")
+

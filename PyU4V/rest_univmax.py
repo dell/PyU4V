@@ -26,6 +26,7 @@ except ImportError:
     import configparser as Config
 import logging.config
 from PyU4V.rest_requests import RestRequests
+import time
 
 # register configuration file
 LOG = logging.getLogger('PyU4V')
@@ -1421,3 +1422,55 @@ class rest_functions:
                          "action": action
                         })
         return self.rest_client.rest_request(target_uri, PUT, request_object=action_payload)
+
+#Performance Metrics
+
+    def get_fe_director_metrics(self,start_date, end_date, directorlist, dataformat, metriclist):
+        """
+        Fuction to get one or more metrics for front end directors
+
+        :param start_date: Date EPOCH Time in Milliseconds
+        :param end_date: Date EPOCH Time in Milliseconds
+        :param directorlist:List of FE Directors
+        :param dataformat:Average or Maximum
+        :param metriclist: Can contain a list of one or more of AvgWPDiscTime, AvgRDFSWriteResponseTime, AvgReadMissResponseTime ,PercentBusy,HostIOs, \
+        HostMBs, Reqs, ReadReqs, WriteReqs, HitReqs
+        :return: JSON Payload, and RETURN CODE 200 for success
+        """
+        target_uri="/performance/FEDirector/metrics"
+        feDirectorParam=({
+                        "symmetrixId":self.array_id,
+                        "directorId": directorlist,
+                        "endDate": end_date,
+                        "dataFormat": dataformat,
+                        "metrics": metriclist,
+                        "startDate": start_date
+                         })
+
+        return self.rest_client.rest_request(targe_uri,POST,request_object=feDirectorParam)
+
+    def get_fe_port_metrics(self,start_date, end_date, director_id, port_id, dataformat, metriclist):
+        """
+        Function to get one or more Metrics for Front end Director ports
+        :param start_date: Date EPOCH Time in Milliseconds
+        :param end_date: Date EPOCH Time in Milliseconds
+        :param directorlist:List of FE Directors
+        :param dataformat:Average or Maximum
+        :param metriclist: Can contain a list of one or more of PercentBusy, IOs, MBRead, MBWritten, MBs \
+        AvgIOSize, SpeedGBs, MaxSpeedGBs, HostIOLimitIOs, HostIOLimitMBs
+        :return: JSON Payload, and RETURN CODE 200 for success
+        """
+        target_uri="/performance/FEPort/metrics"
+        feDirectorParam=({
+                          "symmetrixId": self.array_id,
+                          "directorId": director_id,
+                          "endDate": end_date,
+                          "dataFormat": dataformat,
+                          "metrics": [
+                            metriclist
+                          ],
+                          "portId": port_id,
+                          "startDate": start_date
+                        })
+
+        return self.rest_client.rest_request(targe_uri,POST,request_object=feDirectorParam)

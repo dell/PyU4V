@@ -54,13 +54,14 @@ it is necessary to create a hostgroup or use exising host group.  Please use the
 """
 
 import argparse
-from PyU4V.rest_univmax import rest_functions
+from PyU4V.rest_requests import rest_functions
+
 ####################################
 # Define and Parse CLI arguments   #
 # and instantiate session for REST #
 ####################################
 
-PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe used for creating and provisioning storage for an Oracle Database.')
+PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe provisioning multiple sized volume for an application.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
 RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
 RFLAGS.add_argument('-ig', required=True, help='Filename containing initiators,one per line e.g. 10000000c9873cae')
