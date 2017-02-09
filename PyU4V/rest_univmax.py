@@ -1449,7 +1449,6 @@ class rest_functions:
         target_uri = "/performance/FEPort/keys"
         port_list = []
         dir_list=self.get_fe_director_list()
-        print (dir_list)
         for director in dir_list:
             port_payload = ({
                 "symmetrixId": self.array_id,
