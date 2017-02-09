@@ -1425,9 +1425,64 @@ class rest_functions:
 
     # Performance Metrics
 
-    def get_fe_director_metrics(self,start_date, end_date, directorlist,
-                                dataformat, metriclist):
-        """Fuction to get one or more metrics for front end directors
+    def get_fe_director_list(self):
+        """
+        Get list of all FE Directors
+        :return:
+        """
+        target_uri = "/performance/FEDirector/keys"
+        dir_payload = ({
+            "symmetrixId": self.array_id
+        })
+
+        dir_response = self.rest_client.rest_request(target_uri, POST, request_object=dir_payload)
+        dir_list = []
+        for director in dir_response[0]['feDirectorInfo']:
+            dir_list.append(director['directorId'])
+        return dir_list
+
+    def get_fe_port_list(self):
+        """
+        Function to get a list of all front end ports in the array
+        :return: List of Directors and Ports can be used as payload for other Functions or reports
+        """
+        target_uri = "/performance/FEPort/keys"
+        port_list = []
+        dir_list = self.get_fe_director_list()
+        for director in dir_list:
+            port_payload = ({
+                "symmetrixId": self.array_id,
+                "directorId": director
+            })
+            port_details = {}
+            port_response = self.rest_client.rest_request(target_uri, POST, request_object=port_payload)
+            for port in port_response[0]['fePortInfo']:
+                port_details[port['portId']] = director
+            port_list.append(port_details)
+        return port_list
+
+    def get_fe_port_util_last4hrs(self, dir_id, port_id):
+        """
+        Get stats for last 4 hours, currently only coded for one metric can be adapted for multiple
+        :return:Requested stats
+        """
+        end_date = int(round(time.time() * 1000))
+        start_date = (end_date - 14400000)
+        port_list = self.get_fe_port_list()
+
+        target_uri = '/performance/FEPort/metrics'
+        port_perf_payload = ({"startDate": start_date,
+                              "endDate": end_date,
+                              "symmetrixId": self.array_id,
+                              "directorId": dir_id,
+                              "portId": port_id,
+                              "dataFormat": "Average",
+                              "metrics": ["PercentBusy"]})
+        return self.rest_client.rest_request(target_uri, POST, request_object=port_perf_payload)
+
+    def get_fe_director_metrics(self,start_date, end_date, directorlist, dataformat, metriclist):
+        """
+        Fuction to get one or more metrics for front end directors
 
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
