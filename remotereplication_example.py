@@ -46,5 +46,7 @@ ru = rest_functions()
 
 #Call to protect Storage Group and Protect with SRDF, default action is not to start the copy, see full function
 #srdf_protect_sg in rest_univmax.py, call can also be made adding optional parameter establish=True
+def main ():
+    ru.srdf_protect_sg(sg_id,remote_sid,srdfmode)
 
-ru.srdf_protect_sg(sg_id,remote_sid,srdfmode)
+main()
