@@ -42,16 +42,15 @@ ARGS = PARSER.parse_args()
 
 #Variables are initiated to appent REST to the Storage Group and Initiator
 #SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
-
-
-
-sgname = ARGS.sg
-sg_id=sgname
-
+sg_id = ARGS.sg
 ru = rest_functions()
 
+def main () :
+    snap_name=("REST_Snap_")+strftime ("%d%m%Y%H%M%S")  #assign name to snap with date and time appended to name
+    ru.create_sg_snapshot(sg_id,snap_name)
+    print ("Check the Gui now or REST Client to see if snapshot %s was created for Storge Group %s" % (snap_name,sg_id))
 
-snap_name=("REST_Snap_")+strftime ("%d%m%Y%H%M%S")  #assign name to snap with date and time appended to name
+main()
 
-ru.create_sg_snapshot(sg_id,snap_name)
+
 
