@@ -20,33 +20,52 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# This Script can be used to protect a storage group with SRDF Metro, Syncronous or Asyncronous, or Adaptive copy.
-
-
 import argparse
 from PyU4V.rest_univmax import rest_functions
-
+import time
+import json
 ####################################
 # Define and Parse CLI arguments   #
 # and instantiate session for REST #
 ####################################
 
-PARSER = argparse.ArgumentParser(description='Example implementation of a Python REST client for EMC Unisphere for VMAX Protect Storage Group with SRDF. Note the source storage group must already exist.')
-RFLAGS = PARSER.add_argument_group('Required arguments')
-RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
-RFLAGS.add_argument('-remote_sid', required=True, help='Please Supply symmetrix ID e.g. 000197000008')
-RFLAGS.add_argument('-mode', required=True, help='Valid inputs are Active, AdaptiveCopyDisk,Synchronous,Asynchronous, Metro This is CASE sensitive')
+#No Arguments are Required to run this script
+
+PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe used Gathering Some Performance Statistics from VMAX and VMAX3 Arrays.')
 ARGS = PARSER.parse_args()
 
-sg_id = ARGS.sg
-remote_sid=ARGS.remote_sid
-srdfmode=ARGS.mode
-ru = rest_functions()
+#This script will gather all performance statistics for all Front End directors and print them.  For use in real world
+#output would be writen to a file.
+
+ru=rest_functions()
+
+#First Get a list of all Directors
+#Calculate start and End Dates for Gathering Performance Stats Last 4 Hours
+#end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
+#start_date = (end_date - 14400000)  #Set start date to EPOCH Time 4 hours Earlier
+# Get timestamps
+dir_list=ru.get_fe_director_list()
+
+end_date = int(round(time.time() * 1000))
+start_date = (end_date - 3600000)
+
+director_performance_results=[]
+director_results_combined=[]
+
+for director in dir_list:
+    director_metrics=ru.get_fe_director_metrics(director=director,start_date=start_date,end_date=end_date, dataformat='Average')
+    director_results = ({
+        "director": director,
+        "Perfdata": director_metrics
+    })
+    director_results_combined.append(director_results)
+
+print(director_results_combined)
 
 
-#Call to protect Storage Group and Protect with SRDF, default action is not to start the copy, see full function
-#srdf_protect_sg in rest_univmax.py, call can also be made adding optional parameter establish=True
-def main ():
-    ru.srdf_protect_sg(sg_id,remote_sid,srdfmode)
 
-main()
+
+
+
+
+

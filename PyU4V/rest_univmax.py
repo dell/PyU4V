@@ -1346,7 +1346,7 @@ class rest_functions:
         :param sg_id: Unique string up to 32 Characters
         :param remote_sid: Type Integer 12 digit VMAX ID e.g. 000197000008
         :param srdfmode: String, values can be Active, AdaptiveCopyDisk,Synchronous,Asynchronous
-        :param establish default is none, if passed value then we will use different
+        :param establish default is none, if passed value then we will use Values are Boolean
         :return: message and status Type JSON
         """
         target_uri = "/83/replication/symmetrix/%s/storagegroup/%s/rdf_group" \
@@ -1382,9 +1382,6 @@ class rest_functions:
 
     def get_srdf_state(self, sg_id, rdfg=None):
         """Get the current SRDF state.
-
-        This may be a long running task depending on the size of the SRDF group,
-        will switch to Async call when supported in 8.4 version of Unisphere.
         :param sg_id: name of storage group
         :param rdfg: Optional Parameter if SRDF group is known
         :return:
@@ -1401,7 +1398,6 @@ class rest_functions:
 
     def change_srdf_state(self, sg_id, action, rdfg=None):
         """Modify the state of an srdf
-
         This may be a long running task depending on the size of the SRDF group,
         will switch to Async call when supported in 8.4 version of Unisphere.
         :param sg_id: name of storage group
@@ -1413,7 +1409,7 @@ class rest_functions:
         rdfg_num = None
         rdfg_list = self.get_srdf_num(sg_id)[0]["rdfgs"]
         if len(rdfg_list) < 2:        # Check to see if RDF is cascaded.
-            rdfg_num = rdfg_list[0]   # Sets the RDFG for the Put call to
+            rdfg_num = rdfg_list[0]   # Sets the RDFG for the Put call to first value in list if group is not cascasded.
         else:
             LOG.exception("Group is cascaded, functionality not yet added in "
                           "this python library")
@@ -1480,7 +1476,7 @@ class rest_functions:
                               "metrics": ["PercentBusy"]})
         return self.rest_client.rest_request(target_uri, POST, request_object=port_perf_payload)
 
-    def get_fe_director_metrics(self,start_date, end_date, directorlist, dataformat, metriclist):
+    def get_fe_director_metrics(self,start_date, end_date, director, dataformat):
         """
         Fuction to get one or more metrics for front end directors
 
@@ -1496,10 +1492,17 @@ class rest_functions:
         target_uri="/performance/FEDirector/metrics"
         feDirectorParam=({
                         "symmetrixId":self.array_id,
-                        "directorId": directorlist,
+                        "directorId": director,
                         "endDate": end_date,
                         "dataFormat": dataformat,
-                        "metrics": metriclist,
+                        "metrics": ['AvgRDFSWriteResponseTime', 'AvgReadMissResponseTime', 'AvgWPDiscTime', 'AvgTimePerSyscall',
+                        'DeviceWPEvents', 'HostMBs', 'HitReqs', 'HostIOs', 'MissReqs', 'AvgOptimizedReadMissSize',
+                        'OptimizedMBReadMisses', 'OptimizedReadMisses', 'PercentBusy', 'PercentHitReqs', 'PercentReadReqs',
+                        'PercentReadReqHit', 'PercentWriteReqs', 'PercentWriteReqHit', 'QueueDepthUtilization',
+                        'HostIOLimitIOs', 'HostIOLimitMBs', 'ReadReqs', 'ReadHitReqs', 'ReadMissReqs', 'Reqs',
+                        'ReadResponseTime', 'WriteResponseTime', 'SlotCollisions', 'SyscallCount', 'Syscall_RDF_DirCounts',
+                        'SyscallRemoteDirCounts', 'SystemWPEvents', 'TotalReadCount', 'TotalWriteCount', 'WriteReqs',
+                        'WriteHitReqs', 'WriteMissReqs'],
                         "startDate": start_date
                          })
 
