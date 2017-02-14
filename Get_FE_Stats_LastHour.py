@@ -23,44 +23,51 @@
 import argparse
 from PyU4V.rest_univmax import rest_functions
 import time
-import json
-####################################
-# Define and Parse CLI arguments   #
-# and instantiate session for REST #
-####################################
+#This script will gather all performance statistics for all Front End directors and print them.  For use in real world
+#output would be writen to a file.
 
-#No Arguments are Required to run this script
+####################################
+# Declare Variables                #
+# and instantiate session for REST #
+# calls                            #
+####################################
+#end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
+#start_date = (end_date - 3600000)  #Set start date to EPOCH Time 1 hours Earlier
+ru = rest_functions()
+end_date = int(round(time.time() * 1000))
+start_date = (end_date - 3600000)
+
+#No Arguments are Required to run this script running with -h will provide a description.
 
 PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe used Gathering Some Performance Statistics from VMAX and VMAX3 Arrays.')
 ARGS = PARSER.parse_args()
 
-#This script will gather all performance statistics for all Front End directors and print them.  For use in real world
-#output would be writen to a file.
-
-ru=rest_functions()
-
-#First Get a list of all Directors
-#Calculate start and End Dates for Gathering Performance Stats Last 4 Hours
-#end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
-#start_date = (end_date - 14400000)  #Set start date to EPOCH Time 4 hours Earlier
-# Get timestamps
 dir_list=ru.get_fe_director_list()
 
-end_date = int(round(time.time() * 1000))
-start_date = (end_date - 3600000)
 
-director_performance_results=[]
-director_results_combined=[]
+def get_last_hour_fe_metrics():
+    # First Get a list of all Directors
+    # Calculate start and End Dates for Gathering Performance Stats Last 1 Hour
+    director_results_combined = []
 
-for director in dir_list:
-    director_metrics=ru.get_fe_director_metrics(director=director,start_date=start_date,end_date=end_date, dataformat='Average')
-    director_results = ({
-        "director": director,
-        "Perfdata": director_metrics
-    })
-    director_results_combined.append(director_results)
+    for director in dir_list:
+        director_metrics = ru.get_fe_director_metrics(director=director, start_date=start_date, end_date=end_date,
+                                                      dataformat='Average')
+        director_results = ({
+            "director": director,
+            "Perfdata": director_metrics
+        })
+        director_results_combined.append(director_results)
+        print(director_results_combined) #Return dictionary with directorID and Performance Data.
 
-print(director_results_combined)
+def main():
+    get_last_hour_fe_metrics()
+
+main()
+
+
+
+
 
 
 
