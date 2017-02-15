@@ -50,7 +50,6 @@ def get_last_hour_fe_metrics():
     # Calculate start and End Dates for Gathering Performance Stats Last 1 Hour
     director_results_combined = dict()
     director_results_list=[]
-    director_results=[]
     # print("this is the director list %s" % dir_list)
     director_results_combined['reporting_level'] = "FEDirector"
     for fe_director in dir_list:
