@@ -48,20 +48,26 @@ dir_list=ru.get_fe_director_list()
 def get_last_hour_fe_metrics():
     # First Get a list of all Directors
     # Calculate start and End Dates for Gathering Performance Stats Last 1 Hour
-    director_results_combined = []
-
-    for director in dir_list:
-        director_metrics = ru.get_fe_director_metrics(director=director, start_date=start_date, end_date=end_date,
-                                                      dataformat='Average')
-        director_results = ({
-            "director": director,
-            "Perfdata": director_metrics
+    director_results_combined = dict()
+    director_results_list=[]
+    director_results=[]
+    # print("this is the director list %s" % dir_list)
+    director_results_combined['reporting_level'] = "FEDirector"
+    for fe_director in dir_list:
+        director_metrics = ru.get_fe_director_metrics(director=fe_director, start_date=start_date, end_date=end_date,dataformat='Average')
+        director_results=({
+            "directorID":fe_director,
+            "perfdata":director_metrics[0]['resultList']['result']
         })
-        director_results_combined.append(director_results)
-        print(director_results_combined) #Return dictionary with directorID and Performance Data.
+        director_results_list.append(director_results)
+    director_results_combined['hourlyPerf']=director_results_list
+
+    return director_results_combined
+
 
 def main():
-    get_last_hour_fe_metrics()
+    feperfdata=get_last_hour_fe_metrics()
+    print (feperfdata)
 
 main()
 
