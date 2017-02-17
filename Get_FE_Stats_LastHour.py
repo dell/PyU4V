@@ -55,6 +55,7 @@ def get_last_hour_fe_metrics():
     for fe_director in dir_list:
         director_metrics = ru.get_fe_director_metrics(director=fe_director, start_date=start_date, end_date=end_date,dataformat='Average')
         director_results=({
+            "symmetrixID":ru.array_id,
             "directorID":fe_director,
             "perfdata":director_metrics[0]['resultList']['result']
         })
@@ -67,6 +68,8 @@ def get_last_hour_fe_metrics():
 def main():
     feperfdata=get_last_hour_fe_metrics()
     print (feperfdata)
+
+
 
 main()
 
