@@ -52,18 +52,11 @@ This lab assumes that Host, Storage and Port groups are new.  This is for adding
 it is necessary to create a hostgroup or use exising host group.  Please use the REST Java client to explore the REST endpoints
 
 """
-
-import argparse
-from PyU4V.rest_requests import rest_functions
-
-####################################
-# Define and Parse CLI arguments   #
-# and instantiate session for REST #
-####################################
-
 import argparse
 from PyU4V.rest_univmax import rest_functions
 ru=rest_functions()
+
+
 
 PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe provisioning multiple sized volume for an application.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
