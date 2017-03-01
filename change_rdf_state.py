@@ -20,10 +20,14 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# This Script can be used to change the state of an existing SRDF protected storage group
-#Please ensure you are familar with the actions.  Restore, Failover, Failback and Swap will change the state of Source (R1)
-#Devices.  DO Not Run this script on Production volumes unless you are 100% sure of the Action and resulting state.
-#Please refer to https://support.emc.com/docu78908_Solutions_Enabler_SRDF_Family_8.3.0_CLI_User_Guide.pdf?language=en_US&language=en_US for details of state requirements.
+# This Script can be used to change the state of an existing SRDF protected
+# storage group. Please ensure you are familar with the actions.
+# Restore, Failover, Failback and Swap will change the state of Source (R1)
+# Devices.  DO NOT Run this script on Production volumes unless you are 100%
+# sure of the Action and resulting state.
+# Please refer to
+# https://support.emc.com/docu78908_Solutions_Enabler_SRDF_Family_8.3.0_CLI_User_Guide.pdf?language=en_US&language=en_US
+# for details of state requirements.
 
 
 
@@ -51,10 +55,10 @@ RFLAGS.add_argument('-action', required=True, help='Valid inputs are Establish, 
 ARGS = PARSER.parse_args()
 
 sg_id = ARGS.sg
-action=ARGS.action
+action = ARGS.action
 ru = rest_functions()
 
-currentstate=ru.get_srdf_state(sg_id)[0]["states"] # Gets the Current SRDF State
+currentstate = ru.get_srdf_state(sg_id)[0]["states"]  # Gets the Current SRDF State
 print(currentstate)
 # Note this call may run for a long time depending on the size of the group,
 # change RDF stat will by updated to async call when supported in 8.4

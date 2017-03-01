@@ -38,50 +38,41 @@ ru = rest_functions()
 end_date = int(round(time.time() * 1000))
 start_date = (end_date - 3600000)
 
-#No Arguments are Required to run this script running with -h will provide a description.
+# No Arguments are Required to run this script.
+# Running with -h will provide a description.
 
-PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic VMAX REST recipe used Gathering Some Performance Statistics from VMAX and VMAX3 Arrays.')
+PARSER = argparse.ArgumentParser(
+    description='This python script is a basic VMAX REST recipe which '
+                'gathers some performance statistics from VMAX and VMAX3 '
+                'Arrays.')
 ARGS = PARSER.parse_args()
 
-dir_list=ru.get_fe_director_list()
+dir_list = ru.get_fe_director_list()
 
 
 def get_last_hour_fe_metrics():
     # First Get a list of all Directors
     # Calculate start and End Dates for Gathering Performance Stats Last 1 Hour
     director_results_combined = dict()
-    director_results_list=[]
+    director_results_list = []
     # print("this is the director list %s" % dir_list)
     director_results_combined['reporting_level'] = "FEDirector"
     for fe_director in dir_list:
-        director_metrics = ru.get_fe_director_metrics(director=fe_director, start_date=start_date, end_date=end_date,dataformat='Average')
-        director_results=({
-            "symmetrixID":ru.array_id,
-            "directorID":fe_director,
-            "perfdata":director_metrics[0]['resultList']['result']
-        })
+        director_metrics = ru.get_fe_director_metrics(
+            director=fe_director, start_date=start_date,
+            end_date=end_date, dataformat='Average')
+        director_results = ({
+            "symmetrixID": ru.array_id,
+            "directorID": fe_director,
+            "perfdata": director_metrics[0]['resultList']['result']})
         director_results_list.append(director_results)
-    director_results_combined['hourlyPerf']=director_results_list
+    director_results_combined['hourlyPerf'] = director_results_list
 
     return director_results_combined
 
 
 def main():
-    feperfdata=get_last_hour_fe_metrics()
+    feperfdata = get_last_hour_fe_metrics()
     print (feperfdata)
 
-
-
 main()
-
-
-
-
-
-
-
-
-
-
-
-
