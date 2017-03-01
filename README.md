@@ -49,7 +49,7 @@ This is still a work in progress. To be expected in the future:
 - Unittests
 
 # VERSION FUTURE
-The Rest API is undergoing substantial transformation for the 8.4 release. With that in mind, I will be creating a
+The Rest API is undergoing substantial transformation for the 8.4 release. With that in mind, we will be creating a
 new 84 version when that is released.
 
 # CONTRIBUTION
