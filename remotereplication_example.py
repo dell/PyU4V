@@ -20,7 +20,8 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# This Script can be used to protect a storage group with SRDF Metro, Syncronous or Asyncronous, or Adaptive copy.
+# This Script can be used to protect a storage group with SRDF Metro,
+# Syncronous or Asyncronous, or Adaptive copy.
 
 
 import argparse
@@ -31,22 +32,34 @@ from PyU4V.rest_univmax import rest_functions
 # and instantiate session for REST #
 ####################################
 
-PARSER = argparse.ArgumentParser(description='Example implementation of a Python REST client for EMC Unisphere for VMAX Protect Storage Group with SRDF. Note the source storage group must already exist.')
+PARSER = argparse.ArgumentParser(
+    description='Example implementation of a Python REST client for EMC '
+                'Unisphere for VMAX Protect Storage Group with SRDF. Note '
+                'the source storage group must already exist.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
-RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
-RFLAGS.add_argument('-remote_sid', required=True, help='Please Supply symmetrix ID e.g. 000197000008')
-RFLAGS.add_argument('-mode', required=True, help='Valid inputs are Active, AdaptiveCopyDisk,Synchronous,Asynchronous, Metro This is CASE sensitive')
+RFLAGS.add_argument(
+    '-sg', required=True, help='Storage group name, typically '
+                               'the application name e.g. oraclefinace')
+RFLAGS.add_argument(
+    '-remote_sid', required=True,
+    help='Please Supply symmetrix ID e.g. 000197000008')
+RFLAGS.add_argument('-mode', required=True,
+                    help='Valid inputs are Active, AdaptiveCopyDisk, '
+                         'Synchronous, Asynchronous, Metro This is CASE '
+                         'sensitive')
 ARGS = PARSER.parse_args()
 
 sg_id = ARGS.sg
-remote_sid=ARGS.remote_sid
-srdfmode=ARGS.mode
+remote_sid = ARGS.remote_sid
+srdfmode = ARGS.mode
 ru = rest_functions()
 
 
-#Call to protect Storage Group and Protect with SRDF, default action is not to start the copy, see full function
-#srdf_protect_sg in rest_univmax.py, call can also be made adding optional parameter establish=True
-def main ():
-    ru.srdf_protect_sg(sg_id,remote_sid,srdfmode)
+# Call to protect Storage Group and Protect with SRDF,
+# default action is not to start the copy, see full function
+# srdf_protect_sg in rest_univmax.py, call can also be made
+# adding optional parameter establish=True
+def main():
+    ru.srdf_protect_sg(sg_id, remote_sid, srdfmode)
 
 main()

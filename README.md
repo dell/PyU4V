@@ -1,7 +1,8 @@
 # PyU4V
 A library showing some of the functionality possible using the ReST API of Dell EMC's UniSphere for VMAX.
 This code has been adapted from https://github.com/scottbri/PyVMAX.
-Also see the Dell EMC Rest documentation by navigating to URL/univmax/restapi/docs
+Get the Unisphere for VMAX Rest documentation by navigating to https://<ip-address>:<port-number>/univmax/restapi/docs,
+where <ip-address> = the ip of your Unisphere server and <port-number> = the corresponding port to connect through,
 eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
 # WHAT'S SUPPORTED
@@ -14,7 +15,20 @@ configuration file, under the [setup] heading. Alternatively, you can pass some 
 on initialisation.
 Requires the 'requests' library (can be installed using pip).
 Password, username, server_ip, port, and array MUST be set (either in the config file or on initialisation).
-Cert and verify can be left as is.
+Cert and verify can be left as is, or you can enable SSL verification by following the directions below
+(see SSL CONFIGURATION).
+
+# SSL CONFIGURATION
+1. Get the CA certificate of the Unisphere server.
+	$ openssl s_client -showcerts -connect {server_hostname}:5989 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.lss.emc.com.pem
+    (This pulls the CA cert file and saves it as server_hostname.lss.emc.com.pem e.g. esxi01vm01.lss.emc.com.pem)
+2.	Copy the pem file to the system certificate directory
+	$ sudo cp {server_hostname}.lss.emc.com.pem /usr/share/ca-certificates/{server_hostname}.lss.emc.com.lss.emc.com.crt
+3. 	Update CA certificate database with the following commands
+	$ sudo dpkg-reconfigure ca-certificates (Ensure the new cert file is highlighted)
+	$ sudo update-ca-certificates
+4. In the conf file insert the following:
+   verify=/path-to-file/irco3sd23vm08.lss.emc.com.pem OR pass the value in on initialization.
 
 # USAGE
 PyU4V could also be used as the backend for a script, or a menu etc. Just move the PyU4V package into your working
@@ -23,18 +37,19 @@ rest_functions, and you're good to go. Be sure to bring the configuration file w
 
 If you wish to query another array without changing the configuration file, call the set_array() function.
 
+# EXAMPLES
+There are a number of examples which can be run with minimal set-up. For details on how to run these,
+and other very useful information, please see Paul Martin's blog https://community.emc.com/people/PaulCork/blog
+
 # FUTURE
-This is still a work in progress, and it's far from polished.
-I'll be working on it (and corresponding documentation!) whenever I get the chance!
-- I will keep expanding the rest_functions library (including new Unisphere versions - see below)
-- I plan on making this a proper package, but that is still a work in progress.
-- Ideally, the password won't have to be stored in, or passed in in, plain text.
-- Exception handling and logging still leave a lot to be desired
-- I will create unit tests one of these fine days...
-So far I've more to do than has been done, but I'll get there!
+This is still a work in progress. To be expected in the future:
+- Expansion of the rest_functions library (including new Unisphere versions - see below)
+- Enable the installation of the repository using pip
+- Increased exception handling and logging
+- Unittests
 
 # VERSION FUTURE
-The Rest API is undergoing substantial transformation for the 8.4 release. With that in mind, I will be creating a
+The Rest API is undergoing substantial transformation for the 8.4 release. With that in mind, we will be creating a
 new 84 version when that is released.
 
 # CONTRIBUTION
