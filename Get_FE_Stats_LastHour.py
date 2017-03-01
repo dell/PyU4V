@@ -23,16 +23,17 @@
 import argparse
 from PyU4V.rest_univmax import rest_functions
 import time
-#This script will gather all performance statistics for all Front End directors and print them.  For use in real world
-#output would be writen to a file.
+# This script will gather all performance statistics for all
+# Front End directors and print them.  For use in real world
+# output would be writen to a file.
 
 ####################################
 # Declare Variables                #
 # and instantiate session for REST #
 # calls                            #
 ####################################
-#end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
-#start_date = (end_date - 3600000)  #Set start date to EPOCH Time 1 hours Earlier
+# end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
+# start_date = (end_date - 3600000)  #Set start date to EPOCH Time 1 hours Earlier
 ru = rest_functions()
 end_date = int(round(time.time() * 1000))
 start_date = (end_date - 3600000)

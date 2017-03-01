@@ -34,9 +34,9 @@ IO Density for IOPS restricted service levels- Sample Values only
 -	Low: 0.3 IOps/GB – Silver
 
 """
-highIops =1.3
-mediumIops =0.8
-lowIops =0.3
+highIops = 1.3
+mediumIops = 0.8
+lowIops = 0.3
 
 
 # open the file in universal line ending mode
@@ -68,34 +68,36 @@ def calculate_io_density(sgname, policy):
     sg_current_attributes, sc = ru.get_sg(sg_id=sgname)
     sg_current_capacity = sg_current_attributes["storageGroup"][0]["cap_gb"]
     if policy == "Diamond":
-        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS="NOLIMIT", dynamicDistribution="Never")
+        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS="NOLIMIT",
+                                 dynamicDistribution="Never")
     elif policy == "Platinum":
-        new_IO_limit = int(round(sg_current_capacity) * highIops)
-        if new_IO_limit < 100:
-            new_IO_limit = 100  # Minimum IO limit that can be set is 100 IOPS
-        roundup_limit = roundup(new_IO_limit)
-        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit, dynamicDistribution="Always")
+        new_io_limit = int(round(sg_current_capacity) * highIops)
+        if new_io_limit < 100:
+            # Minimum IO limit that can be set is 100 IOPS
+            new_io_limit = 100
+        roundup_limit = roundup(new_io_limit)
+        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit,
+                                 dynamicDistribution="Always")
     elif policy == "Gold":
-        new_IO_limit = int(round(sg_current_capacity) * mediumIops)
-        if new_IO_limit < 100:
-            new_IO_limit = 100  # Minimum IO limit that can be set is 100 IOPS,
-                                # IOLIMIT must be set in increments of 100 IOPS
-        roundup_limit = roundup(new_IO_limit)
-        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit, dynamicDistribution="Always")
+        new_io_limit = int(round(sg_current_capacity) * mediumIops)
+        if new_io_limit < 100:
+            # Minimum IO limit that can be set is 100 IOPS,
+            # IOLIMIT must be set in increments of 100 IOPS
+            new_io_limit = 100
+        roundup_limit = roundup(new_io_limit)
+        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit,
+                                 dynamicDistribution="Always")
     elif policy == "Silver":
-        new_IO_limit = int(round(sg_current_capacity) * lowIops)
-        if new_IO_limit < 100:
-            new_IO_limit = 100  # Minimum IO limit that can be set is 100 IOPS
-        roundup_limit = roundup(new_IO_limit)
-        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit, dynamicDistribution="Always")
+        new_io_limit = int(round(sg_current_capacity) * lowIops)
+        if new_io_limit < 100:
+            new_io_limit = 100  # Minimum IO limit that can be set is 100 IOPS
+        roundup_limit = roundup(new_io_limit)
+        ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit,
+                                 dynamicDistribution="Always")
 
 # Invoke RestClass with conf file
 
 ru = rest_functions()
 
-for sgname, policy in zip(sgnamelist,policylist) :
-    calculate_io_density(sgname,policy)
-
-
-
-
+for sg_name, policy_name in zip(sgnamelist, policylist):
+    calculate_io_density(sg_name, policy_name)

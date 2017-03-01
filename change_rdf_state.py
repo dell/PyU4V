@@ -35,22 +35,33 @@ from PyU4V.rest_univmax import rest_functions
 # and instantiate session for REST #
 ####################################
 
-PARSER = argparse.ArgumentParser(description='Example implementation of a Python REST client for EMC Unisphere for VMAX Protect Storage Group with SRDF. Note the source storage group must already exist.')
+PARSER = argparse.ArgumentParser(description='Example implementation '
+                                             'of a Python REST client '
+                                             'for EMC Unisphere for VMAX '
+                                             'Protect Storage Group with SRDF. '
+                                             'Note the source storage group must '
+                                             'already exist.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
-RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
-RFLAGS.add_argument('-action', required=True, help='Valid inputs are Establish, Split, Suspend, Restore, Resume, Failover, Failback, Swap')
+RFLAGS.add_argument('-sg', required=True, help='Storage group name, '
+                                               'typically the application '
+                                               'name e.g. oraclefinace')
+RFLAGS.add_argument('-action', required=True, help='Valid inputs are Establish, '
+                                                   'Split, Suspend, Restore, Resume, '
+                                                   'Failover, Failback, Swap')
 ARGS = PARSER.parse_args()
 
 sg_id = ARGS.sg
 action=ARGS.action
 ru = rest_functions()
 
-currentstate=ru.get_srdf_state(sg_id)[0]["states"] #Gets the Current SRDF State
+currentstate=ru.get_srdf_state(sg_id)[0]["states"] # Gets the Current SRDF State
 print(currentstate)
-ru.change_srdf_state(sg_id, action) #Note this call may run for a long time depending on the size of the group,  change RDF stat will by updated to async call when supported in 8.4
+# Note this call may run for a long time depending on the size of the group,
+# change RDF stat will by updated to async call when supported in 8.4
+ru.change_srdf_state(sg_id, action)
 
 
-#newstate=ru.get_srdf_state(sg_id)[0]["states"]
-#print(newstate)  #Note NewState will return failed over if volumes are not in masking group on Remote Side
+# newstate=ru.get_srdf_state(sg_id)[0]["states"]
+# print(newstate)  #Note NewState will return failed over if volumes are not in masking group on Remote Side
 
 

@@ -21,8 +21,8 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-#
-This python scrtipt will create a snapvx snapshot on the specified storage group and timestamp the name.  Each snapshot is preserved
+This python scrtipt will create a snapvx snapshot on the specified
+storage group and timestamp the name.  Each snapshot is preserved
 for 24 hours.
 
 REST call create_new_snap for a storage group.
@@ -32,23 +32,30 @@ from PyU4V.rest_univmax import rest_functions
 from time import strftime
 
 ######################################################################
-# Define and Parse CLI arguments    and instantiate session for REST #
+# Define and Parse CLI arguments and instantiate session for REST #
 ######################################################################
 
-PARSER = argparse.ArgumentParser(description='Example implementation of a Python REST client for EMC Unisphere Taking SnapVX Snapshots.')
+PARSER = argparse.ArgumentParser(
+    description='Example implementation of a Python REST client '
+                'for EMC Unisphere Taking SnapVX Snapshots.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
-RFLAGS.add_argument('-sg', required=True, help='Storage group name, typically the application name e.g. oraclefinace')
+RFLAGS.add_argument(
+    '-sg', required=True, help='Storage group name, typically '
+                               'the application name e.g. oraclefinace')
 ARGS = PARSER.parse_args()
 
-#Variables are initiated to appent REST to the Storage Group and Initiator
-#SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
+# Variables are initiated to appent REST to the Storage Group and Initiator
+# SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 sg_id = ARGS.sg
 ru = rest_functions()
 
-def main () :
-    snap_name=("REST_Snap_")+strftime ("%d%m%Y%H%M%S")  #assign name to snap with date and time appended to name
+
+def main():
+    # assign name to snap with date and time appended to name
+    snap_name = "REST_Snap_" + strftime("%d%m%Y%H%M%S")
     ru.create_sg_snapshot_83(sg_id,snap_name)
-    print ("Check the Gui now or REST Client to see if snapshot %s was created for Storge Group %s" % (snap_name,sg_id))
+    print ("Check the Gui now or REST Client to see if snapshot %s "
+           "was created for Storge Group %s" % (snap_name, sg_id))
 
 main()
 
