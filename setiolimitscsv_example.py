@@ -63,18 +63,19 @@ def roundup(x):
 def calculate_io_density(sgname, policy):
     """after making changes to a storage group config or creating a new storage group, this method can be invoked to set
     IO Limit based on the Policy Specified get current IOLimits and Capacity for storage group
-    Requires that existing
     """
     sg_current_attributes, sc = ru.get_sg(sg_id=sgname)
     sg_current_capacity = sg_current_attributes["storageGroup"][0]["cap_gb"]
     if policy == "Diamond":
         ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS="NOLIMIT", dynamicDistribution="Never")
+        print ("Storage Group %s IOLIMIT set to NOLIMT IOPS as Policy is set to %s in CSV file" % (sgname, policy))
     elif policy == "Platinum":
         new_IO_limit = int(round(sg_current_capacity) * highIops)
         if new_IO_limit < 100:
             new_IO_limit = 100  # Minimum IO limit that can be set is 100 IOPS
         roundup_limit = roundup(new_IO_limit)
         ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit, dynamicDistribution="Always")
+        print("Storage Group %s IOLIMIT set to %s IOPS as Policy is set to %s in CSV file" % (sgname,roundup_limit, policy))
     elif policy == "Gold":
         new_IO_limit = int(round(sg_current_capacity) * mediumIops)
         if new_IO_limit < 100:
@@ -82,12 +83,14 @@ def calculate_io_density(sgname, policy):
                                 # IOLIMIT must be set in increments of 100 IOPS
         roundup_limit = roundup(new_IO_limit)
         ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit, dynamicDistribution="Always")
+        print("Storage Group %s IOLIMIT set to %s IOPS as Policy is set to %s in CSV file" % (sgname, roundup_limit,policy))
     elif policy == "Silver":
         new_IO_limit = int(round(sg_current_capacity) * lowIops)
         if new_IO_limit < 100:
             new_IO_limit = 100  # Minimum IO limit that can be set is 100 IOPS
         roundup_limit = roundup(new_IO_limit)
         ru.set_hostIO_limit_IOPS(storageGroup=sgname, IOPS=roundup_limit, dynamicDistribution="Always")
+        print("Storage Group %s IOLIMIT set to %s IOPS as Policy is set to %s in CSV file" % (sgname, roundup_limit, policy))
 
 # Invoke RestClass with conf file
 
