@@ -20,7 +20,7 @@ Cert and verify can be left as is, or you can enable SSL verification by followi
 
 # SSL CONFIGURATION
 1. Get the CA certificate of the Unisphere server.
-	$ openssl s_client -showcerts -connect {server_hostname}:5989 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.lss.emc.com.pem
+	$ openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.lss.emc.com.pem
     (This pulls the CA cert file and saves it as server_hostname.lss.emc.com.pem e.g. esxi01vm01.lss.emc.com.pem)
 2.	Copy the pem file to the system certificate directory
 	$ sudo cp {server_hostname}.lss.emc.com.pem /usr/share/ca-certificates/{server_hostname}.lss.emc.com.lss.emc.com.crt
