@@ -2026,7 +2026,6 @@ class rest_functions:
 
         else:
             # Performance metrics returned...
-            print(sg_perf_payload)
             for k, v in sg_perf_response['resultList']['result'][0].items():
                 combined_payload[k] = v
 
