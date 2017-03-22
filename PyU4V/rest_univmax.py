@@ -2016,7 +2016,7 @@ class rest_functions:
 
         else:
             # SG level information retrieved...
-            for k, v in sg_info['storageGroup'][0].items():
+            for k, v in sg_info[0]['storageGroup'][0].items():
                 combined_payload[k] = v
 
         # If no SG level performance information is retrieved...
@@ -2026,7 +2026,8 @@ class rest_functions:
 
         else:
             # Performance metrics returned...
-            for k, v in sg_perf_payload['resultList']['result'][0].items():
+            print(sg_perf_payload)
+            for k, v in sg_perf_response['resultList']['result'][0].items():
                 combined_payload[k] = v
 
         # Rename all keys to common standardised format, dump to JSON
