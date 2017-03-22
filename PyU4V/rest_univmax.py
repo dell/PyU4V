@@ -1610,18 +1610,18 @@ class rest_functions:
             combined_payload['array_info_msg'] = "No Array summary data available"
         else:
             # Array level information retrieved...
-            for k, v in array_info_payload['symmetrix'][0].items():
+            for k, v in array_info_payload[0]['symmetrix'][0].items():
                 combined_payload[k] = v
 
             # Remove virtual capacity list, place contents at outer level
             del combined_payload['virtualCapacity']
-            for k, v in array_info_payload['symmetrix'][0]['virtualCapacity'].items():
+            for k, v in array_info_payload[0]['symmetrix'][0]['virtualCapacity'].items():
                 key = 'virtual_%s' % k
                 combined_payload[key] = v
 
             # Remove SL compliance list, place contents at outer level
             del combined_payload['sloCompliance']
-            for k, v in array_info_payload['symmetrix'][0]['sloCompliance'].items():
+            for k, v in array_info_payload[0]['symmetrix'][0]['sloCompliance'].items():
                 key = 'slo_compliance_%s' % k[4:]
                 combined_payload[key] = v
 
@@ -1631,7 +1631,7 @@ class rest_functions:
             combined_payload['replication_info_msg'] = "No Array Replication info data available"
         else:
             # Replication metrics returned...
-            for k, v in rep_info_payload.items():
+            for k, v in rep_info_payload[0].items():
                 combined_payload[k] = v
 
         # If no array level workload information is retrieved...
@@ -1640,7 +1640,7 @@ class rest_functions:
             combined_payload['workload_info_msg'] = "No Array Workload info data available"
         else:
             # Workload metrics returned...
-            for k, v in workload_info_payload.items():
+            for k, v in workload_info_payload[0].items():
                 combined_payload[k] = v
 
         # If no array level SL information is retrieved...
@@ -1649,7 +1649,7 @@ class rest_functions:
             combined_payload['slo_info_msg'] = "No Array Service Level info data available"
         else:
             # SL metrics returned...
-            for k, v in slo_info_payload.items():
+            for k, v in slo_info_payload[0].items():
                 combined_payload[k] = v
 
         # If no array level performance information is retrieved...
@@ -1658,7 +1658,7 @@ class rest_functions:
             combined_payload['perf_msg'] = "No active Array performance data available"
         else:
             # Performance metrics returned...
-            for k, v in perf_payload['resultList']['result'][0].items():
+            for k, v in perf_payload[0]['resultList']['result'][0].items():
                 combined_payload[k] = v
 
         # Rename all keys to common standardised format, dump to JSON
