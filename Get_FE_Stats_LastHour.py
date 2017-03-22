@@ -56,13 +56,13 @@ def get_last_hour_fe_metrics():
     director_results_combined = dict()
     director_results_list = []
     # print("this is the director list %s" % dir_list)
+    director_results_combined['symmetrixID']= ru.array_id
     director_results_combined['reporting_level'] = "FEDirector"
     for fe_director in dir_list:
         director_metrics = ru.get_fe_director_metrics(
             director=fe_director, start_date=start_date,
             end_date=end_date, dataformat='Average')
         director_results = ({
-            "symmetrixID": ru.array_id,
             "directorID": fe_director,
             "perfdata": director_metrics[0]['resultList']['result']})
         director_results_list.append(director_results)
