@@ -2176,7 +2176,7 @@ class rest_functions:
 
         else:
             # Performance metrics returned...
-            for k, v in perf_metrics_payload['resultList']['result'][0].items():
+            for k, v in perf_metrics_payload[0]['resultList']['result'][0].items():
                 combined_payload[k] = v
 
         # Rename all keys to common standardised format, dump to JSON
