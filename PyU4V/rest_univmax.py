@@ -1523,6 +1523,7 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, POST,
                                              request_object=feDirectorParam)
 
+
     def get_fe_port_metrics(self, start_date, end_date, director_id,
                             port_id, dataformat, metriclist):
         """Function to get one or more Metrics for Front end Director ports
@@ -1551,22 +1552,17 @@ class rest_functions:
         ##################################
         # Collect VMAX Array level stats #
         ##################################
-
-    def get_array_info(self):
-        """Get array level info and metrics for last hour.
-
-        :return: Combined payload of all metrics gathered
+    def get_array_metrics(self,start_date, end_date):
         """
-
-        # Create array level target URIs
-        array_info_uri = '/sloprovisioning/symmetrix/%s' % self.array_id
-        perf_uri = '/performance/Array/metrics'
-
-        # Set performance metrics payload
-        # Removed XtremSWCacheMBs & PercentXtremSWCacheReadHits - no input response
+        Get all avaliable performance statiscics for specified time period retrun in JSON
+        :param start_date: EPOCH Time
+        :param end_date: Epoch Time
+        :return:
+        """
+        target_uri = "/performance/Array/metrics"
         array_perf_payload = {
             'symmetrixId': self.array_id,
-            'endDate': self.end_date,
+            'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
                 'OverallCompressionRatio', 'OverallEfficiencyRatio', 'PercentVPSaved', 'VPSharedRatio',
@@ -1586,377 +1582,29 @@ class rest_functions:
                 'FE_Balance', 'DA_Balance', 'DX_Balance', 'RDF_Balance', 'Cache_Balance', 'SATA_Balance',
                 'FC_Balance', 'EFD_Balance'
             ],
-            'startDate': self.start_date
+            'startDate': start_date
         }
+        array_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=array_perf_payload)
+        array_results_combined = dict()
+        array_results_combined['symmetrixID'] = self.array_id
+        array_results_combined['reporting_level'] ="array"
+        array_results_combined['perfdata']= array_perf_data[0]['resultList']['result']
+        return array_results_combined
 
-        # Perform all array level REST calls (get/post)
-        array_info_payload = self.rest_client.rest_request(
-            array_info_uri, GET)
-        rep_info_payload = self.get_replication_info()
-        workload_info_payload = self.get_workload()
-        slo_info_payload = self.get_SLO()
-        perf_payload = self.rest_client.rest_request(
-            perf_uri, POST, request_object=array_perf_payload)
-
-        # Set combined payload values not present in returned REST metrics
-        combined_payload = dict()
-        combined_payload['reporting_level'] = "Array"
-        combined_payload['timestamp'] = self.end_date
-        combined_payload['symmetrixId'] = self.array_id
-
-        # If no array level information is retrieved...
-        if not array_info_payload:
-            combined_payload['array_info_data'] = False
-            combined_payload['array_info_msg'] = "No Array summary data available"
-        else:
-            # Array level information retrieved...
-            for k, v in array_info_payload[0]['symmetrix'][0].items():
-                combined_payload[k] = v
-
-            # Remove virtual capacity list, place contents at outer level
-            del combined_payload['virtualCapacity']
-            for k, v in array_info_payload[0]['symmetrix'][0]['virtualCapacity'].items():
-                key = 'virtual_%s' % k
-                combined_payload[key] = v
-
-            # Remove SL compliance list, place contents at outer level
-            del combined_payload['sloCompliance']
-            for k, v in array_info_payload[0]['symmetrix'][0]['sloCompliance'].items():
-                key = 'slo_compliance_%s' % k[4:]
-                combined_payload[key] = v
-
-        # If no array level replication information is retrieved...
-        if not rep_info_payload:
-            combined_payload['replication_info_data'] = False
-            combined_payload['replication_info_msg'] = "No Array Replication info data available"
-        else:
-            # Replication metrics returned...
-            for k, v in rep_info_payload[0].items():
-                combined_payload[k] = v
-
-        # If no array level workload information is retrieved...
-        if not workload_info_payload:
-            combined_payload['workload_info_data'] = False
-            combined_payload['workload_info_msg'] = "No Array Workload info data available"
-        else:
-            # Workload metrics returned...
-            for k, v in workload_info_payload[0].items():
-                combined_payload[k] = v
-
-        # If no array level SL information is retrieved...
-        if not slo_info_payload:
-            combined_payload['slo_info_data'] = False
-            combined_payload['slo_info_msg'] = "No Array Service Level info data available"
-        else:
-            # SL metrics returned...
-            for k, v in slo_info_payload[0].items():
-                combined_payload[k] = v
-
-        # If no array level performance information is retrieved...
-        if not perf_payload:
-            combined_payload['perf_data'] = False
-            combined_payload['perf_msg'] = "No active Array performance data available"
-        else:
-            # Performance metrics returned...
-            for k, v in perf_payload[0]['resultList']['result'][0].items():
-                combined_payload[k] = v
-
-        # Rename all keys to common standardised format, dump to JSON
-
-        self.rename_metrics(combined_payload)
-
-        return combined_payload
-
-    @staticmethod
-    def rename_metrics(payload):
-        """Rename the metrics.
-
-        Takes the combined payload for any given VMAX reporting level,
-        parses through each key and changes it to a standardised format.
-        If a a metric has no returned value, the value is set to 'N/A'
-        :param payload: Combined summary and performance metrics payload
-                        for a given VMAX reporting level
-        """
-        rename_list = {
-            'AllocatedCapacity': 'allocated_capacity',
-            'AsyncMBSent': 'async_mb_sent',
-            'AsyncWriteReqs': 'async_write_reqs',
-            'AvgFallThruTime': 'avg_fall_through_time',
-            'AvgIOServiceTime': 'avg_io_service_time',
-            'AvgIOSize': 'avg_io_size',
-            'AvgIOSizeReceived': 'avg_io_size_received',
-            'AvgIOSizeSent': 'avg_io_size_sent',
-            'AvgOptimizedReadMissSize': 'avg_optimized_read_miss_size',
-            'AvgRDFSWriteResponseTime': 'avg_rdfs_write_response_time',
-            'AvgReadMissResponseTime': 'avg_read_miss_response_time',
-            'AvgReadResponseTime6': 'avg_read_response_time_1',
-            'AvgReadResponseTime7': 'avg_read_response_time_2',
-            'AvgReadSize': 'avg_read_size',
-            'AvgTimePerSyscall': 'avg_time_per_sys_call',
-            'AvgWPDiscTime': 'avg_wp_disc_time',
-            'AvgWritePacedDelay': 'avg_write_paced_delay',
-            'AvgWriteResponseTime6': 'avg_write_response_time_1',
-            'AvgWriteResponseTime7': 'avg_write_response_time_2',
-            'AvgWriteSize': 'avg_write_size',
-            'BEDiskReadResponseTime': 'be_disk_read_response_time',
-            'BEIOs': 'be_ios',
-            'BEMBReads': 'be_mb_reads',
-            'BEMBTransferred': 'be_mb_transferred',
-            'BEMBWritten': 'be_mb_written',
-            'BEPercentReads': 'be_percent_reads',
-            'BEPercentWrites': 'be_percent_writes',
-            'BEPrefetchedMBs': 'be_prefetched_mbs',
-            'BEPrefetchedTrackUsed': 'be_prefetched_track_used',
-            'BEPrefetchedTrackss': 'be_prefetched_tracks',
-            'BEReadReqs': 'be_read_reqs',
-            'BEReadRequestTime': 'be_read_request_time',
-            'BEReadTaskTime': 'be_read_task_time',
-            'BEReqs': 'be_reqs',
-            'BEWriteReqs': 'be_write_reqs',
-            'BlockSize': 'block_size',
-            'Cache_Balance': 'cache_balance',
-            'CompressedMBs': 'compressed_mbs',
-            'CompressedReadMBs': 'compressed_read_mbs',
-            'CompressedReadReqs': 'compressed_read_reqs',
-            'CompressedReqs': 'compressed_reqs',
-            'CompressedTracks': 'compressed_tracks',
-            'CompressedWriteMBs': 'compressed_write_mbs',
-            'CompressedWriteReqs': 'compressed_write_reqs',
-            'CompressionRatio': 'compression_ratio',
-            'CopyIOs': 'copy_ios',
-            'CopyMBs': 'copy_mbs',
-            'CopySlotCount': 'copy_slot_count',
-            'CriticalAlertCount': 'critical_alert_count',
-            'DA_Balance': 'da_balance',
-            'DX_Balance': 'dx_balance',
-            'DeviceWPEvents': 'device_wp_events',
-            'EFD_Balance': 'efd_balance',
-            'FC_Balance': 'fc_balance',
-            'FEHitReqs': 'fe_hit_reqs',
-            'FEReadHitReqs': 'fe_read_hit_reqs',
-            'FEReadMissReqs': 'fe_read_miss_reqs',
-            'FEReadReqs': 'fe_read_reqs',
-            'FEReqs': 'fe_reqs',
-            'FEWriteHitReqs': 'fe_write_hit_reqs',
-            'FEWriteMissReqs': 'fe_write_miss_reqs',
-            'FEWriteReqs': 'fe_write_reqs',
-            'FE_Balance': 'fe_balance',
-            'HitReqs': 'hit_reqs',
-            'HostHits': 'host_hits',
-            'HostIOLimitIOs': 'host_io_limit_ios',
-            'HostIOLimitMBs': 'host_io_limit_mbs',
-            'HostIOLimitPercentTimeExceeded': 'host_io_limit_percent_time_exceeded',
-            'HostIOs': 'host_ios',
-            'HostMBReads': 'host_mb_reads',
-            'HostMBWrites': 'host_mb_writes',
-            'HostMBWritten': 'host_mb_written',
-            'HostMBs': 'host_mbs',
-            'HostMisses': 'host_misses',
-            'HostReadHits': 'host_read_hits',
-            'HostReadMisses': 'host_read_misses',
-            'HostReads': 'host_reads',
-            'HostWriteHits': 'host_write_hits',
-            'HostWriteMisses': 'host_write_misses',
-            'HostWrites': 'host_writes',
-            'IODensity': 'io_density',
-            'IOs': 'ios',
-            'InfoAlertCount': 'info_alert_count',
-            'MBRead': 'mb_read',
-            'MBSentAndReceived': 'mb_sent_and_received',
-            'MBWritten': 'mb_written',
-            'MBs': 'mbs',
-            'MaxWPThreshold': 'max_wp_threshold',
-            'MissReqs': 'miss_reqs',
-            'OptimizedMBReadMisses': 'optimized_mb_read_misses',
-            'OptimizedMBReadMisss': 'optimized_mv_read_miss',
-            'OptimizedReadMisses': 'optimized_read_misses',
-            'OverallCompressionRatio': 'overall_compression_ratio',
-            'OverallEfficiencyRatio': 'overall_efficiency_ratio',
-            'PercentBusy': 'percent_busy',
-            'PercentBusyLogicalCore_0': 'percent_busy_logical_core_0',
-            'PercentBusyLogicalCore_1': 'percent_busy_logical_core_1',
-            'PercentCacheWP': 'percent_cache_wp',
-            'PercentCompressedTracks': 'percent_compressed_tracks',
-            'PercentHit': 'percent_hit',
-            'PercentHitReqs': 'percent_hit_reqs',
-            'PercentMisses': 'percent_misses',
-            'PercentNonIOBusy': 'percent_non_io_busy',
-            'PercentNonIOBusyLogicalCore_0': 'percent_non_io_busy_logical_core_0',
-            'PercentNonIOBusyLogicalCore_1': 'percent_non_io_busy_logical_core_1',
-            'PercentRandomIO': 'percent_random_IO',
-            'PercentRandomReadHit': 'percent_random_read_hit',
-            'PercentRandomReadMiss': 'percent_random_read_miss',
-            'PercentRandomReads': 'percent_random_reads',
-            'PercentRandomWriteHit': 'percent_random_write_hit',
-            'PercentRandomWriteMiss': 'percent_random_write_miss',
-            'PercentRandomWrites': 'percent_random_writes',
-            'PercentRead': 'percent_read',
-            'PercentReadHit': 'percent_read_hit',
-            'PercentReadMiss': 'percent_read_miss',
-            'PercentReadReqHit': 'percent_read_req_hit',
-            'PercentReadReqs': 'percent_read_reqs',
-            'PercentReads': 'percent_reads',
-            'PercentSeqIO': 'percent_seq_io',
-            'PercentSeqRead': 'percent_seq_read',
-            'PercentSeqReadHit': 'percent_seq_read_hit',
-            'PercentSeqReadMiss': 'percent_seq_read_miss',
-            'PercentSeqWriteHit': 'percent_seq_write_hit',
-            'PercentSeqWriteMiss': 'percent_seq_write_miss',
-            'PercentSeqWrites': 'percent_seq_writes',
-            'PercentSnapshotSaved': 'percent_snapshot_saved',
-            'PercentVPSaved': 'percent_vp_saved',
-            'PercentVPSpaceSaved': 'percent_vp_space_saved',
-            'PercentWrite': 'percent_write',
-            'PercentWriteHit': 'percent_write_hit',
-            'PercentWriteMiss': 'percent_write_miss',
-            'PercentWriteReqHit': 'percent_write_req_hit',
-            'PercentWriteReqs': 'percent_write_reqs',
-            'PercentWrites': 'percent_writes',
-            'PrefetchedTracks': 'prefetched_tracks',
-            'QueueDepthUtilization': 'queue_depth_utilization',
-            'RDFA_WPCount': 'rdfa_wp_count',
-            'RDFRewrites': 'rdf_rewrites',
-            'RDFS_WriteResponseTime': 'rdfs_write_response_time',
-            'RDF_Balance': 'rdf_balance',
-            'RandomIOs': 'random_ios',
-            'RandomReadHits': 'random_read_hits',
-            'RandomReadMissMBs': 'random_read_miss_mbs',
-            'RandomReadMisses': 'random_read_misses',
-            'RandomReads': 'random_reads',
-            'RandomWriteHits': 'random_write_hits',
-            'RandomWriteMissMBs': 'random_write_miss_mbs',
-            'RandomWriteMisses': 'random_write_misses',
-            'RandomWrites': 'random_writes',
-            'RdfMBRead': 'rdf_mb_read',
-            'RdfMBWritten': 'rdf_mb_written',
-            'RdfReadHits': 'rdf_read_hits',
-            'RdfReads': 'rdf_reads',
-            'RdfResponseTime': 'rdf_response_time',
-            'RdfWrites': 'rdf_writes',
-            'ReadHitReqs': 'read_hit_reqs',
-            'ReadMissReqs': 'read_miss_reqs',
-            'ReadMissResponseTime': 'read_miss_response_time',
-            'ReadReqs': 'read_reqs',
-            'ReadResponseTime': 'read_response_time',
-            'ReadResponseTimeCount1': 'read_response_time_1',
-            'ReadResponseTimeCount2': 'read_response_time_2',
-            'ReadResponseTimeCount3': 'read_response_time_3',
-            'ReadResponseTimeCount4': 'read_response_time_4',
-            'ReadResponseTimeCount5': 'read_response_time_5',
-            'ReadResponseTimeCount6': 'read_response_time_6',
-            'ReadResponseTimeCount7': 'read_response_time_7',
-            'Reads': 'reads',
-            'Reqs': 'reqs',
-            'ResponseTime': 'response_time',
-            'Rewrites': 'rewrites',
-            'SATA_Balance': 'sata_balance',
-            'SRDFA_MBSent': 'srdfa_mb_sent',
-            'SRDFA_WriteReqs': 'srdfa_write_reqs',
-            'SRDFS_MBSent': 'srdfs_mb_sent',
-            'SRDFS_WriteReqs': 'srdfs_write_reqs',
-            'SeqIOs': 'seq_ios',
-            'SeqReadHits': 'seq_read_hits',
-            'SeqReadMisses': 'seq_read_misses',
-            'SeqReads': 'seq_reads',
-            'SeqWriteHits': 'seq_write_hits',
-            'SeqWriteMisses': 'seq_write_misses',
-            'SeqWrites': 'seq_writes',
-            'Skew': 'skew',
-            'SlotCollisions': 'slot_collisions',
-            'SnapshotCompressionRatio': 'snapshot_compression_ratio',
-            'SnapshotEfficiencyRatio': 'snapshot_efficency_ratio',
-            'SnapshotSharedRatio': 'snapshot_shared_ratio',
-            'SyncMBSent': 'sync_mb_sent',
-            'SyncWrites': 'sync_writes',
-            'SyscallCount': 'sys_call_count',
-            'SyscallRemoteDirCount': 'sys_call_remote_dir_count',
-            'SyscallRemoteDirCounts': 'sys_call_remote_dir_counts',
-            'SyscallTime': 'sys_call_time',
-            'Syscall_RDF_DirCount': 'sys_call_rdf_dircount',
-            'Syscall_RDF_DirCounts': 'sys_call_rdf_dircounts',
-            'SystemMaxWPLimit': 'system_max_wp_limit',
-            'SystemWPEvents': 'system_wp_events',
-            'TotalReadCount': 'total_read_count',
-            'TotalTracks': 'total_tracks',
-            'TotalWriteCount': 'total_write_count',
-            'TracksReceivedPerSec': 'tracks_received_per_sec',
-            'TracksSentPerSec': 'tracks_sent_per_sec',
-            'VPCompressionRatio': 'vp_compression_ratio',
-            'VPEfficiencyRatio': 'vp_efficency_ratio',
-            'VPSharedRatio': 'vp_shared_ratio',
-            'WPCount': 'system_wp_count',
-            'WarningAlertCount': 'warning_alert_count',
-            'WriteHitReqs': 'write_hit_reqs',
-            'WriteMissReqs': 'write_miss_reqs',
-            'WriteMissResponseTime': 'write_miss_response_time',
-            'WritePacedDelay': 'write_paces_delay',
-            'WriteReqs': 'write_reqs',
-            'WriteResponseTime': 'write_response_time',
-            'WriteResponseTimeCount1': 'write_response_time_count_1',
-            'WriteResponseTimeCount2': 'write_response_time_count_2',
-            'WriteResponseTimeCount3': 'write_response_time_count_3',
-            'WriteResponseTimeCount4': 'write_response_time_count_4',
-            'WriteResponseTimeCount5': 'write_response_time_count_5',
-            'WriteResponseTimeCount6': 'write_response_time_count_6',
-            'WriteResponseTimeCount7': 'write_response_time_count_7',
-            'Writes': 'writes',
-            'directorId': 'director_id',
-            'directorType': 'director_type',
-            'fcid': 'fc_id',
-            'fcid_lockdown': 'fc_id_lockdown',
-            'fcid_value': 'fc_id_value',
-            'hostId': 'host_id',
-            'hostgroup': 'host_group',
-            'initiatorId': 'initiator_id',
-            'maskingview': 'masking_view',
-            'num_of_slos': 'num_of_service_levels',
-            'num_of_Workload_types': 'num_of_workload_types',
-            'portGroupId': 'port_group_id',
-            'rdfGroupCount': 'rdf_group_count',
-            'replicationCacheUsage': 'replication_cache_usage',
-            'sloCompliance': '',
-            'sloId': 'slo_id',
-            'storageGroupCount': 'storage_group_count',
-            'storageGroupId': 'storage_group_id',
-            'symmetrixId': 'symmetrix_id',
-            'symmetrixPortKey': 'symmetrix_port_key',
-            'virtualCapacity': 'virtual_capacity',
-            'workload': 'workload',
-            'workloadId': 'workload_id'
-        }
-
-        for old_key in payload.keys():
-            if payload[old_key] == '':
-                payload[old_key] = 'N/A'
-            for new_key in rename_list.keys():
-                if old_key == new_key:
-                    value = rename_list[new_key]
-                    payload[value] = payload.pop(old_key)
 
     ##########################################
     # Collect VMAX Storage Group level stats #
     ##########################################
 
-    def _get_storage_group_performance(self, payload):
+    def _get_storage_group_metrics(self, sg_id,start_date,end_date):
         """Get storage group performance metrics.
 
         :param payload:
         """
-        sg_perf_uri = '/performance/StorageGroup/metrics'
-        return self.rest_client.rest_request(
-            sg_perf_uri, POST, request_object=payload)
-
-    def get_storage_group_metrics(self, sg_id):
-        """Get SG level information and performance metrics for last hour.
-
-        :param sg_id: Storage Group ID
-        :return: Combined payload of all SG level information & performance metrics
-        """
-
-        # Set SG performance metrics payload
+        target_uri = '/performance/StorageGroup/metrics'
         sg_perf_payload = {
             'symmetrixId': self.array_id,
-            'endDate': self.end_date,
+            'endDate': end_date,
             'dataFormat': 'Average',
             'storageGroupId': sg_id,
             'metrics': [
@@ -1996,50 +1644,43 @@ class rest_functions:
                 'WriteResponseTimeCount5', 'WriteResponseTimeCount6',
                 'WriteResponseTimeCount7'
             ],
-            'startDate': self.start_date
+            'startDate': start_date
         }
+        sg_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=sg_perf_payload)
+        sg_results_combined = dict()
+        sg_results_combined['symmetrixID'] = self.array_id
+        sg_results_combined['reporting_level'] = "StorageGroup"
+        sg_results_combined['sgname'] = sg_id
+        sg_results_combined['perfdata'] = sg_perf_data[0]['resultList']['result']
+        return sg_results_combined
 
-        # Perform all SG level REST calls (get/post)
-        sg_info = self.get_sg(sg_id)
-        sg_perf_response, sc = self._get_storage_group_performance(sg_perf_payload)
-
-        # Set combined payload values not present in returned REST metrics
-        combined_payload = dict()
-        combined_payload['reporting_level'] = "Storage Group"
-        combined_payload['timestamp'] = self.end_date
-        combined_payload['symmetrixId'] = self.array_id
-
-        # If no SG level information is retrieved...
-        if not sg_info:
-            combined_payload['info_data'] = False
-            combined_payload['info_msg'] = "No Storage Group info data available"
-
-        else:
-            # SG level information retrieved...
-            for k, v in sg_info[0]['storageGroup'][0].items():
-                combined_payload[k] = v
-
-        # If no SG level performance information is retrieved...
-        if not sg_perf_response:
-            combined_payload['perf_data'] = False
-            combined_payload['perf_msg'] = "No active Storage Group performance data available"
-
-        else:
-            # Performance metrics returned...
-            for k, v in sg_perf_response['resultList']['result'][0].items():
-                combined_payload[k] = v
-
-        # Rename all keys to common standardised format, dump to JSON
-
-        self.rename_metrics(combined_payload)
-
-        return combined_payload
 
     #####################################
     # Collect VMAX Director level stats #
     #####################################
 
-    def get_director_info(self, director_id):
+    def get_all_fe_director_metrics(self, start_date, end_date):
+        # First Get a list of all Directors
+        # Calculate start and End Dates for Gathering Performance Stats Last 1 Hour
+        dir_list = self.get_fe_director_list()
+        director_results_combined = dict()
+        director_results_list = []
+        # print("this is the director list %s" % dir_list)
+        for fe_director in dir_list:
+            director_metrics = self.get_fe_director_metrics(
+                director=fe_director, start_date=start_date,
+                end_date=end_date, dataformat='Average')
+            director_results = ({
+                "directorID": fe_director,
+                "perfdata": director_metrics[0]['resultList']['result']})
+            director_results_list.append(director_results)
+        director_results_combined['symmetrixID'] = self.array_id
+        director_results_combined['reporting_level'] = "FEDirector"
+        director_results_combined['dirlistdata'] = director_results_list
+        return director_results_combined
+
+
+    def get_director_info(self, director_id, start_date, end_date):
         """Get Director level information and performance metrics for last hour.
 
         :param director_id: Director ID
@@ -2057,7 +1698,7 @@ class rest_functions:
         be_director_payload = {
             'symmetrixId': self.array_id,
             'directorId': director_id,
-            'endDate': self.end_date,
+            'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
                 'AvgTimePerSyscall', 'CompressedMBs', 'CompressedReadMBs', 'CompressedWriteMBs',
@@ -2074,7 +1715,7 @@ class rest_functions:
         fe_director_payload = {
             'symmetrixId': self.array_id,
             'directorId': director_id,
-            'endDate': self.end_date,
+            'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
                 'AvgRDFSWriteResponseTime', 'AvgReadMissResponseTime', 'AvgWPDiscTime', 'AvgTimePerSyscall',
@@ -2086,14 +1727,14 @@ class rest_functions:
                 'SyscallRemoteDirCounts', 'SystemWPEvents', 'TotalReadCount', 'TotalWriteCount', 'WriteReqs',
                 'WriteHitReqs', 'WriteMissReqs'
             ],
-            'startDate': self.start_date
+            'startDate': start_date
         }
 
         # Set RDF Director performance metrics payload
         rdf_director_payload = {
             'symmetrixId': self.array_id,
             'directorId': director_id,
-            'endDate': self.end_date,
+            'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
                 'AvgIOServiceTime', 'AvgIOSizeReceived', 'AvgIOSizeSent', 'AvgTimePerSyscall', 'CopyIOs', 'CopyMBs',
@@ -2101,7 +1742,7 @@ class rest_functions:
                 'AsyncWriteReqs', 'SyncMBSent', 'SyncWrites', 'SyscallCount', 'Syscall_RDF_DirCounts',
                 'SyscallRemoteDirCount', 'SyscallTime', 'TracksReceivedPerSec', 'TracksSentPerSec', 'WriteReqs'
             ],
-            'startDate': self.start_date
+            'startDate': start_date
         }
 
         # Set IM Director performance metrics payload
@@ -2155,8 +1796,8 @@ class rest_functions:
         # Set combined payload values not present in returned REST metrics
         combined_payload = dict()
         combined_payload['reporting_level'] = "Director"
-        combined_payload['timestamp'] = self.end_date
         combined_payload['symmetrixId'] = self.array_id
+        combined_payload['director_id'] =director_id
         combined_payload['directorType'] = director_type
 
         # If no Director level information is retrieved...
@@ -2176,11 +1817,11 @@ class rest_functions:
 
         else:
             # Performance metrics returned...
-            for k, v in perf_metrics_payload[0]['resultList']['result'][0].items():
-                combined_payload[k] = v
+            combined_payload['perf_data']=perf_metrics_payload[0]['resultList']['result']
+
 
         # Rename all keys to common standardised format, dump to JSON
 
-        self.rename_metrics(combined_payload)
+
 
         return combined_payload
