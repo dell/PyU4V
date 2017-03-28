@@ -1588,7 +1588,7 @@ class rest_functions:
         array_results_combined = dict()
         array_results_combined['symmetrixID'] = self.array_id
         array_results_combined['reporting_level'] ="array"
-        array_results_combined['perfdata']= array_perf_data[0]['resultList']['result']
+        array_results_combined['perf_data']= array_perf_data[0]['resultList']['result']
         return array_results_combined
 
 
@@ -1651,7 +1651,7 @@ class rest_functions:
         sg_results_combined['symmetrixID'] = self.array_id
         sg_results_combined['reporting_level'] = "StorageGroup"
         sg_results_combined['sgname'] = sg_id
-        sg_results_combined['perfdata'] = sg_perf_data[0]['resultList']['result']
+        sg_results_combined['perf_data'] = sg_perf_data[0]['resultList']['result']
         return sg_results_combined
 
 
@@ -1676,12 +1676,12 @@ class rest_functions:
             director_results_list.append(director_results)
         director_results_combined['symmetrixID'] = self.array_id
         director_results_combined['reporting_level'] = "FEDirector"
-        director_results_combined['dirlistdata'] = director_results_list
+        director_results_combined['perf_data'] = director_results_list
         return director_results_combined
 
 
     def get_director_info(self, director_id, start_date, end_date):
-        """Get Director level information and performance metrics for last hour.
+        """Get Director level information and performance metrics for specified time frame,  hard coded to average numnbers.
 
         :param director_id: Director ID
         :return: Combined payload of all Director level information & performance metrics
