@@ -249,15 +249,21 @@ class rest_functions:
             raise Exception
         return self.rest_client.rest_request(target_uri, GET, filters)
 
-    def create_host(self, host_name, initiator_list, host_flags=None):
-        """Create a host with the given initiators.
-
+    def create_host(self, host_name, initiator_list=None, host_flags=None, file=None):
+        """Create a host with the given initiators. Accepts either initiator_list or file.
         The initiators must not be associated with another host.
         :param host_name: the name of the new host
-        :param initiator_list: list of initiators
+        :param initiator_list: list of initiators e.g.[10000000ba873cbf,10000000ba873cba]
         :param host_flags: dictionary of optional host flags to apply
+        :param file: full path and file name.
         :return: dict, status_code
         """
+        if file:
+            initiator_list=self.create_list_from_file(file)
+
+        if not file and not initiator_list:
+            print ("No file or initiator_list supplied, you must specify one or the other")
+            exit ()
         target_uri = "/sloprovisioning/symmetrix/%s/host" % self.array_id
         new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
         if host_flags:
@@ -1819,9 +1825,6 @@ class rest_functions:
             # Performance metrics returned...
             combined_payload['perf_data']=perf_metrics_payload[0]['resultList']['result']
 
-
         # Rename all keys to common standardised format, dump to JSON
-
-
 
         return combined_payload
