@@ -92,6 +92,10 @@ class rest_functions:
         return list(raw_list)
 
     def read_csv_values(file_name):
+        '''
+        :param file_name CSV file
+        :return: Dictionary of data parsed from CSV
+        '''
         # open the file in universal line ending mode
         with open('filename', 'rU') as infile:
             # read the file as a dictionary for each row ({header : value})
