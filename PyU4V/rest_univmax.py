@@ -77,6 +77,35 @@ class rest_functions:
         self.rest_client.close_session()
 
     ###############################
+    # Utility functions
+    ###############################
+
+    def create_list_from_file(file_name):
+        """Given a file, create a list from its contents.  
+
+        :param file_name: the path to the file
+        :return: list of contents
+        """
+        with open(file_name) as f:
+            list_item = f.readlines()
+        raw_list = map(lambda s: s.strip(), list_item)
+        return list(raw_list)
+
+    def read_csv_values(file_name):
+        # open the file in universal line ending mode
+        with open('filename', 'rU') as infile:
+            # read the file as a dictionary for each row ({header : value})
+            reader = csv.DictReader(infile)
+            data = {}
+            for row in reader:
+                for header, value in row.items():
+                    try:
+                        data[header].append(value)
+                    except KeyError:
+                        data[header] = [value]
+        return data
+
+    ###############################
     # system functions
     ###############################
 
@@ -693,16 +722,7 @@ class rest_functions:
                                              request_object=pg_payload)
 
     @staticmethod
-    def create_list_from_file(file_name):
-        """Given a file, create a list from its contents.
 
-        :param file_name: the path to the file
-        :return: list of contents
-        """
-        with open(file_name) as f:
-            list_item = f.readlines()
-        raw_list = map(lambda s: s.strip(), list_item)
-        return list(raw_list)
 
     def create_portgroup_from_file(self, file_name, portgroup_id):
         """Given a file with director:port pairs, create a portgroup.
