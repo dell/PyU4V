@@ -1862,7 +1862,7 @@ class rest_functions:
                 Get all avaliable host performance statiscics for specified time period retrun in JSON
                 :param start_date: EPOCH Time
                 :param end_date: Epoch Time
-                :return:
+                :return: Formatted results
                 """
         target_uri = "/81/performance/Host/metrics"
         host_perf_payload = {
