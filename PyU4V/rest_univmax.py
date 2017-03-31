@@ -1852,3 +1852,33 @@ class rest_functions:
         # Rename all keys to common standardised format, dump to JSON
 
         return combined_payload
+
+    ########################
+    #Get host level Metrics#
+    ########################
+
+    def get_host_metrics(self, host, start_date, end_date):
+        """
+                Get all avaliable host performance statiscics for specified time period retrun in JSON
+                :param start_date: EPOCH Time
+                :param end_date: Epoch Time
+                :return:
+                """
+        target_uri = "/81/performance/Host/metrics"
+        host_perf_payload = {
+            'symmetrixId': self.array_id,
+            'endDate': end_date,
+            'hostId':host,
+            'dataFormat': 'Average',
+            'metrics': ['HostIOs','HostMBReads','HostMBWrites','Reads','ResponseTime','ReadResponseTime','WriteResponseTime',
+                        'SyscallCount','Writes','MBs'
+            ],
+            'startDate': start_date
+        }
+        host_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=host_perf_payload)
+        host_results = dict()
+        host_results['symmetrixID'] = self.array_id
+        host_results['reporting_level'] = "Host"
+        host_results['HostID']=host
+        host_results['perf_data'] = host_perf_data[0]['resultList']['result']
+        return host_results
