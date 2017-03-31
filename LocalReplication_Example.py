@@ -29,6 +29,7 @@ REST call create_new_snap for a storage group.
 """
 import argparse
 from PyU4V.rest_univmax import rest_functions
+ru = rest_functions()
 from time import strftime
 
 ######################################################################
@@ -47,8 +48,6 @@ ARGS = PARSER.parse_args()
 # Variables are initiated to appent REST to the Storage Group and Initiator
 # SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
 sg_id = ARGS.sg
-ru = rest_functions()
-
 
 def main():
     # assign name to snap with date and time appended to name
