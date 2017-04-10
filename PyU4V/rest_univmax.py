@@ -27,7 +27,7 @@ except ImportError:
 import logging.config
 from PyU4V.rest_requests import RestRequests
 import time
-
+import csv
 # register configuration file
 LOG = logging.getLogger('PyU4V')
 CONF_FILE = 'PyU4V.conf'
@@ -80,7 +80,7 @@ class rest_functions:
     # Utility functions
     ###############################
 
-    def create_list_from_file(file_name):
+    def create_list_from_file(self,file_name):
         """Given a file, create a list from its contents.  
 
         :param file_name: the path to the file
@@ -91,13 +91,13 @@ class rest_functions:
         raw_list = map(lambda s: s.strip(), list_item)
         return list(raw_list)
 
-    def read_csv_values(file_name):
+    def read_csv_values(self, file_name):
         '''
         :param file_name CSV file
         :return: Dictionary of data parsed from CSV
         '''
         # open the file in universal line ending mode
-        with open('filename', 'rU') as infile:
+        with open(file_name, 'rU') as infile:
             # read the file as a dictionary for each row ({header : value})
             reader = csv.DictReader(infile)
             data = {}
