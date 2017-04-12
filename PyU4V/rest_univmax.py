@@ -1882,3 +1882,56 @@ class rest_functions:
         host_results['HostID']=host
         host_results['perf_data'] = host_perf_data[0]['resultList']['result']
         return host_results
+
+    # Alert Threshold Configuration
+    def get_perf_threshold_categories(self):
+        '''
+        Written for Unisphere 84, if you are on ealier, append /83 to the endpoint 
+        :return: 
+        '''
+        target_uri = "/performance/threshold/categories"
+        categories = self.rest_client.rest_request(target_uri, GET)
+        category_list=categories[0]["endpoint"]
+        return category_list
+
+
+    def get_perf_category_threshold_settings(self,category):
+        '''
+        will accept valid category, categories listed from get_threshold_categories 
+        written for Unisphere 84, if earlier version append /83/ to start of uri
+        :param category: 
+        :return: 
+        '''
+        target_uri = "/performance/threshold/list/%s" % (category)
+        return self.rest_client.rest_request(target_uri, GET)
+
+
+    def get_kpi_metrics_config(self):
+        '''
+        Checks all Performance Alerting Thresholds and returns settings for KPI
+        Metrics.
+        :return: list of KPI metrics organised by category with each setting.
+        '''''
+        categories = self.get_perf_threshold_categories()
+        perf_threshold_combined=dict()
+        perf_threshold_list=[]
+        #print (categories)
+        for category in categories:
+            current_perf_threshold = self.get_perf_category_threshold_settings(category)
+        #    print (category, current_perf_threshold)
+            data = current_perf_threshold[0]["performanceThreshold"]
+            metriclist = []
+            for item in data:
+                if item['kpi']:
+                    metriclist.append([item])
+            perf_threshold = ({
+                "category": category,
+                "current_settings": metriclist})
+            perf_threshold_list.append(perf_threshold)
+        perf_threshold_combined['performance_thresholds']= "performance_thresholds"
+        perf_threshold_combined['Unisphere_settings'] = perf_threshold_list
+
+        return perf_threshold_combined
+
+
+
