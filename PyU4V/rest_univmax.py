@@ -1039,7 +1039,7 @@ class rest_functions:
         """
         response, sc = self.get_sg(storageGroup)
         mvlist = response["storageGroup"][0]["maskingview"]
-        if len(mvlist) > 1:
+        if len(mvlist) > 0:
             return mvlist
         else:
             return None
