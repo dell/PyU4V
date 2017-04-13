@@ -28,6 +28,7 @@ import logging.config
 from PyU4V.rest_requests import RestRequests
 import time
 import csv
+import json
 # register configuration file
 LOG = logging.getLogger('PyU4V')
 CONF_FILE = 'PyU4V.conf'
@@ -93,6 +94,13 @@ class rest_functions:
 
     def read_csv_values(self, file_name):
         '''
+        reads any csv file with headers
+        You can extract the multiple lists from the headers in the CSV file in your own script call this function and 
+        assign to data variable, then extract the lists to the variables example below
+        data=ru.read_csv_values(mycsv.csv)
+        sgnamelist = data['sgname']
+        policylist = data['policy']
+
         :param file_name CSV file
         :return: Dictionary of data parsed from CSV
         '''
@@ -724,8 +732,6 @@ class rest_functions:
                        "symmetrixPortKey": ports})
         return self.rest_client.rest_request(target_uri, POST,
                                              request_object=pg_payload)
-
-    @staticmethod
 
 
     def create_portgroup_from_file(self, file_name, portgroup_id):
@@ -1926,10 +1932,23 @@ class rest_functions:
                     metriclist.append([item])
             perf_threshold = ({
                 "category": category,
-                "current_settings": metriclist})
+                "metric_settings": metriclist})
             perf_threshold_list.append(perf_threshold)
-        perf_threshold_combined['performance_thresholds']= "performance_thresholds"
-        perf_threshold_combined['Unisphere_settings'] = perf_threshold_list
+        perf_threshold_combined['perf_threshold']= perf_threshold_list
+        print(perf_threshold_combined)
+        # TODO export this to CSV that can be easily modified. Also create set function to read CSV
+        '''    Work in Progress'''
+        outputfile = open('unisettings.csv', 'w')
+        csvwriter = csv.writer(outputfile)
+        count = 0
+        for stuff in perf_threshold_combined['perf_threshold']['category'][0]:
+            print (stuff)
+            if count == 0:
+                header = stuff.keys()
+                csvwriter.writerow(header)
+                count += 1
+            csvwriter.writerow(stuff.values())
+        outputfile.close()
 
         return perf_threshold_combined
 
