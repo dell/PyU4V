@@ -623,17 +623,23 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, DELETE)
 
     def get_host_from_mv(self, masking_view_id):
-        """Given a masking view, get the associated host.
+        """Given a masking view, get the associated host or host group.
 
         :param masking_view_id: the name of the masking view
         :return: host ID
         """
+        host_id = None
         response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
-            host_id = response['maskingView'][0]['hostId']
-            return host_id
+            mv_details = response['maskingView'][0]
         except KeyError:
             LOG.error("Error retrieving host ID from masking view")
+        if mv_details:
+            if mv_details.get('hostId'):
+                host_id = mv_details['hostId']
+            elif mv_details.get('hostGroupId'):
+                host_id = mv_details['hostGroupId']
+            return host_id
 
     def get_sg_from_mv(self, masking_view_id):
         """Given a masking view, get the associated storage group.
