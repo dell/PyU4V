@@ -639,7 +639,7 @@ class rest_functions:
                 host_id = mv_details['hostId']
             elif mv_details.get('hostGroupId'):
                 host_id = mv_details['hostGroupId']
-            return host_id
+        return host_id
 
     def get_sg_from_mv(self, masking_view_id):
         """Given a masking view, get the associated storage group.
