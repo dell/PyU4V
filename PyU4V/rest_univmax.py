@@ -1937,18 +1937,6 @@ class rest_functions:
         perf_threshold_combined['perf_threshold']= perf_threshold_list
         print(perf_threshold_combined)
         # TODO export this to CSV that can be easily modified. Also create set function to read CSV
-        '''    Work in Progress'''
-        outputfile = open('unisettings.csv', 'w')
-        csvwriter = csv.writer(outputfile)
-        count = 0
-        for stuff in perf_threshold_combined['perf_threshold']['category'][0]:
-            print (stuff)
-            if count == 0:
-                header = stuff.keys()
-                csvwriter.writerow(header)
-                count += 1
-            csvwriter.writerow(stuff.values())
-        outputfile.close()
 
         return perf_threshold_combined
 
