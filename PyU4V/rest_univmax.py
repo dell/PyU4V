@@ -1632,7 +1632,7 @@ class rest_functions:
     # Collect VMAX Storage Group level stats #
     ##########################################
 
-    def _get_storage_group_metrics(self, sg_id,start_date,end_date):
+    def get_storage_group_metrics(self, sg_id,start_date,end_date):
         """Get storage group performance metrics.
 
         :param payload:
@@ -1858,6 +1858,38 @@ class rest_functions:
         # Rename all keys to common standardised format, dump to JSON
 
         return combined_payload
+
+    #########################
+    #Get Port Group Metrics #
+    #########################
+
+    def get_port_group_metrics(self, pg_id,start_date,end_date):
+        """
+        Get Port Group Performance Metrics
+        :param sg_id: 
+        :param start_date: 
+        :param end_date: 
+        :return: 
+        """
+        target_uri = '/performance/PortGroup/metrics'
+        pg_perf_payload = {
+            'symmetrixId': self.array_id,
+            'endDate': end_date,
+            'dataFormat': 'Average',
+            'portGroupId': pg_id,
+            'metrics': [
+                'Reads','Writes','IOs','MBRead','MBWritten','MBs','AvgIOSize','PercentBusy'
+            ],
+            'startDate': start_date
+        }
+        pg_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=pg_perf_payload)
+        pg_results_combined = dict()
+        pg_results_combined['symmetrixID'] = self.array_id
+        pg_results_combined['reporting_level'] = "PortGroup"
+        pg_results_combined['pgname'] = pg_id
+        pg_results_combined['perf_data'] = pg_perf_data[0]['resultList']['result']
+        return pg_results_combined
+
 
     ########################
     #Get host level Metrics#
