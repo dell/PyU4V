@@ -33,7 +33,7 @@ def get_my_kpi():
     ru = rest_functions()
     array_metrics=ru.get_array_metrics(start_date,end_date)
     sg_metrics=ru.get_storage_group_metrics(sg_id=sg_id,start_date=start_date, end_date=end_date)
-    masking_view=ru.get_mv_from_sg(sg_id)[0]
+    masking_view=ru.get_mv_from_sg(sg_id)[0] #Only referencing first MV in list, if SG is in more you may want to iterate for more portgroup metrics
     portgroup=ru.get_pg_from_mv(masking_view_id=masking_view)
     pg_metrics=ru.get_port_group_metrics(pg_id=portgroup,start_date=start_date,end_date=end_date)
     print (sg_metrics)
