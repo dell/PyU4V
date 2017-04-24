@@ -27,9 +27,11 @@ Array, Storage Groupm, Port Group, and Host or Cluster level Metrics.
 from PyU4V.rest_univmax import rest_functions
 import time
 
-end_date = int(round(time.time() * 1000))
+end_date = int(round(time.time())*1000)
 start_date = (end_date - 3600000)
-sg_id="ESX_DATASTORE"
+sg_id="HOL_SRDFS_SG"
+print (start_date)
+print(end_date)
 
 def get_my_kpi():
     ru = rest_functions()
