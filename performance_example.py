@@ -30,8 +30,7 @@ import time
 end_date = int(round(time.time())*1000)
 start_date = (end_date - 3600000)
 sg_id="HOL_SRDFS_SG"
-print (start_date)
-print(end_date)
+
 
 def get_my_kpi():
     ru = rest_functions()
