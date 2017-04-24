@@ -44,7 +44,6 @@ class RestRequests:
         self.username = username
         self.password = password
         self.verifySSL = verify
-        self.cert = cert
         self.base_url = base_url
         self.headers = {'content-type': 'application/json',
                         'accept': 'application/json'}
@@ -55,7 +54,6 @@ class RestRequests:
         session.headers = self.headers
         session.auth = HTTPBasicAuth(self.username, self.password)
         session.verify = self.verifySSL
-        session.cert = self.cert
         return session
 
     def rest_request(self, target_url, method,
