@@ -70,30 +70,37 @@ ARGS = PARSER.parse_args()
 sgname = ARGS.sg
 hba_file = ARGS.ig
 port_file = ARGS.pg
-appname = ("REST_")+sgname
-sg_id=appname+("_SG")
-ig_id=appname+("_IG")
-pg_id=appname+("_PG")
-mv_id=appname+("_MV")
+appname = "REST_" + sgname
+sg_id = appname + "_SG"
+ig_id = appname + "_IG"
+pg_id = appname + "_PG"
+mv_id = appname + "_MV"
 requested_capacity=ARGS.cap
 initiator_list = ru.create_list_from_file(file_name=hba_file)
 
+
 def headroom_check():
-    headroom_capacity_GB = ru.get_headroom("OLTP")[0]["headroom"][0]["headroomCapacity"]
-    if int(requested_capacity) <= int(headroom_capacity_GB):
+    headroom_capacity_gb = ru.get_headroom("OLTP")[0]["headroom"][0]["headroomCapacity"]
+    if int(requested_capacity) <= int(headroom_capacity_gb):
         return True
     else:
         return False
 
-def provision_storage ():
+
+def provision_storage():
     if headroom_check():
-        ru.create_non_empty_storagegroup(srpID="SRP_1",sg_id=sg_id,slo="Diamond",workload="OLTP",num_vols=1,vol_size=requested_capacity, capUnit="GB")
-        ru.create_host(host_name=ig_id,initiator_list=initiator_list)
+        ru.create_non_empty_storagegroup(
+            srpID="SRP_1", sg_id=sg_id, slo="Diamond", workload="OLTP",
+            num_vols=1, vol_size=requested_capacity, capUnit="GB")
+        ru.create_host(host_name=ig_id, initiator_list=initiator_list)
         ru.create_portgroup_from_file(file_name=port_file, portgroup_id=pg_id)
-        ru.create_masking_view_existing_components(masking_view_name=mv_id, port_group_name=pg_id, storage_group_name=sg_id, host_name=ig_id)
-        #ru.srdf_protect_sg(sg_id,remote_sid="000197000008",srdfmode="Active",establish=True)
+        ru.create_masking_view_existing_components(
+            masking_view_name=mv_id, port_group_name=pg_id,
+            storage_group_name=sg_id, host_name=ig_id)
+        # ru.srdf_protect_sg(sg_id, remote_sid="000197000008", srdfmode="Active", establish=True)
     else:
         print ("Not Enough Headroom for requested capacity")
+
 
 def main():
     provision_storage()

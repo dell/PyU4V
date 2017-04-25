@@ -10,12 +10,11 @@ This package supports Unisphere version 8.3 onwards, although the calls *should*
 We support VMAX3 and VMAX All-Flash (All Flash from 8.3 onwards).
 
 # INSTALLATION
-To give it a try, download the files and add your server and array details to the top of the PyU4V.conf
-configuration file, under the [setup] heading. Alternatively, you can pass some or all of these details
-on initialisation.
-Requires the 'requests' library (can be installed using pip).
+To give it a try, install the package using pip (pip install PyU4V). Copy the sample PyU4V.conf into your working
+directory, and add your server and array details to the top of the PyU4V.conf configuration file, under the [setup]
+heading. Alternatively, you can pass some or all of these details on initialisation.
 Password, username, server_ip, port, and array MUST be set (either in the config file or on initialisation).
-Cert and verify can be left as is, or you can enable SSL verification by following the directions below
+Verify can be left as is, or you can enable SSL verification by following the directions below
 (see SSL CONFIGURATION).
 
 # SSL CONFIGURATION
@@ -31,9 +30,8 @@ Cert and verify can be left as is, or you can enable SSL verification by followi
    verify=/path-to-file/irco3sd23vm08.lss.emc.com.pem OR pass the value in on initialization.
 
 # USAGE
-PyU4V could also be used as the backend for a script, or a menu etc. Just move the PyU4V package into your working
-directory and import it into your script ('from PyU4V.rest_univmax import rest_functions'), create an instance of
-rest_functions, and you're good to go. Be sure to bring the configuration file with you.
+PyU4V could also be used as the backend for a script, or a menu etc. Just import the PyU4V package (import PyU4V),
+create an instance of rest_functions (e.g. "rf = PyU4V.rest_functions()"), and you're good to go.
 
 If you wish to query another array without changing the configuration file, call the set_array() function.
 
@@ -44,7 +42,6 @@ and other very useful information, please see Paul Martin's blog https://communi
 # FUTURE
 This is still a work in progress. To be expected in the future:
 - Expansion of the rest_functions library (including new Unisphere versions - see below)
-- Enable the installation of the repository using pip
 - Increased exception handling and logging
 - Unittests
 

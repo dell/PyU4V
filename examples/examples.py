@@ -1,7 +1,7 @@
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
 
+ru = PyU4V.rest_functions()
 # define variables
-ru = rest_functions()
 array_id = '000197800128'
 
 sg_id = "test-1"
@@ -34,9 +34,9 @@ def main():
     ru.create_empty_sg(SRP, sg_id, SLO, workload)
     ru.create_non_empty_storagegroup(
         srpID=SRP, sg_id=sg_id2, slo=SLO, workload="None",
-        num_vols=2, capUnit="GB", vol_size="1")
+        num_vols=2, cap_unit="GB", vol_size="1")
     ru.add_new_vol_to_storagegroup(sg_id=sg_id2, num_vols=1,
-                                   capUnit="GB", vol_size="1")
+                                   cap_unit="GB", vol_size="1")
     ru.get_sg(sg_id)
     ru.delete_sg(sg_id)
 
@@ -47,7 +47,7 @@ def main():
         PG, maskingviewId, 'new_host_name', sg_id2)
     print(ru.get_mv_connections(maskingviewId))
 
-main()
+# main()
 
 
 # Example function where a given SLO and workload are checked on the array
@@ -77,7 +77,9 @@ def verify_slo_workload(slo, workload, array):
                "%s" % (slo, validSLOs)))
     print(isValidSLO, isValidWorkload)
 
-verify_slo_workload(SLO, workload, array_id)
+# verify_slo_workload(SLO, workload, array_id)
+
+# print(ru.get_perf_threshold_categories())
 
 
 # example function to get the physical port identifiers from a portgroup
@@ -98,3 +100,12 @@ def get_port_identifier(portgroup):
         except KeyError:
             pass
     return identifier_list
+
+print(get_port_identifier('os-ciara-pg'))
+
+
+def headroom_check():
+    headroom_capacity_gb = ru.get_headroom("OLTP")[0]
+    print(headroom_capacity_gb)
+
+# headroom_check()

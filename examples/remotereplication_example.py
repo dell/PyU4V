@@ -20,39 +20,46 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+# This Script can be used to protect a storage group with SRDF Metro,
+# Syncronous or Asyncronous, or Adaptive copy.
+
+
 import argparse
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
+
 ####################################
 # Define and Parse CLI arguments   #
 # and instantiate session for REST #
 ####################################
 
 PARSER = argparse.ArgumentParser(
-    description='This python script is a basic VMAX REST recipe used for '
-                'creating and provisioning storage for an Oracle Database.')
+    description='Example implementation of a Python REST client for EMC '
+                'Unisphere for VMAX Protect Storage Group with SRDF. Note '
+                'the source storage group must already exist.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
 RFLAGS.add_argument(
-    '-sg', required=True, help='Storage group name, typically the application'
-                               ' name e.g. REST_TEST_SG')
+    '-sg', required=True, help='Storage group name, typically '
+                               'the application name e.g. oraclefinace')
+RFLAGS.add_argument(
+    '-remote_sid', required=True,
+    help='Please Supply symmetrix ID e.g. 000197000008')
+RFLAGS.add_argument('-mode', required=True,
+                    help='Valid inputs are Active, AdaptiveCopyDisk, '
+                         'Synchronous, Asynchronous, Metro This is CASE '
+                         'sensitive')
 ARGS = PARSER.parse_args()
 
-# Variables are initiated to append REST to the Storage Group and Initiator
-# - this can all be customized to match your individual
-# requirements
-
 sg_id = ARGS.sg
-ln_sg_id = sg_id + "_LNK"
-ru = rest_functions()
-mvname = ln_sg_id + "_MV"
+remote_sid = ARGS.remote_sid
+srdfmode = ARGS.mode
+ru = PyU4V.rest_functions()
 
 
+# Call to protect Storage Group and Protect with SRDF,
+# default action is not to start the copy, see full function
+# srdf_protect_sg in rest_univmax.py, call can also be made
+# adding optional parameter establish=True
 def main():
-    mysnap = ru.set_snapshot_id(sg_id)
-    print("You Chose Snap %s" % mysnap)
-    ru.link_gen_snapsthot_83(sg_id, mysnap, generation=0,
-                             link_sg_name=ln_sg_id)
-    ru.create_masking_view_existing_components(
-        port_group_name="cse_pg", masking_view_name=mvname,
-        storage_group_name=ln_sg_id, host_name="esx144_IG")
+    ru.srdf_protect_sg(sg_id, remote_sid, srdfmode)
 
 main()
