@@ -1,8 +1,10 @@
 import PyU4V
 
-ru = PyU4V.rest_functions()
+ru = PyU4V.rest_functions(server_ip='10.60.141.75')
+
 # define variables
 array_id = '000197800128'
+ru.set_array(array_id)
 
 sg_id = "test-1"
 sg_id2 = "test-2"
@@ -26,7 +28,7 @@ link_sg_name = "test_link_sg"
 
 def main():
 
-    #ru.set_array(array_id)
+    ru.set_array(array_id)
 
     ''' sg function calls '''
     print(ru.get_sg())
@@ -34,9 +36,9 @@ def main():
     ru.create_empty_sg(SRP, sg_id, SLO, workload)
     ru.create_non_empty_storagegroup(
         srpID=SRP, sg_id=sg_id2, slo=SLO, workload="None",
-        num_vols=2, cap_unit="GB", vol_size="1")
+        num_vols=2, capUnit="GB", vol_size="1")
     ru.add_new_vol_to_storagegroup(sg_id=sg_id2, num_vols=1,
-                                   cap_unit="GB", vol_size="1")
+                                   capUnit="GB", vol_size="1")
     ru.get_sg(sg_id)
     ru.delete_sg(sg_id)
 

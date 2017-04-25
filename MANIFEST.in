@@ -1,1 +1,2 @@
-include README.md, PyU4V.conf
+include README.md
+include PyU4V.conf
