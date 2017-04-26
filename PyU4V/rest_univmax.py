@@ -223,7 +223,13 @@ class rest_functions:
     # SLOProvisioning functions
     #############################
 
-    # director
+    def get_vmax3_array_list(self):
+        """Returns a list of V3 arrays in the environment.
+        
+        :return: dict, status_code
+        """
+        target_uri = "/sloprovisioning/symmetrix"
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_director(self, director=None):
         """Queries for details of Symmetrix directors for a symmetrix
