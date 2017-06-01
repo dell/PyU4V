@@ -1093,6 +1093,38 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, GET,
                                              params=filters)
 
+    def get_vol_effectivewwn_details_84(self, vollist):
+        """
+        Get volume details for a list of volumes usually obtained for get_vols_from_SG
+        using 84 endpoint as this gives wwn details
+        :param vollist: 
+        :return: Dictionary 
+        """
+        """Create CSV and set headings"""
+        with open(bytes('wwn_data.csv', 'UTF-8'), 'wt') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(['volumeId', 'effective_wwn', 'wwn', 'has_effective_wwn', 'storageGroupId'])
+        for volume in vollist:
+            target_uri = ("/84/sloprovisioning/symmetrix/%s/volume/%s"
+                          % (self.array_id, volume))
+            voldetails, rc = self.rest_client.rest_request(target_uri, GET)
+            volumeId = voldetails.get('volumeId')
+            effective_wwn = voldetails.get('effective_wwn')
+            wwn = voldetails.get('wwn')
+            has_effective_wwn = voldetails.get('has_effective_wwn')
+            storageGroupId = voldetails.get('storageGroupId')
+            with open(bytes('wwn_data.csv', 'UTF-8'), 'a') as csvfile:
+                eventwriter = csv.writer(csvfile,
+                                         delimiter=',',
+                                         quotechar='|',
+                                         quoting=csv.QUOTE_MINIMAL)
+                eventwriter.writerow([volumeId, effective_wwn, wwn, has_effective_wwn, storageGroupId])
+
+
     def delete_volume(self, vol_id):
         """Delete a specified volume off the array.
         Note that you cannot delete volumes with any associations/ allocations
