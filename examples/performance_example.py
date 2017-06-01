@@ -24,29 +24,35 @@ Sample Performance Script to gather an hour of data at Given a Storage group wil
 Array, Storage Groupm, Port Group, and Host or Cluster level Metrics.
 
 """
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
 import time
 
 end_date = int(round(time.time())*1000)
 start_date = (end_date - 3600000)
-sg_id="HOL_SRDFS_SG"
+sg_id = "HOL_SRDFS_SG"
 
 
 def get_my_kpi():
-    ru = rest_functions()
-    array_metrics=ru.get_array_metrics(start_date,end_date)
-    sg_metrics=ru.get_storage_group_metrics(sg_id=sg_id,start_date=start_date, end_date=end_date)
-    masking_view=ru.get_mv_from_sg(sg_id)[0] #Only referencing first MV in list, if SG is in more you may want to iterate for more portgroup metrics
-    portgroup=ru.get_pg_from_mv(masking_view_id=masking_view)
-    pg_metrics=ru.get_port_group_metrics(pg_id=portgroup,start_date=start_date,end_date=end_date)
-    host=ru.get_host_from_mv(masking_view)
-    host_metrics=ru.get_host_metrics(host=host,start_date=start_date,end_date=end_date)
+    ru = PyU4V.rest_functions()
+    array_metrics = ru.get_array_metrics(start_date,end_date)
+    sg_metrics = ru.get_storage_group_metrics(
+        sg_id=sg_id,start_date=start_date, end_date=end_date)
+    # Only referencing first MV in list, if SG is in more than one,
+    # you may want to iterate for more portgroup metrics
+    masking_view = ru.get_mv_from_sg(sg_id)[0]
+    portgroup = ru.get_pg_from_mv(masking_view_id=masking_view)
+    pg_metrics = ru.get_port_group_metrics(
+        pg_id=portgroup,start_date=start_date, end_date=end_date)
+    host = ru.get_host_from_mv(masking_view)
+    host_metrics = ru.get_host_metrics(
+        host=host, start_date=start_date, end_date=end_date)
     print (sg_metrics)
     print (array_metrics)
     print (pg_metrics)
     print (host_metrics)
 
-def main ():
+
+def main():
     get_my_kpi()
 
 main()

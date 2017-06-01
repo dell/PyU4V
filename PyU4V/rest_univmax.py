@@ -28,7 +28,6 @@ import logging.config
 from PyU4V.rest_requests import RestRequests
 import time
 import csv
-import json
 # register configuration file
 LOG = logging.getLogger('PyU4V')
 CONF_FILE = 'PyU4V.conf'
@@ -45,7 +44,7 @@ DELETE = 'DELETE'
 
 class rest_functions:
     def __init__(self, username=None, password=None, server_ip=None,
-                 port=None, verify=False, cert=None):
+                 port=None, verify=False):
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = CFG.get('setup', 'array')
@@ -59,11 +58,9 @@ class rest_functions:
             port = CFG.get('setup', 'port')
         if not verify:
             verify = CFG.getboolean('setup', 'verify')
-        if not cert:
-            cert = CFG.get('setup', 'cert')
         base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
         self.rest_client = RestRequests(username, password, verify,
-                                        cert, base_url)
+                                        base_url)
 
     def set_array(self, array):
         """Change to a different array.
@@ -81,7 +78,7 @@ class rest_functions:
     # Utility functions
     ###############################
 
-    def create_list_from_file(self,file_name):
+    def create_list_from_file(self, file_name):
         """Given a file, create a list from its contents.  
 
         :param file_name: the path to the file
@@ -93,17 +90,18 @@ class rest_functions:
         return list(raw_list)
 
     def read_csv_values(self, file_name):
-        '''
-        reads any csv file with headers
-        You can extract the multiple lists from the headers in the CSV file in your own script call this function and 
-        assign to data variable, then extract the lists to the variables example below
+        """Reads any csv file with headers.
+        
+        You can extract the multiple lists from the headers in the CSV file.
+        In your own script, call this function and assign to data variable, 
+        then extract the lists to the variables. Example:
         data=ru.read_csv_values(mycsv.csv)
         sgnamelist = data['sgname']
         policylist = data['policy']
 
         :param file_name CSV file
         :return: Dictionary of data parsed from CSV
-        '''
+        """
         # open the file in universal line ending mode
         with open(file_name, 'rU') as infile:
             # read the file as a dictionary for each row ({header : value})
@@ -157,7 +155,7 @@ class rest_functions:
             target_uri += "/%s" % array_id
         return self.rest_client.rest_request(target_uri, GET)
 
-    def get_array_jobs(self, jobID=None, filters=None):
+    def get_array_jobs(self, job_id=None, filters=None):
         """Call queries for a list of Job ids for the specified symmetrix.
 
         The optional filters are: scheduled_date, name, completed_date,
@@ -165,15 +163,15 @@ class rest_functions:
         last_modified_date_milliseconds, last_modified_date,
         completed_date_milliseconds (all params including =,<, or >),
         status (=).
-        :param jobID: specific ID of the job (optional)
+        :param job_id: specific ID of the job (optional)
         :param filters: dict of filters - optional
         :return: dict, status_code
         """
         target_uri = "/system/symmetrix/%s/job" % self.array_id
-        if jobID:
-            target_uri += "/%s" % jobID
-        if jobID and filters:
-            LOG.error("jobID and filters are mutually exclusive options")
+        if job_id:
+            target_uri += "/%s" % job_id
+        if job_id and filters:
+            LOG.error("job_id and filters are mutually exclusive options")
             raise Exception
         return self.rest_client.rest_request(target_uri, GET, params=filters)
 
@@ -225,7 +223,13 @@ class rest_functions:
     # SLOProvisioning functions
     #############################
 
-    # director
+    def get_vmax3_array_list(self):
+        """Returns a list of V3 arrays in the environment.
+        
+        :return: dict, status_code
+        """
+        target_uri = "/sloprovisioning/symmetrix"
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_director(self, director=None):
         """Queries for details of Symmetrix directors for a symmetrix
@@ -290,21 +294,25 @@ class rest_functions:
             raise Exception
         return self.rest_client.rest_request(target_uri, GET, filters)
 
-    def create_host(self, host_name, initiator_list=None, host_flags=None, file=None):
-        """Create a host with the given initiators. Accepts either initiator_list or file.
+    def create_host(self, host_name, initiator_list=None,
+                    host_flags=None, init_file=None):
+        """Create a host with the given initiators. 
+        
+        Accepts either initiator_list or file.
         The initiators must not be associated with another host.
         :param host_name: the name of the new host
         :param initiator_list: list of initiators e.g.[10000000ba873cbf,10000000ba873cba]
         :param host_flags: dictionary of optional host flags to apply
-        :param file: full path and file name.
+        :param init_file: full path and file name.
         :return: dict, status_code
         """
-        if file:
-            initiator_list=self.create_list_from_file(file)
+        if init_file:
+            initiator_list = self.create_list_from_file(init_file)
 
-        if not file and not initiator_list:
-            print ("No file or initiator_list supplied, you must specify one or the other")
-            exit ()
+        if not init_file and not initiator_list:
+            print ("No file or initiator_list supplied, "
+                   "you must specify one or the other")
+            exit()
         target_uri = "/sloprovisioning/symmetrix/%s/host" % self.array_id
         new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
         if host_flags:
@@ -484,23 +492,23 @@ class rest_functions:
             raise Exception
         return self.rest_client.rest_request(target_uri, GET, params=filters)
 
-    def modify_initiator(self, initiator_id, removeMaskingEntry=None,
+    def modify_initiator(self, initiator_id, remove_masking_entry=None,
                          replace_init=None, rename_alias=None,
                          set_fcid=None, initiator_flags=None):
         """Modify an initiator.
 
         Only one parameter can be edited at a time.
         :param initiator_id: the initiator id
-        :param removeMaskingEntry: string - "true" or "false"
+        :param remove_masking_entry: string - "true" or "false"
         :param replace_init: Id of the new initiator
         :param rename_alias: tuple ('new node name', 'new port name')
         :param set_fcid: set fcid value - string
         :param initiator_flags: dictionary of initiator flags to set
         :return: dict, status_code
         """
-        if removeMaskingEntry:
+        if remove_masking_entry:
             edit_init_data = ({"editInitiatorActionParam": {
-                "removeMaskingEntry": removeMaskingEntry}})
+                "removeMaskingEntry": remove_masking_entry}})
         elif replace_init:
             edit_init_data = ({"editInitiatorActionParam": {
                 "replaceInitiatorParam": {"new_initiator": replace_init}}})
@@ -606,7 +614,7 @@ class rest_functions:
         :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
-                      % self.array_id, masking_view_id)
+                      % (self.array_id, masking_view_id))
         mv_payload = {"editMaskingViewActionParam": {
             "renameMaskingViewParam": {"new_masking_view_name": new_name}}}
         return self.rest_client.rest_request(target_uri, PUT,
@@ -628,6 +636,7 @@ class rest_functions:
         :param masking_view_id: the name of the masking view
         :return: host ID
         """
+        mv_details = None
         host_id = None
         response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
@@ -739,7 +748,6 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, POST,
                                              request_object=pg_payload)
 
-
     def create_portgroup_from_file(self, file_name, portgroup_id):
         """Given a file with director:port pairs, create a portgroup.
 
@@ -789,7 +797,7 @@ class rest_functions:
                       "rename_portgroup.")
             raise Exception()
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup/%s"
-                      % self.array_id, portgroup_id)
+                      % (self.array_id, portgroup_id))
         return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=edit_pg_data)
 
@@ -800,7 +808,7 @@ class rest_functions:
         :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup/%s"
-                      % self.array_id, portgroup_id)
+                      % (self.array_id, portgroup_id))
         return self.rest_client.rest_request(target_uri, DELETE)
 
     def extract_directorId_pg(self, portgroup):
@@ -811,52 +819,52 @@ class rest_functions:
         """
         info, sc = self.get_portgroups(portgroup_id=portgroup)
         try:
-            portKey = info["portGroup"][0]["symmetrixPortKey"]
-            return portKey
+            port_key = info["portGroup"][0]["symmetrixPortKey"]
+            return port_key
         except KeyError:
             LOG.error("Cannot find port key information from given portgroup")
 
     # SLO
 
-    def get_SLO(self, SLO_Id=None):
+    def get_SLO(self, slo_id=None):
         """Gets a list of available SLO's on a given array, or returns
         details on a specific SLO if one is passed in in the parameters.
 
-        :param SLO_Id: the service level agreement, optional
+        :param slo_id: the service level agreement, optional
         :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/slo" % self.array_id
-        if SLO_Id:
-            target_uri += "/%s" % SLO_Id
+        if slo_id:
+            target_uri += "/%s" % slo_id
         return self.rest_client.rest_request(target_uri, GET)
 
-    def modify_slo(self, SLO_Id, new_name):
+    def modify_slo(self, slo_id, new_name):
         """Modify an SLO.
 
         Currently, the only modification permitted is renaming.
-        :param SLO_Id: the current name of the slo
+        :param slo_id: the current name of the slo
         :param new_name: the new name for the slo
         :return: dict, status_code
         """
         edit_slo_data = ({"editSloActionParam": {
             "renameSloParam": {"sloId": new_name}}})
         target_uri = ("/sloprovisioning/symmetrix/%s/slo/%s" %
-                      self.array_id, SLO_Id)
+                      (self.array_id, slo_id))
         return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=edit_slo_data)
 
     # SRP
 
-    def get_SRP(self, SRP=None):
+    def get_srp(self, srp=None):
         """Gets a list of available SRP's on a given array, or returns
         details on a specific SRP if one is passed in in the parameters.
 
-        :param SRP: the storage resource pool, optional
+        :param srp: the storage resource pool, optional
         :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/srp" % self.array_id
-        if SRP:
-            target_uri += "/%s" % SRP
+        if srp:
+            target_uri += "/%s" % srp
         return self.rest_client.rest_request(target_uri, GET)
 
     # storage group functions.
@@ -917,14 +925,14 @@ class rest_functions:
             return self._create_sg(new_sg_data)
 
     # create an empty storage group
-    def create_empty_sg(self, srpID, sg_id, slo, workload,
+    def create_empty_sg(self, srp_id, sg_id, slo, workload,
                         disable_compression=False):
         """Generates a dictionary for json formatting and calls
         the create_sg function to create an empty storage group
         Set the disable_compression flag for
         disabling compression on an All Flash array (where compression
         is on by default).
-        :param srpID: the storage resource pool
+        :param srp_id: the storage resource pool
         :param sg_id: the name of the new storage group
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
@@ -938,7 +946,7 @@ class rest_functions:
                      "num_of_vols": 1, }
         if disable_compression:
             sg_params.update({"noCompression": "true"})
-        new_sg_data = ({"srpId": srpID,
+        new_sg_data = ({"srpId": srp_id,
                         "storageGroupId": sg_id,
                         "sloBasedStorageGroupParam": [sg_params],
                         "create_empty_storage_group": "true"})
@@ -991,10 +999,10 @@ class rest_functions:
         :param vol_id: the device id of the volume
         :return: dict, status_code
         """
-        addVolData = {"editStorageGroupActionParam": {
+        add_vol_data = {"editStorageGroupActionParam": {
                                     "addVolumeParam": {
                                             "volumeId": [vol_id]}}}
-        return self.modify_storagegroup(sg_id, addVolData)
+        return self.modify_storagegroup(sg_id, add_vol_data)
 
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size, capUnit):
         """Expand an existing storage group by adding new volumes.
@@ -1013,16 +1021,16 @@ class rest_functions:
             }}})
         return self.modify_storagegroup(sg_id, expand_sg_data)
 
-    def remove_vol_from_storagegroup(self, sg_id, volID):
+    def remove_vol_from_storagegroup(self, sg_id, vol_id):
         """Remove a volume from a given storage group
 
         :param sg_id: the name of the storage group
-        :param volID: the device id of the volume
+        :param vol_id: the device id of the volume
         :return: dict, status_code
         """
         del_vol_data = ({"editStorageGroupActionParam": {
             "removeVolumeParam": {
-                "volumeId": [volID]}}})
+                "volumeId": [vol_id]}}})
         return self.modify_storagegroup(sg_id, del_vol_data)
 
     def delete_sg(self, sg_id):
@@ -1034,52 +1042,52 @@ class rest_functions:
         :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
-                     % (self.array_id, sg_id))
+                      % (self.array_id, sg_id))
         return self.rest_client.rest_request(target_uri, DELETE)
 
-    def get_mv_from_sg(self, storageGroup):
+    def get_mv_from_sg(self, storage_group):
         """Get the associated masking view(s) from a given storage group
 
-        :param storageGroup: the name of the storage group
+        :param storage_group: the name of the storage group
         :return: Masking view list, or None
         """
-        response, sc = self.get_sg(storageGroup)
+        response, sc = self.get_sg(storage_group)
         mvlist = response["storageGroup"][0]["maskingview"]
         if len(mvlist) > 0:
             return mvlist
         else:
             return None
 
-    def set_hostIO_limit_IOPS(self, storageGroup, IOPS, dynamicDistribution):
+    def set_hostIO_limit_IOPS(self, storage_group, iops, dynamic_distribution):
         """Set the HOSTIO Limits on an existing storage group.
 
-        :param storageGroup: String up to 32 Characters
-        :param dynamicDistribution: valid values Always, Never, OnFailure
-        :param IOPS: integer value. Min Value 100, must be specified to 
+        :param storage_group: String up to 32 Characters
+        :param dynamic_distribution: valid values Always, Never, OnFailure
+        :param iops: integer value. Min Value 100, must be specified to 
                      nearest 100, e.g.202 is not a valid value
         :return: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
-                      % (self.array_id, storageGroup))
+                      % (self.array_id, storage_group))
         iolimits = {"editStorageGroupActionParam": {
                         "setHostIOLimitsParam": {
-                            "host_io_limit_io_sec": IOPS,
-                            "dynamicDistribution": dynamicDistribution}}}
+                            "host_io_limit_io_sec": iops,
+                            "dynamicDistribution": dynamic_distribution}}}
         return self.rest_client.rest_request(target_uri, PUT, request_object=iolimits)
 
     # volume
 
-    def get_volumes(self, volID=None, filters=None):
+    def get_volumes(self, vol_id=None, filters=None):
         """Gets details of volume(s) from array.
 
-        :param volID: the volume's device ID
+        :param vol_id: the volume's device ID
         :param filters: dictionary of filters
         :return: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/volume" % self.array_id
-        if volID:
-            target_uri += volID
-        if volID and filters:
+        if vol_id:
+            target_uri += vol_id
+        if vol_id and filters:
             LOG.error("volID and filters are mutually exclusive.")
             raise Exception()
         return self.rest_client.rest_request(target_uri, GET,
@@ -1107,14 +1115,14 @@ class rest_functions:
         result = response['resultList']['result'][0]
         return result['volumeId']
 
-    def get_vols_from_SG(self, sgID):
+    def get_vols_from_SG(self, sg_id):
         """Retrieve volume information associated with a particular sg
 
-        :param sgID: the name of the storage group
+        :param sg_id: the name of the storage group
         :return: list of device IDs of associated volumes
         """
         vols = []
-        response, sc = self.get_volumes(filters={'storageGroupId': sgID})
+        response, sc = self.get_volumes(filters={'storageGroupId': sg_id})
         vol_list = response['resultList']['result']
         for vol in vol_list:
             vol_id = vol['volumeId']
@@ -1129,45 +1137,12 @@ class rest_functions:
         :param vol_id: the device ID of the volume
         :return: list of storage groups, or None
         """
-        response, sc = self.get_volumes(volID=vol_id)
+        response, sc = self.get_volumes(vol_id=vol_id)
         try:
             sglist = response["volume"][0]["storageGroupId"]
             return sglist
         except KeyError:
             return None
-
-    def get_vol_effectivewwn_details_84(self, vollist):
-        """
-        Get volume details for a list of volumes usually obtained for get_vols_from_SG
-        using 84 endpoint as this gives wwn details
-        :param vollist: 
-        :return: Dictionary 
-        """
-        """Create CSV and set headings"""
-        with open(bytes('wwn_data.csv','UTF-8'), 'wt') as csvfile:
-            eventwriter = csv.writer(csvfile,
-                                     delimiter=',',
-                                     quotechar='|',
-                                     quoting=csv.QUOTE_MINIMAL)
-
-            eventwriter.writerow(['volumeId', 'effective_wwn','wwn','has_effective_wwn','storageGroupId'])
-        for volume in vollist:
-            target_uri = ("/84/sloprovisioning/symmetrix/%s/volume/%s"
-                      % (self.array_id, volume))
-            voldetails,rc =self.rest_client.rest_request(target_uri,GET)
-            volumeId=voldetails.get('volumeId')
-            effective_wwn=voldetails.get('effective_wwn')
-            wwn=voldetails.get('wwn')
-            has_effective_wwn=voldetails.get('has_effective_wwn')
-            storageGroupId=voldetails.get('storageGroupId')
-            with open(bytes('wwn_data.csv','UTF-8'), 'a') as csvfile:
-                eventwriter = csv.writer(csvfile,
-                                          delimiter=',',
-                                          quotechar='|',
-                                          quoting=csv.QUOTE_MINIMAL)
-                eventwriter.writerow([volumeId,effective_wwn,wwn,has_effective_wwn,storageGroupId])
-
-        return
 
     # workloadtype
 
@@ -1318,7 +1293,7 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=snap_data)
 
-    def set_snapshot_id(self,sgname):
+    def set_snapshot_id(self, sgname):
         """Parse a list of snaps for storage group and select from menu.
 
         :return:String returned with the name of the selected snapshot
@@ -1385,8 +1360,8 @@ class rest_functions:
         snap_capability = False
         response, sc = self.get_replication_capabilities(array)
         try:
-            symmList = response['symmetrixCapability']
-            for symm in symmList:
+            symm_list = response['symmetrixCapability']
+            for symm in symm_list:
                 if symm['symmetrixId'] == array:
                     snap_capability = symm['snapVxCapable']
                     break
@@ -1448,7 +1423,7 @@ class rest_functions:
         print(rdf_payload)
         return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
 
-    def get_srdf_num(self,sg_id):
+    def get_srdf_num(self, sg_id):
         """Get the SRDF number for a storage group.
 
         :param sg_id: Storage Group Name of replicated group.
@@ -1463,7 +1438,7 @@ class rest_functions:
         """
         target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/rdf_group"
                       % (self.array_id, sg_id))
-        return self.rest_client.rest_request(target_uri,GET)
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_srdf_state(self, sg_id, rdfg=None):
         """Get the current SRDF state.
@@ -1518,7 +1493,8 @@ class rest_functions:
         target_uri = "/performance/FEDirector/keys"
         dir_payload = ({"symmetrixId": self.array_id})
 
-        dir_response = self.rest_client.rest_request(target_uri, POST, request_object=dir_payload)
+        dir_response = self.rest_client.rest_request(
+            target_uri, POST, request_object=dir_payload)
         dir_list = []
         for director in dir_response[0]['feDirectorInfo']:
             dir_list.append(director['directorId'])
@@ -1538,7 +1514,8 @@ class rest_functions:
                 "directorId": director
             })
             port_details = {}
-            port_response = self.rest_client.rest_request(target_uri, POST, request_object=port_payload)
+            port_response = self.rest_client.rest_request(
+                target_uri, POST, request_object=port_payload)
             for port in port_response[0]['fePortInfo']:
                 port_details[port['portId']] = director
             port_list.append(port_details)
@@ -1552,7 +1529,6 @@ class rest_functions:
         """
         end_date = int(round(time.time() * 1000))
         start_date = (end_date - 14400000)
-        port_list = self.get_fe_port_list()
 
         target_uri = '/performance/FEPort/metrics'
         port_perf_payload = ({"startDate": start_date,
@@ -1562,9 +1538,11 @@ class rest_functions:
                               "portId": port_id,
                               "dataFormat": "Average",
                               "metrics": ["PercentBusy"]})
-        return self.rest_client.rest_request(target_uri, POST, request_object=port_perf_payload)
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=port_perf_payload)
 
-    def get_fe_director_metrics(self, start_date, end_date, director, dataformat):
+    def get_fe_director_metrics(self, start_date, end_date,
+                                director, dataformat):
         """Function to get one or more metrics for front end directors.
 
         :param start_date: Date EPOCH Time in Milliseconds
@@ -1575,7 +1553,7 @@ class rest_functions:
         :return: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEDirector/metrics"
-        feDirectorParam = ({
+        fe_director_param = ({
                         "symmetrixId": self.array_id,
                         "directorId": director,
                         "endDate": end_date,
@@ -1596,8 +1574,7 @@ class rest_functions:
                         "startDate": start_date})
 
         return self.rest_client.rest_request(target_uri, POST,
-                                             request_object=feDirectorParam)
-
+                                             request_object=fe_director_param)
 
     def get_fe_port_metrics(self, start_date, end_date, director_id,
                             port_id, dataformat, metriclist):
@@ -1614,25 +1591,28 @@ class rest_functions:
         :return: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEPort/metrics"
-        feDirectorParam = ({"symmetrixId": self.array_id,
-                            "directorId": director_id,
-                            "endDate": end_date,
-                            "dataFormat": dataformat,
-                            "metrics": [metriclist],
-                            "portId": port_id,
-                            "startDate": start_date})
+        fe_director_param = ({"symmetrixId": self.array_id,
+                              "directorId": director_id,
+                              "endDate": end_date,
+                              "dataFormat": dataformat,
+                              "metrics": [metriclist],
+                              "portId": port_id,
+                              "startDate": start_date})
 
-        return self.rest_client.rest_request(target_uri, POST, request_object=feDirectorParam)
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=fe_director_param)
 
         ##################################
         # Collect VMAX Array level stats #
         ##################################
-    def get_array_metrics(self,start_date, end_date):
-        """
-        Get all avaliable performance statiscics for specified time period retrun in JSON
+    def get_array_metrics(self, start_date, end_date):
+        """Get array metrics.
+
+        Get all avaliable performance statistics for specified time 
+        period return in JSON
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return:
+        :return: array_results_combined
         """
         target_uri = "/performance/Array/metrics"
         array_perf_payload = {
@@ -1640,41 +1620,49 @@ class rest_functions:
             'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
-                'OverallCompressionRatio', 'OverallEfficiencyRatio', 'PercentVPSaved', 'VPSharedRatio',
-                'VPCompressionRatio', 'VPEfficiencyRatio', 'PercentSnapshotSaved', 'SnapshotSharedRatio',
-                'SnapshotCompressionRatio', 'SnapshotEfficiencyRatio', 'CopySlotCount', 'HostIOs', 'HostReads',
-                'HostWrites', 'PercentReads', 'PercentWrites', 'PercentHit', 'HostMBs', 'HostMBReads',
-                'HostMBWritten',
-                'HostMBWritten', 'FEReqs', 'FEReadReqs', 'FEWriteReqs', 'BEIOs', 'BEReqs', 'BEReadReqs',
-                'BEWriteReqs',
-                'SystemWPEvents', 'DeviceWPEvents', 'WPCount', 'SystemMaxWPLimit', 'PercentCacheWP',
-                'AvgFallThruTime',
-                'FEHitReqs', 'FEReadHitReqs', 'FEWriteHitReqs', 'PrefetchedTracks', 'FEReadMissReqs',
-                'FEWriteMissReqs',
-                'ReadResponseTime', 'WriteResponseTime', 'OptimizedReadMisses',
-                'OptimizedMBReadMisses', 'AvgOptimizedReadMissSize', 'QueueDepthUtilization',
-                'InfoAlertCount', 'WarningAlertCount', 'CriticalAlertCount', 'RDFA_WPCount', 'AllocatedCapacity',
-                'FE_Balance', 'DA_Balance', 'DX_Balance', 'RDF_Balance', 'Cache_Balance', 'SATA_Balance',
-                'FC_Balance', 'EFD_Balance'
+                'OverallCompressionRatio', 'OverallEfficiencyRatio',
+                'PercentVPSaved', 'VPSharedRatio', 'VPCompressionRatio',
+                'VPEfficiencyRatio', 'PercentSnapshotSaved',
+                'SnapshotSharedRatio', 'SnapshotCompressionRatio',
+                'SnapshotEfficiencyRatio', 'CopySlotCount', 'HostIOs',
+                'HostReads', 'HostWrites', 'PercentReads', 'PercentWrites',
+                'PercentHit', 'HostMBs', 'HostMBReads', 'HostMBWritten',
+                'HostMBWritten', 'FEReqs', 'FEReadReqs', 'FEWriteReqs',
+                'BEIOs', 'BEReqs', 'BEReadReqs', 'BEWriteReqs',
+                'SystemWPEvents', 'DeviceWPEvents', 'WPCount',
+                'SystemMaxWPLimit', 'PercentCacheWP', 'AvgFallThruTime',
+                'FEHitReqs', 'FEReadHitReqs', 'FEWriteHitReqs',
+                'PrefetchedTracks', 'FEReadMissReqs', 'FEWriteMissReqs',
+                'ReadResponseTime', 'WriteResponseTime',
+                'OptimizedReadMisses', 'OptimizedMBReadMisses',
+                'AvgOptimizedReadMissSize', 'QueueDepthUtilization',
+                'InfoAlertCount', 'WarningAlertCount', 'CriticalAlertCount',
+                'RDFA_WPCount', 'AllocatedCapacity', 'FE_Balance',
+                'DA_Balance', 'DX_Balance', 'RDF_Balance', 'Cache_Balance',
+                'SATA_Balance', 'FC_Balance', 'EFD_Balance'
             ],
             'startDate': start_date
         }
-        array_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=array_perf_payload)
+        array_perf_data = self.rest_client.rest_request(
+            target_uri, POST, request_object=array_perf_payload)
         array_results_combined = dict()
         array_results_combined['symmetrixID'] = self.array_id
-        array_results_combined['reporting_level'] ="array"
-        array_results_combined['perf_data']= array_perf_data[0]['resultList']['result']
+        array_results_combined['reporting_level'] = "array"
+        array_results_combined['perf_data'] = (
+            array_perf_data[0]['resultList']['result'])
         return array_results_combined
-
 
     ##########################################
     # Collect VMAX Storage Group level stats #
     ##########################################
 
-    def get_storage_group_metrics(self, sg_id,start_date,end_date):
-        """Get storage group performance metrics.
-
-        :param payload:
+    def get_storage_group_metrics(self, sg_id, start_date, end_date):
+        """Get storage group metrics.
+        
+        :param sg_id: the storage group id
+        :param start_date: the start date
+        :param end_date: the end date
+        :return: sg_results_combined
         """
         target_uri = '/performance/StorageGroup/metrics'
         sg_perf_payload = {
@@ -1683,60 +1671,76 @@ class rest_functions:
             'dataFormat': 'Average',
             'storageGroupId': sg_id,
             'metrics': [
-                'CriticalAlertCount', 'InfoAlertCount', 'WarningAlertCount', 'AllocatedCapacity', 'TotalTracks',
-                'BEDiskReadResponseTime', 'BEReadRequestTime', 'BEReadTaskTime', 'AvgIOSize',
-                'AvgReadResponseTime6',
-                'AvgReadResponseTime7', 'AvgReadSize', 'AvgWritePacedDelay', 'AvgWriteResponseTime6',
-                'AvgWriteResponseTime7', 'AvgWriteSize', 'BEMBReads', 'BEMBTransferred', 'BEMBWritten',
-                'BEPercentReads', 'BEPercentWrites', 'BEPrefetchedTrackss', 'BEPrefetchedTrackUsed', 'BEReadReqs',
-                'BEWriteReqs', 'CompressedTracks', 'CompressionRatio', 'BlockSize', 'HostMBs', 'IODensity',
-                'HostIOs',
-                'MaxWPThreshold', 'HostMBReads', 'HostMBWritten', 'AvgOptimizedReadMissSize',
-                'OptimizedMBReadMisss',
-                'OptimizedReadMisses', 'PercentCompressedTracks', 'PercentHit', 'PercentMisses', 'PercentRandomIO',
-                'PercentRandomReads', 'PercentRandomReadHit', 'PercentRandomReadMiss', 'PercentRandomWrites',
-                'PercentRandomWriteHit', 'PercentRandomWriteMiss', 'PercentRead', 'PercentReadHit',
-                'PercentReadMiss',
-                'PercentSeqIO', 'PercentSeqRead', 'PercentSeqReadHit', 'PercentSeqReadMiss', 'PercentSeqWrites',
-                'PercentSeqWriteHit', 'PercentSeqWriteMiss', 'PercentVPSpaceSaved', 'PercentWrite',
-                'PercentWriteHit',
-                'PercentWriteMiss', 'BEPrefetchedMBs', 'HostIOLimitPercentTimeExceeded', 'RandomIOs',
-                'RandomReadHits',
-                'RandomReadMisses', 'RandomReads', 'RandomWriteHits', 'RandomWriteMisses', 'RandomWrites',
-                'RdfMBRead',
-                'RdfMBWritten', 'RdfReads', 'RdfReadHits', 'RdfResponseTime', 'RDFRewrites', 'RdfWrites',
-                'HostReads',
-                'HostReadHits', 'HostReadMisses', 'ReadResponseTimeCount1', 'ReadResponseTimeCount2',
-                'ReadResponseTimeCount3', 'ReadResponseTimeCount4', 'ReadResponseTimeCount5',
-                'ReadResponseTimeCount6',
-                'ReadResponseTimeCount7', 'ResponseTime', 'RDFS_WriteResponseTime', 'ReadMissResponseTime',
-                'ReadResponseTime', 'WriteMissResponseTime', 'WriteResponseTime', 'SeqReadHits', 'SeqReadMisses',
-                'SeqReads', 'SeqWriteHits', 'SeqWriteMisses', 'SeqWrites', 'Skew', 'SRDFA_MBSent',
-                'SRDFA_WriteReqs',
-                'SRDFS_MBSent', 'SRDFS_WriteReqs', 'BEReqs', 'HostHits', 'HostMisses', 'SeqIOs', 'WPCount',
-                'HostWrites', 'HostWriteHits', 'HostWriteMisses', 'WritePacedDelay', 'WriteResponseTimeCount1',
-                'WriteResponseTimeCount2', 'WriteResponseTimeCount3', 'WriteResponseTimeCount4',
+                'CriticalAlertCount', 'InfoAlertCount', 'WarningAlertCount',
+                'AllocatedCapacity', 'TotalTracks', 'BEDiskReadResponseTime',
+                'BEReadRequestTime', 'BEReadTaskTime', 'AvgIOSize',
+                'AvgReadResponseTime6', 'AvgReadResponseTime7',
+                'AvgReadSize', 'AvgWritePacedDelay', 'AvgWriteResponseTime6',
+                'AvgWriteResponseTime7', 'AvgWriteSize', 'BEMBReads',
+                'BEMBTransferred', 'BEMBWritten', 'BEPercentReads',
+                'BEPercentWrites', 'BEPrefetchedTrackss', 'BEReadReqs',
+                'BEPrefetchedTrackUsed', 'BEWriteReqs', 'CompressedTracks',
+                'CompressionRatio', 'BlockSize', 'HostMBs', 'IODensity',
+                'HostIOs', 'MaxWPThreshold', 'HostMBReads', 'HostMBWritten',
+                'AvgOptimizedReadMissSize', 'OptimizedMBReadMisss',
+                'OptimizedReadMisses', 'PercentCompressedTracks',
+                'PercentHit', 'PercentMisses', 'PercentRandomIO',
+                'PercentRandomReads', 'PercentRandomReadHit', 'PercentRead',
+                'PercentRandomReadMiss', 'PercentRandomWrites',
+                'PercentRandomWriteHit', 'PercentRandomWriteMiss',
+                'PercentReadMiss', 'PercentReadHit', 'PercentSeqIO',
+                'PercentSeqRead', 'PercentSeqReadHit', 'PercentSeqReadMiss',
+                'PercentSeqWrites', 'PercentSeqWriteHit', 'PercentWrite',
+                'PercentVPSpaceSaved', 'PercentWriteHit', 'RandomIOs',
+                'PercentSeqWriteMiss', 'PercentWriteMiss', 'BEPrefetchedMBs',
+                'HostIOLimitPercentTimeExceeded', 'RandomReadHits',
+                'RandomReadMisses', 'RandomReads', 'RandomWriteHits',
+                'RandomWriteMisses', 'RandomWrites', 'RdfMBRead',
+                'RdfMBWritten', 'RdfReads', 'RdfReadHits', 'RdfResponseTime',
+                'RDFRewrites', 'RdfWrites', 'HostReads', 'HostReadHits',
+                'HostReadMisses', 'ReadResponseTimeCount1',
+                'ReadResponseTimeCount2', 'ReadResponseTimeCount3',
+                'ReadResponseTimeCount4', 'ReadResponseTimeCount5',
+                'ReadResponseTimeCount6', 'ReadResponseTimeCount7',
+                'RDFS_WriteResponseTime', 'ReadMissResponseTime',
+                'ResponseTime', 'ReadResponseTime', 'WriteMissResponseTime',
+                'WriteResponseTime', 'SeqReadHits', 'SeqReadMisses',
+                'SeqReads', 'SeqWriteHits', 'SeqWriteMisses', 'SeqWrites',
+                'Skew', 'SRDFA_MBSent', 'SRDFA_WriteReqs', 'SRDFS_MBSent',
+                'SRDFS_WriteReqs', 'BEReqs', 'HostHits', 'HostMisses',
+                'SeqIOs', 'WPCount', 'HostWrites', 'HostWriteHits',
+                'HostWriteMisses', 'WritePacedDelay',
+                'WriteResponseTimeCount1', 'WriteResponseTimeCount2',
+                'WriteResponseTimeCount3', 'WriteResponseTimeCount4',
                 'WriteResponseTimeCount5', 'WriteResponseTimeCount6',
                 'WriteResponseTimeCount7'
             ],
             'startDate': start_date
         }
-        sg_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=sg_perf_payload)
+        sg_perf_data = self.rest_client.rest_request(
+            target_uri, POST, request_object=sg_perf_payload)
         sg_results_combined = dict()
         sg_results_combined['symmetrixID'] = self.array_id
         sg_results_combined['reporting_level'] = "StorageGroup"
         sg_results_combined['sgname'] = sg_id
-        sg_results_combined['perf_data'] = sg_perf_data[0]['resultList']['result']
+        sg_results_combined['perf_data'] = (
+            sg_perf_data[0]['resultList']['result'])
         return sg_results_combined
-
 
     #####################################
     # Collect VMAX Director level stats #
     #####################################
 
     def get_all_fe_director_metrics(self, start_date, end_date):
-        # First Get a list of all Directors
-        # Calculate start and End Dates for Gathering Performance Stats Last 1 Hour
+        """
+        
+        Get a list of all Directors.
+        Calculate start and End Dates for Gathering Performance Stats 
+        Last 1 Hour.
+        :param start_date: start date
+        :param end_date: end date
+        :return: 
+        """
         dir_list = self.get_fe_director_list()
         director_results_combined = dict()
         director_results_list = []
@@ -1754,12 +1758,16 @@ class rest_functions:
         director_results_combined['perf_data'] = director_results_list
         return director_results_combined
 
-
     def get_director_info(self, director_id, start_date, end_date):
-        """Get Director level information and performance metrics for specified time frame,  hard coded to average numnbers.
+        """Get director performance information.
 
+        Get Director level information and performance metrics for 
+        specified time frame, hard coded to average numbers.
         :param director_id: Director ID
-        :return: Combined payload of all Director level information & performance metrics
+        :param start_date: start date
+        :param end_date: end date
+        :return: Combined payload of all Director level information 
+                 & performance metrics
         """
         # Create Director level target URIs
         director_info, sc = self.get_director(director_id)
@@ -1776,12 +1784,14 @@ class rest_functions:
             'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
-                'AvgTimePerSyscall', 'CompressedMBs', 'CompressedReadMBs', 'CompressedWriteMBs',
-                'CompressedReadReqs',
-                'CompressedReqs', 'CompressedWriteReqs', 'IOs', 'MBs', 'MBRead', 'MBWritten', 'PercentBusy',
-                'PercentBusyLogicalCore_0', 'PercentBusyLogicalCore_1', 'PercentNonIOBusy',
-                'PercentNonIOBusyLogicalCore_0', 'PercentNonIOBusyLogicalCore_1', 'PrefetchedTracks', 'ReadReqs',
-                'Reqs', 'SyscallCount', 'Syscall_RDF_DirCount', 'SyscallRemoteDirCount', 'WriteReqs'
+                'AvgTimePerSyscall', 'CompressedMBs', 'CompressedReadMBs',
+                'CompressedWriteMBs', 'CompressedReadReqs', 'CompressedReqs',
+                'CompressedWriteReqs', 'IOs', 'MBs', 'MBRead', 'MBWritten',
+                'PercentBusy', 'PercentBusyLogicalCore_0',
+                'PercentBusyLogicalCore_1', 'PercentNonIOBusyLogicalCore_1',
+                'PercentNonIOBusyLogicalCore_0', 'PercentNonIOBusy',
+                'PrefetchedTracks', 'ReadReqs', 'Reqs', 'SyscallCount',
+                'Syscall_RDF_DirCount', 'SyscallRemoteDirCount', 'WriteReqs'
             ],
             'startDate': self.start_date
         }
@@ -1793,14 +1803,18 @@ class rest_functions:
             'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
-                'AvgRDFSWriteResponseTime', 'AvgReadMissResponseTime', 'AvgWPDiscTime', 'AvgTimePerSyscall',
-                'DeviceWPEvents', 'HostMBs', 'HitReqs', 'HostIOs', 'MissReqs', 'AvgOptimizedReadMissSize',
-                'OptimizedMBReadMisses', 'OptimizedReadMisses', 'PercentBusy', 'PercentHitReqs', 'PercentReadReqs',
-                'PercentReadReqHit', 'PercentWriteReqs', 'PercentWriteReqHit', 'QueueDepthUtilization',
-                'HostIOLimitIOs', 'HostIOLimitMBs', 'ReadReqs', 'ReadHitReqs', 'ReadMissReqs', 'Reqs',
-                'ReadResponseTime', 'WriteResponseTime', 'SlotCollisions', 'SyscallCount', 'Syscall_RDF_DirCounts',
-                'SyscallRemoteDirCounts', 'SystemWPEvents', 'TotalReadCount', 'TotalWriteCount', 'WriteReqs',
-                'WriteHitReqs', 'WriteMissReqs'
+                'AvgRDFSWriteResponseTime', 'AvgReadMissResponseTime',
+                'AvgWPDiscTime', 'AvgTimePerSyscall', 'DeviceWPEvents',
+                'HostMBs', 'HitReqs', 'HostIOs', 'MissReqs',
+                'AvgOptimizedReadMissSize', 'OptimizedMBReadMisses',
+                'OptimizedReadMisses', 'WriteMissReqs', 'PercentHitReqs',
+                'PercentReadReqs', 'PercentReadReqHit', 'PercentWriteReqs',
+                'PercentWriteReqHit', 'QueueDepthUtilization', 'ReadMissReqs',
+                'HostIOLimitMBs', 'ReadReqs', 'ReadHitReqs', 'Reqs',
+                'ReadResponseTime', 'HostIOLimitIOs', 'WriteResponseTime',
+                'SlotCollisions', 'SyscallCount', 'Syscall_RDF_DirCounts',
+                'SyscallRemoteDirCounts', 'SystemWPEvents', 'TotalReadCount',
+                'TotalWriteCount', 'WriteReqs', 'WriteHitReqs', 'PercentBusy',
             ],
             'startDate': start_date
         }
@@ -1812,10 +1826,13 @@ class rest_functions:
             'endDate': end_date,
             'dataFormat': 'Average',
             'metrics': [
-                'AvgIOServiceTime', 'AvgIOSizeReceived', 'AvgIOSizeSent', 'AvgTimePerSyscall', 'CopyIOs', 'CopyMBs',
-                'IOs', 'MBSentAndReceived', 'MBRead', 'MBWritten', 'PercentBusy', 'Reqs', 'Rewrites', 'AsyncMBSent',
-                'AsyncWriteReqs', 'SyncMBSent', 'SyncWrites', 'SyscallCount', 'Syscall_RDF_DirCounts',
-                'SyscallRemoteDirCount', 'SyscallTime', 'TracksReceivedPerSec', 'TracksSentPerSec', 'WriteReqs'
+                'AvgIOServiceTime', 'AvgIOSizeReceived', 'AvgIOSizeSent',
+                'AvgTimePerSyscall', 'CopyIOs', 'CopyMBs', 'IOs', 'Reqs',
+                'MBSentAndReceived', 'MBRead', 'MBWritten', 'PercentBusy',
+                'Rewrites', 'AsyncMBSent', 'AsyncWriteReqs', 'SyncMBSent',
+                'SyncWrites', 'SyscallCount', 'Syscall_RDF_DirCounts',
+                'SyscallRemoteDirCount', 'SyscallTime', 'WriteReqs',
+                'TracksSentPerSec', 'TracksReceivedPerSec'
             ],
             'startDate': start_date
         }
@@ -1837,7 +1854,8 @@ class rest_functions:
             'endDate': self.end_date,
             'dataFormat': 'Average',
             'metrics': [
-                'PercentBusy', 'RandomReadMissMBs', 'RandomReadMisses', 'RandomWriteMissMBs', 'RandomWriteMisses'
+                'PercentBusy', 'RandomReadMissMBs', 'RandomReadMisses',
+                'RandomWriteMissMBs', 'RandomWriteMisses'
             ],
             'startDate': self.start_date
         }
@@ -1847,7 +1865,8 @@ class rest_functions:
             perf_metrics_payload = self.rest_client.rest_request(
                 be_director_uri, POST, request_object=be_director_payload)
             director_type = 'BE'
-        elif 'EF' in director_id or 'FA' in director_id or 'FE' in director_id or 'SE' in director_id:
+        elif ('EF' in director_id or 'FA' in director_id
+              or 'FE' in director_id or 'SE' in director_id):
             perf_metrics_payload = self.rest_client.rest_request(
                 fe_director_uri, POST, request_object=fe_director_payload)
             director_type = 'FE'
@@ -1872,7 +1891,7 @@ class rest_functions:
         combined_payload = dict()
         combined_payload['reporting_level'] = "Director"
         combined_payload['symmetrixId'] = self.array_id
-        combined_payload['director_id'] =director_id
+        combined_payload['director_id'] = director_id
         combined_payload['directorType'] = director_type
 
         # If no Director level information is retrieved...
@@ -1888,24 +1907,24 @@ class rest_functions:
         # If no Director level performance information is retrieved...
         if not perf_metrics_payload:
             combined_payload['perf_data'] = False
-            combined_payload['perf_msg'] = "No active Director performance data available"
+            combined_payload['perf_msg'] = ("No active Director "
+                                            "performance data available")
 
         else:
             # Performance metrics returned...
-            combined_payload['perf_data']=perf_metrics_payload[0]['resultList']['result']
-
-        # Rename all keys to common standardised format, dump to JSON
+            combined_payload['perf_data'] = (perf_metrics_payload
+                                             [0]['resultList']['result'])
 
         return combined_payload
 
     #########################
-    #Get Port Group Metrics #
+    # Get Port Group Metrics #
     #########################
 
-    def get_port_group_metrics(self, pg_id,start_date,end_date):
-        """
-        Get Port Group Performance Metrics
-        :param sg_id: 
+    def get_port_group_metrics(self, pg_id, start_date, end_date):
+        """Get Port Group Performance Metrics.
+
+        :param pg_id: 
         :param start_date: 
         :param end_date: 
         :return: 
@@ -1917,85 +1936,95 @@ class rest_functions:
             'dataFormat': 'Average',
             'portGroupId': pg_id,
             'metrics': [
-                'Reads','Writes','IOs','MBRead','MBWritten','MBs','AvgIOSize','PercentBusy'
-            ],
+                'Reads', 'Writes', 'IOs', 'MBRead', 'MBWritten', 'MBs',
+                'AvgIOSize', 'PercentBusy'],
             'startDate': start_date
         }
-        pg_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=pg_perf_payload)
+        pg_perf_data = self.rest_client.rest_request(
+            target_uri, POST, request_object=pg_perf_payload)
         pg_results_combined = dict()
         pg_results_combined['symmetrixID'] = self.array_id
         pg_results_combined['reporting_level'] = "PortGroup"
         pg_results_combined['pgname'] = pg_id
-        pg_results_combined['perf_data'] = pg_perf_data[0]['resultList']['result']
+        pg_results_combined['perf_data'] = (
+            pg_perf_data[0]['resultList']['result'])
         return pg_results_combined
 
-
     ########################
-    #Get host level Metrics#
+    # Get host level Metrics#
     ########################
 
     def get_host_metrics(self, host, start_date, end_date):
+        """Get host metrics.
+        
+        Get all avaliable host performance statiscics for specified 
+        time period return in JSON.
+        :param host: the host name
+        :param start_date: EPOCH Time
+        :param end_date: Epoch Time
+        :return: Formatted results
         """
-                Get all avaliable host performance statiscics for specified time period retrun in JSON
-                :param start_date: EPOCH Time
-                :param end_date: Epoch Time
-                :return: Formatted results
-                """
         target_uri = "/81/performance/Host/metrics"
         host_perf_payload = {
             'symmetrixId': self.array_id,
             'endDate': end_date,
-            'hostId':host,
+            'hostId': host,
             'dataFormat': 'Average',
-            'metrics': ['HostIOs','HostMBReads','HostMBWrites','Reads','ResponseTime','ReadResponseTime','WriteResponseTime',
-                        'SyscallCount','Writes','MBs'
-            ],
+            'metrics': ['HostIOs', 'HostMBReads', 'HostMBWrites', 'Reads',
+                        'ResponseTime', 'ReadResponseTime', 'Writes',
+                        'WriteResponseTime', 'SyscallCount', 'MBs'],
             'startDate': start_date
         }
-        host_perf_data = self.rest_client.rest_request(target_uri, POST, request_object=host_perf_payload)
+        host_perf_data = self.rest_client.rest_request(
+            target_uri, POST, request_object=host_perf_payload)
         host_results = dict()
         host_results['symmetrixID'] = self.array_id
         host_results['reporting_level'] = "Host"
-        host_results['HostID']=host
+        host_results['HostID'] = host
         host_results['perf_data'] = host_perf_data[0]['resultList']['result']
         return host_results
 
     # Alert Threshold Configuration
     def get_perf_threshold_categories(self):
-        '''
-        Written for Unisphere 84, if you are on ealier, append /83 to the endpoint 
-        :return: 
-        '''
+        """Get performance threshold categories.
+        
+        Written for Unisphere 84, if you are on ealier, append /83 to the 
+        endpoint.
+        :return: category_list
+        """
         target_uri = "/performance/threshold/categories"
         categories = self.rest_client.rest_request(target_uri, GET)
-        category_list=categories[0]["endpoint"]
+        category_list = categories[0]["endpoint"]
         return category_list
 
-
-    def get_perf_category_threshold_settings(self,category):
-        '''
-        will accept valid category, categories listed from get_threshold_categories 
-        written for Unisphere 84, if earlier version append /83/ to start of uri
+    def get_perf_category_threshold_settings(self, category):
+        """Get performance threshold category settings.
+        
+        Will accept valid category (categories listed from 
+        get_threshold_categories). 
+        Written for Unisphere 84, if earlier version append 
+        /83/ to start of uri
         :param category: 
-        :return: 
-        '''
-        target_uri = "/performance/threshold/list/%s" % (category)
+        :return: dict, sc
+        """
+        target_uri = "/performance/threshold/list/%s" % category
         return self.rest_client.rest_request(target_uri, GET)
 
-
     def get_kpi_metrics_config(self):
-        '''
-        Checks all Performance Alerting Thresholds and returns settings for KPI
-        Metrics.
+        """Get KPI metrics configurations.
+        
+        Checks all Performance Alerting Thresholds and returns 
+        settings for KPI Metrics.
         :return: list of KPI metrics organised by category with each setting.
-        '''''
+        """
         categories = self.get_perf_threshold_categories()
         perf_threshold_combined = dict()
         perf_threshold_list = []
-        # print (categories)
+        # print(categories)
         for category in categories:
-            current_perf_threshold = self.get_perf_category_threshold_settings(category)
-            #    print (category, current_perf_threshold)
+            current_perf_threshold = (
+                self.get_perf_category_threshold_settings(category))
+        #    print (category, current_perf_threshold)
             data = current_perf_threshold[0]["performanceThreshold"]
             metriclist = []
             for item in data:
@@ -2007,9 +2036,7 @@ class rest_functions:
             perf_threshold_list.append(perf_threshold)
         perf_threshold_combined['perf_threshold'] = perf_threshold_list
         print(perf_threshold_combined)
-        # TODO export this to CSV that can be easily modified. Also create set function to read CSV
+        # TODO export this to CSV that can be easily modified.
+        # Also create set function to read CSV
 
         return perf_threshold_combined
-
-
-

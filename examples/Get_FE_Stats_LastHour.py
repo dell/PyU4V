@@ -21,7 +21,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import argparse
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
 import time
 # This script will gather all performance statistics for all
 # Front End directors and print them.  For use in real world
@@ -34,7 +34,7 @@ import time
 ####################################
 # end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
 # start_date = (end_date - 3600000)  #Set start date to EPOCH Time 1 hours Earlier
-ru = rest_functions()
+ru = PyU4V.rest_functions()
 end_date = int(round(time.time() * 1000))
 start_date = (end_date - 3600000)
 

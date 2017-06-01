@@ -40,7 +40,7 @@ logging.config.fileConfig(CONF_FILE)
 
 class RestRequests:
 
-    def __init__(self, username, password, verify, cert, base_url):
+    def __init__(self, username, password, verify, base_url):
         self.username = username
         self.password = password
         self.verifySSL = verify
@@ -64,7 +64,7 @@ class RestRequests:
         :param method: The method (GET, POST, PUT, or DELETE)
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
-        :return: server response object (dict)
+        :return: server response object (dict), status code
         """
         if not self.session:
             self.establish_rest_session()

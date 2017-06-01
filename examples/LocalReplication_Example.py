@@ -28,14 +28,13 @@ for 24 hours.
 REST call create_new_snap for a storage group.
 """
 import argparse
-from PyU4V.rest_univmax import rest_functions
-ru = rest_functions()
+import PyU4V
 from time import strftime
 
 ######################################################################
 # Define and Parse CLI arguments and instantiate session for REST #
 ######################################################################
-
+ru = PyU4V.rest_functions()
 PARSER = argparse.ArgumentParser(
     description='Example implementation of a Python REST client '
                 'for EMC Unisphere Taking SnapVX Snapshots.')

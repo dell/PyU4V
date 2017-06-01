@@ -1,8 +1,10 @@
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
+
+ru = PyU4V.rest_functions(server_ip='10.60.141.75')
 
 # define variables
-ru = rest_functions()
 array_id = '000197800128'
+ru.set_array(array_id)
 
 sg_id = "test-1"
 sg_id2 = "test-2"
@@ -26,7 +28,7 @@ link_sg_name = "test_link_sg"
 
 def main():
 
-    #ru.set_array(array_id)
+    ru.set_array(array_id)
 
     ''' sg function calls '''
     print(ru.get_sg())
@@ -47,7 +49,7 @@ def main():
         PG, maskingviewId, 'new_host_name', sg_id2)
     print(ru.get_mv_connections(maskingviewId))
 
-main()
+# main()
 
 
 # Example function where a given SLO and workload are checked on the array
@@ -77,7 +79,9 @@ def verify_slo_workload(slo, workload, array):
                "%s" % (slo, validSLOs)))
     print(isValidSLO, isValidWorkload)
 
-verify_slo_workload(SLO, workload, array_id)
+# verify_slo_workload(SLO, workload, array_id)
+
+# print(ru.get_perf_threshold_categories())
 
 
 # example function to get the physical port identifiers from a portgroup
@@ -98,3 +102,12 @@ def get_port_identifier(portgroup):
         except KeyError:
             pass
     return identifier_list
+
+print(get_port_identifier('os-ciara-pg'))
+
+
+def headroom_check():
+    headroom_capacity_gb = ru.get_headroom("OLTP")[0]
+    print(headroom_capacity_gb)
+
+# headroom_check()

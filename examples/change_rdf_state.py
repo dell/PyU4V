@@ -32,7 +32,7 @@
 
 
 import argparse
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
 
 ####################################
 # Define and Parse CLI arguments   #
@@ -56,7 +56,8 @@ ARGS = PARSER.parse_args()
 
 sg_id = ARGS.sg
 action = ARGS.action
-ru = rest_functions()
+
+ru = PyU4V.rest_functions()
 
 currentstate = ru.get_srdf_state(sg_id)[0]["states"]  # Gets the Current SRDF State
 print(currentstate)

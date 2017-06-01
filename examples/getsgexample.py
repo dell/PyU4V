@@ -24,13 +24,13 @@
 This script is a very simple example to get a list of storage groups in the system, it will also get a count.
 Also introduced here is a way to parse the returned JSON payload from the get SG.
 """
-from PyU4V.rest_univmax import rest_functions
+import PyU4V
 
-ru = rest_functions()  # Sets up Session with Unisphere Server
+ru = PyU4V.rest_functions()  # Sets up Session with Unisphere Server
 
 
 sglist, sc = ru.get_sg()
-numbersg=len(sglist["storageGroupId"])
+numbersg = len(sglist["storageGroupId"])
 
 print("This is the full json dictionary returned from the REST Call %s  " % sglist)
 
