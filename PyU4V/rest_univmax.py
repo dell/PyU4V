@@ -1136,6 +1136,39 @@ class rest_functions:
         except KeyError:
             return None
 
+    def get_vol_effectivewwn_details_84(self, vollist):
+        """
+        Get volume details for a list of volumes usually obtained for get_vols_from_SG
+        using 84 endpoint as this gives wwn details
+        :param vollist: 
+        :return: Dictionary 
+        """
+        """Create CSV and set headings"""
+        with open(bytes('wwn_data.csv','UTF-8'), 'wt') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(['volumeId', 'effective_wwn','wwn','has_effective_wwn','storageGroupId'])
+        for volume in vollist:
+            target_uri = ("/84/sloprovisioning/symmetrix/%s/volume/%s"
+                      % (self.array_id, volume))
+            voldetails,rc =self.rest_client.rest_request(target_uri,GET)
+            volumeId=voldetails.get('volumeId')
+            effective_wwn=voldetails.get('effective_wwn')
+            wwn=voldetails.get('wwn')
+            has_effective_wwn=voldetails.get('has_effective_wwn')
+            storageGroupId=voldetails.get('storageGroupId')
+            with open(bytes('wwn_data.csv','UTF-8'), 'a') as csvfile:
+                eventwriter = csv.writer(csvfile,
+                                          delimiter=',',
+                                          quotechar='|',
+                                          quoting=csv.QUOTE_MINIMAL)
+                eventwriter.writerow([volumeId,effective_wwn,wwn,has_effective_wwn,storageGroupId])
+
+        return
+
     # workloadtype
 
     def get_workload(self):
@@ -1957,12 +1990,12 @@ class rest_functions:
         :return: list of KPI metrics organised by category with each setting.
         '''''
         categories = self.get_perf_threshold_categories()
-        perf_threshold_combined=dict()
-        perf_threshold_list=[]
-        #print (categories)
+        perf_threshold_combined = dict()
+        perf_threshold_list = []
+        # print (categories)
         for category in categories:
             current_perf_threshold = self.get_perf_category_threshold_settings(category)
-        #    print (category, current_perf_threshold)
+            #    print (category, current_perf_threshold)
             data = current_perf_threshold[0]["performanceThreshold"]
             metriclist = []
             for item in data:
@@ -1972,7 +2005,7 @@ class rest_functions:
                 "category": category,
                 "metric_settings": metriclist})
             perf_threshold_list.append(perf_threshold)
-        perf_threshold_combined['perf_threshold']= perf_threshold_list
+        perf_threshold_combined['perf_threshold'] = perf_threshold_list
         print(perf_threshold_combined)
         # TODO export this to CSV that can be easily modified. Also create set function to read CSV
 
