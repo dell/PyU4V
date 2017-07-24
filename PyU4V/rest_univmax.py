@@ -1086,7 +1086,7 @@ class rest_functions:
         """
         target_uri = "/sloprovisioning/symmetrix/%s/volume" % self.array_id
         if vol_id:
-            target_uri += vol_id
+            target_uri += '/' + vol_id
         if vol_id and filters:
             LOG.error("volID and filters are mutually exclusive.")
             raise Exception()
