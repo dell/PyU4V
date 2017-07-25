@@ -9,6 +9,9 @@ eg: https://10.0.0.1:8443/univmax/restapi/docs.
 This package supports Unisphere version 8.3 onwards, although the calls *should* work on 8.0, 8.1 and 8.2 also.
 We support VMAX3 and VMAX All-Flash (All Flash from 8.3 onwards).
 
+As Unisphere RESTAPI changed significantly for the 8.4 release, there is one client for 8.3 and older and one for 8.4
+and newer. Please see USAGE below.
+
 # INSTALLATION
 To give it a try, install the package using pip (pip install PyU4V). Copy the sample PyU4V.conf into your working
 directory, and add your server and array details to the top of the PyU4V.conf configuration file, under the [setup]
@@ -30,10 +33,14 @@ Verify can be left as is, or you can enable SSL verification by following the di
    verify=/path-to-file/irco3sd23vm08.lss.emc.com.pem OR pass the value in on initialization.
 
 # USAGE
-PyU4V could also be used as the backend for a script, or a menu etc. Just import the PyU4V package (import PyU4V),
-create an instance of rest_functions (e.g. "rf = PyU4V.rest_functions()"), and you're good to go.
+PyU4V could also be used as the backend for a script, or a menu etc.
+Just import the PyU4V package (import PyU4V), create an instance of rest_functions, and you're good to go.
+If you are using a Unisphere version which is 8.3 or older, create the instance as follows: "rf = PyU4V.rest_functions()"
+If you are using 8.4 or newer, create the instance using "rf = PyU4V.RestFunctions()". Please note that only RestFunctions
+will be updated with new functionality going forward.
 
-If you wish to query another array without changing the configuration file, call the set_array() function.
+If you wish to query another array without changing the configuration file, simply change the array_id attribute
+(e.g. rf.array_id = '0001978880000').
 
 # EXAMPLES
 There are a number of examples which can be run with minimal set-up. For details on how to run these,
@@ -44,10 +51,6 @@ This is still a work in progress. To be expected in the future:
 - Expansion of the rest_functions library (including new Unisphere versions - see below)
 - Increased exception handling and logging
 - Unittests
-
-# VERSION FUTURE
-The Rest API is undergoing substantial transformation for the 8.4 release. With that in mind, we will be creating a
-new 84 version when that is released.
 
 # CONTRIBUTION
 Please do! Create a fork of the project into your own repository. Make all your necessary changes and create a pull

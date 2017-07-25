@@ -57,13 +57,14 @@ class RestRequests:
         return session
 
     def rest_request(self, target_url, method,
-                     params=None, request_object=None):
+                     params=None, request_object=None, stream=True):
         """Sends a request (GET, POST, PUT, DELETE) to the target api.
 
         :param target_url: target url (string)
         :param method: The method (GET, POST, PUT, or DELETE)
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
+        :param stream: flag to indicate if the response should be streamed
         :return: server response object (dict), status code
         """
         if not self.session:
@@ -72,8 +73,8 @@ class RestRequests:
                {'self.base_url': self.base_url,
                 'target_url': target_url})
         try:
-            if method == 'DELETE':
-                # Delete response hangs forever unless stream=True
+            if method == 'DELETE' and stream is True:
+                # Pre 8.4, delete response hangs forever unless stream=True
                 return self.session.delete(url=url, stream=True)
             elif request_object:
                 response = self.session.request(

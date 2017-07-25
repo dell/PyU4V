@@ -1318,9 +1318,8 @@ class rest_functions:
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
                       "snapshot/%s/generation/%d"
                       % (self.array_id, sg_id, snap_name, gen_num))
-        snap_data = ({{"action": "Link",
-                       "link": {"linkStorageGroupName": link_sg_name},
-                       }})
+        snap_data = ({"action": "Link",
+                      "link": {"linkStorageGroupName": link_sg_name}})
         return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=snap_data)
 
