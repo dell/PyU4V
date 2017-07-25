@@ -59,8 +59,7 @@ class rest_functions:
         if not verify:
             verify = CFG.getboolean('setup', 'verify')
         base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
-        self.rest_client = RestRequests(username, password, verify,
-                                        base_url)
+        self.rest_client = RestRequests(username, password, verify, base_url)
 
     def set_array(self, array):
         """Change to a different array.
@@ -1086,7 +1085,7 @@ class rest_functions:
         """
         target_uri = "/sloprovisioning/symmetrix/%s/volume" % self.array_id
         if vol_id:
-            target_uri += '/' + vol_id
+            target_uri += '/%s' % vol_id
         if vol_id and filters:
             LOG.error("volID and filters are mutually exclusive.")
             raise Exception()
@@ -1443,10 +1442,8 @@ class rest_functions:
         """
         target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/rdf_group"
                       % (self.array_id, sg_id))
-        if establish:
-            establish_sg = "True"
-        else:
-            establish_sg = "False"
+
+        establish_sg = True if establish else False
         print(establish_sg)
         rdf_payload = ({"replicationMode": srdfmode,
                         "remoteSymmId": remote_sid,
@@ -1454,6 +1451,18 @@ class rest_functions:
                         "establish": establish_sg})
         print(rdf_payload)
         return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
+
+    def get_srdf_groups(self, rdfg=None):
+        """Get the SRDF groups
+
+        :param rdfg: Optional Parameter if SRDF group is known
+        :return:
+        """
+
+        target_uri = ("/84/replication/symmetrix/%s/rdf_group" % self.array_id)
+        if rdfg:
+            target_uri += '/%s' % rdfg
+        return self.rest_client.rest_request(target_uri, GET)
 
     def get_srdf_num(self, sg_id):
         """Get the SRDF number for a storage group.
@@ -1472,11 +1481,25 @@ class rest_functions:
                       % (self.array_id, sg_id))
         return self.rest_client.rest_request(target_uri, GET)
 
-    def get_srdf_state(self, sg_id, rdfg=None):
+    def get_srdf_pairs(self, rdfg, vol_id=None):
+        """Get the SRDF pairs and details about volumes
+
+        :param rdfg: SRDF group
+        :param vol_id: Optional Parameter volume id for detailed informations
+        :return:
+        """
+
+        target_uri = ("/84/replication/symmetrix/%s/rdf_group/%s" %
+                     (self.array_id, rdfg))
+
+        if vol_id:
+            target_uri += '/volume/%s' % vol_id
+        return self.rest_client.rest_request(target_uri, GET)
+
+    def get_srdf_state(self, sg_id):
         """Get the current SRDF state.
 
         :param sg_id: name of storage group
-        :param rdfg: Optional Parameter if SRDF group is known
         :return:
         """
         # Get a list of SRDF groups for storage group
@@ -1489,14 +1512,13 @@ class rest_functions:
 
         return self.rest_client.rest_request(target_uri, GET)
 
-    def change_srdf_state(self, sg_id, action, rdfg=None):
+    def change_srdf_state(self, sg_id, action):
         """Modify the state of an srdf.
 
         This may be a long running task depending on the size of the SRDF group,
         will switch to Async call when supported in 8.4 version of Unisphere.
         :param sg_id: name of storage group
         :param action
-        :param rdfg: Optional Parameter if SRDF group is known
         :return:
         """
         # Get a list of SRDF groups for storage group
