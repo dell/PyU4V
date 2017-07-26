@@ -2169,18 +2169,6 @@ class RestFunctions:
         return self.get_resource(self.array_id, REPLICATION, 'storagegroup',
                                  resource_name=res_name)
 
-    def create_sg_snapshot_83(self, sg_id, snap_name):
-        """Creates a new snapshot of a specified sg
-
-        :param sg_id: the name of the storage group
-        :param snap_name: the name of the snapshot
-        :return: dict, status_code
-        """
-        resource_type = "/storagegroup/%s/snapshot" % sg_id
-        payload = ({"snapshotName": snap_name,
-                    "daysToLive": 1})
-        return self.create_resource(
-            self.array_id, REPLICATION, resource_type, payload, '83')
 
     def create_new_gen_snap(self, sg_id, snap_name):
         """Establish a new generation of a SnapVX snapshot for a source SG
@@ -2248,19 +2236,6 @@ class RestFunctions:
                               "below list \n")
         snapshot_id = (snaplist[0]["name"][int(snapselection)])
         return snapshot_id
-
-    def link_gen_snapsthot_83(self, sg_id, snap_name,
-                              generation, link_sg_name):
-        """Creates a new link between a source snapshot and a target group.
-
-        :param sg_id: Source storage group name
-        :param snap_name: name of the snapshot
-        :param generation: generation number of a snapshot (int)
-        :param link_sg_name:  the target storage group name
-        :return: dict, status_code
-        """
-        return self.modify_storagegroup_snap(
-            sg_id, link_sg_name, snap_name, link=True, gen_num=generation)
 
     def delete_sg_snapshot(self, sg_id, snap_name, gen_num=0):
         """Delete the snapshot of a storagegroup.
@@ -2909,7 +2884,7 @@ class RestFunctions:
         :param end_date: Epoch Time
         :return: Formatted results
         """
-        target_uri = "/81/performance/Host/metrics"
+        target_uri = "/performance/Host/metrics"
         host_perf_payload = {
             'symmetrixId': self.array_id,
             'endDate': end_date,
