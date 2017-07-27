@@ -2105,8 +2105,9 @@ class RestFunctions:
         :param restore: Flag to indicate action = Restore
         :param new_name: the new name for the snapshot
         :param gen_num: the generation number
+        :param async: flag to indicate if call should be async
         """
-        payload = ''
+        payload = {}
         if link:
             payload = {"link": {"linkStorageGroupName": target_sg_id,
                                 "copy": "true"},
@@ -2123,6 +2124,9 @@ class RestFunctions:
                         "action": "Rename"})
         if async :
             payload.update({"executionOption" : ASYNCHRONOUS})
+
+        if async:
+            payload.update({"executionOption": ASYNCHRONOUS})
 
         resource_name = ('%(sg_name)s/snapshot/%(snap_id)s/generation/'
                          '%(gen_num)d'
@@ -2348,7 +2352,8 @@ class RestFunctions:
                 number = None
         return number
 
-    def srdf_protect_sg(self, sg_id, remote_sid, srdfmode, establish=None):
+    def srdf_protect_sg(self, sg_id, remote_sid, srdfmode, establish=None,
+                        async=False):
         """SRDF protect a storage group.
 
         :param sg_id: Unique string up to 32 Characters
@@ -2356,14 +2361,18 @@ class RestFunctions:
         :param srdfmode: String, values can be Active, AdaptiveCopyDisk,
                          Synchronous, Asynchronous
         :param establish: default is none. Bool
+        :param async: Flag to indicate if call should be async
+                      (NOT to be confused with the SRDF mode)
         :return: message and status Type JSON
         """
         res_type = "/storagegroup/%s/rdf_group" % sg_id
         establish_sg = "True" if establish else "False"
-        rdf_payload = ({"replicationMode": srdfmode,
-                        "remoteSymmId": remote_sid,
-                        "remoteStorageGroupName": sg_id,
-                        "establish": establish_sg})
+        rdf_payload = {"replicationMode": srdfmode,
+                       "remoteSymmId": remote_sid,
+                       "remoteStorageGroupName": sg_id,
+                       "establish": establish_sg}
+        if async:
+            rdf_payload.update({'executionOption': ASYNCHRONOUS})
         return self.create_resource(
             self.array_id, REPLICATION, res_type, rdf_payload)
 
