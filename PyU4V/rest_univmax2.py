@@ -334,7 +334,7 @@ class RestFunctions:
         version = self.U4V_VERSION
         target_uri = self._build_uri(array, category, resource_type,
                                      resource_name, version=version)
-        status_code, message = self.request(target_uri, DELETE,
+        message, status_code = self.request(target_uri, DELETE,
                                             request_object=payload,
                                             params=params, stream=False)
         operation = 'delete %(res)s resource' % {'res': resource_type}
