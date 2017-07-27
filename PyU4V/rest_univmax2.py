@@ -90,18 +90,6 @@ class RestFunctions:
         self.retries = retries
         self.U4V_VERSION = u4v_version
 
-    @property
-    def array_id(self):
-        return self.array_id
-
-    @array_id.setter
-    def array_id(self, array):
-        """Change to a different array.
-
-        :param array: The VMAX serial number
-        """
-        self.array_id = array
-
     def close_session(self):
         """Close the current rest session
         """
