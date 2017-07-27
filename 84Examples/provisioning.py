@@ -66,10 +66,9 @@ def provision_storage():
         #showing how async functions can be worked in.
         ru.wait_for_job("", sg_rc, sg_job)
         print("Storage Group Created Return Code %s" % sg_rc)
-        print("Server Message %s" % sg_job)
         host_job, host_rc = ru.create_host(ig_id, initiator_list)
         if host_rc < 300:
-            print("Host Created %s" % host_rc)
+            print("Host Created Return Code %s" % host_rc)
             pg_job, pg_rc = ru.create_portgroup_from_file(port_file, pg_id)
             if pg_rc < 300:
                 print("Port Group Created Return Code %s" % pg_rc)
