@@ -1115,13 +1115,11 @@ class RestFunctions:
         :param port_id: the port id
         :return: dict, status_code
         """
-        target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
-                      % self.array_id)
-        pg_payload = ({"portGroupId": portgroup_id,
+        payload = ({"portGroupId": portgroup_id,
                        "symmetrixPortKey": [{"directorId": director_id,
                                              "portId": port_id}]})
-        return self.rest_client.rest_request(target_uri, POST,
-                                             request_object=pg_payload)
+        return self.create_resource(
+            self.array_id, SLOPROVISIONING, 'portgroup', payload)
 
     def create_multiport_portgroup(self, portgroup_id, ports):
         """Create a new portgroup.
@@ -1131,12 +1129,11 @@ class RestFunctions:
                                             "portId": port_id}
         :return: dict, status_code
         """
-        target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
-                      % self.array_id)
-        pg_payload = ({"portGroupId": portgroup_id,
+        payload = ({"portGroupId": portgroup_id,
                        "symmetrixPortKey": ports})
-        return self.rest_client.rest_request(target_uri, POST,
-                                             request_object=pg_payload)
+        return self.create_resource(
+            self.array_id, SLOPROVISIONING, 'portgroup', payload)
+
 
     def create_portgroup_from_file(self, file_name, portgroup_id):
         """Given a file with director:port pairs, create a portgroup.

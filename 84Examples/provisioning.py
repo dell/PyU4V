@@ -58,35 +58,37 @@ initiator_list = ru.create_list_from_file(hba_file)
 
 
 def provision_storage():
-    sg_job,sg_rc = ru.create_non_empty_storagegroup("SRP_1",sg_id,"Diamond",
-                                                    "OLTP",1,
-                                                    requested_capacity, "GB"
-                                                    , True)
-    if sg_rc < 300:
-        #showing how async functions can be worked in.
-        ru.wait_for_job("", sg_rc, sg_job)
-        print("Storage Group Created Return Code %s" % sg_rc)
-        print("Server Message %s" % sg_job)
-        host_job, host_rc = ru.create_host(ig_id, initiator_list)
-        if host_rc < 300:
-            print("Host Created %s" % host_rc)
-            pg_job, pg_rc = ru.create_portgroup_from_file(port_file, pg_id)
-            if pg_rc < 300:
-                print("Port Group Created Return Code %s" % pg_rc)
-                mv_job, mv_rc = ru.create_masking_view_existing_components(
-                     pg_id, mv_id, sg_id, ig_id)
-                if mv_rc < 300:
-                    print("Masking View Created Return Code %s" % mv_rc)
+    if headroom_check():
+        sg_job,sg_rc = ru.create_non_empty_storagegroup("SRP_1",sg_id,"Diamond",
+                                                        "OLTP",1,
+                                                        requested_capacity, "GB"
+                                                        , True)
+        if sg_rc < 300:
+            #showing how async functions can be worked in.
+            ru.wait_for_job("", sg_rc, sg_job)
+            print("Storage Group Created Return Code %s" % sg_rc)
+            host_job, host_rc = ru.create_host(ig_id, initiator_list)
+            if host_rc < 300:
+                print("Host Created Return Code %s" % host_rc)
+                pg_job, pg_rc = ru.create_portgroup_from_file(port_file, pg_id)
+                if pg_rc < 300:
+                    print("Port Group Created Return Code %s" % pg_rc)
+                    mv_job, mv_rc = ru.create_masking_view_existing_components(
+                         pg_id, mv_id, sg_id, ig_id)
+                    if mv_rc < 300:
+                        print("Masking View Created Return Code %s" % mv_rc)
+                    else:
+                        print ('Error Creating Masking view %s' % mv_job[
+                            'message'])
                 else:
-                    print ('Error Creating Masking view %s' % mv_job[
-                        'message'])
+                    print("Error Creating Port Group %s" % pg_job['message'])
             else:
-                print("Error Creating Port Group %s" % pg_job['message'])
-        else:
-            print("Error Creating Host %s" % host_job['message'])
+                print("Error Creating Host %s" % host_job['message'])
 
+        else:
+            print("Error Creating %s" % sg_job['message'])
     else:
-        print("Error Creating %s" % sg_job['message'])
+        print("Headroom Check Failed, Check array Capacity Usage")
 
 def headroom_check():
     headroom_cp = ru.get_headroom("OLTP")[0]["headroom"][0]["headroomCapacity"]
