@@ -2122,8 +2122,6 @@ class RestFunctions:
         elif new_name:
             payload = ({"rename": {"newSnapshotName": new_name},
                         "action": "Rename"})
-        if async :
-            payload.update({"executionOption" : ASYNCHRONOUS})
 
         if async:
             payload.update({"executionOption": ASYNCHRONOUS})
