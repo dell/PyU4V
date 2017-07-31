@@ -2096,7 +2096,7 @@ class RestFunctions:
             async=False):
         """Modify a storage group snapshot.
 
-        Please note that only one paramter can be modiffied at a time.
+        Please note that only one parameter can be modiffied at a time.
         :param source_sg_id: the source sg id
         :param target_sg_id: the target sg id (Can be None)
         :param snap_name: the snapshot name
@@ -2122,6 +2122,8 @@ class RestFunctions:
         elif new_name:
             payload = ({"rename": {"newSnapshotName": new_name},
                         "action": "Rename"})
+        if async :
+            payload.update({"executionOption" : ASYNCHRONOUS})
 
         if async:
             payload.update({"executionOption": ASYNCHRONOUS})
@@ -2198,7 +2200,8 @@ class RestFunctions:
             self.array_id, sg_id, None, snap_name,
             new_name=new_name, gen_num=gen_num)
 
-    def link_gen_snapshot(self, sg_id, snap_name, gen_num, link_sg_name):
+    def link_gen_snapshot(self, sg_id, snap_name, gen_num, link_sg_name,
+                          async=False):
         """Link a snapshot to another storage group.
 
         Target storage group will be created if it does not exist.
@@ -2209,7 +2212,8 @@ class RestFunctions:
         :return: dict, status_code
         """
         return self.modify_storagegroup_snap(sg_id, link_sg_name, snap_name,
-                                             link=True, gen_num=gen_num)
+                                             link=True, gen_num=gen_num,
+                                             async=async)
 
     def set_snapshot_id(self, sgname):
         """Parse a list of snaps for storage group and select from menu.
@@ -2219,12 +2223,12 @@ class RestFunctions:
         snaplist = self.get_snap_sg(sgname)
         print(snaplist)
         i = 0
-        for elem in snaplist[0]["name"]:
+        for elem in snaplist[0]["snapVXSnapshots"]:
             print(i, " ", elem, "\n")
             i = int(i + 1)
         snapselection = input("Choose the snapshot you want from the "
                               "below list \n")
-        snapshot_id = (snaplist[0]["name"][int(snapselection)])
+        snapshot_id = (snaplist[0]["snapVXSnapshots"][int(snapselection)])
         return snapshot_id
 
     def delete_sg_snapshot(self, sg_id, snap_name, gen_num=0):
