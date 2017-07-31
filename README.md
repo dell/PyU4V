@@ -22,15 +22,19 @@ Verify can be left as is, or you can enable SSL verification by following the di
 
 # SSL CONFIGURATION
 1. Get the CA certificate of the Unisphere server.
-	$ openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.lss.emc.com.pem
-    (This pulls the CA cert file and saves it as server_hostname.lss.emc.com.pem e.g. esxi01vm01.lss.emc.com.pem)
-2.	Copy the pem file to the system certificate directory
-	$ sudo cp {server_hostname}.lss.emc.com.pem /usr/share/ca-certificates/{server_hostname}.lss.emc.com.lss.emc.com.crt
-3. 	Update CA certificate database with the following commands
-	$ sudo dpkg-reconfigure ca-certificates (Ensure the new cert file is highlighted)
-	$ sudo update-ca-certificates
-4. In the conf file insert the following:
-   verify=/path-to-file/irco3sd23vm08.lss.emc.com.pem OR pass the value in on initialization.
+	$ openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
+    (This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
+2.	Either (a) add the certificate to a ca-certificates bundle, OR (b) add the path to the conf file:
+    a.
+        - Copy the pem file to the system certificate directory:
+	      $ sudo cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt
+        - Update CA certificate database with the following commands
+	      $ sudo dpkg-reconfigure ca-certificates (Ensure the new cert file is highlighted)
+	      $ sudo update-ca-certificates
+	    - In the conf file ensure "verify=True" OR pass the value in on initialization
+	b.
+        In the conf file insert the following:
+        verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.
 
 # USAGE
 PyU4V could also be used as the backend for a script, or a menu etc.
