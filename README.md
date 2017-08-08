@@ -9,6 +9,9 @@ eg: https://10.0.0.1:8443/univmax/restapi/docs.
 This package supports Unisphere version 8.3 onwards, although the calls *should* work on 8.0, 8.1 and 8.2 also.
 We support VMAX3 and VMAX All-Flash (All Flash from 8.3 onwards).
 
+As Unisphere RESTAPI changed significantly for the 8.4 release, there is one client for 8.3 and older and one for 8.4
+and newer. Please see USAGE below.
+
 # INSTALLATION
 To give it a try, install the package using pip (pip install PyU4V). Copy the sample PyU4V.conf into your working
 directory, and add your server and array details to the top of the PyU4V.conf configuration file, under the [setup]
@@ -19,21 +22,29 @@ Verify can be left as is, or you can enable SSL verification by following the di
 
 # SSL CONFIGURATION
 1. Get the CA certificate of the Unisphere server.
-	$ openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.lss.emc.com.pem
-    (This pulls the CA cert file and saves it as server_hostname.lss.emc.com.pem e.g. esxi01vm01.lss.emc.com.pem)
-2.	Copy the pem file to the system certificate directory
-	$ sudo cp {server_hostname}.lss.emc.com.pem /usr/share/ca-certificates/{server_hostname}.lss.emc.com.lss.emc.com.crt
-3. 	Update CA certificate database with the following commands
-	$ sudo dpkg-reconfigure ca-certificates (Ensure the new cert file is highlighted)
-	$ sudo update-ca-certificates
-4. In the conf file insert the following:
-   verify=/path-to-file/irco3sd23vm08.lss.emc.com.pem OR pass the value in on initialization.
+	$ openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
+    (This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
+2.	Either (a) add the certificate to a ca-certificates bundle, OR (b) add the path to the conf file:
+    a.
+        - Copy the pem file to the system certificate directory:
+	      $ sudo cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt
+        - Update CA certificate database with the following commands
+	      $ sudo dpkg-reconfigure ca-certificates (Ensure the new cert file is highlighted)
+	      $ sudo update-ca-certificates
+	    - In the conf file ensure "verify=True" OR pass the value in on initialization
+	b.
+        In the conf file insert the following:
+        verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.
 
 # USAGE
-PyU4V could also be used as the backend for a script, or a menu etc. Just import the PyU4V package (import PyU4V),
-create an instance of rest_functions (e.g. "rf = PyU4V.rest_functions()"), and you're good to go.
+PyU4V could also be used as the backend for a script, or a menu etc.
+Just import the PyU4V package (import PyU4V), create an instance of rest_functions, and you're good to go.
+If you are using a Unisphere version which is 8.3 or older, create the instance as follows: "rf = PyU4V.rest_functions()"
+If you are using 8.4 or newer, create the instance using "rf = PyU4V.RestFunctions()". Please note that only RestFunctions
+will be updated with new functionality going forward.
 
-If you wish to query another array without changing the configuration file, call the set_array() function.
+If you wish to query another array without changing the configuration file, simply change the array_id attribute
+(e.g. rf.array_id = '0001978880000').
 
 # EXAMPLES
 There are a number of examples which can be run with minimal set-up. For details on how to run these,
@@ -44,10 +55,6 @@ This is still a work in progress. To be expected in the future:
 - Expansion of the rest_functions library (including new Unisphere versions - see below)
 - Increased exception handling and logging
 - Unittests
-
-# VERSION FUTURE
-The Rest API is undergoing substantial transformation for the 8.4 release. With that in mind, we will be creating a
-new 84 version when that is released.
 
 # CONTRIBUTION
 Please do! Create a fork of the project into your own repository. Make all your necessary changes and create a pull
