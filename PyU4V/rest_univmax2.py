@@ -1316,7 +1316,7 @@ class RestFunctions:
         is_compression_capable = False
         target_uri = ("/%s/sloprovisioning/symmetrix?compressionCapable=true"
                       % self.U4V_VERSION)
-        status_code, message = self.request(target_uri, GET)
+        message, status_code = self.request(target_uri, GET)
         self.check_status_code_success(
             "Check if compression enabled", status_code, message)
         if message.get('symmetrixId'):
@@ -2122,8 +2122,6 @@ class RestFunctions:
         elif new_name:
             payload = ({"rename": {"newSnapshotName": new_name},
                         "action": "Rename"})
-        if async :
-            payload.update({"executionOption" : ASYNCHRONOUS})
 
         if async:
             payload.update({"executionOption": ASYNCHRONOUS})
