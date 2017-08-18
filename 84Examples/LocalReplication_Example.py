@@ -35,7 +35,7 @@ from time import strftime
 ######################################################################
 # Define and Parse CLI arguments and instantiate session for REST #
 ######################################################################
-ru = PyU4V.rest_functions()
+
 PARSER = argparse.ArgumentParser(
     description='Example implementation of a Python REST client '
                 'for EMC Unisphere Taking SnapVX Snapshots.')
@@ -46,7 +46,8 @@ RFLAGS.add_argument(
 ARGS = PARSER.parse_args()
 
 # Variables are initiated to appent REST to the Storage Group and Initiator
-# SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
+# SG and IG will append _SG or _IG to the name passed by the user.  e.g.
+# REST_Oracle_IG and REST_ORACLE_IG
 sg_id = ARGS.sg
 
 def main():
