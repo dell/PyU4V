@@ -53,7 +53,7 @@ sg_id = ARGS.sg
 def main():
     # assign name to snap with date and time appended to name
     snap_name = "REST_Snap_" + strftime("%d%m%Y%H%M%S")
-    ru.create_sg_snapshot(sg_id, snap_name)
+    ru.create_storagegroup_snap(sg_id, snap_name)
     print ("Check the Gui now or REST Client to see if snapshot %s "
            "was created for Storge Group %s" % (snap_name, sg_id))
 

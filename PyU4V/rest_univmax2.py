@@ -48,6 +48,12 @@ DELETE = 'DELETE'
 # U4V constants
 REPLICATION = 'replication'
 SLOPROVISIONING = 'sloprovisioning'
+WLP = 'wlp'
+MIGRATION = 'migration'
+DSA = 'dsa'
+SYSTEM = 'system'
+VVOL = 'vvol'
+PROVISIONING = 'provisioning'
 STATUS_200 = 200
 STATUS_201 = 201
 STATUS_202 = 202
@@ -219,7 +225,7 @@ class RestFunctions:
     def _build_uri(self, array, category, resource_type,
                    resource_name=None, version=None):
         """Build the target url.
-
+.
         :param array: the array serial number
         :param category: the resource category e.g. sloprovisioning
         :param resource_type: the resource type e.g. maskingview
@@ -413,6 +419,7 @@ class RestFunctions:
         if array_id:
             target_uri += "/%s" % array_id
         return self._get_request(target_uri, 'symmetrix')
+
 
     def get_array_jobs(self, job_id=None, filters=None):
         """Call queries for a list of Job ids for the specified symmetrix.
@@ -904,7 +911,7 @@ class RestFunctions:
         :raises: VolumeBackendAPIException
         """
         element = None
-        masking_view_details, _ = self.get_masking_view(maskingview_name)
+        masking_view_details, sc = self.get_masking_view(maskingview_name)
         if masking_view_details:
             if portgroup:
                 element = masking_view_details['portGroupId']
@@ -966,8 +973,7 @@ class RestFunctions:
         :param masking_view_id: the name of the masking view
         :return: host ID
         """
-        return self.get_element_from_masking_view(
-            self.array_id, masking_view_id, host=True)
+        return self.get_element_from_masking_view(masking_view_id,host=True)
 
     def get_sg_from_mv(self, masking_view_id):
         """Given a masking view, get the associated storage group.
@@ -2075,16 +2081,20 @@ class RestFunctions:
             array, REPLICATION, 'storagegroup',
             resource_name=storage_group_name)
 
-    def create_storagegroup_snap(self, sg_name, snap_name, ttl=None):
+    def create_storagegroup_snap(self, sg_name, snap_name, ttl=None,
+                                 hours=None):
         """Create a snapVx snapshot of a storage group.
 
         :param sg_name: the source group name
         :param snap_name: the name of the snapshot
         :param ttl: ttl in days, if any - int
+        :param hours: Boolean, if set will specify TTL value is hours not days
         """
         payload = {"snapshotName": snap_name}
         if ttl:
             payload.update({"timeToLive": ttl})
+        if hours and ttl:
+            payload.update({"timeInHours": "True"})
         resource_type = ('storagegroup/%(sg_name)s/snapshot'
                          % {'sg_name': sg_name})
         return self.create_resource(
