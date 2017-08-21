@@ -31,7 +31,7 @@ import time
 
 end_date = int(round(time.time()) * 1000)
 start_date = (end_date - 3600000)
-sg_id = "BPCE"
+sg_id = "YOURSG"
 
 
 def get_my_kpi():
