@@ -36,8 +36,6 @@ ru = RestFunctions(u4v_version='84')
 
 end_date = int(round(time.time()) * 1000)
 start_date = (end_date - 3600000)
-sg_id = "BPCE"
-
 
 def get_array_kpi():
     array_metrics = ru.get_array_metrics(start_date, end_date)
@@ -71,9 +69,6 @@ def main():
     plt.xlabel('Time')
     plt.title('Host IOs last Hour')
     plt.show()
-
-    # plt.plot(epochtimelist,hostiolist)
-
 
 
 main()
