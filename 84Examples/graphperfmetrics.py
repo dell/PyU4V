@@ -47,14 +47,15 @@ def main():
     perfdatalist=array_metrics.get('perf_data')
     hostiolist = []
     dtstimelist = []
-
+    readresponselist =[]
+    print (perfdatalist)
     for perf_host in perfdatalist:
         hostiolist.append(perf_host.get('HostIOs'))
+        readresponselist.append(perf_host.get('ReadResponseTime'))
         epochtime=(perf_host.get ('timestamp'))
         dtstime = round(epochtime/1000)
         dtstimelist.append(dtstime)
-    # print (hostiolist)
-    # print(dtstimelist)
+
     dateconv=np.vectorize(dt.datetime.fromtimestamp)
     convtimelist =(dateconv(dtstimelist))
     # print(convtimelist)
@@ -63,11 +64,13 @@ def main():
     xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
     ax.xaxis.set_major_formatter(xfmt)
     plt.plot_date(convtimelist,hostiolist,'-')
-    plt.subplots_adjust(bottom=0.2)
+    plt.plot_date(convtimelist, readresponselist, '-')
+    plt.legend(['HostIOs', 'ReadResponseTime'], loc='upper left')
+    plt.subplots_adjust(bottom=0.1)
     plt.xticks(rotation=25)
     plt.ylabel('Host IOs')
     plt.xlabel('Time')
-    plt.title('Host IOs last Hour')
+    plt.title('Host IOs and Read Response times over the last Hour')
     plt.show()
 
 
