@@ -634,7 +634,7 @@ class RestFunctions:
         if async:
             new_ig_data.update({"executionOption": ASYNCHRONOUS})
         return self.create_resource(self.array_id, SLOPROVISIONING,
-                                    'host', new_ig_data)
+                                    'hostgroup', new_ig_data)
 
     def modify_hostgroup(self, hostgroup_id, host_flag_dict=None,
                          remove_host_list=None, add_host_list=None,
@@ -1421,8 +1421,8 @@ class RestFunctions:
         :return: dict, status_code
         """
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'host', edit_sg_data,
-            version='', resource_name=sg_id)
+            self.array_id, SLOPROVISIONING, 'storagegroup', edit_sg_data,
+            version=None, resource_name=sg_id)
 
     def add_existing_vol_to_sg(self, sg_id, vol_id, async=False):
         """Expand an existing storage group by adding new volumes.
