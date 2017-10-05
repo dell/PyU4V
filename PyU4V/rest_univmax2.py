@@ -20,24 +20,17 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import csv
+import logging
 import time
 
-try:
-    import ConfigParser as Config
-except ImportError:
-    import configparser as Config
-import logging.config
 import six
 
 from PyU4V.rest_requests import RestRequests
+from PyU4V.utils import config_handler
 from PyU4V.utils import exception
 
-# register configuration file
-LOG = logging.getLogger('PyU4V')
-CONF_FILE = 'PyU4V.conf'
-logging.config.fileConfig(CONF_FILE)
-CFG = Config.ConfigParser()
-CFG.read(CONF_FILE)
+logger = logging.getLogger(__name__)
+LOG, CFG = config_handler.set_logger_and_config(logger)
 
 # HTTP constants
 GET = 'GET'
@@ -69,24 +62,35 @@ ASYNCHRONOUS = "ASYNCHRONOUS"
 
 class RestFunctions:
     def __init__(self, username=None, password=None, server_ip=None,
-                 port=None, verify=False, u4v_version='84',
-                 interval=5, retries=200):
+                 port=None, verify=None, u4v_version='84',
+                 interval=5, retries=200, array_id=None):
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
-        self.array_id = CFG.get('setup', 'array')
-        if not username:
-            username = CFG.get('setup', 'username')
-        if not password:
-            password = CFG.get('setup', 'password')
-        if not server_ip:
-            server_ip = CFG.get('setup', 'server_ip')
-        if not port:
-            port = CFG.get('setup', 'port')
-        if not verify:
-            verify = CFG.get('setup', 'verify')
-            if verify.lower() == 'false':
-                verify = False
-            elif verify.lower() == 'true':
+        self.array_id = array_id
+        if not self.array_id:
+            try:
+                self.array_id = CFG.get('setup', 'array')
+            except Exception:
+                LOG.warning("No array id specified. Please set "
+                            "array ID using the 'set_array_id(array_id)' "
+                            "function.")
+        if CFG is not None:
+            if not username:
+                username = CFG.get('setup', 'username')
+            if not password:
+                password = CFG.get('setup', 'password')
+            if not server_ip:
+                server_ip = CFG.get('setup', 'server_ip')
+            if not port:
+                port = CFG.get('setup', 'port')
+        if verify is None:
+            try:
+                verify = CFG.get('setup', 'verify')
+                if verify.lower() == 'false':
+                    verify = False
+                elif verify.lower() == 'true':
+                    verify = True
+            except Exception:
                 verify = True
         base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
         self.rest_client = RestRequests(username, password, verify,
@@ -100,6 +104,20 @@ class RestFunctions:
         """Close the current rest session
         """
         self.rest_client.close_session()
+
+    def set_requests_timeout(self, timeout_value):
+        """Set the requests timeout.
+
+        :param timeout_value: the new timeout value - int
+        """
+        self.rest_client.timeout = timeout_value
+
+    def set_array_id(self, array_id):
+        """Set the array serial number.
+
+        :param array_id: the array serial number
+        """
+        self.array_id = array_id
 
     def wait_for_job_complete(self, job):
         """Given the job wait for it to complete.
@@ -419,7 +437,6 @@ class RestFunctions:
         if array_id:
             target_uri += "/%s" % array_id
         return self._get_request(target_uri, 'symmetrix')
-
 
     def get_array_jobs(self, job_id=None, filters=None):
         """Call queries for a list of Job ids for the specified symmetrix.
@@ -973,7 +990,7 @@ class RestFunctions:
         :param masking_view_id: the name of the masking view
         :return: host ID
         """
-        return self.get_element_from_masking_view(masking_view_id,host=True)
+        return self.get_element_from_masking_view(masking_view_id, host=True)
 
     def get_sg_from_mv(self, masking_view_id):
         """Given a masking view, get the associated storage group.
@@ -1122,8 +1139,8 @@ class RestFunctions:
         :return: dict, status_code
         """
         payload = ({"portGroupId": portgroup_id,
-                       "symmetrixPortKey": [{"directorId": director_id,
-                                             "portId": port_id}]})
+                    "symmetrixPortKey": [{"directorId": director_id,
+                                          "portId": port_id}]})
         return self.create_resource(
             self.array_id, SLOPROVISIONING, 'portgroup', payload)
 
@@ -1136,10 +1153,9 @@ class RestFunctions:
         :return: dict, status_code
         """
         payload = ({"portGroupId": portgroup_id,
-                       "symmetrixPortKey": ports})
+                    "symmetrixPortKey": ports})
         return self.create_resource(
             self.array_id, SLOPROVISIONING, 'portgroup', payload)
-
 
     def create_portgroup_from_file(self, file_name, portgroup_id):
         """Given a file with director:port pairs, create a portgroup.
@@ -2169,7 +2185,6 @@ class RestFunctions:
         return self.get_resource(self.array_id, REPLICATION, 'storagegroup',
                                  resource_name=res_name)
 
-
     def create_new_gen_snap(self, sg_id, snap_name):
         """Establish a new generation of a SnapVX snapshot for a source SG
 
@@ -2217,6 +2232,7 @@ class RestFunctions:
         :param snap_name: name of the snapshot
         :param gen_num: generation number of a snapshot (int)
         :param link_sg_name:  the target storage group name
+        :param async: flag to indicate if call is async
         :return: dict, status_code
         """
         return self.modify_storagegroup_snap(sg_id, link_sg_name, snap_name,

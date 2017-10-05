@@ -9,7 +9,7 @@ setup(name='PyU4V',
                    "using the ReST API of Dell EMC's UniSphere for VMAX."),
       license='MIT',
       packages=['PyU4V','PyU4V.utils'],
-      install_requires=['requests', 'six'],
+      install_requires=['requests', 'six', 'urllib3'],
       include_package_data=True,
       classifiers=[
           'Development Status :: 3 - Alpha',

@@ -1,16 +1,9 @@
-try:
-    import ConfigParser as Config
-except ImportError:
-    import configparser as Config
-import logging.config
 import six
 
 # register configuration file
-LOG = logging.getLogger('PyU4V')
-CONF_FILE = 'PyU4V.conf'
-logging.config.fileConfig(CONF_FILE)
-CFG = Config.ConfigParser()
-CFG.read(CONF_FILE)
+from PyU4V.utils import config_handler
+
+LOG, CFG = config_handler.get_logger()
 
 
 class PyU4VException(Exception):
