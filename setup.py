@@ -4,7 +4,7 @@ setup(name='PyU4V',
       version='2.0.0',
       url='https://github.com/ciarams87/PyU4V/',
       author='Dell Inc. or its subsidiaries',
-      author_email='',
+      author_email='ciarastacke@hotmail.com',
       description=("A library showing some of the functionality possible "
                    "using the ReST API of Dell EMC's UniSphere for VMAX."),
       license='MIT',
