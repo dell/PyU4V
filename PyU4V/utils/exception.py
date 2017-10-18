@@ -1,9 +1,11 @@
+import logging
 import six
 
 # register configuration file
 from PyU4V.utils import config_handler
 
-LOG, CFG = config_handler.get_logger()
+logger = logging.getLogger(__name__)
+LOG, CFG = config_handler.set_logger_and_config(logger)
 
 
 class PyU4VException(Exception):
