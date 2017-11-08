@@ -2981,6 +2981,9 @@ class RestFunctions:
 
         return perf_threshold_combined
 
+
+
+
     def set_perf_threshold_and_alert(self, category, metric, firstthreshold,
                                  secondthreshold, notify):
         """
@@ -3005,5 +3008,30 @@ class RestFunctions:
 
         return self.rest_client.rest_request(target_uri,PUT,
                                              request_object=payload)
+
+    def generate_threshold_settings_csv(self,outputcsvname):
+        category_list = self.get_perf_threshold_categories()
+        with open(bytes(outputcsvname, 'UTF-8'), 'wt') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(["category","metric","firstthreshold","secondthreshold","notify"])
+
+        for category in category_list:
+            metric_setting = \
+            self.get_perf_category_threshold_settings(category)[0][
+                'performanceThreshold']
+            for metric in metric_setting:
+
+                with open(bytes(outputcsvname, 'UTF-8'), 'a') as csvfile:
+                    eventwriter = csv.writer(csvfile,
+                                             delimiter=',',
+                                             quotechar='|',
+                                             quoting=csv.QUOTE_MINIMAL)
+                    eventwriter.writerow([category, metric.get('metric'),
+                      metric.get('firstThreshold'), metric.get(
+                            'secondThreshold'),metric.get('alertError')])
 
 
