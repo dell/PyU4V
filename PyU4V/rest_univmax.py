@@ -20,20 +20,15 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-try:
-    import ConfigParser as Config
-except ImportError:
-    import configparser as Config
-import logging.config
-from PyU4V.rest_requests import RestRequests
-import time
 import csv
-# register configuration file
-LOG = logging.getLogger('PyU4V')
-CONF_FILE = 'PyU4V.conf'
-logging.config.fileConfig(CONF_FILE)
-CFG = Config.ConfigParser()
-CFG.read(CONF_FILE)
+import logging
+import time
+
+from PyU4V.rest_requests import RestRequests
+from PyU4V.utils import config_handler
+
+logger = logging.getLogger(__name__)
+LOG, CFG = config_handler.set_logger_and_config(logger)
 
 # HTTP constants
 GET = 'GET'
@@ -44,7 +39,7 @@ DELETE = 'DELETE'
 
 class rest_functions:
     def __init__(self, username=None, password=None, server_ip=None,
-                 port=None, verify=False):
+                 port=None, verify=None):
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = CFG.get('setup', 'array')
@@ -56,8 +51,15 @@ class rest_functions:
             server_ip = CFG.get('setup', 'server_ip')
         if not port:
             port = CFG.get('setup', 'port')
-        if not verify:
-            verify = CFG.getboolean('setup', 'verify')
+        if verify is None:
+            try:
+                verify = CFG.get('setup', 'verify')
+                if verify.lower() == 'true':
+                    verify = True
+                elif verify.lower() == 'false':
+                    verify = False
+            except Exception:
+                verify = True
         base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
         self.rest_client = RestRequests(username, password, verify, base_url)
 

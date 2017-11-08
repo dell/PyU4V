@@ -20,22 +20,19 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-try:
-    import ConfigParser as Config
-except ImportError:
-    import configparser as Config
 import json
-import logging.config
+import logging
+
+from PyU4V.utils import config_handler
+
 import requests
 from requests.auth import HTTPBasicAuth
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib3
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# register configuration file
-CONF_FILE = "PyU4V.conf"
-LOG = logging.getLogger("PyU4V")
-logging.config.fileConfig(CONF_FILE)
+logger = logging.getLogger(__name__)
+LOG, CFG = config_handler.set_logger_and_config(logger)
 
 
 class RestRequests:
@@ -47,6 +44,7 @@ class RestRequests:
         self.base_url = base_url
         self.headers = {'content-type': 'application/json',
                         'accept': 'application/json'}
+        self.timeout = 60
         self.session = self.establish_rest_session()
 
     def establish_rest_session(self):
@@ -57,7 +55,7 @@ class RestRequests:
         return session
 
     def rest_request(self, target_url, method,
-                     params=None, request_object=None, stream=True):
+                     params=None, request_object=None, stream=True, timeout=None):
         """Sends a request (GET, POST, PUT, DELETE) to the target api.
 
         :param target_url: target url (string)
@@ -65,8 +63,13 @@ class RestRequests:
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
         :param stream: flag to indicate if the response should be streamed
+        :param timeout: optional timeout override
         :return: server response object (dict), status code
         """
+        if timeout:
+            timeout_val = timeout
+        else:
+            timeout_val = self.timeout
         if not self.session:
             self.establish_rest_session()
         url = ("%(self.base_url)s%(target_url)s" %
@@ -78,15 +81,16 @@ class RestRequests:
                 return self.session.delete(url=url, stream=True)
             elif request_object:
                 response = self.session.request(
-                    method=method, url=url, timeout=120,
+                    method=method, url=url, timeout=timeout_val,
                     data=json.dumps(request_object, sort_keys=True,
                                     indent=4))
             elif params:
                 response = self.session.request(method=method, url=url,
-                                                params=params, timeout=60)
+                                                params=params,
+                                                timeout=timeout_val)
             else:
                 response = self.session.request(method=method, url=url,
-                                                timeout=60)
+                                                timeout=timeout_val)
             status_code = response.status_code
             try:
                 response = response.json()

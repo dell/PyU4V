@@ -1,15 +1,15 @@
 from setuptools import setup
 
 setup(name='PyU4V',
-      version='2.0.0',
+      version='2.0.1',
       url='https://github.com/ciarams87/PyU4V/',
       author='Dell Inc. or its subsidiaries',
-      author_email='',
+      author_email='ciarastacke@hotmail.com',
       description=("A library showing some of the functionality possible "
                    "using the ReST API of Dell EMC's UniSphere for VMAX."),
       license='MIT',
-      packages=['PyU4V'],
-      install_requires=['requests', 'six'],
+      packages=['PyU4V','PyU4V.utils'],
+      install_requires=['requests', 'six', 'urllib3'],
       include_package_data=True,
       classifiers=[
           'Development Status :: 3 - Alpha',
