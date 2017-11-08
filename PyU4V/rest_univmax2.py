@@ -3002,8 +3002,8 @@ class RestFunctions:
               "secondThresholdOccurrrences": 1
               })
         target_uri = "/performance/threshold/update/%s" % category
-        print (target_uri)
-        print (payload)
-        return self.rest_client.rest_request(target_uri,PUT,request_object=payload)
+
+        return self.rest_client.rest_request(target_uri,PUT,
+                                             request_object=payload)
 
 
