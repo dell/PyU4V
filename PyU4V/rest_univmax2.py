@@ -2962,7 +2962,32 @@ class RestFunctions:
             perf_threshold_list.append(perf_threshold)
         perf_threshold_combined['perf_threshold'] = perf_threshold_list
         print(perf_threshold_combined)
-        # TODO export this to CSV that can be easily modified.
-        # Also create set function to read CSV
 
         return perf_threshold_combined
+
+    def set_perf_threshold_and_alert(self, category, metric, firstthreshold,
+                                 secondthreshold, notify):
+        """
+        Function to set performance alerts, suggested use with CSV file to
+        get parameter settings from user template.
+        :param category:
+        :param metric:
+        :param firstthreshold:
+        :param secondthreshold:
+        :param notify: Notify user with Alert Boolean
+        :return:
+        """
+        payload=({"secondThresholdSamples": 5,"firstThreshold": firstthreshold,
+              "firstThresholdSamples": 3,"metric": metric, "alert": notify,
+              "firstThresholdOccurrrences": 2,
+              "firstThresholdSeverity": "WARNING",
+              "secondThresholdSeverity": "CRITICAL",
+              "secondThreshold": secondthreshold,
+              "secondThresholdOccurrrences": 1
+              })
+        target_uri = "/performance/threshold/update/%s" % category
+        print (target_uri)
+        print (payload)
+        return self.rest_client.rest_request(target_uri,PUT,request_object=payload)
+
+
