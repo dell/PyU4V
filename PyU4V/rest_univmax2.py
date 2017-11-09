@@ -3039,6 +3039,11 @@ class RestFunctions:
                                  firstthreshold_list,
                                  secondthreshold_list, notify_list,
                                     kpimetric_list):
-            if k :
-                self.set_perf_threshold_and_alert(c, m, f, s, n)
+            #if k :
+            #unhash line above if you only want to update KPI values,
+            # doing this will reduce runtime of set_perfthresholds_csv
+            #you can restrict futher by filtering on category values e.g.
+            # if c ="Array" or "RDFS": to restrict to update certain array
+            # categories
+            self.set_perf_threshold_and_alert(c, m, f, s, n)
 
