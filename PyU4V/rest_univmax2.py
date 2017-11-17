@@ -2046,6 +2046,46 @@ class RestFunctions:
                       {'vol': device_id, 'e': e})
         return cap
 
+    def find_low_volume_utilization(self, low_utilization_percentage, csvname):
+        """
+        Function to find volumes under a specified percentage, may be long
+        running as will check all sg on array and all storage group.  Only
+        identifies volumes in storage group,  note if volume is in more
+        than one sg it may show up more than once.
+        :param low_utilization_percentage: low utilization watermark
+        percentage,
+        e.g. find volumes with utilization less than 10%
+        :param csvname: filename for CFV output file
+        :return: will create csvfile with name passed
+        """
+        sg_dict, rc = self.get_sg()
+        sg_list = sg_dict.get('storageGroupId')
+
+        with open(bytes(csvname, 'UTF-8'), 'w', newline='') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(["sgname", "volumeid", "identifier",
+                                  "capacity", "allocated_Percent"])
+
+            for sg in sg_list:
+                vollist = self.get_vols_from_SG(sg)
+
+                for vol in vollist:
+                    volume = self.get_volume(vol)
+                    if volume[
+                        "allocated_percent"] < low_utilization_percentage:
+                        allocated = volume["allocated_percent"]
+                        try:
+                            vol_identifiers = (volume["volume_identifier"])
+                        except:
+                            vol_identifiers = ("No Identifier")
+                    vol_cap = (volume["cap_gb"])
+                    eventwriter.writerow(
+                        [sg, vol, vol_identifiers, vol_cap, allocated])
+
     def get_replication_info(self):
         """Return replication information for an array.
 
