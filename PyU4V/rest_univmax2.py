@@ -1016,7 +1016,7 @@ class RestFunctions:
         :param mv_name: the name of the masking view
         :return: dict, status_code
         """
-        res_name = "/%s/connections" % mv_name
+        res_name = "%s/connections" % mv_name
         return self.get_resource(self.array_id, SLOPROVISIONING,
                                  'maskingview', resource_name=res_name)
 
@@ -1062,7 +1062,7 @@ class RestFunctions:
         :param filters: optional filters - dict
         :return: dict, status_code
         """
-        res_name = "/%s/%s" % (director, port_no) if port_no else director
+        res_name = "%s/%s" % (director, port_no) if port_no else director
         if port_no and filters:
             LOG.error("portNo and filters are mutually exclusive options")
             raise Exception
@@ -1456,6 +1456,9 @@ class RestFunctions:
                     "volumeId": vol_id}}}}
         if async:
             add_vol_data.update({'executionOption': ASYNCHRONOUS})
+        if self.U4V_VERSION == '83':
+            add_vol_data = {"editStorageGroupActionParam": {
+                "addVolumeParam": {"volumeId": vol_id}}}
         return self.modify_storagegroup(sg_id, add_vol_data)
 
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size,
@@ -1491,13 +1494,31 @@ class RestFunctions:
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
-        payload = {"executionOption": "ASYNCHRONOUS",
-                   "editStorageGroupActionParam": {
-                       "removeVolumeParam": {
-                           "volumeId": vol_id}}}
+        payload = {"editStorageGroupActionParam": {
+            "removeVolumeParam": {"volumeId": vol_id}}}
         if async:
             payload.update({'executionOption': ASYNCHRONOUS})
         return self.modify_storagegroup(sg_id, payload)
+
+    def move_vol_between_storagegroup(self, src_sg_id, tgt_sg_id,
+                                      vol_id, async=False):
+        """MOve volumes between storage groups.
+
+        :param src_sg_id: the name of the source storage group
+        :param tgt_sg_id: the name of the target sg
+        :param vol_id: the device id of the volume
+        :param async: Flag to indicate if call should be async
+        :return: dict, status_code
+        """
+        if not isinstance(vol_id, list):
+            vol_id = [vol_id]
+        payload = {"editStorageGroupActionParam": {
+            "moveVolumeToStorageGroupParam": {
+                "storageGroupId": tgt_sg_id,
+                "volumeId": vol_id, "force": 'true'}}}
+        if async:
+            payload.update({'executionOption': ASYNCHRONOUS})
+        return self.modify_storagegroup(src_sg_id, payload)
 
     def delete_sg(self, sg_id):
         """Delete a given storage group.
@@ -2192,7 +2213,7 @@ class RestFunctions:
         :param snap_name: the name of the existing snapshot
         :return: dict, status_code
         """
-        resource_type = ("/storagegroup/%s/snapshot/%s/generation"
+        resource_type = ("storagegroup/%s/snapshot/%s/generation"
                          % (sg_id, snap_name))
         payload = ({})
         return self.create_resource(
@@ -2301,7 +2322,7 @@ class RestFunctions:
           "rdfgs": [4]
         }
         """
-        res_name = "/%s/rdf_group" % sg_id
+        res_name = "%s/rdf_group" % sg_id
         return self.get_resource(self.array_id, REPLICATION, 'storagegroup',
                                  res_name)
 
@@ -2377,7 +2398,7 @@ class RestFunctions:
         return number
 
     def srdf_protect_sg(self, sg_id, remote_sid, srdfmode, establish=None,
-                        async=False):
+                        async=False, rdfg_number=None):
         """SRDF protect a storage group.
 
         :param sg_id: Unique string up to 32 Characters
@@ -2387,14 +2408,18 @@ class RestFunctions:
         :param establish: default is none. Bool
         :param async: Flag to indicate if call should be async
                       (NOT to be confused with the SRDF mode)
+        :param rdfg_number: the required RDFG number (optional)
         :return: message and status Type JSON
         """
-        res_type = "/storagegroup/%s/rdf_group" % sg_id
+        res_type = "storagegroup/%s/rdf_group" % sg_id
         establish_sg = "True" if establish else "False"
         rdf_payload = {"replicationMode": srdfmode,
                        "remoteSymmId": remote_sid,
-                       "remoteStorageGroupName": sg_id,
-                       "establish": establish_sg}
+                       "remoteStorageGroupName": sg_id}
+        if rdfg_number is not None:
+            rdf_payload['rdfgNumber'] = rdfg_number
+        if establish is not None:
+            rdf_payload["establish"] = establish_sg
         if async:
             rdf_payload.update({'executionOption': ASYNCHRONOUS})
         return self.create_resource(
@@ -2411,19 +2436,21 @@ class RestFunctions:
             # Get a list of SRDF groups for storage group
             rdfg_list = self.get_srdf_num(sg_id)[0]["rdfgs"]
             rdfg = rdfg_list[0]
-        res_name = "/%s/rdf_group/%s" % (sg_id, rdfg)
+        res_name = "%s/rdf_group/%s" % (sg_id, rdfg)
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', res_name)
 
-    def change_srdf_state(self, sg_id, action, rdfg=None):
+    def change_srdf_state(self, sg_id, action, rdfg=None,
+                          options=None, async=False):
         """Modify the state of an srdf.
 
         This may be a long running task depending on the size of the SRDF group,
-        will switch to Async call when supported in 8.4 version of Unisphere.
+        can switch to async call if required.
         :param sg_id: name of storage group
-        :param action
+        :param action: the rdf action e.g. Suspend, Establish, etc
         :param rdfg: rdf number, optional
-        :return:
+        :param options: a dict of possible options - depends on action type
+        :param async: flag to indicate if call should be async
         """
         # Get a list of SRDF groups for storage group
         if not rdfg:
@@ -2436,8 +2463,13 @@ class RestFunctions:
                 LOG.exception("Group is cascaded, functionality not yet "
                               "added in this python library")
         if rdfg:
-            res_name = "/%s/rdf_group/%s" % (sg_id, rdfg)
-            payload = ({"executionOption": "ASYNCHRONOUS", "action": action})
+            res_name = "%s/rdf_group/%s" % (sg_id, rdfg)
+            payload = {"action": action}
+            if async:
+                payload.update({"executionOption": "ASYNCHRONOUS"})
+            if options:
+                option_header = action.lower()
+                payload.update({option_header: options})
             return self.modify_resource(
                 self.array_id, REPLICATION, 'storagegroup',
                 payload, resource_name=res_name)
