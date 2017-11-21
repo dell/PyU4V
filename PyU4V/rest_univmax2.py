@@ -2067,6 +2067,46 @@ class RestFunctions:
                       {'vol': device_id, 'e': e})
         return cap
 
+    def find_low_volume_utilization(self, low_utilization_percentage, csvname):
+        """
+        Function to find volumes under a specified percentage, may be long
+        running as will check all sg on array and all storage group.  Only
+        identifies volumes in storage group,  note if volume is in more
+        than one sg it may show up more than once.
+        :param low_utilization_percentage: low utilization watermark
+        percentage,
+        e.g. find volumes with utilization less than 10%
+        :param csvname: filename for CFV output file
+        :return: will create csvfile with name passed
+        """
+        sg_dict, rc = self.get_sg()
+        sg_list = sg_dict.get('storageGroupId')
+
+        with open(bytes(csvname, 'UTF-8'), 'w', newline='') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(["sgname", "volumeid", "identifier",
+                                  "capacity", "allocated_Percent"])
+
+            for sg in sg_list:
+                vollist = self.get_vols_from_SG(sg)
+
+                for vol in vollist:
+                    volume = self.get_volume(vol)
+                    if volume[
+                        "allocated_percent"] < low_utilization_percentage:
+                        allocated = volume["allocated_percent"]
+                        try:
+                            vol_identifiers = (volume["volume_identifier"])
+                        except:
+                            vol_identifiers = ("No Identifier")
+                    vol_cap = (volume["cap_gb"])
+                    eventwriter.writerow(
+                        [sg, vol, vol_identifiers, vol_cap, allocated])
+
     def get_replication_info(self):
         """Return replication information for an array.
 
@@ -2984,33 +3024,98 @@ class RestFunctions:
         target_uri = "/performance/threshold/list/%s" % category
         return self.rest_client.rest_request(target_uri, GET)
 
-    def get_kpi_metrics_config(self):
-        """Get KPI metrics configurations.
 
-        Checks all Performance Alerting Thresholds and returns
-        settings for KPI Metrics.
-        :return: list of KPI metrics organised by category with each setting.
+    def set_perf_threshold_and_alert(self, category, metric, firstthreshold,
+                                 secondthreshold, notify):
         """
-        categories = self.get_perf_threshold_categories()
-        perf_threshold_combined = dict()
-        perf_threshold_list = []
-        # print(categories)
-        for category in categories:
-            current_perf_threshold = (
-                self.get_perf_category_threshold_settings(category))
-            #    print (category, current_perf_threshold)
-            data = current_perf_threshold[0]["performanceThreshold"]
-            metriclist = []
-            for item in data:
-                if item['kpi']:
-                    metriclist.append([item])
-            perf_threshold = ({
-                "category": category,
-                "metric_settings": metriclist})
-            perf_threshold_list.append(perf_threshold)
-        perf_threshold_combined['perf_threshold'] = perf_threshold_list
-        print(perf_threshold_combined)
-        # TODO export this to CSV that can be easily modified.
-        # Also create set function to read CSV
+        Function to set performance alerts, suggested use with CSV file to
+        get parameter settings from user template.
+        Default is to check for 3 out of 5 samples before returning alert,
+        users may want to modify as potentially 3 of 5 could mean could
+        take 25 minutes for an alert to be seen as samples are at 5 minute
+        intervals.
+        :param category:
+        :param metric:
+        :param firstthreshold:
+        :param secondthreshold:
+        :param notify: Notify user with Alert Boolean
+        :return:
+        """
+        payload=({"secondThresholdSamples": 5,"firstThreshold": firstthreshold,
+              "firstThresholdSamples": 5,"metric": metric, "alert": notify,
+              "firstThresholdOccurrrences": 3,
+              "firstThresholdSeverity": "WARNING",
+              "secondThresholdSeverity": "CRITICAL",
+              "secondThreshold": secondthreshold,
+              "secondThresholdOccurrrences": 3
 
-        return perf_threshold_combined
+              })
+        target_uri = "/performance/threshold/update/%s" % category
+
+        return self.rest_client.rest_request(target_uri,PUT,
+                                             request_object=payload)
+
+    def generate_threshold_settings_csv(self,outputcsvname):
+        """
+        Creates a CSV file with the following headers format containing current
+        alert configuration for the given unisphere instance
+        category,metric,firstthreshold,secondthreshold,notify,kpi
+        array,HostReads,100000,300000,true,true
+        array,HostWrites,100000,300000,true,false
+        :param outputcsvname: filename for CSV to be generated
+        :return:
+        """
+        category_list = self.get_perf_threshold_categories()
+        with open(bytes(outputcsvname, 'UTF-8'), 'w',newline='') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(["category","metric","firstthreshold",
+                                  "secondthreshold","notify", "kpi"])
+            for category in category_list:
+                metric_setting = \
+                self.get_perf_category_threshold_settings(category)[0][
+                    'performanceThreshold']
+                for metric in metric_setting:
+                        eventwriter.writerow([category, metric.get('metric'),
+                          metric.get('firstThreshold'), metric.get(
+                                'secondThreshold'),metric.get('alertError'),
+                                              metric.get('kpi')])
+
+
+    def set_perfthresholds_csv(self,csvfilename):
+        """
+        reads CSV file, and sets perforamnce threshold metrics, should be
+        used with generate_threshold_settings_csv to produce CSV file that
+        can be edited and uploaded.
+
+        :param csvfilename:
+        :return:
+        Reads a CSV file with the following headers format
+        category,metric,firstthreshold,secondthreshold,notify,kpi
+        array,HostReads,100000,300000,true,true
+        array,HostWrites,100000,300000,true,false
+        cur
+        """
+        data = self.read_csv_values(csvfilename)
+        firstthreshold_list = data.get("firstthreshold")
+        secondthreshold_list = data.get("secondthreshold")
+        notify_list = data.get("notify")
+        categrory_list = data.get("category")
+        metric_list = data.get("metric")
+        kpimetric_list = data.get("kpi")
+
+        for c, m, f, s, n, k in zip(categrory_list, metric_list,
+                                 firstthreshold_list,
+                                 secondthreshold_list, notify_list,
+                                    kpimetric_list):
+            #if k :
+            #unhash line above if you only want to update KPI values,
+            # doing this will reduce runtime of set_perfthresholds_csv
+            #you can restrict futher by filtering on category values e.g.
+            # if c ="Array" or "RDFS": to restrict to update certain array
+            # categories
+            self.set_perf_threshold_and_alert(c, m, f, s, n)
+

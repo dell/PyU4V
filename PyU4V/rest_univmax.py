@@ -1074,7 +1074,8 @@ class rest_functions:
                         "setHostIOLimitsParam": {
                             "host_io_limit_io_sec": iops,
                             "dynamicDistribution": dynamic_distribution}}}
-        return self.rest_client.rest_request(target_uri, PUT, request_object=iolimits)
+        return self.rest_client.rest_request(target_uri, PUT,
+                                             request_object=iolimits)
 
     # volume
 
@@ -1178,6 +1179,64 @@ class rest_functions:
             return None
 
     # workloadtype
+    def get_volume(self, device_id):
+        """Get a VMAX volume from array.
+
+        :param device_id: the volume device id
+        :returns: volume dict
+        :raises: VolumeBackendAPIException
+        """
+        volume_dict, _ = self.get_volumes(vol_id=device_id)
+        if not volume_dict:
+            exception_message = ("Volume %(deviceID)s not found."
+                                 % {'deviceID': device_id})
+            LOG.error(exception_message)
+            raise exception.VolumeBackendAPIException(data=exception_message)
+        return volume_dict
+
+    def find_low_volume_utilization(self, low_utilization_percentage, csvname):
+        """
+        Function to find volumes under a specified percentage, may be long
+        running as will check all sg on array and all storage group.  Only
+        identifies volumes in storage group,  note if volume is in more
+        than one sg it may show up more than once.
+        :param low_utilization_percentage:
+        :param csvname: filename for CFV output file
+        :return: will create csvfile with name passed
+        """
+        sg_dict, rc = self.get_sg()
+        sg_list = sg_dict.get('storageGroupId')
+
+        with open(bytes(csvname, 'UTF-8'), 'w', newline='') as csvfile:
+            eventwriter = csv.writer(csvfile,
+                                     delimiter=',',
+                                     quotechar='|',
+                                     quoting=csv.QUOTE_MINIMAL)
+
+            eventwriter.writerow(["sgname", "volumeid", "identifier",
+                                  "capacity", "allocated_Percent"])
+
+            for sg in sg_list:
+                try:
+                    vollist = self.get_vols_from_SG(sg)
+                    for vol in vollist:
+                        volume = self.get_volume(vol)
+                        vol_attributes=volume.get("volume")
+                        vol_attributes_dict=vol_attributes[0]
+                        if vol_attributes_dict.get("allocated_percent") < \
+                                low_utilization_percentage:
+                            allocated = vol_attributes_dict["allocated_percent"]
+                            try:
+                                vol_identifiers = vol_attributes_dict[
+                                    "volume_identifier"]
+                            except:
+                                vol_identifiers = ("No Identifier")
+                        vol_cap = (vol_attributes_dict["cap_gb"])
+                        eventwriter.writerow(
+                            [sg, vol, vol_identifiers, vol_cap, allocated])
+                except:
+                    eventwriter.writerow([sg,"no volumes found"])
+
 
     def get_workload(self):
         """Gets details of all available workload types.
