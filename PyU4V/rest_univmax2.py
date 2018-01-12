@@ -1692,7 +1692,7 @@ class RestFunctions:
         """
         job, status_code = self.add_new_vol_to_storagegroup(
             storagegroup_name, 1, vol_size, "GB",
-            async=False, vol_name=volume_name)
+            async=True, vol_name=volume_name)
         LOG.debug("Create Volume: %(volumename)s. Status code: %(sc)lu.",
                   {'volumename': volume_name,
                    'sc': status_code})
