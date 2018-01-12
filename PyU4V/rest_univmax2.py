@@ -1462,7 +1462,7 @@ class RestFunctions:
         return self.modify_storagegroup(sg_id, add_vol_data)
 
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size,
-                                    capUnit, async=False):
+                                    capUnit, async=False, vol_name=None):
         """Expand an existing storage group by adding new volumes.
 
         :param sg_id: the name of the storage group
@@ -1470,18 +1470,25 @@ class RestFunctions:
         :param vol_size: the size of the volumes
         :param capUnit: the capacity unit
         :param async: Flag to indicate if call should be async
+        :param vol_name: name to give to the volume, optional
         :return: dict, status_code
         """
-        expand_sg_data = {"editStorageGroupActionParam": {
-            "expandStorageGroupParam": {
-                "addVolumeParam": {
+        add_vol_info = {
                     "num_of_vols": num_vols,
                     "emulation": "FBA",
                     "volumeAttribute": {
                         "volume_size": vol_size,
-                        "capacityUnit": capUnit}}}}}
+                        "capacityUnit": capUnit}}
+        if vol_name:
+            add_vol_info.update({
+                "volumeIdentifier": {
+                    "identifier_name": vol_name,
+                    "volumeIdentifierChoice": "identifier_name"}})
+        expand_sg_data = {"editStorageGroupActionParam": {
+            "expandStorageGroupParam": {
+                "addVolumeParam": add_vol_info}}}
         if async:
-            expand_sg_data.update({'executionOption': ASYNCHRONOUS})
+            expand_sg_data.update({"executionOption": ASYNCHRONOUS})
         return self.modify_storagegroup(sg_id, expand_sg_data)
 
     def remove_vol_from_storagegroup(self, sg_id, vol_id, async=False):
@@ -1684,7 +1691,8 @@ class RestFunctions:
         :raises: VolumeBackendAPIException
         """
         job, status_code = self.add_new_vol_to_storagegroup(
-            storagegroup_name, 1, vol_size, "GB", async=False)
+            storagegroup_name, 1, vol_size, "GB",
+            async=False, vol_name=volume_name)
         LOG.debug("Create Volume: %(volumename)s. Status code: %(sc)lu.",
                   {'volumename': volume_name,
                    'sc': status_code})
