@@ -769,15 +769,14 @@ class RestFunctions:
         except KeyError:
             return True
 
-    def get_initiator_list(self, array, params=None):
+    def get_initiator_list(self, params=None):
         """Retrieve initiator list from the array.
 
-        :param array: the array serial number
         :param params: dict of optional params
         :returns: list of initiators
         """
         init_dict, _ = self.get_resource(
-            array, SLOPROVISIONING, 'initiator', params=params)
+            self.array_id, SLOPROVISIONING, 'initiator', params=params)
         try:
             init_list = init_dict['initiatorId']
         except KeyError:
