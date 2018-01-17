@@ -453,7 +453,7 @@ class RestFunctions:
         if job_id and filters:
             msg = "job_id and filters are mutually exclusive options"
             LOG.error(msg)
-            raise exception.VolumeBackendAPIException(data=msg)
+            raise exception.InvalidInputException(data=msg)
         return self.get_resource(self.array_id, 'system', 'job',
                                  resource_name=job_id, params=filters)
 
@@ -469,7 +469,7 @@ class RestFunctions:
         if alert_id and filters:
             msg = "alert_id and filters are mutually exclusive options"
             LOG.error(msg)
-            raise exception.VolumeBackendAPIException(data=msg)
+            raise exception.InvalidInputException(data=msg)
         return self.get_resource(self.array_id, 'system', 'alert',
                                  resource_name=alert_id, params=filters)
 
@@ -540,7 +540,7 @@ class RestFunctions:
         if not init_file and not initiator_list:
             msg = ("No file or initiator_list supplied, "
                    "you must specify one or the other")
-            raise exception.VolumeBackendAPIException(data=msg)
+            raise exception.InvalidInputException(data=msg)
         new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
         if host_flags:
             new_ig_data.update({"hostFlags": host_flags})
@@ -709,7 +709,7 @@ class RestFunctions:
         if initiator_id and filters:
             msg = "Initiator_id and filters are mutually exclusive"
             LOG.error(msg)
-            raise exception.VolumeBackendAPIException(data=msg)
+            raise exception.InvalidInputException(data=msg)
         return self.get_resource(self.array_id, SLOPROVISIONING, 'initiator',
                                  resource_name=initiator_id, params=filters)
 
@@ -750,7 +750,7 @@ class RestFunctions:
                    "replace_init, rename_alias, set_fcid, "
                    "initiator_flags.")
             LOG.error(msg)
-            raise exception.VolumeBackendAPIException(data=msg)
+            raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'initiator', edit_init_data,
             version='', resource_name=initiator_id)
@@ -924,7 +924,7 @@ class RestFunctions:
         :param host: the host name - optional
         :param storagegroup: the storage group name - optional
         :returns: name of the specified element -- string
-        :raises: VolumeBackendAPIException
+        :raises: ResourceNotFoundException
         """
         element = None
         masking_view_details, sc = self.get_masking_view(maskingview_name)
@@ -941,7 +941,7 @@ class RestFunctions:
         else:
             exception_message = "Error retrieving masking group."
             LOG.error(exception_message)
-            raise exception.VolumeBackendAPIException(data=exception_message)
+            raise exception.ResourceNotFoundException(data=exception_message)
         return element
 
     def get_common_masking_views(self, portgroup_name, ig_name):
@@ -1772,7 +1772,7 @@ class RestFunctions:
                     {'dt': qos_specs.get('DistributionType'),
                      'dl': dynamic_list})
                 LOG.error(exception_message)
-                raise exception.VolumeBackendAPIException(
+                raise exception.InvalidInputException(
                     data=exception_message)
             else:
                 distribution_type = qos_specs['DistributionType']
@@ -1900,14 +1900,14 @@ class RestFunctions:
 
         :param device_id: the volume device id
         :returns: volume dict
-        :raises: VolumeBackendAPIException
+        :raises: ResourceNotFoundException
         """
         volume_dict, _ = self.get_volumes(vol_id=device_id)
         if not volume_dict:
             exception_message = ("Volume %(deviceID)s not found."
                                  % {'deviceID': device_id})
             LOG.error(exception_message)
-            raise exception.VolumeBackendAPIException(data=exception_message)
+            raise exception.ResourceNotFoundException(data=exception_message)
         return volume_dict
 
     def get_list_of_dev_ids(self, params):
@@ -1960,33 +1960,34 @@ class RestFunctions:
         :param device_id: the volume device id
         :param new_name: the new name for the volume
         """
+        if new_name is not None:
+            vol_identifier_dict = {
+                "identifier_name": new_name,
+                "volumeIdentifierChoice": "identifier_name"}
+        else:
+            vol_identifier_dict = {"volumeIdentifierChoice": "none"}
         rename_vol_payload = {"editVolumeActionParam": {
             "modifyVolumeIdentifierParam": {
-                "volumeIdentifier": {
-                    "identifier_name": new_name,
-                    "volumeIdentifierChoice": "identifier_name"}}}}
+                "volumeIdentifier": vol_identifier_dict}}}
         return self._modify_volume(device_id, rename_vol_payload)
 
     def delete_volume(self, device_id):
-        """Deallocate and delete a volume.
+        """Delete a volume.
 
         :param device_id: volume device id
         """
         return self.delete_resource(
             self.array_id, SLOPROVISIONING, "volume", device_id)
 
-    def deallocate_volume(self, device_id, async=False):
+    def deallocate_volume(self, device_id):
         """Deallocate all tracks on a volume.
 
         Necessary before deletion.
         :param device_id: the device id
-        :param async: flag to indicate if async
         :return: dict, sc
         """
         payload = {"editVolumeActionParam": {
             "freeVolumeParam": {"free_volume": 'true'}}}
-        if async:
-            payload.update({"executionOption": ASYNCHRONOUS})
         return self._modify_volume(device_id, payload)
 
     def find_host_lun_id_for_vol(self, maskingview, device_id):
