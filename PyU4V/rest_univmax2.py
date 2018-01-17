@@ -1061,7 +1061,7 @@ class RestFunctions:
         :param filters: optional filters - dict
         :return: dict, status_code
         """
-        res_name = "%s/%s" % (director, port_no) if port_no else director
+        res_name = "%s/port/%s" % (director, port_no) if port_no else director
         if port_no and filters:
             LOG.error("portNo and filters are mutually exclusive options")
             raise Exception

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='PyU4V',
-      version='2.0.2.2',
+      version='2.0.2.4',
       url='https://github.com/ciarams87/PyU4V/',
       author='Dell Inc. or its subsidiaries',
       author_email='ciarastacke@hotmail.com',
