@@ -2203,7 +2203,7 @@ class RestFunctions:
         have not been deleted as they have links
         :return:String is printed with details of the snap expiry and link
         sg details
-        sample string.
+        sample string ---
         Storage Group snapsrc has expired snapshots Snapshot name test,
         Generation Number 0 snapshot expired on 14:46:24 Wed, 24 Jan 2018
         UTC +0000, linked storage group name is myexplinkgrp
