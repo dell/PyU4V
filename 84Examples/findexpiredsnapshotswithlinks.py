@@ -1,6 +1,9 @@
 from PyU4V.rest_univmax2 import RestFunctions
 ru=RestFunctions(u4v_version=84)
 
+#Script will find a list of storage groups with expired snapshots and print
+# details.
+
 sglist,rc = ru.get_sg()
 
 for sg in sglist["storageGroupId"]:
