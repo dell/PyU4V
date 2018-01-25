@@ -57,3 +57,11 @@ class PyU4VException(Exception):
 class VolumeBackendAPIException(PyU4VException):
     message = ("Bad or unexpected response from the storage volume "
                "backend API: %(data)s")
+
+
+class ResourceNotFoundException(PyU4VException):
+    message = "The requested resource was not found: %(data)s"
+
+
+class InvalidInputException(PyU4VException):
+    message = "Invalid input received: %(data)s"
