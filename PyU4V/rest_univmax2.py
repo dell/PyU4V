@@ -2166,6 +2166,17 @@ class RestFunctions:
             array, REPLICATION, 'storagegroup',
             resource_name=storage_group_name)
 
+    def get_storage_group_rep_list(self, array=None,filters=None):
+        """Given a name, return list of storage groups with replication.
+
+        :param array: the array serial number
+        :param storage_group_name: the name of the storage group
+        :returns: storage group dict or None + return code
+        """
+        array=self.array_id
+        return self.get_resource(
+            array, REPLICATION, 'storagegroup',params=filters)
+
     def create_storagegroup_snap(self, sg_name, snap_name, ttl=None,
                                  hours=None):
         """Create a snapVx snapshot of a storage group.
@@ -2184,6 +2195,49 @@ class RestFunctions:
                          % {'sg_name': sg_name})
         return self.create_resource(
             self.array_id, REPLICATION, resource_type, payload)
+
+    def find_expired_snapvx_snapshots(self):
+        """
+        Parsees through all Snapshots for array and lists those that have
+        snapshots where the expiration date has passed however snapshots
+        have not been deleted as they have links
+        :return:String is printed with details of the snap expiry and link
+        sg details
+        sample string.
+        Storage Group snapsrc has expired snapshots Snapshot name test,
+        Generation Number 0 snapshot expired on 14:46:24 Wed, 24 Jan 2018
+        UTC +0000, linked storage group name is myexplinkgrp
+        """
+        sglist, rc = self.get_storage_group_rep_list(
+            filters={'hasSnapshots': 'true'})
+        for sg in sglist["name"]:
+            snaplist, rc = self.get_snap_sg(sg)
+            for snapshot_name in snaplist["snapVXSnapshots"]:
+                snapgen, rc = self.get_snap_sg_generation(sg,
+                                                          snapshot_name)
+                snapcount = snapgen["generationCount"]
+                gen_num = 0
+                while snapcount > 0:
+                    snapdetails, rc = self.get_snapshot_generation_details(
+                        sg,
+                        snapshot_name,
+                        gen_num)
+                    snapcount = snapcount - 1
+                    if snapdetails["isExpired"]:
+                        # print (snapdetails)
+                        snapcreation_time = snapdetails["timestamp"]
+                        snapexpiration = snapdetails[
+                            "timeToLiveExpiryDate"]
+                        for linked_sg in snapdetails["linkedStorageGroup"]:
+                            linked_sg_name = linked_sg["name"]
+                            print("Storage Group %s has expired snapshots "
+                                  "Snapshot name %s, Generation "
+                                  "Number %s snapshot expired on %s, "
+                                  "linked storage group name is %s" % (
+                                      sg, snapshot_name, gen_num,
+                                      snapexpiration, linked_sg_name))
+                    gen_num = gen_num + 1
+
 
     def modify_storagegroup_snap(
             self, source_sg_id, target_sg_id, snap_name, link=False,
@@ -2252,7 +2306,22 @@ class RestFunctions:
         """
         res_name = "%s/snapshot/%s" % (sg_id, snap_name)
         return self.get_resource(self.array_id, REPLICATION, 'storagegroup',
-                                 resource_name=res_name)
+                                 resource_name=res_name,)
+
+    def get_snapshot_generation_details(self,sg_id, snap_name, gen_num):
+        """
+
+        :param sg_id:
+        :param snap_name:
+        :param generation:Generation number
+        :return:dict, status code
+        """
+        resource_name = ('%(sg_name)s/snapshot/%(snap_id)s/generation/'
+                         '%(gen_num)d'
+                         % {'sg_name': sg_id, 'snap_id': snap_name,
+                            'gen_num': gen_num})
+        return self.get_resource(
+            self.array_id, REPLICATION, 'storagegroup', resource_name)
 
     def create_new_gen_snap(self, sg_id, snap_name):
         """Establish a new generation of a SnapVX snapshot for a source SG
