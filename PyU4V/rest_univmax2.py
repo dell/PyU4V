@@ -2120,7 +2120,7 @@ class RestFunctions:
 
         :return: dict, status_code
         """
-        target_uri = '/83/replication/symmetrix/%s' % self.array_id
+        target_uri = '/replication/symmetrix/%s' % self.array_id
         return self._get_request(target_uri, 'replication info')
 
     def check_snap_capabilities(self):
@@ -2198,7 +2198,7 @@ class RestFunctions:
 
     def find_expired_snapvx_snapshots(self):
         """
-        Parsees through all Snapshots for array and lists those that have
+        Parses through all Snapshots for array and lists those that have
         snapshots where the expiration date has passed however snapshots
         have not been deleted as they have links
         :return:String is printed with details of the snap expiry and link
