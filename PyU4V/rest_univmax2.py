@@ -2167,7 +2167,7 @@ class RestFunctions:
             resource_name=storage_group_name)
 
     def get_storage_group_rep_list(self, array=None,filters=None):
-        """Given a name, return list of storage groups with replication.
+        """Returns list of storage groups with replication.
 
         :param array: the array serial number
         :param storage_group_name: the name of the storage group
