@@ -44,7 +44,7 @@ class RestRequests:
         self.base_url = base_url
         self.headers = {'content-type': 'application/json',
                         'accept': 'application/json'}
-        self.timeout = 60
+        self.timeout = 120
         self.session = self.establish_rest_session()
 
     def establish_rest_session(self):

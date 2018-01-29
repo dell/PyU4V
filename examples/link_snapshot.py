@@ -21,19 +21,24 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import argparse
-import PyU4V
+from PyU4V import RestFunctions
+ru = RestFunctions(u4v_version='84')
 ####################################
 # Define and Parse CLI arguments   #
 # and instantiate session for REST #
 ####################################
 
 PARSER = argparse.ArgumentParser(
-    description='This python script is a basic VMAX REST recipe used for '
-                'creating and provisioning storage for an Oracle Database.')
+    description='This python script is a basic VMAX REST recipe '
+                'used for creating a linked storagegroup and '
+                'provisioning it to a host.')
 RFLAGS = PARSER.add_argument_group('Required arguments')
 RFLAGS.add_argument(
     '-sg', required=True, help='Storage group name, typically the application'
                                ' name e.g. REST_TEST_SG')
+RFLAGS.add_argument(
+    '-host', required=True, help='Name of host to provision the storage '
+                                 'to, e.g. ESX_123')
 ARGS = PARSER.parse_args()
 
 # Variables are initiated to append REST to the Storage Group and Initiator
@@ -41,18 +46,20 @@ ARGS = PARSER.parse_args()
 # requirements
 
 sg_id = ARGS.sg
+host_id = ARGS.host
 ln_sg_id = sg_id + "_LNK"
-ru = PyU4V.rest_functions()
 mvname = ln_sg_id + "_MV"
 
 
 def main():
-    mysnap = ru.set_snapshot_id(sg_id)
+    mysnap = ru.replication.choose_snapshot_from_list_in_console(sg_id)
     print("You Chose Snap %s" % mysnap)
-    ru.link_gen_snapsthot_83(sg_id, mysnap, generation=0,
-                             link_sg_name=ln_sg_id)
-    ru.create_masking_view_existing_components(
-        port_group_name="cse_pg", masking_view_name=mvname,
-        storage_group_name=ln_sg_id, host_name="esx144_IG")
+    snap_job = ru.replication.link_gen_snapshot(
+        sg_id, mysnap, ln_sg_id, async=True)
+    ru.common.wait_for_job("", snap_job)
+    ru.provisioning.create_masking_view_existing_components(
+        port_group_name="REST_TEST_PG", masking_view_name=mvname,
+        storage_group_name=ln_sg_id, host_name=host_id)
+
 
 main()

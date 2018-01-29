@@ -28,13 +28,16 @@ for 24 hours.
 REST call create_new_snap for a storage group.
 """
 import argparse
-import PyU4V
 from time import strftime
+
+from PyU4V import RestFunctions
+
+ru = RestFunctions(u4v_version='84')
 
 ######################################################################
 # Define and Parse CLI arguments and instantiate session for REST #
 ######################################################################
-ru = PyU4V.rest_functions()
+
 PARSER = argparse.ArgumentParser(
     description='Example implementation of a Python REST client '
                 'for EMC Unisphere Taking SnapVX Snapshots.')
@@ -45,17 +48,17 @@ RFLAGS.add_argument(
 ARGS = PARSER.parse_args()
 
 # Variables are initiated to appent REST to the Storage Group and Initiator
-# SG and IG will append _SG or _IG to the name passed by the user.  e.g. REST_Oracle_IG and REST_ORACLE_IG
+# SG and IG will append _SG or _IG to the name passed by the user.  e.g.
+# REST_Oracle_IG and REST_ORACLE_IG
 sg_id = ARGS.sg
+
 
 def main():
     # assign name to snap with date and time appended to name
     snap_name = "REST_Snap_" + strftime("%d%m%Y%H%M%S")
-    ru.create_sg_snapshot_83(sg_id, snap_name)
+    ru.replication.create_storagegroup_snap(sg_id, snap_name)
     print ("Check the Gui now or REST Client to see if snapshot %s "
-           "was created for Storge Group %s" % (snap_name, sg_id))
+           "was created for Storage Group %s" % (snap_name, sg_id))
+
 
 main()
-
-
-

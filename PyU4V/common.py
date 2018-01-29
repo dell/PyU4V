@@ -223,16 +223,12 @@ class CommonFunctions(object):
         :param resource_type: the resource type, e.g. maskingview
         :param params: optional dict of filter params
         :returns: resource_object -- dict or None
+        :raises: ResourceNotFoundException
         """
         message, sc = self.request(target_uri, GET, params=params)
         operation = 'get {}'.format(resource_type)
-        try:
-            self.check_status_code_success(operation, sc, message)
-            resource_object = message
-        except exception.ResourceNotFoundException as e:
-            LOG.debug("Get resource failed with {}".format(e))
-            resource_object = None
-        return resource_object
+        self.check_status_code_success(operation, sc, message)
+        return message
 
     def get_resource(self, array, category, resource_type,
                      resource_name=None, params=None):

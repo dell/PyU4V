@@ -49,9 +49,9 @@ mvname = ln_sg_id + "_MV"
 def main():
     mysnap = ru.replication.set_snapshot_id(sg_id)
     print("You Chose Snap %s" % mysnap)
-    snap_job, snap_rc = ru.replication.link_gen_snapshot(
+    snap_job = ru.replication.link_gen_snapshot(
         sg_id=sg_id, snap_name=mysnap, gen_num=0, link_sg_name=ln_sg_id, async=True)
-    ru.common.wait_for_job("", snap_rc, snap_job)
+    ru.common.wait_for_job("", snap_job)
     ru.provisioning.create_masking_view_existing_components(
         port_group_name="REST_TEST_PG", masking_view_name=mvname,
         storage_group_name=ln_sg_id, host_name="esx144_IG")

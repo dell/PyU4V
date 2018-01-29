@@ -34,7 +34,7 @@ import time
 ####################################
 # end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
 # start_date = (end_date - 3600000)  #Set start date to EPOCH Time 1 hours Earlier
-ru = PyU4V.rest_functions()
+ru = PyU4V.RestFunctions()
 end_date = int(round(time.time() * 1000))
 start_date = (end_date - 3600000)
 
@@ -47,7 +47,7 @@ PARSER = argparse.ArgumentParser(
                 'Arrays.')
 ARGS = PARSER.parse_args()
 
-dir_list = ru.get_fe_director_list()
+dir_list = ru.performance.get_fe_director_list()
 
 
 def get_last_hour_fe_metrics():
@@ -59,7 +59,7 @@ def get_last_hour_fe_metrics():
     director_results_combined['symmetrixID']= ru.array_id
     director_results_combined['reporting_level'] = "FEDirector"
     for fe_director in dir_list:
-        director_metrics = ru.get_fe_director_metrics(
+        director_metrics = ru.performance.get_fe_director_metrics(
             director=fe_director, start_date=start_date,
             end_date=end_date, dataformat='Average')
         director_results = ({
@@ -74,5 +74,6 @@ def get_last_hour_fe_metrics():
 def main():
     feperfdata = get_last_hour_fe_metrics()
     print (feperfdata)
+
 
 main()

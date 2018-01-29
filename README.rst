@@ -2,8 +2,8 @@
 Welcome to PyU4V
 ================
 
-A library showing some of the functionality possible using the ReST API of Dell EMC's UniSphere for VMAX.
-See the documentation here: pyu4v.readthedocs.io
+A library showing some of the functionality possible using the RestAPI of Dell EMC's Unisphere for VMAX.
+See the documentation here: http://pyu4v.readthedocs.io/.
 Get the Unisphere for VMAX Rest documentation by navigating to https://<ip-address>:<port-number>/univmax/restapi/docs,
 where <ip-address> = the ip of your Unisphere server and <port-number> = the corresponding port to connect through,
 eg: https://10.0.0.1:8443/univmax/restapi/docs.
@@ -11,9 +11,9 @@ eg: https://10.0.0.1:8443/univmax/restapi/docs.
 VERSION 3
 
 Please note that version 3 of the library is NOT BACKWARDS COMPATIBLE with existing scripts, and does not support any
-Unisphere for VMAX version earlier that 8.4 - PyU4V version 2.0.2.5 is still available on Pip and a tagged repoisitory
-is available on Github. Version 3 will be the version maintained going forward, and we do suggest you move to this
-version when possible.
+Unisphere for VMAX version earlier that 8.4 - PyU4V version 2.0.2.6 is still available on Pip, and there is a
+'stable/2.0' branch available on Github. Version 3 will be the version maintained going forward, and we do suggest
+you move to this version when possible.
 
 WHAT'S SUPPORTED
 
@@ -34,7 +34,7 @@ SSL CONFIGURATION
 
     # openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
 
-(This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
+    (This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
 2.	Either (a) add the certificate to a ca-certificates bundle, OR (b) add the path to the conf file:
     a. - Copy the pem file to the system certificate directory:
           .. code-block:: bash
@@ -55,7 +55,7 @@ SSL CONFIGURATION
 USAGE
 
 PyU4V could also be used as the backend for a script, or a menu etc.
-Just import the PyU4V package (import PyU4V), create an instance of RestFunctions, and you're good to go.
+Just import the PyU4V package, create an instance of RestFunctions, and you're good to go.
 The functions are divided up into categories - common, provisioning, replication and performance
 
 .. code-block:: python
@@ -83,7 +83,7 @@ FUTURE
 
 This is still a work in progress. To be expected in the future:
  - Expansion of the RestFunctions library
- - Increased exception handling and logging
+ - Improved exception handling and logging
  - Unittests
  - Tutorials
 

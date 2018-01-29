@@ -52,7 +52,7 @@ ARGS = PARSER.parse_args()
 sg_id = ARGS.sg
 remote_sid = ARGS.remote_sid
 srdfmode = ARGS.mode
-ru = PyU4V.rest_functions()
+ru = PyU4V.RestFunctions()
 
 
 # Call to protect Storage Group and Protect with SRDF,
@@ -60,6 +60,8 @@ ru = PyU4V.rest_functions()
 # srdf_protect_sg in rest_univmax.py, call can also be made
 # adding optional parameter establish=True
 def main():
-    ru.srdf_protect_sg(sg_id, remote_sid, srdfmode)
+    ru.replication.create_storagegroup_srdf_pairings(
+        sg_id, remote_sid, srdfmode)
+
 
 main()

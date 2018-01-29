@@ -3,7 +3,7 @@ import time
 import PyU4V
 
 
-rr = PyU4V.RestFunctions(
+rf = PyU4V.RestFunctions(
         username='smc', password='smc', server_ip='10.0.0.1',
         port='8443', array_id='000197111111')
 
@@ -32,56 +32,51 @@ def expand_srdf_storagegroup(
     :param rdf_mode: the rdf mode required
     :param version: the unisphere version required - '84' or '83' only
     """
-    rr.U4V_VERSION = version
-    rr.rest_client.timeout = 600
+    rf.U4V_VERSION = version
+    rf.rest_client.timeout = 600
     sg_name = 'temp-sg-%d' % time.time()
-    rr.create_non_empty_storagegroup(
+    rf.provisioning.create_non_empty_storagegroup(
         srp, sg_name, slo, workload, num_vols, vol_size, cap_unit)
 
     # Create SRDF relationship
     if rdf_mode.lower() == "asynchronous":
         # The group needs to be in a suspended state before new volumes
         # can be added. Check state, suspend group if required.
-        sg_rdf_details = rr.get_srdf_state(production_sg_name, rdfg_no)[0]
+        sg_rdf_details = rf.replication.get_storagegroup_srdf_details(
+            production_sg_name, rdfg_no)
         if 'Suspended' not in sg_rdf_details['states']:
-            rr.change_srdf_state(
+            rf.replication.modify_storagegroup_srdf(
                 production_sg_name, 'Suspend', rdfg=rdfg_no,
                 options={'immediate': 'true'})
-        rr.srdf_protect_sg(sg_name, remote_symm_id, rdf_mode,
-                           establish=None, rdfg_number=rdfg_no)
+        rf.replication.create_storagegroup_srdf_pairings(
+            sg_name, remote_symm_id, rdf_mode,
+            establish=None, rdfg_number=rdfg_no)
     else:
-        rr.srdf_protect_sg(sg_name, remote_symm_id, rdf_mode,
-                           establish=establish, rdfg_number=rdfg_no)
+        rf.replication.create_storagegroup_srdf_pairings(
+            sg_name, remote_symm_id, rdf_mode,
+            establish=establish, rdfg_number=rdfg_no)
 
     # Get the device ids and move the volumes from the temp sg
     # to the production sg
-    vol_list = rr.get_vols_from_SG(sg_name)
+    vol_list = rf.provisioning.get_vols_from_storagegroup(sg_name)
     # In 8.4, use 'move_volume' functionality
-    if version == '84':
-        rr.move_vol_between_storagegroup(
-            sg_name, production_sg_name, vol_list)
-    else:
-        rr.remove_vol_from_storagegroup(sg_name, vol_list)
-        rr.add_existing_vol_to_sg(production_sg_name, vol_list)
+    rf.provisioning.move_volumes_between_storage_groups(
+        sg_name, production_sg_name, vol_list)
     # Delete the temporary sg
-    rr.delete_sg(sg_name)
+    rf.provisioning.delete_storagegroup(sg_name)
 
     # Repeat on remote side
-    local_array = rr.array_id
-    rr.set_array_id(remote_symm_id)
-    remote_vol_list = rr.get_vols_from_SG(sg_name)
-    if version == '84':
-        rr.move_vol_between_storagegroup(
-            sg_name, production_sg_name, remote_vol_list)
-    else:
-        rr.remove_vol_from_storagegroup(sg_name, remote_vol_list)
-        rr.add_existing_vol_to_sg(production_sg_name, remote_vol_list)
-    rr.delete_sg(sg_name)
+    local_array = rf.array_id
+    rf.set_array_id(remote_symm_id)
+    remote_vol_list = rf.provisioning.get_vols_from_storagegroup(sg_name)
+    rf.provisioning.move_vol_between_storagegroup(
+        sg_name, production_sg_name, remote_vol_list)
+    rf.provisioning.delete_storagegroup(sg_name)
     # Set array back to local
-    rr.set_array_id(local_array)
+    rf.set_array_id(local_array)
     # If async, re-establish the replication relationship if required
     if rdf_mode.lower() == "asynchronous" and establish is True:
-        rr.change_srdf_state(
+        rf.replication.modify_storagegroup_srdf(
             production_sg_name, 'Establish', rdfg=rdfg_no)
 
 

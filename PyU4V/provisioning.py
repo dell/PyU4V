@@ -904,7 +904,7 @@ class ProvisioningFunctions(object):
         """Given a name, return storage group details.
 
         :param storage_group_name: the name of the storage group
-        :returns: storage group dict or None
+        :returns: storage group dict
         """
         return self.get_resource(
             self.array_id, SLOPROVISIONING, 'storagegroup',
@@ -1305,7 +1305,7 @@ class ProvisioningFunctions(object):
         """Get a VMAX volume from array.
 
         :param device_id: the volume device id
-        :returns: volume dict or None
+        :returns: volume dict
         """
         return self.get_resource(
             self.array_id, SLOPROVISIONING, 'volume', resource_name=device_id)

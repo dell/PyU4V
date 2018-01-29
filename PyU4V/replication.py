@@ -68,7 +68,7 @@ class ReplicationFunctions(object):
         """Given a name, return storage group details wrt replication.
 
         :param storage_group_name: the name of the storage group
-        :returns: storage group dict or None
+        :returns: storage group dict
         """
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup',
@@ -92,6 +92,20 @@ class ReplicationFunctions(object):
         if response and response.get('name'):
             storage_group_list = response['name']
         return storage_group_list
+
+    def get_storagegroup_snapshot_list(self, storagegroup_id):
+        """Get a list of snapshots associated with a storagegroup.
+
+        :param storagegroup_id: the storagegroup name
+        :return: list of snapshot names
+        """
+        snapshot_list = []
+        res_name = 'storagegroup/{}/snapshot'.format(storagegroup_id)
+        response = self.get_resource(
+            self.array_id, REPLICATION, res_name)
+        if response and response.get('name'):
+            snapshot_list = response['name']
+        return snapshot_list
 
     def create_storagegroup_snap(
             self, sg_name, snap_name, ttl=None, hours=False):
@@ -128,7 +142,8 @@ class ReplicationFunctions(object):
         :return: list of generation numbers
         """
         gen_list = []
-        res_name = "{}/snapshot/{}".format(storagegroup_id, snap_name)
+        res_name = "{}/snapshot/{}/generation".format(
+            storagegroup_id, snap_name)
         response = self.get_resource(self.array_id, REPLICATION,
                                      'storagegroup', resource_name=res_name)
         if response and response.get('generations'):
@@ -291,6 +306,19 @@ class ReplicationFunctions(object):
             storagegroup, snap_name, gen_num))
         return self.delete_resource(
             self.array_id, REPLICATION, 'storagegroup', resource_name)
+
+    def choose_snapshot_from_list_in_console(self, storagegroup_id):
+        """Allow a user to select a snapshot from a list.
+
+        :param storagegroup_id: the storagegoup id
+        """
+        snaplist = self.get_storagegroup_snapshot_list(storagegroup_id)
+        print("Choose the snapshot you want from the below list: \n")
+        for counter, value in enumerate(snaplist):
+            print("{}: {}".format(counter, value))
+        snapselection = input("Choice: ")
+        snapshot_id = (snaplist[int(snapselection)])
+        return snapshot_id
 
     def is_vol_in_rep_session(self, device_id):
         """Check if a volume is in a replication session.
