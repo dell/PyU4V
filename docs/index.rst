@@ -12,7 +12,6 @@ Welcome to PyU4V's documentation!
 
    readme
    tutorial
-   modules
 
 
 Indices and tables
