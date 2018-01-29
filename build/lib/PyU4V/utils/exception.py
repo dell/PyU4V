@@ -65,7 +65,3 @@ class ResourceNotFoundException(PyU4VException):
 
 class InvalidInputException(PyU4VException):
     message = "Invalid input received: %(data)s"
-
-
-class UnauthorizedRequestException(PyU4VException):
-    meesage = "Unauthorized request - please check credentials"

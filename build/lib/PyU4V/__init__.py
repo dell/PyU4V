@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from .rest_univmax import RestFunctions
+from .rest_univmax import rest_functions
+from .rest_univmax2 import RestFunctions
 
 __title__ = 'pyu4v'
 __version__ = '2.0'

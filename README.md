@@ -5,12 +5,14 @@ Get the Unisphere for VMAX Rest documentation by navigating to https://<ip-addre
 where <ip-address> = the ip of your Unisphere server and <port-number> = the corresponding port to connect through,
 eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
-# WHAT'S SUPPORTED
-This package supports Unisphere version 8.3 onwards, although the calls *should* work on 8.0, 8.1 and 8.2 also.
-We support VMAX3 and VMAX All-Flash (All Flash from 8.3 onwards).
+# VERSION 3
+Please note that version 3 of the library is NOT BACKWARDS COMPATIBLE with existing scripts, and does not support any
+Unisphere for VMAX version earlier that 8.4 - PyU4V version 2.0.2.5 is still available on Pip and a tagged repoisitory
+is available on Github. Version 3 will be the version maintained going forward, and we do suggest you move to this
+version when possible.
 
-As Unisphere RESTAPI changed significantly for the 8.4 release, there is one client for 8.3 and older and one for 8.4
-and newer. Please see USAGE below.
+# WHAT'S SUPPORTED
+This package supports Unisphere version 8.4 onwards. We support VMAX3 and VMAX All-Flash.
 
 # INSTALLATION
 To give it a try, install the package using pip (pip install PyU4V). Copy the sample PyU4V.conf into your working
@@ -38,13 +40,12 @@ Verify can be left as is, or you can enable SSL verification by following the di
 
 # USAGE
 PyU4V could also be used as the backend for a script, or a menu etc.
-Just import the PyU4V package (import PyU4V), create an instance of rest_functions, and you're good to go.
-If you are using a Unisphere version which is 8.3 or older, create the instance as follows: "rf = PyU4V.rest_functions()"
-If you are using 8.4 or newer, create the instance using "rf = PyU4V.RestFunctions()". Please note that only RestFunctions
-will be updated with new functionality going forward.
+Just import the PyU4V package (import PyU4V), create an instance of RestFunctions "rf = PyU4V.RestFunctions()",
+and you're good to go. The functions are divided up into categories - common, provisioning, replication and performance,
+e.g. "rf.provisioning.get_host_list()"; "rf.replication.find_expired_snapvx_snapshots()"
 
-If you wish to query another array without changing the configuration file, simply change the array_id attribute
-(e.g. rf.array_id = '0001978880000').
+If you wish to query another array without changing the configuration file, call the 'set_array_id(new_array_id)'
+function, e.g. 'rf.set_array_id('000197123456')'.
 
 # EXAMPLES
 There are a number of examples which can be run with minimal set-up. For details on how to run these,
@@ -52,7 +53,7 @@ and other very useful information, please see Paul Martin's blog https://communi
 
 # FUTURE
 This is still a work in progress. To be expected in the future:
-- Expansion of the rest_functions library (including new Unisphere versions - see below)
+- Expansion of the rest_functions library
 - Increased exception handling and logging
 - Unittests
 

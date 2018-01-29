@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='PyU4V',
-      version='2.0.2.5',
+      version='3.0.0',
       url='https://github.com/ciarams87/PyU4V/',
       author='Dell Inc. or its subsidiaries',
       author_email='ciarastacke@hotmail.com',
@@ -12,7 +12,7 @@ setup(name='PyU4V',
       install_requires=['requests', 'six', 'urllib3'],
       include_package_data=True,
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'Intended Audience :: System Administrators',
           'License :: OSI Approved :: MIT License',

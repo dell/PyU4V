@@ -116,7 +116,7 @@ class RestRequests:
                            "failed with exception %(e)s")
                           % {'method': method, 'url': url, 'e': e})
                 raise
-
+            
     def close_session(self):
         """
         Close the current rest session
