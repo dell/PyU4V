@@ -429,7 +429,7 @@ class ReplicationFunctions(object):
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', res_name)
 
-    def create_storagegroup_srdf_pairings_(
+    def create_storagegroup_srdf_pairings(
             self, storagegroup_id, remote_sid, srdfmode, establish=None,
             async=False, rdfg_number=None):
         """SRDF protect a storage group.

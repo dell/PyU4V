@@ -19,10 +19,11 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import argparse
 
 from PyU4V import RestFunctions
-ru=RestFunctions(u4v_version='84')
-import argparse
+
+ru = RestFunctions(u4v_version='84')
 
 PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic '
                                              'VMAX REST recipe provisioning '
@@ -43,7 +44,7 @@ RFLAGS.add_argument('-pg', required=True, help='Filename containing list of '
                                                'e.g. FA-1D:25')
 RFLAGS.add_argument('-cap', required=True, help='Capacity in GB')
 
-#Assign parameters to command line arguments
+# Assign parameters to command line arguments
 ARGS = PARSER.parse_args()
 sgname = ARGS.sg
 hba_file = ARGS.ig
@@ -53,27 +54,25 @@ sg_id = appname + "_SG"
 ig_id = appname + "_IG"
 pg_id = appname + "_PG"
 mv_id = appname + "_MV"
-requested_capacity=ARGS.cap
-initiator_list = ru.create_list_from_file(hba_file)
+requested_capacity = ARGS.cap
+initiator_list = ru.common.create_list_from_file(hba_file)
 
 
 def provision_storage():
     if headroom_check():
-        sg_job,sg_rc = ru.create_non_empty_storagegroup("SRP_1",sg_id,"Diamond",
-                                                        "OLTP",1,
-                                                        requested_capacity, "GB"
-                                                        , True)
+        sg_job,sg_rc = ru.provisioning.create_non_empty_storagegroup(
+            "SRP_1", sg_id, "Diamond", "OLTP", 1, requested_capacity, "GB", True)
         if sg_rc < 300:
-            #showing how async functions can be worked in.
-            ru.wait_for_job("", sg_rc, sg_job)
+            # showing how async functions can be worked in.
+            ru.common.wait_for_job("", sg_rc, sg_job)
             print("Storage Group Created Return Code %s" % sg_rc)
-            host_job, host_rc = ru.create_host(ig_id, initiator_list)
+            host_job, host_rc = ru.provisioning.create_host(ig_id, initiator_list)
             if host_rc < 300:
                 print("Host Created Return Code %s" % host_rc)
-                pg_job, pg_rc = ru.create_portgroup_from_file(port_file, pg_id)
+                pg_job, pg_rc = ru.provisioning.create_portgroup_from_file(port_file, pg_id)
                 if pg_rc < 300:
                     print("Port Group Created Return Code %s" % pg_rc)
-                    mv_job, mv_rc = ru.create_masking_view_existing_components(
+                    mv_job, mv_rc = ru.provisioning.create_masking_view_existing_components(
                          pg_id, mv_id, sg_id, ig_id)
                     if mv_rc < 300:
                         print("Masking View Created Return Code %s" % mv_rc)
@@ -90,25 +89,13 @@ def provision_storage():
     else:
         print("Headroom Check Failed, Check array Capacity Usage")
 
+
 def headroom_check():
-    headroom_cp = ru.get_headroom("OLTP")[0]["headroom"][0]["headroomCapacity"]
+    headroom_cp = ru.common.get_headroom("OLTP")[0]["headroom"][0]["headroomCapacity"]
     if int(requested_capacity) <= int(headroom_cp):
         return True
     else:
         return False
 
 
-
-def main():
-    provision_storage()
-
-main()
-
-
-
-
-
-
-
-
-
+provision_storage()
