@@ -29,8 +29,7 @@ from PyU4V.utils import config_handler
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 
-logger = logging.getLogger(__name__)
-LOG, CFG = config_handler.set_logger_and_config(logger)
+LOG = logging.getLogger(__name__)
 
 # HTTP constants
 GET = constants.GET
@@ -331,7 +330,7 @@ class CommonFunctions(object):
         sgnamelist = data['sgname']
         policylist = data['policy']
 
-        :param file_name CSV file
+        :param file_name: path to CSV file
         :return: Dictionary of data parsed from CSV
         """
         # open the file in universal line ending mode

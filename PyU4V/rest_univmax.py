@@ -30,11 +30,11 @@ from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
 
-logger = logging.getLogger(__name__)
-LOG, CFG = config_handler.set_logger_and_config(logger)
+LOG = logging.getLogger(__name__)
+CFG = config_handler.set_logger_and_config()
 
 
-class RestFunctions:
+class U4VConn(object):
     def __init__(self, username=None, password=None, server_ip=None,
                  port=None, verify=None,
                  u4v_version=constants.UNIVMAX_VERSION,

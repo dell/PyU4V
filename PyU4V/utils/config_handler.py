@@ -6,7 +6,7 @@ import logging
 import logging.config
 
 
-def set_logger_and_config(logger):
+def set_logger_and_config():
     CFG = None
     # register configuration file
     try:
@@ -14,7 +14,7 @@ def set_logger_and_config(logger):
         logging.config.fileConfig(CONF_FILE)
         CFG = Config.ConfigParser()
         CFG.read(CONF_FILE)
-        LOG = logging.getLogger(logger.__name__)
+        logging.getLogger(__name__)
     except Exception:
         # Set default logging handler to avoid "No handler found" warnings.
         try:  # Python 2.7+
@@ -24,6 +24,6 @@ def set_logger_and_config(logger):
                 def emit(self, record):
                     pass
 
-        LOG = logging.getLogger(__name__).addHandler(NullHandler())
+        logging.getLogger(__name__).addHandler(NullHandler())
 
-    return LOG, CFG
+    return CFG

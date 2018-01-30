@@ -31,8 +31,7 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-logger = logging.getLogger(__name__)
-LOG, CFG = config_handler.set_logger_and_config(logger)
+LOG = logging.getLogger(__name__)
 
 
 class RestRequests:

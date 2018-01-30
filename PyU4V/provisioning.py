@@ -27,8 +27,7 @@ from PyU4V.utils import config_handler
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 
-logger = logging.getLogger(__name__)
-LOG, CFG = config_handler.set_logger_and_config(logger)
+LOG = logging.getLogger(__name__)
 
 SLOPROVISIONING = constants.SLOPROVISIONING
 CREATE_VOL_STRING = constants.CREATE_VOL_STRING
