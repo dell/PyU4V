@@ -23,7 +23,7 @@
 Sample Script to show graphing of performanc metrics using matplotlib
 
 """
-from PyU4V import RestFunctions
+import PyU4V
 import matplotlib.pyplot as plt
 import matplotlib.dates as md
 import datetime as dt
@@ -31,7 +31,7 @@ import time
 import numpy as np
 
 
-ru = RestFunctions(u4v_version='84')
+ru = PyU4V.U4VConn(u4v_version='84')
 
 
 end_date = int(round(time.time()) * 1000)

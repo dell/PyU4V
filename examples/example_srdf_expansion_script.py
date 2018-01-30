@@ -3,7 +3,7 @@ import time
 import PyU4V
 
 
-rf = PyU4V.RestFunctions(
+rf = PyU4V.U4VConn(
         username='smc', password='smc', server_ip='10.0.0.1',
         port='8443', array_id='000197111111')
 

@@ -25,9 +25,9 @@ will collect Array, Storage Groupm, Port Group, and Host
 or Cluster level Metrics.
 """
 import time
-from PyU4V import RestFunctions
+from PyU4V import U4VConn
 
-ru = RestFunctions(u4v_version='84', server_ip='')
+ru = U4VConn(u4v_version='84', server_ip='')
 
 end_date = int(round(time.time()) * 1000)
 start_date = (end_date - 3600000)

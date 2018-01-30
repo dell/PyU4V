@@ -5,7 +5,7 @@
 # /    ( /  / _/  / _ |  \ /
 #       /             |
 
-from .rest_univmax import U4VConn
+from .univmax_conn import U4VConn
 
 __title__ = 'pyu4v'
 __version__ = '2.0'

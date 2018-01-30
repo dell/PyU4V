@@ -1,5 +1,6 @@
-from PyU4V import RestFunctions
-ru = RestFunctions()
+from PyU4V import U4VConn
+
+ru = U4VConn()
 
 """
 Sample script to set specific performance metrics and enable alerting for 

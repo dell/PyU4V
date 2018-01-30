@@ -25,7 +25,9 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PyU4V.utils package" href="PyU4V.utils.html" />
+    <link rel="prev" title="API Glossary" href="../api.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,7 +39,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">PyU4V 3.0.0 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="PyU4V.utils.html" title="PyU4V.utils package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../api.html" title="API Glossary"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api.html" accesskey="U">API Glossary</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -48,23 +57,49 @@
             
   <div class="section" id="pyu4v-package">
 <h1>PyU4V package<a class="headerlink" href="#pyu4v-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="PyU4V.utils.html">PyU4V.utils package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.config_handler">PyU4V.utils.config_handler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.constants">PyU4V.utils.constants module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.exception">PyU4V.utils.exception module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pyu4v-univmax-conn-module">
+<h2>PyU4V.univmax_conn module<a class="headerlink" href="#pyu4v-univmax-conn-module" title="Permalink to this headline">¶</a></h2>
+<p>Creates the connection with the Unisphere for VMAX instance.</p>
+<span class="target" id="module-PyU4V.univmax_conn"></span><dl class="class">
+<dt id="PyU4V.univmax_conn.U4VConn">
+<em class="property">class </em><code class="descclassname">PyU4V.univmax_conn.</code><code class="descname">U4VConn</code><span class="sig-paren">(</span><em>username=None</em>, <em>password=None</em>, <em>server_ip=None</em>, <em>port=None</em>, <em>verify=None</em>, <em>u4v_version='84'</em>, <em>interval=5</em>, <em>retries=200</em>, <em>array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/univmax_conn.html#U4VConn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.univmax_conn.U4VConn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="PyU4V.univmax_conn.U4VConn.close_session">
+<code class="descname">close_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/univmax_conn.html#U4VConn.close_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.univmax_conn.U4VConn.close_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the current rest session</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.univmax_conn.U4VConn.set_array_id">
+<code class="descname">set_array_id</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/univmax_conn.html#U4VConn.set_array_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.univmax_conn.U4VConn.set_array_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the array serial number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array_id</strong> &#8211; the array serial number</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.univmax_conn.U4VConn.set_requests_timeout">
+<code class="descname">set_requests_timeout</code><span class="sig-paren">(</span><em>timeout_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/univmax_conn.html#U4VConn.set_requests_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.univmax_conn.U4VConn.set_requests_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the requests timeout.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout_value</strong> &#8211; the new timeout value - int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-PyU4V.common">
 <span id="pyu4v-common-module"></span><h2>PyU4V.common module<a class="headerlink" href="#module-PyU4V.common" title="Permalink to this headline">¶</a></h2>
@@ -3106,52 +3141,21 @@ can switch to async call if required.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-PyU4V.rest_univmax">
-<span id="pyu4v-rest-univmax-module"></span><h2>PyU4V.rest_univmax module<a class="headerlink" href="#module-PyU4V.rest_univmax" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PyU4V.rest_univmax.U4VConn">
-<em class="property">class </em><code class="descclassname">PyU4V.rest_univmax.</code><code class="descname">U4VConn</code><span class="sig-paren">(</span><em>username=None</em>, <em>password=None</em>, <em>server_ip=None</em>, <em>port=None</em>, <em>verify=None</em>, <em>u4v_version='84'</em>, <em>interval=5</em>, <em>retries=200</em>, <em>array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_univmax.html#U4VConn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_univmax.U4VConn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="PyU4V.rest_univmax.U4VConn.close_session">
-<code class="descname">close_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_univmax.html#U4VConn.close_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_univmax.U4VConn.close_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close the current rest session</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="PyU4V.rest_univmax.U4VConn.set_array_id">
-<code class="descname">set_array_id</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_univmax.html#U4VConn.set_array_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_univmax.U4VConn.set_array_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the array serial number.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array_id</strong> &#8211; the array serial number</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="PyU4V.rest_univmax.U4VConn.set_requests_timeout">
-<code class="descname">set_requests_timeout</code><span class="sig-paren">(</span><em>timeout_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_univmax.html#U4VConn.set_requests_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_univmax.U4VConn.set_requests_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the requests timeout.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout_value</strong> &#8211; the new timeout value - int</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PyU4V.utils.html">PyU4V.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.config_handler">PyU4V.utils.config_handler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.constants">PyU4V.utils.constants module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.exception">PyU4V.utils.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
 </div>
-<div class="section" id="module-PyU4V">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyU4V" title="Permalink to this headline">¶</a></h2>
-</div>
+<span class="target" id="module-PyU4V"></span></div>
 </div>
 
 
@@ -3163,19 +3167,23 @@ can switch to async call if required.</p>
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">PyU4V package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#pyu4v-univmax-conn-module">PyU4V.univmax_conn module</a></li>
 <li><a class="reference internal" href="#module-PyU4V.common">PyU4V.common module</a></li>
 <li><a class="reference internal" href="#module-PyU4V.performance">PyU4V.performance module</a></li>
 <li><a class="reference internal" href="#module-PyU4V.provisioning">PyU4V.provisioning module</a></li>
 <li><a class="reference internal" href="#module-PyU4V.replication">PyU4V.replication module</a></li>
 <li><a class="reference internal" href="#module-PyU4V.rest_requests">PyU4V.rest_requests module</a></li>
-<li><a class="reference internal" href="#module-PyU4V.rest_univmax">PyU4V.rest_univmax module</a></li>
-<li><a class="reference internal" href="#module-PyU4V">Module contents</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../api.html"
+                        title="previous chapter">API Glossary</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="PyU4V.utils.html"
+                        title="next chapter">PyU4V.utils package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -3206,7 +3214,14 @@ can switch to async call if required.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">PyU4V 3.0.0 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="PyU4V.utils.html" title="PyU4V.utils package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../api.html" title="API Glossary"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api.html" >API Glossary</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -8,7 +8,7 @@ Welcome to PyU4V's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :hidden:
 
    installation
    quick_start

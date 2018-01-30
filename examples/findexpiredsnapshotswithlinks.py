@@ -1,6 +1,6 @@
-from PyU4V import RestFunctions
+import PyU4V
 
-ru = RestFunctions(u4v_version=84)
+ru = PyU4V.U4VConn(u4v_version=84)
 
 # Script will find a list of storage groups with expired snapshots and return
 # details.

@@ -30,9 +30,9 @@ REST call create_new_snap for a storage group.
 import argparse
 from time import strftime
 
-from PyU4V import RestFunctions
+from PyU4V import U4VConn
 
-ru = RestFunctions(u4v_version='84')
+ru = U4VConn(u4v_version='84')
 
 ######################################################################
 # Define and Parse CLI arguments and instantiate session for REST #

@@ -52,7 +52,7 @@ ARGS = PARSER.parse_args()
 sg_id = ARGS.sg
 remote_sid = ARGS.remote_sid
 srdfmode = ARGS.mode
-rf = PyU4V.RestFunctions()
+rf = PyU4V.U4VConn()
 
 # Call to protect Storage Group and Protect with SRDF,
 # default action is not to start the copy, see full function

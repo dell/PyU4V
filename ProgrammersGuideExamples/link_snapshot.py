@@ -21,8 +21,9 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import argparse
-from PyU4V import RestFunctions
-ru=RestFunctions(u4v_version='84')
+from PyU4V import U4VConn
+
+ru = U4VConn(u4v_version='84')
 ####################################
 # Define and Parse CLI arguments   #
 # and instantiate session for REST #

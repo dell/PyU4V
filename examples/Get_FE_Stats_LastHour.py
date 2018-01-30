@@ -34,7 +34,7 @@ import time
 ####################################
 # end_date = int(round(time.time() * 1000)) #Set end Date to current time EPOCH in Milliseconds
 # start_date = (end_date - 3600000)  #Set start date to EPOCH Time 1 hours Earlier
-ru = PyU4V.RestFunctions()
+ru = PyU4V.U4VConn()
 end_date = int(round(time.time() * 1000))
 start_date = (end_date - 3600000)
 

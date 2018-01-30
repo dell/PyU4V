@@ -21,9 +21,9 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import argparse
 
-from PyU4V import RestFunctions
+from PyU4V import U4VConn
 
-ru = RestFunctions(u4v_version='84')
+ru = U4VConn(u4v_version='84')
 
 PARSER = argparse.ArgumentParser(description='This python scrtipt is a basic '
                                              'VMAX REST recipe provisioning '

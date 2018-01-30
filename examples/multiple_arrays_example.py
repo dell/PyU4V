@@ -5,8 +5,8 @@
 import PyU4V
 
 # Create connections to Unisphere servers - create RestFunctions instances for each Unisphere server
-rf1 = PyU4V.RestFunctions(username='smc', password='smc', server_ip='10.0.0.1')
-rf2 = PyU4V.RestFunctions(username='smc', password='smc', server_ip='10.0.0.2')
+rf1 = PyU4V.U4VConn(username='smc', password='smc', server_ip='10.0.0.1')
+rf2 = PyU4V.U4VConn(username='smc', password='smc', server_ip='10.0.0.2')
 
 
 def get_host_count_from_all_arrays(rf):

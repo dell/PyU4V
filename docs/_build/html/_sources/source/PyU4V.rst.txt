@@ -1,15 +1,15 @@
 PyU4V package
 =============
 
-Subpackages
------------
 
-.. toctree::
+PyU4V\.univmax\_conn module
+---------------------------
+Creates the connection with the Unisphere for VMAX instance.
 
-    PyU4V.utils
-
-Submodules
-----------
+.. automodule:: PyU4V.univmax_conn
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 PyU4V\.common module
 --------------------
@@ -51,17 +51,13 @@ PyU4V\.rest\_requests module
     :undoc-members:
     :show-inheritance:
 
-PyU4V\.rest\_univmax module
----------------------------
+Subpackages
+-----------
 
-.. automodule:: PyU4V.rest_univmax
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
 
+    PyU4V.utils
 
-Module contents
----------------
 
 .. automodule:: PyU4V
     :members:
