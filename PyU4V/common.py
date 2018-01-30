@@ -239,7 +239,7 @@ class CommonFunctions(object):
         :param resource_type: the resource type e.g. maskingview
         :param resource_name: the name of a specific resource
         :param params: query parameters
-        :returns: resource object -- dict or None
+        :returns: resource object -- dict
         """
         target_uri = self._build_uri(array, category, resource_type,
                                      resource_name)
@@ -330,6 +330,7 @@ class CommonFunctions(object):
         data=ru.read_csv_values(mycsv.csv)
         sgnamelist = data['sgname']
         policylist = data['policy']
+
         :param file_name CSV file
         :return: Dictionary of data parsed from CSV
         """
@@ -418,12 +419,13 @@ class CommonFunctions(object):
         """Get the Remaining Headroom Capacity.
 
         Get the headroom capacity for a given srp/ slo/ workload combination.
-        Exapmle output:
+        Example output:
         {'headroom': [{'workloadType': 'OLTP',
         'headroomCapacity': 29076.34, 'processingDetails':
         {'lastProcessedSpaTimestamp': 1485302100000,
         'nextUpdate': 1670}, 'sloName': 'Diamond',
         'srp': 'SRP_1', 'emulation': 'FBA'}]})
+
         :param array_id: the array serial number
         :param workload: the workload type (DSS, OLTP, DSS_REP, OLTP_REP)
         :param srp: the storage resource pool. Default SRP_1.

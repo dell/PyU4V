@@ -82,6 +82,7 @@ class ProvisioningFunctions(object):
         """Get list of the ports on a particular director.
 
         Can be filtered by optional parameters, please see documentation.
+
         :param director: the director ID e.g. FA-1D
         :param filters: optional filters - dict
         :return: list of port key dicts
@@ -122,6 +123,7 @@ class ProvisioningFunctions(object):
         """Get list of the hosts on the array.
 
         See documentation for applicable filters.
+
         :param filters: optional list of filters - dict
         :return: list of hosts
         """
@@ -139,6 +141,7 @@ class ProvisioningFunctions(object):
         Accepts either initiator_list, e.g.
         [10000000ba873cbf, 10000000ba873cba], or file.
         The initiators must not be associated with another host.
+
         :param host_name: the name of the new host
         :param initiator_list: list of initiators
         :param host_flags: dictionary of optional host flags to apply
@@ -166,6 +169,7 @@ class ProvisioningFunctions(object):
         """Modify an existing host.
 
         Only one parameter can be modified at a time.
+
         :param host_id: the host name
         :param host_flag_dict: dictionary of host flags
         :param remove_init_list: list of initiators to be removed
@@ -197,7 +201,8 @@ class ProvisioningFunctions(object):
     def delete_host(self, host_id):
         """Delete a given host.
 
-        Cannot delete if associated with a masking view
+        Cannot delete if associated with a masking view.
+
         :param host_id: name of the host
         """
         self.delete_resource(self.array_id, SLOPROVISIONING, 'host', host_id)
@@ -239,6 +244,7 @@ class ProvisioningFunctions(object):
         """Get list of hostgroup(s) on the array.
 
         See unisphere documentation for applicable filters.
+
         :param filters: optional list of filters - dict
         :return: dict
         """
@@ -273,6 +279,7 @@ class ProvisioningFunctions(object):
         """Modify an existing hostgroup.
 
         Only one parameter can be modified at a time.
+
         :param hostgroup_id: the name of the hostgroup
         :param host_flag_dict: dictionary of host flags
         :param remove_host_list: list of hosts to be removed
@@ -304,7 +311,8 @@ class ProvisioningFunctions(object):
     def delete_hostgroup(self, hostgroup_id):
         """Delete a given hostgroup.
 
-        Cannot delete if associated with a masking view
+        Cannot delete if associated with a masking view.
+
         :param hostgroup_id: name of the hostgroup
         """
         self.delete_resource(self.array_id, SLOPROVISIONING,
@@ -338,6 +346,7 @@ class ProvisioningFunctions(object):
         """Modify an initiator.
 
         Only one parameter can be edited at a time.
+
         :param initiator_id: the initiator id
         :param remove_masking_entry: string - "true" or "false"
         :param replace_init: Id of the new initiator
@@ -390,7 +399,8 @@ class ProvisioningFunctions(object):
 
         Gets the list of initiators from the array which are in
         hosts/ initiator groups.
-        :returns: init_list
+
+        :returns: list of in-use initiators
         """
         params = {'in_a_host': 'true'}
         return self.get_initiator_list(params)
@@ -411,6 +421,7 @@ class ProvisioningFunctions(object):
         """Get a masking view or list of masking views.
 
         See unisphere documentation for possible filters.
+
         :param filters: dictionary of filters
         :return: list of masking views
         """
@@ -439,6 +450,7 @@ class ProvisioningFunctions(object):
 
         Must enter either a host name or a host group name, but
         not both.
+
         :param port_group_name: name of the port group
         :param masking_view_name: name of the new masking view
         :param storage_group_name: name of the storage group
@@ -446,6 +458,7 @@ class ProvisioningFunctions(object):
         :param host_group_name: name of host group
         :param async: flag to indicate if command should be run asynchronously
         :return: dict
+        :raises: InvalidInputException
         """
         if host_name:
             host_details = {"useExistingHostParam": {"hostId": host_name}}
@@ -486,6 +499,7 @@ class ProvisioningFunctions(object):
 
         Retrieve the list of masking views associated with the
         given initiator group.
+
         :param initiatorgroup_name: the name of the initiator group
         :returns: list of masking view names
         """
@@ -555,6 +569,7 @@ class ProvisioningFunctions(object):
         """Rename an existing masking view.
 
         Currently, the only supported modification is "rename".
+
         :param masking_view_id: the current name of the masking view
         :param new_name: the new name of the masking view
         :return: dict
@@ -638,6 +653,7 @@ class ProvisioningFunctions(object):
 
         Note a mixture of Front end, back end and RDF port specific values
         are not allowed. See UniSphere documentation for possible values.
+
         :param filters: dictionary of filters e.g. {'vnx_attached': 'true'}
         :return: list of port key dicts
         """
@@ -750,6 +766,7 @@ class ProvisioningFunctions(object):
 
         Each director:port pair must be on a new line.
         Example director:port - FA-1D:4.
+
         :param file_name: the path to the file
         :param portgroup_id: the name for the portgroup
         :return: dict, status_code
@@ -769,6 +786,7 @@ class ProvisioningFunctions(object):
         """Modify an existing portgroup.
 
         Only one parameter can be modified at a time.
+
         :param portgroup_id: the name of the portgroup
         :param remove_port: tuple of port details ($director_id, $portId)
         :param add_port: tuple of port details ($director_id, $portId)
@@ -842,6 +860,7 @@ class ProvisioningFunctions(object):
         """Modify an SLO.
 
         Currently, the only modification permitted is renaming.
+
         :param slo_id: the current name of the slo
         :param new_name: the new name for the slo
         :return: dict
@@ -1013,6 +1032,7 @@ class ProvisioningFunctions(object):
         specified volumes. Set the disable_compression flag for
         disabling compression on an All Flash array (where compression
         is on by default).
+
         :param srp_id: the storage resource pool
         :param sg_id: the name of the new storage group
         :param slo: the service level agreement (e.g. Gold)
@@ -1032,11 +1052,11 @@ class ProvisioningFunctions(object):
 
     def create_empty_sg(self, srp_id, sg_id, slo, workload,
                         disable_compression=False, async=False):
-        """Generates a dictionary for json formatting and calls
-        the create_sg function to create an empty storage group
-        Set the disable_compression flag for
-        disabling compression on an All Flash array (where compression
-        is on by default).
+        """Create an empty storage group.
+
+        Set the disable_compression flag for disabling compression
+        on an All Flash array (where compression is on by default).
+
         :param srp_id: the storage resource pool
         :param sg_id: the name of the new storage group
         :param slo: the service level agreement (e.g. Gold)
@@ -1130,6 +1150,7 @@ class ProvisioningFunctions(object):
         """Move volumes to a different storage group.
 
         Note: 8.4.0.7 or later
+
         :param source_storagegroup_name: the originating storage group name
         :param target_storagegroup_name: the destination storage group name
         :param device_ids: the device ids - can be list
@@ -1192,6 +1213,7 @@ class ProvisioningFunctions(object):
 
         This method adds an existing storage group to another storage
         group, i.e. cascaded storage groups.
+
         :param child_sg: the name of the child sg
         :param parent_sg: the name of the parent sg
         """
@@ -1205,6 +1227,7 @@ class ProvisioningFunctions(object):
         """Remove a storage group from its parent storage group.
 
         This method removes a child storage group from its parent group.
+
         :param child_sg: the name of the child sg
         :param parent_sg: the name of the parent sg
         """
@@ -1222,6 +1245,7 @@ class ProvisioningFunctions(object):
         either is set in StorageGroup. If so, then DistributionType can be
         modified. Example qos specs:
         {'maxIOPS': '4000', 'maxMBPS': '4000', 'DistributionType': 'Dynamic'}.
+
         :param storage_group_name: the storagegroup instance name
         :param qos_specs: the qos specifications
         :returns: dict
@@ -1295,7 +1319,8 @@ class ProvisioningFunctions(object):
         """Delete a given storage group.
 
         A storage group cannot be deleted if it
-        is associated with a masking view
+        is associated with a masking view.
+
         :param storagegroup_id: the name of the storage group
         """
         self.delete_resource(
@@ -1345,6 +1370,7 @@ class ProvisioningFunctions(object):
 
         Get volume details for a list of volume device ids,
         and write results to a csv file.
+
         :param vol_list: list of device ids
         :return: Dictionary
         """
@@ -1502,7 +1528,11 @@ class ProvisioningFunctions(object):
     def deallocate_volume(self, device_id):
         """Deallocate all tracks on a volume.
 
-        Necessary before deletion.
+        Necessary before deletion. Please note that it is not possible
+        to know exactly when a deallocation is complete. This method
+        will return when the array has accepted the request for deallocation;
+        the deallocation itself happens as a background task on the array.
+
         :param device_id: the device id
         :return: dict
         """
@@ -1525,6 +1555,7 @@ class ProvisioningFunctions(object):
         running as will check all sg on array and all storage group.  Only
         identifies volumes in storage group,  note if volume is in more
         than one sg it may show up more than once.
+
         :param low_utilization_percentage: low utilization watermark
         percentage, e.g. find volumes with utilization less than 10%
         :param csvname: filename for CFV output file

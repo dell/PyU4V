@@ -2,7 +2,7 @@ try:
     import ConfigParser as Config
 except ImportError:
     import configparser as Config
-
+import logging
 import logging.config
 
 
@@ -16,5 +16,14 @@ def set_logger_and_config(logger):
         CFG.read(CONF_FILE)
         LOG = logging.getLogger(logger.__name__)
     except Exception:
-        LOG = logger
+        # Set default logging handler to avoid "No handler found" warnings.
+        try:  # Python 2.7+
+            from logging import NullHandler
+        except ImportError:
+            class NullHandler(logging.Handler):
+                def emit(self, record):
+                    pass
+
+        LOG = logging.getLogger(logger.__name__).addHandler(NullHandler())
+
     return LOG, CFG

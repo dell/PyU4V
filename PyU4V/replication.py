@@ -114,6 +114,7 @@ class ReplicationFunctions(object):
         To establish a new generation of an existing SnapVX snapshot
         for a source SG, use the same name as the existing snapshot for
         the new snapshot.
+
         :param sg_name: the source group name
         :param snap_name: the name of the snapshot
         :param ttl: ttl in days, if any - int
@@ -137,6 +138,7 @@ class ReplicationFunctions(object):
         The oldest snapshot will have a gen number = genCount - 1
         (i.e. if there are 4 generations of particular snapshot,
         the oldest will have a gen num of 3)
+
         :param storagegroup_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :return: list of generation numbers
@@ -175,6 +177,7 @@ class ReplicationFunctions(object):
         'expiration_time': '14:46:24 Wed, 24 Jan 2018',
         'linked_sg_name': 'my-linked-sg',
         'snap_creation_time': '14:46:24 Wed, 23 Jan 2018'}]
+
         :return: list of dicts with expired snap details,
         """
         expired_snap_list = []
@@ -216,6 +219,7 @@ class ReplicationFunctions(object):
         """Modify a storage group snapshot.
 
         Please note that only one parameter can be modified at a time.
+
         :param source_sg_id: the source sg id
         :param target_sg_id: the target sg id (Can be None)
         :param snap_name: the snapshot name
@@ -284,6 +288,7 @@ class ReplicationFunctions(object):
         """Link a snapshot to another storage group.
 
         Target storage group will be created if it does not exist.
+
         :param sg_id: Source storage group name
         :param snap_name: name of the snapshot
         :param link_sg_name:  the target storage group name
@@ -493,6 +498,7 @@ class ReplicationFunctions(object):
 
         This may be a long running task depending on the size of the SRDF group,
         can switch to async call if required.
+
         :param storagegroup_id: name of storage group
         :param action: the rdf action e.g. Suspend, Establish, etc
         :param rdfg: rdf number, optional

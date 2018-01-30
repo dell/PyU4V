@@ -83,8 +83,9 @@ class PerformanceFunctions(object):
     def get_fe_port_util_last4hrs(self, dir_id, port_id):
         """Get stats for last 4 hours.
 
-        Currently only coded for one metric - can be adapted for multiple
-        :return:Requested stats
+        Currently only coded for one metric - can be adapted for multiple.
+
+        :return: Requested stats
         """
         end_date = int(round(time.time() * 1000))
         start_date = (end_date - 14400000)
@@ -140,6 +141,7 @@ class PerformanceFunctions(object):
         The metric list can contain a list of one or more of PercentBusy,
         IOs, MBRead, MBWritten, MBs, AvgIOSize, SpeedGBs, MaxSpeedGBs,
         HostIOLimitIOs, HostIOLimitMBs.
+
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
         :param director_id: Director id
@@ -164,7 +166,8 @@ class PerformanceFunctions(object):
         """Get array metrics.
 
         Get all avaliable performance statistics for specified time
-        period return in JSON
+        period return in JSON.
+
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
         :return: array_results_combined
@@ -283,6 +286,7 @@ class PerformanceFunctions(object):
 
         Calculate start and End Dates for Gathering Performance Stats
         Last 1 Hour.
+
         :param start_date: start date
         :param end_date: end date
         :return: director_results_combined
@@ -309,6 +313,7 @@ class PerformanceFunctions(object):
 
         Get Director level information and performance metrics for
         specified time frame, hard coded to average numbers.
+
         :param director_id: Director ID
         :param start_date: start date
         :param end_date: end date
@@ -496,6 +501,7 @@ class PerformanceFunctions(object):
 
         Get all avaliable host performance statiscics for specified
         time period return in JSON.
+
         :param host: the host name
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
@@ -523,8 +529,6 @@ class PerformanceFunctions(object):
     def get_perf_threshold_categories(self):
         """Get performance threshold categories.
 
-        Written for Unisphere 84, if you are on ealier, append /83 to the
-        endpoint.
         :return: category_list
         """
         target_uri = "/performance/threshold/categories"
@@ -537,8 +541,7 @@ class PerformanceFunctions(object):
 
         Will accept valid category (categories listed from
         get_threshold_categories).
-        Written for Unisphere 84, if earlier version append
-        /83/ to start of uri
+
         :param category:
         :return: dict, sc
         """
@@ -555,6 +558,7 @@ class PerformanceFunctions(object):
         users may want to modify as potentially 3 of 5 could mean could
         take 25 minutes for an alert to be seen as samples are at 5 minute
         intervals.
+
         :param category: the category name
         :param metric: the required metric
         :param firstthreshold: the first threshold
@@ -580,8 +584,8 @@ class PerformanceFunctions(object):
         category,metric,firstthreshold,secondthreshold,notify,kpi
         array,HostReads,100000,300000,true,true
         array,HostWrites,100000,300000,true,false
+
         :param outputcsvname: filename for CSV to be generated
-        :return:
         """
         category_list = self.get_perf_threshold_categories()
         with open(bytes(outputcsvname, 'UTF-8'), 'w',newline='') as csvfile:
