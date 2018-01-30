@@ -49,10 +49,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="PyU4V.utils.html">PyU4V.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#pyu4v-utils-config-handler-module">PyU4V.utils.config_handler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#pyu4v-utils-constants-module">PyU4V.utils.constants module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#pyu4v-utils-exception-module">PyU4V.utils.exception module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.config_handler">PyU4V.utils.config_handler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.constants">PyU4V.utils.constants module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.exception">PyU4V.utils.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -61,26 +61,3082 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="pyu4v-common-module">
-<h2>PyU4V.common module<a class="headerlink" href="#pyu4v-common-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.common">
+<span id="pyu4v-common-module"></span><h2>PyU4V.common module<a class="headerlink" href="#module-PyU4V.common" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyU4V.common.CommonFunctions">
+<em class="property">class </em><code class="descclassname">PyU4V.common.</code><code class="descname">CommonFunctions</code><span class="sig-paren">(</span><em>request</em>, <em>interval</em>, <em>retries</em>, <em>u4v_version</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="PyU4V.common.CommonFunctions.check_status_code_success">
+<em class="property">static </em><code class="descname">check_status_code_success</code><span class="sig-paren">(</span><em>operation</em>, <em>status_code</em>, <em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.check_status_code_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a status code indicates success.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>operation</strong> &#8211; the operation</li>
+<li><strong>status_code</strong> &#8211; the status code</li>
+<li><strong>message</strong> &#8211; the server response</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">VolumeBackendAPIException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="PyU4V.common.CommonFunctions.create_list_from_file">
+<em class="property">static </em><code class="descname">create_list_from_file</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.create_list_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a file, create a list from its contents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> &#8211; the path to the file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of contents</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.create_resource">
+<code class="descname">create_resource</code><span class="sig-paren">(</span><em>array</em>, <em>category</em>, <em>resource_type</em>, <em>payload</em>, <em>version=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.create_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a resource.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>category</strong> &#8211; the category</li>
+<li><strong>resource_type</strong> &#8211; the resource type</li>
+<li><strong>payload</strong> &#8211; the payload</li>
+<li><strong>version</strong> &#8211; the U4V version</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">message &#8211; string, server response</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.delete_resource">
+<code class="descname">delete_resource</code><span class="sig-paren">(</span><em>array</em>, <em>category</em>, <em>resource_type</em>, <em>resource_name</em>, <em>payload=None</em>, <em>params=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.delete_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a resource.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>category</strong> &#8211; the resource category e.g. sloprovisioning</li>
+<li><strong>resource_type</strong> &#8211; the type of resource to be deleted</li>
+<li><strong>resource_name</strong> &#8211; the name of the resource to be deleted</li>
+<li><strong>payload</strong> &#8211; the payload, optional</li>
+<li><strong>params</strong> &#8211; dict of optional query params</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_array">
+<code class="descname">get_array</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return details on specific array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">server response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_array_list">
+<code class="descname">get_array_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_array_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of arrays.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional dict of filters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_headroom">
+<code class="descname">get_headroom</code><span class="sig-paren">(</span><em>array_id</em>, <em>workload</em>, <em>srp='SRP_1'</em>, <em>slo='Diamond'</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_headroom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Remaining Headroom Capacity.</p>
+<p>Get the headroom capacity for a given srp/ slo/ workload combination.
+Example output:
+{&#8216;headroom&#8217;: [{&#8216;workloadType&#8217;: &#8216;OLTP&#8217;,
+&#8216;headroomCapacity&#8217;: 29076.34, &#8216;processingDetails&#8217;:
+{&#8216;lastProcessedSpaTimestamp&#8217;: 1485302100000,
+&#8216;nextUpdate&#8217;: 1670}, &#8216;sloName&#8217;: &#8216;Diamond&#8217;,
+&#8216;srp&#8217;: &#8216;SRP_1&#8217;, &#8216;emulation&#8217;: &#8216;FBA&#8217;}]})</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array_id</strong> &#8211; the array serial number</li>
+<li><strong>workload</strong> &#8211; the workload type (DSS, OLTP, DSS_REP, OLTP_REP)</li>
+<li><strong>srp</strong> &#8211; the storage resource pool. Default SRP_1.</li>
+<li><strong>slo</strong> &#8211; the service level. Default Diamond.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_iterator_page_list">
+<code class="descname">get_iterator_page_list</code><span class="sig-paren">(</span><em>iterator_id</em>, <em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_iterator_page_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results from an iterator instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iterator_id</strong> &#8211; the id of the iterator</li>
+<li><strong>start</strong> &#8211; the start number</li>
+<li><strong>end</strong> &#8211; the end number</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_job_by_id">
+<code class="descname">get_job_by_id</code><span class="sig-paren">(</span><em>job_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_job_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details of a specific job.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job_id</strong> &#8211; the job id</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_request">
+<code class="descname">get_request</code><span class="sig-paren">(</span><em>target_uri</em>, <em>resource_type</em>, <em>params=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a GET request to the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_uri</strong> &#8211; the target uri</li>
+<li><strong>resource_type</strong> &#8211; the resource type, e.g. maskingview</li>
+<li><strong>params</strong> &#8211; optional dict of filter params</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">resource_object &#8211; dict or None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ResourceNotFoundException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_resource">
+<code class="descname">get_resource</code><span class="sig-paren">(</span><em>array</em>, <em>category</em>, <em>resource_type</em>, <em>resource_name=None</em>, <em>params=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get resource details from array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>category</strong> &#8211; the resource category e.g. sloprovisioning</li>
+<li><strong>resource_type</strong> &#8211; the resource type e.g. maskingview</li>
+<li><strong>resource_name</strong> &#8211; the name of a specific resource</li>
+<li><strong>params</strong> &#8211; query parameters</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">resource object &#8211; dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_uni_version">
+<code class="descname">get_uni_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_uni_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the unisphere version from the server.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">version and major_version(e.g. (&#8220;V8.4.0.16&#8221;, &#8220;84&#8221;))</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_v3_or_newer_array_list">
+<code class="descname">get_v3_or_newer_array_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_v3_or_newer_array_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of V3 or newer arrays in the environment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional dict of filters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of array ids</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.get_wlp_timestamp">
+<code class="descname">get_wlp_timestamp</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_wlp_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the latest timestamp from WLP for processing New Workloads.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.modify_resource">
+<code class="descname">modify_resource</code><span class="sig-paren">(</span><em>array</em>, <em>category</em>, <em>resource_type</em>, <em>payload</em>, <em>version=None</em>, <em>resource_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.modify_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify a resource.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>category</strong> &#8211; the category</li>
+<li><strong>resource_type</strong> &#8211; the resource type</li>
+<li><strong>payload</strong> &#8211; the payload</li>
+<li><strong>version</strong> &#8211; the uv4 version</li>
+<li><strong>resource_name</strong> &#8211; the resource name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">message &#8211; string (server response)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="PyU4V.common.CommonFunctions.read_csv_values">
+<em class="property">static </em><code class="descname">read_csv_values</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.read_csv_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads any csv file with headers.</p>
+<p>You can extract the multiple lists from the headers in the CSV file.
+In your own script, call this function and assign to data variable,
+then extract the lists to the variables. Example:
+data=ru.read_csv_values(mycsv.csv)
+sgnamelist = data[&#8216;sgname&#8217;]
+policylist = data[&#8216;policy&#8217;]</p>
+<p>:param file_name CSV file
+:return: Dictionary of data parsed from CSV</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.wait_for_job">
+<code class="descname">wait_for_job</code><span class="sig-paren">(</span><em>operation</em>, <em>status_code</em>, <em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.wait_for_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if call is async, wait for it to complete.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>operation</strong> &#8211; the operation being performed</li>
+<li><strong>status_code</strong> &#8211; the status code</li>
+<li><strong>job</strong> &#8211; the job</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">task &#8211; list of dicts detailing tasks in the job</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">VolumeBackendAPIException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.common.CommonFunctions.wait_for_job_complete">
+<code class="descname">wait_for_job_complete</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.common.CommonFunctions.wait_for_job_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the job wait for it to complete.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> &#8211; the job dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">rc &#8211; int, result &#8211; string, status &#8211; string,
+task &#8211; list of dicts detailing tasks in the job</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">VolumeBackendAPIException</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="pyu4v-performance-module">
-<h2>PyU4V.performance module<a class="headerlink" href="#pyu4v-performance-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.performance">
+<span id="pyu4v-performance-module"></span><h2>PyU4V.performance module<a class="headerlink" href="#module-PyU4V.performance" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyU4V.performance.PerformanceFunctions">
+<em class="property">class </em><code class="descclassname">PyU4V.performance.</code><code class="descname">PerformanceFunctions</code><span class="sig-paren">(</span><em>array_id</em>, <em>request</em>, <em>common</em>, <em>provisioning</em>, <em>u4v_version</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.generate_threshold_settings_csv">
+<code class="descname">generate_threshold_settings_csv</code><span class="sig-paren">(</span><em>outputcsvname</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.generate_threshold_settings_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a csv file with threshold settings.</p>
+<p>Creates a CSV file with the following headers format containing current
+alert configuration for the given unisphere instance
+category,metric,firstthreshold,secondthreshold,notify,kpi
+array,HostReads,100000,300000,true,true
+array,HostWrites,100000,300000,true,false</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outputcsvname</strong> &#8211; filename for CSV to be generated</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_all_fe_director_metrics">
+<code class="descname">get_all_fe_director_metrics</code><span class="sig-paren">(</span><em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_all_fe_director_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all Directors.</p>
+<p>Calculate start and End Dates for Gathering Performance Stats
+Last 1 Hour.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_date</strong> &#8211; start date</li>
+<li><strong>end_date</strong> &#8211; end date</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">director_results_combined</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_array_metrics">
+<code class="descname">get_array_metrics</code><span class="sig-paren">(</span><em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_array_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get array metrics.</p>
+<p>Get all avaliable performance statistics for specified time
+period return in JSON.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_date</strong> &#8211; EPOCH Time</li>
+<li><strong>end_date</strong> &#8211; Epoch Time</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array_results_combined</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_director_info">
+<code class="descname">get_director_info</code><span class="sig-paren">(</span><em>director_id</em>, <em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_director_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get director performance information.</p>
+<p>Get Director level information and performance metrics for
+specified time frame, hard coded to average numbers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>director_id</strong> &#8211; Director ID</li>
+<li><strong>start_date</strong> &#8211; start date</li>
+<li><strong>end_date</strong> &#8211; end date</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Combined payload</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_fe_director_list">
+<code class="descname">get_fe_director_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_fe_director_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of all FE Directors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">director list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_fe_director_metrics">
+<code class="descname">get_fe_director_metrics</code><span class="sig-paren">(</span><em>start_date</em>, <em>end_date</em>, <em>director</em>, <em>dataformat</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_fe_director_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get one or more metrics for front end directors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_date</strong> &#8211; Date EPOCH Time in Milliseconds</li>
+<li><strong>end_date</strong> &#8211; Date EPOCH Time in Milliseconds</li>
+<li><strong>director</strong> &#8211; List of FE Directors</li>
+<li><strong>dataformat</strong> &#8211; Average or Maximum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">JSON Payload, and RETURN CODE 200 for success</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_fe_port_list">
+<code class="descname">get_fe_port_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_fe_port_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get a list of all front end ports in the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of Directors and Ports</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_fe_port_metrics">
+<code class="descname">get_fe_port_metrics</code><span class="sig-paren">(</span><em>start_date</em>, <em>end_date</em>, <em>director_id</em>, <em>port_id</em>, <em>dataformat</em>, <em>metriclist</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_fe_port_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get one or more Metrics for Front end Director ports.</p>
+<p>The metric list can contain a list of one or more of PercentBusy,
+IOs, MBRead, MBWritten, MBs, AvgIOSize, SpeedGBs, MaxSpeedGBs,
+HostIOLimitIOs, HostIOLimitMBs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_date</strong> &#8211; Date EPOCH Time in Milliseconds</li>
+<li><strong>end_date</strong> &#8211; Date EPOCH Time in Milliseconds</li>
+<li><strong>director_id</strong> &#8211; Director id</li>
+<li><strong>port_id</strong> &#8211; port id</li>
+<li><strong>dataformat</strong> &#8211; Average or Maximum</li>
+<li><strong>metriclist</strong> &#8211; list of one or more metrics</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">JSON Payload, and RETURN CODE 200 for success</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_fe_port_util_last4hrs">
+<code class="descname">get_fe_port_util_last4hrs</code><span class="sig-paren">(</span><em>dir_id</em>, <em>port_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_fe_port_util_last4hrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get stats for last 4 hours.</p>
+<p>Currently only coded for one metric - can be adapted for multiple.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Requested stats</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_host_metrics">
+<code class="descname">get_host_metrics</code><span class="sig-paren">(</span><em>host</em>, <em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_host_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get host metrics.</p>
+<p>Get all avaliable host performance statiscics for specified
+time period return in JSON.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>host</strong> &#8211; the host name</li>
+<li><strong>start_date</strong> &#8211; EPOCH Time</li>
+<li><strong>end_date</strong> &#8211; Epoch Time</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Formatted results</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_perf_category_threshold_settings">
+<code class="descname">get_perf_category_threshold_settings</code><span class="sig-paren">(</span><em>category</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_perf_category_threshold_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get performance threshold category settings.</p>
+<p>Will accept valid category (categories listed from
+get_threshold_categories).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>category</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict, sc</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_perf_threshold_categories">
+<code class="descname">get_perf_threshold_categories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_perf_threshold_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get performance threshold categories.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">category_list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_port_group_metrics">
+<code class="descname">get_port_group_metrics</code><span class="sig-paren">(</span><em>pg_id</em>, <em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_port_group_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Port Group Performance Metrics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pg_id</strong> &#8211; port group id</li>
+<li><strong>start_date</strong> &#8211; the start date</li>
+<li><strong>end_date</strong> &#8211; the end date</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">pg_results_combined</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.get_storage_group_metrics">
+<code class="descname">get_storage_group_metrics</code><span class="sig-paren">(</span><em>sg_id</em>, <em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.get_storage_group_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get storage group metrics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the storage group id</li>
+<li><strong>start_date</strong> &#8211; the start date</li>
+<li><strong>end_date</strong> &#8211; the end date</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">sg_results_combined</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.set_perf_threshold_and_alert">
+<code class="descname">set_perf_threshold_and_alert</code><span class="sig-paren">(</span><em>category</em>, <em>metric</em>, <em>firstthreshold</em>, <em>secondthreshold</em>, <em>notify</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.set_perf_threshold_and_alert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set performance thresholds and alerts.</p>
+<p>Function to set performance alerts, suggested use with CSV file to
+get parameter settings from user template.
+Default is to check for 3 out of 5 samples before returning alert,
+users may want to modify as potentially 3 of 5 could mean could
+take 25 minutes for an alert to be seen as samples are at 5 minute
+intervals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>category</strong> &#8211; the category name</li>
+<li><strong>metric</strong> &#8211; the required metric</li>
+<li><strong>firstthreshold</strong> &#8211; the first threshold</li>
+<li><strong>secondthreshold</strong> &#8211; the second threshold</li>
+<li><strong>notify</strong> &#8211; Notify user with Alert Boolean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.performance.PerformanceFunctions.set_perfthresholds_csv">
+<code class="descname">set_perfthresholds_csv</code><span class="sig-paren">(</span><em>csvfilename</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.performance.PerformanceFunctions.set_perfthresholds_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set performance thresholds using a CSV file.</p>
+<p>reads CSV file, and sets perforamnce threshold metrics, should be
+used with generate_threshold_settings_csv to produce CSV file that
+can be edited and uploaded. The CSV file should have the following
+headers format category,metric,firstthreshold,secondthreshold,
+notify,kpi,array,HostReads,100000,300000,true,true
+array,HostWrites,100000,300000,true,false cur</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>csvfilename</strong> &#8211; the path to the csv file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="pyu4v-provisioning-module">
-<h2>PyU4V.provisioning module<a class="headerlink" href="#pyu4v-provisioning-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.provisioning">
+<span id="pyu4v-provisioning-module"></span><h2>PyU4V.provisioning module<a class="headerlink" href="#module-PyU4V.provisioning" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyU4V.provisioning.ProvisioningFunctions">
+<em class="property">class </em><code class="descclassname">PyU4V.provisioning.</code><code class="descname">ProvisioningFunctions</code><span class="sig-paren">(</span><em>array_id</em>, <em>request</em>, <em>common</em>, <em>u4v_version</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.add_child_sg_to_parent_sg">
+<code class="descname">add_child_sg_to_parent_sg</code><span class="sig-paren">(</span><em>child_sg</em>, <em>parent_sg</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.add_child_sg_to_parent_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a storage group to a parent storage group.</p>
+<p>This method adds an existing storage group to another storage
+group, i.e. cascaded storage groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>child_sg</strong> &#8211; the name of the child sg</li>
+<li><strong>parent_sg</strong> &#8211; the name of the parent sg</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.add_existing_vol_to_sg">
+<code class="descname">add_existing_vol_to_sg</code><span class="sig-paren">(</span><em>sg_id</em>, <em>vol_ids</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.add_existing_vol_to_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand an existing storage group by adding existing volumes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the name of the storage group</li>
+<li><strong>vol_ids</strong> &#8211; the device id of the volume - can be list</li>
+<li><strong>async</strong> &#8211; Flag to indicate if the call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.add_new_vol_to_storagegroup">
+<code class="descname">add_new_vol_to_storagegroup</code><span class="sig-paren">(</span><em>sg_id</em>, <em>num_vols</em>, <em>vol_size</em>, <em>cap_unit</em>, <em>async=False</em>, <em>vol_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.add_new_vol_to_storagegroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand an existing storage group by adding new volumes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the name of the storage group</li>
+<li><strong>num_vols</strong> &#8211; the number of volumes</li>
+<li><strong>vol_size</strong> &#8211; the size of the volumes</li>
+<li><strong>cap_unit</strong> &#8211; the capacity unit</li>
+<li><strong>async</strong> &#8211; Flag to indicate if call should be async</li>
+<li><strong>vol_name</strong> &#8211; name to give to the volume, optional</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_empty_sg">
+<code class="descname">create_empty_sg</code><span class="sig-paren">(</span><em>srp_id</em>, <em>sg_id</em>, <em>slo</em>, <em>workload</em>, <em>disable_compression=False</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_empty_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an empty storage group.</p>
+<p>Set the disable_compression flag for disabling compression
+on an All Flash array (where compression is on by default).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>srp_id</strong> &#8211; the storage resource pool</li>
+<li><strong>sg_id</strong> &#8211; the name of the new storage group</li>
+<li><strong>slo</strong> &#8211; the service level agreement (e.g. Gold)</li>
+<li><strong>workload</strong> &#8211; the workload (e.g. DSS)</li>
+<li><strong>disable_compression</strong> &#8211; flag for disabling compression (AF only)</li>
+<li><strong>async</strong> &#8211; Flag to indicate if this call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_host">
+<code class="descname">create_host</code><span class="sig-paren">(</span><em>host_name</em>, <em>initiator_list=None</em>, <em>host_flags=None</em>, <em>init_file=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a host with the given initiators.</p>
+<p>Accepts either initiator_list, e.g.
+[10000000ba873cbf, 10000000ba873cba], or file.
+The initiators must not be associated with another host.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>host_name</strong> &#8211; the name of the new host</li>
+<li><strong>initiator_list</strong> &#8211; list of initiators</li>
+<li><strong>host_flags</strong> &#8211; dictionary of optional host flags to apply</li>
+<li><strong>init_file</strong> &#8211; full path and file name.</li>
+<li><strong>async</strong> &#8211; Flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_hostgroup">
+<code class="descname">create_hostgroup</code><span class="sig-paren">(</span><em>hostgroup_id</em>, <em>host_list</em>, <em>host_flags=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_hostgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a hostgroup containing the given hosts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostgroup_id</strong> &#8211; the name of the new hostgroup</li>
+<li><strong>host_list</strong> &#8211; list of hosts</li>
+<li><strong>host_flags</strong> &#8211; dictionary of optional host flags to apply</li>
+<li><strong>async</strong> &#8211; Flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_masking_view_existing_components">
+<code class="descname">create_masking_view_existing_components</code><span class="sig-paren">(</span><em>port_group_name</em>, <em>masking_view_name</em>, <em>storage_group_name</em>, <em>host_name=None</em>, <em>host_group_name=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_masking_view_existing_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new masking view using existing groups.</p>
+<p>Must enter either a host name or a host group name, but
+not both.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>port_group_name</strong> &#8211; name of the port group</li>
+<li><strong>masking_view_name</strong> &#8211; name of the new masking view</li>
+<li><strong>storage_group_name</strong> &#8211; name of the storage group</li>
+<li><strong>host_name</strong> &#8211; name of the host (initiator group)</li>
+<li><strong>host_group_name</strong> &#8211; name of host group</li>
+<li><strong>async</strong> &#8211; flag to indicate if command should be run asynchronously</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">InvalidInputException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_multiport_portgroup">
+<code class="descname">create_multiport_portgroup</code><span class="sig-paren">(</span><em>portgroup_id</em>, <em>ports</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_multiport_portgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new portgroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>portgroup_id</strong> &#8211; the name of the new port group</li>
+<li><strong>ports</strong> &#8211; list of port dicts - {&#8220;directorId&#8221;: director_id,
+&#8220;portId&#8221;: port_id}</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_non_empty_storagegroup">
+<code class="descname">create_non_empty_storagegroup</code><span class="sig-paren">(</span><em>srp_id</em>, <em>sg_id</em>, <em>slo</em>, <em>workload</em>, <em>num_vols</em>, <em>vol_size</em>, <em>cap_unit</em>, <em>disable_compression=False</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_non_empty_storagegroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new storage group with the specified volumes.</p>
+<p>Generates a dictionary for json formatting and calls the
+create_sg function to create a new storage group with the
+specified volumes. Set the disable_compression flag for
+disabling compression on an All Flash array (where compression
+is on by default).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>srp_id</strong> &#8211; the storage resource pool</li>
+<li><strong>sg_id</strong> &#8211; the name of the new storage group</li>
+<li><strong>slo</strong> &#8211; the service level agreement (e.g. Gold)</li>
+<li><strong>workload</strong> &#8211; the workload (e.g. DSS)</li>
+<li><strong>num_vols</strong> &#8211; the amount of volumes to be created</li>
+<li><strong>vol_size</strong> &#8211; the size of each volume</li>
+<li><strong>cap_unit</strong> &#8211; the capacity unit (MB, GB)</li>
+<li><strong>disable_compression</strong> &#8211; Flag for disabling compression (AF only)</li>
+<li><strong>async</strong> &#8211; Flag to indicate if this call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_portgroup">
+<code class="descname">create_portgroup</code><span class="sig-paren">(</span><em>portgroup_id</em>, <em>director_id</em>, <em>port_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_portgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new portgroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>portgroup_id</strong> &#8211; the name of the new port group</li>
+<li><strong>director_id</strong> &#8211; the directoy id</li>
+<li><strong>port_id</strong> &#8211; the port id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_portgroup_from_file">
+<code class="descname">create_portgroup_from_file</code><span class="sig-paren">(</span><em>file_name</em>, <em>portgroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_portgroup_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a file with director:port pairs, create a portgroup.</p>
+<p>Each director:port pair must be on a new line.
+Example director:port - FA-1D:4.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> &#8211; the path to the file</li>
+<li><strong>portgroup_id</strong> &#8211; the name for the portgroup</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict, status_code</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_storage_group">
+<code class="descname">create_storage_group</code><span class="sig-paren">(</span><em>srp_id</em>, <em>sg_id</em>, <em>slo</em>, <em>workload</em>, <em>do_disable_compression=False</em>, <em>num_vols=0</em>, <em>vol_size='0'</em>, <em>cap_unit='GB'</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_storage_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the volume in the specified storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>srp_id</strong> &#8211; the SRP (String)</li>
+<li><strong>sg_id</strong> &#8211; the group name (String)</li>
+<li><strong>slo</strong> &#8211; the SLO (String)</li>
+<li><strong>workload</strong> &#8211; the workload (String)</li>
+<li><strong>do_disable_compression</strong> &#8211; flag for disabling compression</li>
+<li><strong>num_vols</strong> &#8211; number of volumes to be created</li>
+<li><strong>vol_size</strong> &#8211; the volume size</li>
+<li><strong>cap_unit</strong> &#8211; the capacity unit (MB, GB, TB, CYL)</li>
+<li><strong>async</strong> &#8211; Flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.create_volume_from_sg_return_dev_id">
+<code class="descname">create_volume_from_sg_return_dev_id</code><span class="sig-paren">(</span><em>volume_name</em>, <em>storagegroup_name</em>, <em>vol_size</em>, <em>cap_unit='GB'</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.create_volume_from_sg_return_dev_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new volume in the given storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>volume_name</strong> &#8211; the volume name (String)</li>
+<li><strong>storagegroup_name</strong> &#8211; the storage group name</li>
+<li><strong>vol_size</strong> &#8211; volume size (String)</li>
+<li><strong>cap_unit</strong> &#8211; the capacity unit, default &#8216;GB&#8217;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">device_id</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.deallocate_volume">
+<code class="descname">deallocate_volume</code><span class="sig-paren">(</span><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.deallocate_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deallocate all tracks on a volume.</p>
+<p>Necessary before deletion. Please note that it is not possible
+to know exactly when a deallocation is complete. This method
+will return when the array has accepted the request for deallocation;
+the deallocation itself happens as a background task on the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device_id</strong> &#8211; the device id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.delete_host">
+<code class="descname">delete_host</code><span class="sig-paren">(</span><em>host_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.delete_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a given host.</p>
+<p>Cannot delete if associated with a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>host_id</strong> &#8211; name of the host</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.delete_hostgroup">
+<code class="descname">delete_hostgroup</code><span class="sig-paren">(</span><em>hostgroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.delete_hostgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a given hostgroup.</p>
+<p>Cannot delete if associated with a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostgroup_id</strong> &#8211; name of the hostgroup</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.delete_masking_view">
+<code class="descname">delete_masking_view</code><span class="sig-paren">(</span><em>maskingview_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.delete_masking_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>maskingview_name</strong> &#8211; the masking view name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.delete_portgroup">
+<code class="descname">delete_portgroup</code><span class="sig-paren">(</span><em>portgroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.delete_portgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a portgroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup_id</strong> &#8211; the name of the portgroup</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.delete_storagegroup">
+<code class="descname">delete_storagegroup</code><span class="sig-paren">(</span><em>storagegroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.delete_storagegroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a given storage group.</p>
+<p>A storage group cannot be deleted if it
+is associated with a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup_id</strong> &#8211; the name of the storage group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.delete_volume">
+<code class="descname">delete_volume</code><span class="sig-paren">(</span><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.delete_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device_id</strong> &#8211; volume device id</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.extend_volume">
+<code class="descname">extend_volume</code><span class="sig-paren">(</span><em>device_id</em>, <em>new_size</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.extend_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend a VMAX volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device_id</strong> &#8211; volume device id</li>
+<li><strong>new_size</strong> &#8211; the new required size for the device</li>
+<li><strong>async</strong> &#8211; flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.extract_director_id_from_portgroup">
+<code class="descname">extract_director_id_from_portgroup</code><span class="sig-paren">(</span><em>portgroup</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.extract_director_id_from_portgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the director information from the port group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup</strong> &#8211; the name of the portgroup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the director information</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.find_host_lun_id_for_vol">
+<code class="descname">find_host_lun_id_for_vol</code><span class="sig-paren">(</span><em>maskingview</em>, <em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.find_host_lun_id_for_vol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the host_lun_id for a volume in a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>maskingview</strong> &#8211; the masking view name</li>
+<li><strong>device_id</strong> &#8211; the device ID</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">host_lun_id &#8211; int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.find_low_volume_utilization">
+<code class="descname">find_low_volume_utilization</code><span class="sig-paren">(</span><em>low_utilization_percentage</em>, <em>csvname</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.find_low_volume_utilization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find volumes under a certain utilization threshold.</p>
+<p>Function to find volumes under a specified percentage,
+(e.g. find volumes with utilization less than 10%) - may be long
+running as will check all sg on array and all storage group.  Only
+identifies volumes in storage group,  note if volume is in more
+than one sg it may show up more than once.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>low_utilization_percentage</strong> &#8211; low utilization watermark percent</li>
+<li><strong>csvname</strong> &#8211; filename for CFV output file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">will create csvfile with name passed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.find_volume_device_id">
+<code class="descname">find_volume_device_id</code><span class="sig-paren">(</span><em>volume_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.find_volume_device_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a volume identifier, find the corresponding device_id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>volume_name</strong> &#8211; the volume name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">device_id</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.find_volume_identifier">
+<code class="descname">find_volume_identifier</code><span class="sig-paren">(</span><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.find_volume_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the volume identifier of a VMAX volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device_id</strong> &#8211; the device id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the volume identifier &#8211; string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_common_masking_views">
+<code class="descname">get_common_masking_views</code><span class="sig-paren">(</span><em>portgroup_name</em>, <em>ig_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_common_masking_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get common masking views for a given portgroup and initiator group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>portgroup_name</strong> &#8211; the port group name</li>
+<li><strong>ig_name</strong> &#8211; the initiator group name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">masking view list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_compressibility_report">
+<code class="descname">get_compressibility_report</code><span class="sig-paren">(</span><em>srp_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_compressibility_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a specified SRP Compressibility Report.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>srp_id</strong> &#8211; the srp id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of compressibility reports</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_director">
+<code class="descname">get_director</code><span class="sig-paren">(</span><em>director</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_director" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries for details of a director for a symmetrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>director</strong> &#8211; the director ID e.g. FA-1D</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_director_list">
+<code class="descname">get_director_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_director_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries for details of Symmetrix directors for a symmetrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">director list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_director_port">
+<code class="descname">get_director_port</code><span class="sig-paren">(</span><em>director</em>, <em>port_no</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_director_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details of the symmetrix director port.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>director</strong> &#8211; the director ID e.g. FA-1D</li>
+<li><strong>port_no</strong> &#8211; the port number e.g. 1 - optional</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_director_port_list">
+<code class="descname">get_director_port_list</code><span class="sig-paren">(</span><em>director</em>, <em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_director_port_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of the ports on a particular director.</p>
+<p>Can be filtered by optional parameters, please see documentation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>director</strong> &#8211; the director ID e.g. FA-1D</li>
+<li><strong>filters</strong> &#8211; optional filters - dict</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of port key dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_element_from_masking_view">
+<code class="descname">get_element_from_masking_view</code><span class="sig-paren">(</span><em>maskingview_name</em>, <em>portgroup=False</em>, <em>host=False</em>, <em>storagegroup=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_element_from_masking_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the specified element from a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>maskingview_name</strong> &#8211; the masking view name</li>
+<li><strong>portgroup</strong> &#8211; the port group name - optional</li>
+<li><strong>host</strong> &#8211; the host name - optional</li>
+<li><strong>storagegroup</strong> &#8211; the storage group name - optional</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">name of the specified element &#8211; string</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ResourceNotFoundException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_host">
+<code class="descname">get_host</code><span class="sig-paren">(</span><em>host_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details on a host on the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>host_id</strong> &#8211; the name of the host, optional</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_host_from_maskingview">
+<code class="descname">get_host_from_maskingview</code><span class="sig-paren">(</span><em>masking_view_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_host_from_maskingview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a masking view, get the associated host or host group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>masking_view_id</strong> &#8211; the name of the masking view</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">host ID</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_host_list">
+<code class="descname">get_host_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_host_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of the hosts on the array.</p>
+<p>See documentation for applicable filters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional list of filters - dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of hosts</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_hostgroup">
+<code class="descname">get_hostgroup</code><span class="sig-paren">(</span><em>hostgroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_hostgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details on a hostgroup on the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hostgroup_id</strong> &#8211; the name of the hostgroup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_hostgroup_list">
+<code class="descname">get_hostgroup_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_hostgroup_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of hostgroup(s) on the array.</p>
+<p>See unisphere documentation for applicable filters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional list of filters - dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_in_use_initiator_list_from_array">
+<code class="descname">get_in_use_initiator_list_from_array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_in_use_initiator_list_from_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of initiators which are in-use from the array.</p>
+<p>Gets the list of initiators from the array which are in
+hosts/ initiator groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of in-use initiators</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_initiator">
+<code class="descname">get_initiator</code><span class="sig-paren">(</span><em>initiator_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_initiator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets details of an initiator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>initiator_id</strong> &#8211; initiator id, optional</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">initiator details</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_initiator_group_from_initiator">
+<code class="descname">get_initiator_group_from_initiator</code><span class="sig-paren">(</span><em>initiator</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_initiator_group_from_initiator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an initiator, get its corresponding initiator group, if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>initiator</strong> &#8211; the initiator id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">found_init_group_name &#8211; string, or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_initiator_ids_from_host">
+<code class="descname">get_initiator_ids_from_host</code><span class="sig-paren">(</span><em>host_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_initiator_ids_from_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get initiator details from a host.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>host_id</strong> &#8211; the name of the host</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of initiator IDs</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_initiator_list">
+<code class="descname">get_initiator_list</code><span class="sig-paren">(</span><em>params=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_initiator_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve initiator list from the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> &#8211; dict of optional params</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of initiators</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_iscsi_ip_address_and_iqn">
+<code class="descname">get_iscsi_ip_address_and_iqn</code><span class="sig-paren">(</span><em>port_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_iscsi_ip_address_and_iqn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ip addresses from the director port.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>port_id</strong> &#8211; the director port identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(list of ip_addresses, iqn)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_masking_view">
+<code class="descname">get_masking_view</code><span class="sig-paren">(</span><em>masking_view_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_masking_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details of a masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>masking_view_name</strong> &#8211; the masking view name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">masking view dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_masking_view_list">
+<code class="descname">get_masking_view_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_masking_view_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a masking view or list of masking views.</p>
+<p>See unisphere documentation for possible filters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; dictionary of filters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of masking views</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_masking_views_by_host">
+<code class="descname">get_masking_views_by_host</code><span class="sig-paren">(</span><em>initiatorgroup_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_masking_views_by_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a host (initiator group), retrieve the masking view name.</p>
+<p>Retrieve the list of masking views associated with the
+given initiator group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>initiatorgroup_name</strong> &#8211; the name of the initiator group</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of masking view names</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_masking_views_from_storage_group">
+<code class="descname">get_masking_views_from_storage_group</code><span class="sig-paren">(</span><em>storagegroup</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_masking_views_from_storage_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return any masking views associated with a storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup</strong> &#8211; the storage group name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">masking view list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_maskingview_connections">
+<code class="descname">get_maskingview_connections</code><span class="sig-paren">(</span><em>mv_name</em>, <em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_maskingview_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all connection information for a given masking view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mv_name</strong> &#8211; the name of the masking view</li>
+<li><strong>filters</strong> &#8211; dict of optional filter parameters</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of masking view connection dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_mv_from_sg">
+<code class="descname">get_mv_from_sg</code><span class="sig-paren">(</span><em>storage_group</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_mv_from_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the associated masking view(s) from a given storage group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group</strong> &#8211; the name of the storage group</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Masking view list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_mvs_from_host">
+<code class="descname">get_mvs_from_host</code><span class="sig-paren">(</span><em>host_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_mvs_from_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve masking view information for a specified host.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>host_id</strong> &#8211; the name of the host</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of masking views</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_num_vols_in_sg">
+<code class="descname">get_num_vols_in_sg</code><span class="sig-paren">(</span><em>storage_group_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_num_vols_in_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of volumes in a storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> &#8211; the storage group name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">num_vols &#8211; int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_port_identifier">
+<code class="descname">get_port_identifier</code><span class="sig-paren">(</span><em>director</em>, <em>port_no</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_port_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the identifier (wwn) of the physical port.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>director</strong> &#8211; the ID of the director</li>
+<li><strong>port_no</strong> &#8211; the number of the port</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">wwn (FC) or iqn (iscsi), or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_port_list">
+<code class="descname">get_port_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_port_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries for a list of Symmetrix port keys.</p>
+<p>Note a mixture of Front end, back end and RDF port specific values
+are not allowed. See UniSphere documentation for possible values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; dictionary of filters e.g. {&#8216;vnx_attached&#8217;: &#8216;true&#8217;}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of port key dicts</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_portgroup">
+<code class="descname">get_portgroup</code><span class="sig-paren">(</span><em>portgroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_portgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get portgroup details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup_id</strong> &#8211; the name of the portgroup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_portgroup_from_maskingview">
+<code class="descname">get_portgroup_from_maskingview</code><span class="sig-paren">(</span><em>masking_view_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_portgroup_from_maskingview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a masking view, get the associated port group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>masking_view_id</strong> &#8211; the masking view name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the name of the port group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_portgroup_list">
+<code class="descname">get_portgroup_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_portgroup_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get portgroup details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; dict of optional filters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of portgroups</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_ports_from_pg">
+<code class="descname">get_ports_from_pg</code><span class="sig-paren">(</span><em>portgroup</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_ports_from_pg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of port identifiers from a port group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup</strong> &#8211; the name of the portgroup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of port ids, e.g. [&#8216;FA-3D:35&#8217;, &#8216;FA-4D:32&#8217;]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_size_of_device_on_array">
+<code class="descname">get_size_of_device_on_array</code><span class="sig-paren">(</span><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_size_of_device_on_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the size of the volume from the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device_id</strong> &#8211; the volume device id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">size</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_slo">
+<code class="descname">get_slo</code><span class="sig-paren">(</span><em>slo_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_slo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details on a specific service level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>slo_id</strong> &#8211; the service level agreement</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_slo_list">
+<code class="descname">get_slo_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_slo_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the list of slo&#8217;s from the array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">slo_list &#8211; list of service level names</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_srp">
+<code class="descname">get_srp</code><span class="sig-paren">(</span><em>srp</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_srp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details on a specific SRP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>srp</strong> &#8211; the storage resource pool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_srp_list">
+<code class="descname">get_srp_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_srp_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of available SRP&#8217;s on a given array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional dict of filter parameters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_storage_group">
+<code class="descname">get_storage_group</code><span class="sig-paren">(</span><em>storage_group_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_storage_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a name, return storage group details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> &#8211; the name of the storage group</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">storage group dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_storage_group_list">
+<code class="descname">get_storage_group_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_storage_group_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8220;Return a list of storage groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional filter parameters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">storage group list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_storagegroup_from_maskingview">
+<code class="descname">get_storagegroup_from_maskingview</code><span class="sig-paren">(</span><em>masking_view_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_storagegroup_from_maskingview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a masking view, get the associated storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>masking_view_id</strong> &#8211; the masking view name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the name of the storage group</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_storagegroup_from_vol">
+<code class="descname">get_storagegroup_from_vol</code><span class="sig-paren">(</span><em>vol_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_storagegroup_from_vol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves sg information for a specified volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vol_id</strong> &#8211; the device ID of the volume</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of storage groups</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg">
+<code class="descname">get_target_wwns_from_pg</code><span class="sig-paren">(</span><em>portgroup</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the director ports&#8217; wwns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup</strong> &#8211; portgroup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">target_wwns &#8211; the list of target wwns for the pg</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_vol_effective_wwn_details_84">
+<code class="descname">get_vol_effective_wwn_details_84</code><span class="sig-paren">(</span><em>vol_list</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_vol_effective_wwn_details_84" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the effective wwn for a list of vols.</p>
+<p>Get volume details for a list of volume device ids,
+and write results to a csv file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vol_list</strong> &#8211; list of device ids</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_vols_from_storagegroup">
+<code class="descname">get_vols_from_storagegroup</code><span class="sig-paren">(</span><em>storagegroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_vols_from_storagegroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve volume information associated with a particular sg.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup_id</strong> &#8211; the name of the storage group</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of device IDs of associated volumes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_volume">
+<code class="descname">get_volume</code><span class="sig-paren">(</span><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a VMAX volume from array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device_id</strong> &#8211; the volume device id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">volume dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_volume_list">
+<code class="descname">get_volume_list</code><span class="sig-paren">(</span><em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_volume_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets list of volumes from array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> &#8211; optional dictionary of filters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of device ids</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.get_workload_settings">
+<code class="descname">get_workload_settings</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_workload_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get valid workload options from array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> &#8211; the array serial number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">workload_setting &#8211; list of workload names</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.is_child_sg_in_parent_sg">
+<code class="descname">is_child_sg_in_parent_sg</code><span class="sig-paren">(</span><em>child_name</em>, <em>parent_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.is_child_sg_in_parent_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a child storage group is a member of a parent group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>child_name</strong> &#8211; the child sg name</li>
+<li><strong>parent_name</strong> &#8211; the parent sg name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.is_compression_capable">
+<code class="descname">is_compression_capable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.is_compression_capable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if array is compression capable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.is_initiator_in_host">
+<code class="descname">is_initiator_in_host</code><span class="sig-paren">(</span><em>initiator</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.is_initiator_in_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if a given initiator is already assigned to a host</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>initiator</strong> &#8211; the initiator ID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.is_volume_in_storagegroup">
+<code class="descname">is_volume_in_storagegroup</code><span class="sig-paren">(</span><em>device_id</em>, <em>storagegroup</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.is_volume_in_storagegroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>See if a volume is a member of the given storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>device_id</strong> &#8211; the device id</li>
+<li><strong>storagegroup</strong> &#8211; the storage group name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.modify_host">
+<code class="descname">modify_host</code><span class="sig-paren">(</span><em>host_id</em>, <em>host_flag_dict=None</em>, <em>remove_init_list=None</em>, <em>add_init_list=None</em>, <em>new_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.modify_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify an existing host.</p>
+<p>Only one parameter can be modified at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>host_id</strong> &#8211; the host name</li>
+<li><strong>host_flag_dict</strong> &#8211; dictionary of host flags</li>
+<li><strong>remove_init_list</strong> &#8211; list of initiators to be removed</li>
+<li><strong>add_init_list</strong> &#8211; list of initiators to be added</li>
+<li><strong>new_name</strong> &#8211; new host name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.modify_hostgroup">
+<code class="descname">modify_hostgroup</code><span class="sig-paren">(</span><em>hostgroup_id</em>, <em>host_flag_dict=None</em>, <em>remove_host_list=None</em>, <em>add_host_list=None</em>, <em>new_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.modify_hostgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify an existing hostgroup.</p>
+<p>Only one parameter can be modified at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostgroup_id</strong> &#8211; the name of the hostgroup</li>
+<li><strong>host_flag_dict</strong> &#8211; dictionary of host flags</li>
+<li><strong>remove_host_list</strong> &#8211; list of hosts to be removed</li>
+<li><strong>add_host_list</strong> &#8211; list of hosts to be added</li>
+<li><strong>new_name</strong> &#8211; new name of the hostgroup</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.modify_initiator">
+<code class="descname">modify_initiator</code><span class="sig-paren">(</span><em>initiator_id</em>, <em>remove_masking_entry=None</em>, <em>replace_init=None</em>, <em>rename_alias=None</em>, <em>set_fcid=None</em>, <em>initiator_flags=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.modify_initiator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify an initiator.</p>
+<p>Only one parameter can be edited at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>initiator_id</strong> &#8211; the initiator id</li>
+<li><strong>remove_masking_entry</strong> &#8211; string - &#8220;true&#8221; or &#8220;false&#8221;</li>
+<li><strong>replace_init</strong> &#8211; Id of the new initiator</li>
+<li><strong>rename_alias</strong> &#8211; tuple (&#8216;new node name&#8217;, &#8216;new port name&#8217;)</li>
+<li><strong>set_fcid</strong> &#8211; set fcid value - string</li>
+<li><strong>initiator_flags</strong> &#8211; dictionary of initiator flags to set</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.modify_portgroup">
+<code class="descname">modify_portgroup</code><span class="sig-paren">(</span><em>portgroup_id</em>, <em>remove_port=None</em>, <em>add_port=None</em>, <em>rename_portgroup=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.modify_portgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify an existing portgroup.</p>
+<p>Only one parameter can be modified at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>portgroup_id</strong> &#8211; the name of the portgroup</li>
+<li><strong>remove_port</strong> &#8211; tuple of port details ($director_id, $portId)</li>
+<li><strong>add_port</strong> &#8211; tuple of port details ($director_id, $portId)</li>
+<li><strong>rename_portgroup</strong> &#8211; new portgroup name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.modify_slo">
+<code class="descname">modify_slo</code><span class="sig-paren">(</span><em>slo_id</em>, <em>new_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.modify_slo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify an SLO.</p>
+<p>Currently, the only modification permitted is renaming.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>slo_id</strong> &#8211; the current name of the slo</li>
+<li><strong>new_name</strong> &#8211; the new name for the slo</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.modify_storage_group">
+<code class="descname">modify_storage_group</code><span class="sig-paren">(</span><em>storagegroup</em>, <em>payload</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.modify_storage_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify a storage group (PUT operation).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storagegroup</strong> &#8211; storage group name</li>
+<li><strong>payload</strong> &#8211; the request payload</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">message &#8211; dict, server response</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.move_volumes_between_storage_groups">
+<code class="descname">move_volumes_between_storage_groups</code><span class="sig-paren">(</span><em>device_ids</em>, <em>source_storagegroup_name</em>, <em>target_storagegroup_name</em>, <em>force=False</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.move_volumes_between_storage_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move volumes to a different storage group.</p>
+<p>Note: 8.4.0.7 or later</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>source_storagegroup_name</strong> &#8211; the originating storage group name</li>
+<li><strong>target_storagegroup_name</strong> &#8211; the destination storage group name</li>
+<li><strong>device_ids</strong> &#8211; the device ids - can be list</li>
+<li><strong>force</strong> &#8211; force flag (necessary on a detach)</li>
+<li><strong>async</strong> &#8211; async flag</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.remove_child_sg_from_parent_sg">
+<code class="descname">remove_child_sg_from_parent_sg</code><span class="sig-paren">(</span><em>child_sg</em>, <em>parent_sg</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.remove_child_sg_from_parent_sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a storage group from its parent storage group.</p>
+<p>This method removes a child storage group from its parent group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>child_sg</strong> &#8211; the name of the child sg</li>
+<li><strong>parent_sg</strong> &#8211; the name of the parent sg</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.remove_vol_from_storagegroup">
+<code class="descname">remove_vol_from_storagegroup</code><span class="sig-paren">(</span><em>sg_id</em>, <em>vol_id</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.remove_vol_from_storagegroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a volume from a given storage group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the name of the storage group</li>
+<li><strong>vol_id</strong> &#8211; the device id of the volume</li>
+<li><strong>async</strong> &#8211; Flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.rename_masking_view">
+<code class="descname">rename_masking_view</code><span class="sig-paren">(</span><em>masking_view_id</em>, <em>new_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.rename_masking_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename an existing masking view.</p>
+<p>Currently, the only supported modification is &#8220;rename&#8221;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>masking_view_id</strong> &#8211; the current name of the masking view</li>
+<li><strong>new_name</strong> &#8211; the new name of the masking view</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.rename_volume">
+<code class="descname">rename_volume</code><span class="sig-paren">(</span><em>device_id</em>, <em>new_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.rename_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename a volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device_id</strong> &#8211; the volume device id</li>
+<li><strong>new_name</strong> &#8211; the new name for the volume</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops">
+<code class="descname">set_host_io_limit_iops</code><span class="sig-paren">(</span><em>storage_group</em>, <em>iops</em>, <em>dynamic_distribution</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the HOSTIO Limits on an existing storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storage_group</strong> &#8211; String up to 32 Characters</li>
+<li><strong>dynamic_distribution</strong> &#8211; valid values Always, Never, OnFailure</li>
+<li><strong>iops</strong> &#8211; integer value. Min Value 100, must be specified to
+nearest 100, e.g.202 is not a valid value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.provisioning.ProvisioningFunctions.update_storagegroup_qos">
+<code class="descname">update_storagegroup_qos</code><span class="sig-paren">(</span><em>storage_group_name</em>, <em>qos_specs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.update_storagegroup_qos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the storagegroupinstance with qos details.</p>
+<p>If maxIOPS or maxMBPS is in qos_specs, then DistributionType can be
+modified in addition to maxIOPS or/and maxMBPS
+If maxIOPS or maxMBPS is NOT in qos_specs, we check to see if
+either is set in StorageGroup. If so, then DistributionType can be
+modified. Example qos specs:
+{&#8216;maxIOPS&#8217;: &#8216;4000&#8217;, &#8216;maxMBPS&#8217;: &#8216;4000&#8217;, &#8216;DistributionType&#8217;: &#8216;Dynamic&#8217;}.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storage_group_name</strong> &#8211; the storagegroup instance name</li>
+<li><strong>qos_specs</strong> &#8211; the qos specifications</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="pyu4v-replication-module">
-<h2>PyU4V.replication module<a class="headerlink" href="#pyu4v-replication-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.replication">
+<span id="pyu4v-replication-module"></span><h2>PyU4V.replication module<a class="headerlink" href="#module-PyU4V.replication" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyU4V.replication.ReplicationFunctions">
+<em class="property">class </em><code class="descclassname">PyU4V.replication.</code><code class="descname">ReplicationFunctions</code><span class="sig-paren">(</span><em>array_id</em>, <em>request</em>, <em>common</em>, <em>provisioning</em>, <em>u4v_version</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired">
+<code class="descname">are_vols_rdf_paired</code><span class="sig-paren">(</span><em>array</em>, <em>remote_array</em>, <em>device_id</em>, <em>target_device</em>, <em>rdf_group</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a pair of volumes are RDF paired.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>remote_array</strong> &#8211; the remote array serial number</li>
+<li><strong>device_id</strong> &#8211; the device id</li>
+<li><strong>target_device</strong> &#8211; the target device id</li>
+<li><strong>rdf_group</strong> &#8211; the rdf group</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">paired &#8211; bool, state &#8211; string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.check_snap_capabilities">
+<code class="descname">check_snap_capabilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.check_snap_capabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check what replication facilities are available</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">array_capabilities dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.choose_snapshot_from_list_in_console">
+<code class="descname">choose_snapshot_from_list_in_console</code><span class="sig-paren">(</span><em>storagegroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.choose_snapshot_from_list_in_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow a user to select a snapshot from a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup_id</strong> &#8211; the storagegoup id</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.create_storagegroup_snap">
+<code class="descname">create_storagegroup_snap</code><span class="sig-paren">(</span><em>sg_name</em>, <em>snap_name</em>, <em>ttl=None</em>, <em>hours=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_storagegroup_snap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a snapVx snapshot of a storage group.</p>
+<p>To establish a new generation of an existing SnapVX snapshot
+for a source SG, use the same name as the existing snapshot for
+the new snapshot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sg_name</strong> &#8211; the source group name</li>
+<li><strong>snap_name</strong> &#8211; the name of the snapshot</li>
+<li><strong>ttl</strong> &#8211; ttl in days, if any - int</li>
+<li><strong>hours</strong> &#8211; Boolean, if set will specify TTL value is hours not days</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.create_storagegroup_srdf_pairings">
+<code class="descname">create_storagegroup_srdf_pairings</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>remote_sid</em>, <em>srdfmode</em>, <em>establish=None</em>, <em>async=False</em>, <em>rdfg_number=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_storagegroup_srdf_pairings" title="Permalink to this definition">¶</a></dt>
+<dd><p>SRDF protect a storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storagegroup_id</strong> &#8211; Unique string up to 32 Characters</li>
+<li><strong>remote_sid</strong> &#8211; Type Integer 12 digit VMAX ID e.g. 000197000008</li>
+<li><strong>srdfmode</strong> &#8211; String, values can be Active, AdaptiveCopyDisk,
+Synchronous, Asynchronous</li>
+<li><strong>establish</strong> &#8211; default is none. Bool</li>
+<li><strong>async</strong> &#8211; Flag to indicate if call should be async
+(NOT to be confused with the SRDF mode)</li>
+<li><strong>rdfg_number</strong> &#8211; the required RDFG number (optional)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">message and status Type JSON</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.delete_storagegroup_snapshot">
+<code class="descname">delete_storagegroup_snapshot</code><span class="sig-paren">(</span><em>storagegroup</em>, <em>snap_name</em>, <em>gen_num=0</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.delete_storagegroup_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the snapshot of a storagegroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup</strong> &#8211; the storage group name</li>
+<li><strong>snap_name</strong> &#8211; the name of the snapshot</li>
+<li><strong>gen_num</strong> &#8211; the generation number</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.delete_storagegroup_srdf">
+<code class="descname">delete_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>rdfg_num=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.delete_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete srdf pairings for a given storagegroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup_id</strong> &#8211; </li>
+<li><strong>rdfg_num</strong> &#8211; the rdfg number to remove pairings from - can be list</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.find_expired_snapvx_snapshots">
+<code class="descname">find_expired_snapvx_snapshots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.find_expired_snapvx_snapshots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all expired snapvx snapshots.</p>
+<p>Parses through all Snapshots for array and lists those that have
+snapshots where the expiration date has passed however snapshots
+have not been deleted as they have links. Example output:
+[{&#8216;storagegroup_name&#8217;: &#8216;my-storagegroup1&#8217;,
+&#8216;snapshot_name&#8217;: &#8216;my-temporary-snap&#8217;,
+&#8216;generation_number&#8217;: &#8216;0&#8217;,
+&#8216;expiration_time&#8217;: &#8216;14:46:24 Wed, 24 Jan 2018&#8217;,
+&#8216;linked_sg_name&#8217;: &#8216;my-linked-sg&#8217;,
+&#8216;snap_creation_time&#8217;: &#8216;14:46:24 Wed, 23 Jan 2018&#8217;}]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of dicts with expired snap details,</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group">
+<code class="descname">get_rdf_group</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_number</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get specific rdf group details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>rdf_number</strong> &#8211; the rdf number</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_list">
+<code class="descname">get_rdf_group_list</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get rdf group list from array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> &#8211; the array serial number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of rdf group dicts with &#8216;rdfgNumber&#8217; and &#8216;label&#8217;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_number">
+<code class="descname">get_rdf_group_number</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_group_label</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an rdf_group_label, return the associated group number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>rdf_group_label</strong> &#8211; the group label</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">rdf_group_number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_volume">
+<code class="descname">get_rdf_group_volume</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_number</em>, <em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get specific volume details, from an RDF group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>rdf_number</strong> &#8211; the rdf group number</li>
+<li><strong>device_id</strong> &#8211; the device id</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list">
+<code class="descname">get_rdf_group_volume_list</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_number</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get specific volume details, from an RDF group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; the array serial number</li>
+<li><strong>rdf_number</strong> &#8211; the rdf group number</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of device ids</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_replication_info">
+<code class="descname">get_replication_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_replication_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return replication information for an array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_snapshot_generation_details">
+<code class="descname">get_snapshot_generation_details</code><span class="sig-paren">(</span><em>sg_id</em>, <em>snap_name</em>, <em>gen_num</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_snapshot_generation_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the details for a particular snapshot generation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the storage group id</li>
+<li><strong>snap_name</strong> &#8211; the snapshot name</li>
+<li><strong>gen_num</strong> &#8211; Generation number</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_storage_group_rep">
+<code class="descname">get_storage_group_rep</code><span class="sig-paren">(</span><em>storage_group_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_storage_group_rep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a name, return storage group details wrt replication.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> &#8211; the name of the storage group</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">storage group dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_storage_group_rep_list">
+<code class="descname">get_storage_group_rep_list</code><span class="sig-paren">(</span><em>has_snapshots=False</em>, <em>has_srdf=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_storage_group_rep_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of storage groups with replication.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>has_snapshots</strong> &#8211; return only storagegroups with snapshots</li>
+<li><strong>has_srdf</strong> &#8211; return only storagegroups with SRDF</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of storage groups with associated replication</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_generation_list">
+<code class="descname">get_storagegroup_snapshot_generation_list</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>snap_name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_generation_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a snapshot and its generation count information for an sg.</p>
+<p>The most recent snapshot will have a gen number of 0.
+The oldest snapshot will have a gen number = genCount - 1
+(i.e. if there are 4 generations of particular snapshot,
+the oldest will have a gen num of 3)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storagegroup_id</strong> &#8211; the name of the storage group</li>
+<li><strong>snap_name</strong> &#8211; the name of the snapshot</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of generation numbers</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_list">
+<code class="descname">get_storagegroup_snapshot_list</code><span class="sig-paren">(</span><em>storagegroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of snapshots associated with a storagegroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup_id</strong> &#8211; the storagegroup name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of snapshot names</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_storagegroup_srdf_details">
+<code class="descname">get_storagegroup_srdf_details</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>rdfg_num</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_storagegroup_srdf_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the SRDF details for an RDF group on a particular storagegroup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storagegroup_id</strong> &#8211; name of storage group</li>
+<li><strong>rdfg_num</strong> &#8211; rdf number</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_storagegroup_srdfg_list">
+<code class="descname">get_storagegroup_srdfg_list</code><span class="sig-paren">(</span><em>storagegroup_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_storagegroup_srdfg_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the SRDF numbers for a storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup_id</strong> &#8211; Storage Group Name of replicated group</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of RDFG numbers</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.is_snapvx_licensed">
+<code class="descname">is_snapvx_licensed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.is_snapvx_licensed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the snapVx feature is licensed and enabled.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if licensed and enabled; False otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.is_vol_in_rep_session">
+<code class="descname">is_vol_in_rep_session</code><span class="sig-paren">(</span><em>device_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.is_vol_in_rep_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a volume is in a replication session.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device_id</strong> &#8211; the device id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">snapvx_tgt &#8211; bool, snapvx_src &#8211; bool,
+rdf_grp &#8211; list or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.link_gen_snapshot">
+<code class="descname">link_gen_snapshot</code><span class="sig-paren">(</span><em>sg_id</em>, <em>snap_name</em>, <em>link_sg_name</em>, <em>async=False</em>, <em>gen_num=0</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.link_gen_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link a snapshot to another storage group.</p>
+<p>Target storage group will be created if it does not exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; Source storage group name</li>
+<li><strong>snap_name</strong> &#8211; name of the snapshot</li>
+<li><strong>link_sg_name</strong> &#8211; the target storage group name</li>
+<li><strong>async</strong> &#8211; flag to indicate if call is async</li>
+<li><strong>gen_num</strong> &#8211; generation number of a snapshot (int)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.modify_storagegroup_snap">
+<code class="descname">modify_storagegroup_snap</code><span class="sig-paren">(</span><em>source_sg_id</em>, <em>target_sg_id</em>, <em>snap_name</em>, <em>link=False</em>, <em>unlink=False</em>, <em>restore=False</em>, <em>new_name=None</em>, <em>gen_num=0</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.modify_storagegroup_snap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify a storage group snapshot.</p>
+<p>Please note that only one parameter can be modified at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>source_sg_id</strong> &#8211; the source sg id</li>
+<li><strong>target_sg_id</strong> &#8211; the target sg id (Can be None)</li>
+<li><strong>snap_name</strong> &#8211; the snapshot name</li>
+<li><strong>link</strong> &#8211; Flag to indicate action = Link</li>
+<li><strong>unlink</strong> &#8211; Flag to indicate action = Unlink</li>
+<li><strong>restore</strong> &#8211; Flag to indicate action = Restore</li>
+<li><strong>new_name</strong> &#8211; the new name for the snapshot</li>
+<li><strong>gen_num</strong> &#8211; the generation number</li>
+<li><strong>async</strong> &#8211; flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf">
+<code class="descname">modify_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>action</em>, <em>rdfg=None</em>, <em>options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the state of an srdf.</p>
+<p>This may be a long running task depending on the size of the SRDF group,
+can switch to async call if required.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup_id</strong> &#8211; name of storage group</li>
+<li><strong>action</strong> &#8211; the rdf action e.g. Suspend, Establish, etc</li>
+<li><strong>rdfg</strong> &#8211; rdf number, optional</li>
+<li><strong>options</strong> &#8211; a dict of possible options - depends on action type</li>
+<li><strong>async</strong> &#8211; flag to indicate if call should be async</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.rename_snapshot">
+<code class="descname">rename_snapshot</code><span class="sig-paren">(</span><em>sg_id</em>, <em>snap_name</em>, <em>new_name</em>, <em>gen_num=0</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.rename_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename an existing storage group snapshot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the name of the storage group</li>
+<li><strong>snap_name</strong> &#8211; the name of the snapshot</li>
+<li><strong>new_name</strong> &#8211; the new name of the snapshot</li>
+<li><strong>gen_num</strong> &#8211; generation number of a snapshot (int)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.restore_snapshot">
+<code class="descname">restore_snapshot</code><span class="sig-paren">(</span><em>sg_id</em>, <em>snap_name</em>, <em>gen_num=0</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.restore_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore a storage group to its snapshot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; the name of the storage group</li>
+<li><strong>snap_name</strong> &#8211; the name of the snapshot</li>
+<li><strong>gen_num</strong> &#8211; the generation number of the snapshot (int)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="pyu4v-rest-requests-module">
-<h2>PyU4V.rest_requests module<a class="headerlink" href="#pyu4v-rest-requests-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.rest_requests">
+<span id="pyu4v-rest-requests-module"></span><h2>PyU4V.rest_requests module<a class="headerlink" href="#module-PyU4V.rest_requests" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyU4V.rest_requests.RestRequests">
+<em class="property">class </em><code class="descclassname">PyU4V.rest_requests.</code><code class="descname">RestRequests</code><span class="sig-paren">(</span><em>username</em>, <em>password</em>, <em>verify</em>, <em>base_url</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_requests.RestRequests" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="PyU4V.rest_requests.RestRequests.close_session">
+<code class="descname">close_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_requests.RestRequests.close_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the current rest session</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.rest_requests.RestRequests.establish_rest_session">
+<code class="descname">establish_rest_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_requests.RestRequests.establish_rest_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.rest_requests.RestRequests.rest_request">
+<code class="descname">rest_request</code><span class="sig-paren">(</span><em>target_url</em>, <em>method</em>, <em>params=None</em>, <em>request_object=None</em>, <em>stream=True</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_requests.RestRequests.rest_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a request (GET, POST, PUT, DELETE) to the target api.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_url</strong> &#8211; target url (string)</li>
+<li><strong>method</strong> &#8211; The method (GET, POST, PUT, or DELETE)</li>
+<li><strong>params</strong> &#8211; Additional URL parameters</li>
+<li><strong>request_object</strong> &#8211; request payload (dict)</li>
+<li><strong>stream</strong> &#8211; flag to indicate if the response should be streamed</li>
+<li><strong>timeout</strong> &#8211; optional timeout override</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">server response object (dict), status code</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="pyu4v-rest-univmax-module">
-<h2>PyU4V.rest_univmax module<a class="headerlink" href="#pyu4v-rest-univmax-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.rest_univmax">
+<span id="pyu4v-rest-univmax-module"></span><h2>PyU4V.rest_univmax module<a class="headerlink" href="#module-PyU4V.rest_univmax" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyU4V.rest_univmax.RestFunctions">
+<em class="property">class </em><code class="descclassname">PyU4V.rest_univmax.</code><code class="descname">RestFunctions</code><span class="sig-paren">(</span><em>username=None</em>, <em>password=None</em>, <em>server_ip=None</em>, <em>port=None</em>, <em>verify=None</em>, <em>u4v_version='84'</em>, <em>interval=5</em>, <em>retries=200</em>, <em>array_id=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_univmax.RestFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="PyU4V.rest_univmax.RestFunctions.close_session">
+<code class="descname">close_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_univmax.RestFunctions.close_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the current rest session</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.rest_univmax.RestFunctions.set_array_id">
+<code class="descname">set_array_id</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_univmax.RestFunctions.set_array_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the array serial number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array_id</strong> &#8211; the array serial number</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.rest_univmax.RestFunctions.set_requests_timeout">
+<code class="descname">set_requests_timeout</code><span class="sig-paren">(</span><em>timeout_value</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.rest_univmax.RestFunctions.set_requests_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the requests timeout.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout_value</strong> &#8211; the new timeout value - int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyU4V" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -95,13 +3151,13 @@
 <li><a class="reference internal" href="#">PyU4V package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#pyu4v-common-module">PyU4V.common module</a></li>
-<li><a class="reference internal" href="#pyu4v-performance-module">PyU4V.performance module</a></li>
-<li><a class="reference internal" href="#pyu4v-provisioning-module">PyU4V.provisioning module</a></li>
-<li><a class="reference internal" href="#pyu4v-replication-module">PyU4V.replication module</a></li>
-<li><a class="reference internal" href="#pyu4v-rest-requests-module">PyU4V.rest_requests module</a></li>
-<li><a class="reference internal" href="#pyu4v-rest-univmax-module">PyU4V.rest_univmax module</a></li>
-<li><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li><a class="reference internal" href="#module-PyU4V.common">PyU4V.common module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.performance">PyU4V.performance module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.provisioning">PyU4V.provisioning module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.replication">PyU4V.replication module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.rest_requests">PyU4V.rest_requests module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.rest_univmax">PyU4V.rest_univmax module</a></li>
+<li><a class="reference internal" href="#module-PyU4V">Module contents</a></li>
 </ul>
 </li>
 </ul>

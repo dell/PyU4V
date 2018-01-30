@@ -24,6 +24,6 @@ def set_logger_and_config(logger):
                 def emit(self, record):
                     pass
 
-        LOG = logging.getLogger(logger.__name__).addHandler(NullHandler())
+        LOG = logging.getLogger(__name__).addHandler(NullHandler())
 
     return LOG, CFG

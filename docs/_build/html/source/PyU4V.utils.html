@@ -46,17 +46,92 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="pyu4v-utils-config-handler-module">
-<h2>PyU4V.utils.config_handler module<a class="headerlink" href="#pyu4v-utils-config-handler-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.utils.config_handler">
+<span id="pyu4v-utils-config-handler-module"></span><h2>PyU4V.utils.config_handler module<a class="headerlink" href="#module-PyU4V.utils.config_handler" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PyU4V.utils.config_handler.set_logger_and_config">
+<code class="descclassname">PyU4V.utils.config_handler.</code><code class="descname">set_logger_and_config</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.utils.config_handler.set_logger_and_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="pyu4v-utils-constants-module">
-<h2>PyU4V.utils.constants module<a class="headerlink" href="#pyu4v-utils-constants-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.utils.constants">
+<span id="pyu4v-utils-constants-module"></span><h2>PyU4V.utils.constants module<a class="headerlink" href="#module-PyU4V.utils.constants" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="pyu4v-utils-exception-module">
-<h2>PyU4V.utils.exception module<a class="headerlink" href="#pyu4v-utils-exception-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.utils.exception">
+<span id="pyu4v-utils-exception-module"></span><h2>PyU4V.utils.exception module<a class="headerlink" href="#module-PyU4V.utils.exception" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="PyU4V.utils.exception.InvalidInputException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">InvalidInputException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.utils.exception.InvalidInputException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.InvalidInputException.message">
+<code class="descname">message</code><em class="property"> = 'Invalid input received: %(data)s'</em><a class="headerlink" href="#PyU4V.utils.exception.InvalidInputException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.PyU4VException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">PyU4VException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.code">
+<code class="descname">code</code><em class="property"> = 500</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.headers">
+<code class="descname">headers</code><em class="property"> = {}</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.message">
+<code class="descname">message</code><em class="property"> = 'An unknown exception occurred.'</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.safe">
+<code class="descname">safe</code><em class="property"> = False</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.safe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.ResourceNotFoundException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">ResourceNotFoundException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.utils.exception.ResourceNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.ResourceNotFoundException.message">
+<code class="descname">message</code><em class="property"> = 'The requested resource was not found: %(data)s'</em><a class="headerlink" href="#PyU4V.utils.exception.ResourceNotFoundException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.UnauthorizedRequestException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">UnauthorizedRequestException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.utils.exception.UnauthorizedRequestException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.UnauthorizedRequestException.meesage">
+<code class="descname">meesage</code><em class="property"> = 'Unauthorized request - please check credentials'</em><a class="headerlink" href="#PyU4V.utils.exception.UnauthorizedRequestException.meesage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.VolumeBackendAPIException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">VolumeBackendAPIException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.utils.exception.VolumeBackendAPIException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.VolumeBackendAPIException.message">
+<code class="descname">message</code><em class="property"> = 'Bad or unexpected response from the storage volume backend API: %(data)s'</em><a class="headerlink" href="#PyU4V.utils.exception.VolumeBackendAPIException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PyU4V.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyU4V.utils" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -70,10 +145,10 @@
   <ul>
 <li><a class="reference internal" href="#">PyU4V.utils package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#pyu4v-utils-config-handler-module">PyU4V.utils.config_handler module</a></li>
-<li><a class="reference internal" href="#pyu4v-utils-constants-module">PyU4V.utils.constants module</a></li>
-<li><a class="reference internal" href="#pyu4v-utils-exception-module">PyU4V.utils.exception module</a></li>
-<li><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li><a class="reference internal" href="#module-PyU4V.utils.config_handler">PyU4V.utils.config_handler module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.utils.constants">PyU4V.utils.constants module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.utils.exception">PyU4V.utils.exception module</a></li>
+<li><a class="reference internal" href="#module-PyU4V.utils">Module contents</a></li>
 </ul>
 </li>
 </ul>

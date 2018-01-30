@@ -1551,13 +1551,13 @@ class ProvisioningFunctions(object):
     def find_low_volume_utilization(self, low_utilization_percentage, csvname):
         """Find volumes under a certain utilization threshold.
 
-        Function to find volumes under a specified percentage, may be long
+        Function to find volumes under a specified percentage,
+        (e.g. find volumes with utilization less than 10%) - may be long
         running as will check all sg on array and all storage group.  Only
         identifies volumes in storage group,  note if volume is in more
         than one sg it may show up more than once.
 
-        :param low_utilization_percentage: low utilization watermark
-        percentage, e.g. find volumes with utilization less than 10%
+        :param low_utilization_percentage: low utilization watermark percent
         :param csvname: filename for CFV output file
         :return: will create csvfile with name passed
         """

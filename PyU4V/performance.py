@@ -146,7 +146,7 @@ class PerformanceFunctions(object):
         :param end_date: Date EPOCH Time in Milliseconds
         :param director_id: Director id
         :param port_id: port id
-        :param dataformat:Average or Maximum
+        :param dataformat: Average or Maximum
         :param metriclist: list of one or more metrics
         :return: JSON Payload, and RETURN CODE 200 for success
         """
