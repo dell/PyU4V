@@ -2538,14 +2538,13 @@ modified. Example qos specs:
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired">
-<code class="descname">are_vols_rdf_paired</code><span class="sig-paren">(</span><em>array</em>, <em>remote_array</em>, <em>device_id</em>, <em>target_device</em>, <em>rdf_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.are_vols_rdf_paired"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired" title="Permalink to this definition">¶</a></dt>
+<code class="descname">are_vols_rdf_paired</code><span class="sig-paren">(</span><em>remote_array</em>, <em>device_id</em>, <em>target_device</em>, <em>rdf_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.are_vols_rdf_paired"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a pair of volumes are RDF paired.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> &#8211; the array serial number</li>
 <li><strong>remote_array</strong> &#8211; the remote array serial number</li>
 <li><strong>device_id</strong> &#8211; the device id</li>
 <li><strong>target_device</strong> &#8211; the target device id</li>
@@ -2700,17 +2699,13 @@ have not been deleted as they have links. Example output:
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group">
-<code class="descname">get_rdf_group</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_rdf_group</code><span class="sig-paren">(</span><em>rdf_number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get specific rdf group details.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>array</strong> &#8211; the array serial number</li>
-<li><strong>rdf_number</strong> &#8211; the rdf number</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rdf_number</strong> &#8211; the rdf number</td>
 </tr>
 </tbody>
 </table>
@@ -2718,15 +2713,13 @@ have not been deleted as they have links. Example output:
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_list">
-<code class="descname">get_rdf_group_list</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_rdf_group_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get rdf group list from array.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> &#8211; the array serial number</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of rdf group dicts with &#8216;rdfgNumber&#8217; and &#8216;label&#8217;</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of rdf group dicts with &#8216;rdfgNumber&#8217; and &#8216;label&#8217;</td>
 </tr>
 </tbody>
 </table>
@@ -2734,20 +2727,15 @@ have not been deleted as they have links. Example output:
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_number">
-<code class="descname">get_rdf_group_number</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_group_label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_number" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_rdf_group_number</code><span class="sig-paren">(</span><em>rdf_group_label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an rdf_group_label, return the associated group number.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> &#8211; the array serial number</li>
-<li><strong>rdf_group_label</strong> &#8211; the group label</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rdf_group_label</strong> &#8211; the group label</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">rdf_group_number</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">rdf_group_number</td>
 </tr>
 </tbody>
 </table>
@@ -2755,14 +2743,13 @@ have not been deleted as they have links. Example output:
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_volume">
-<code class="descname">get_rdf_group_volume</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_number</em>, <em>device_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_rdf_group_volume</code><span class="sig-paren">(</span><em>rdf_number</em>, <em>device_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get specific volume details, from an RDF group.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>array</strong> &#8211; the array serial number</li>
 <li><strong>rdf_number</strong> &#8211; the rdf group number</li>
 <li><strong>device_id</strong> &#8211; the device id</li>
 </ul>
@@ -2774,20 +2761,15 @@ have not been deleted as they have links. Example output:
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list">
-<code class="descname">get_rdf_group_volume_list</code><span class="sig-paren">(</span><em>array</em>, <em>rdf_number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_volume_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_rdf_group_volume_list</code><span class="sig-paren">(</span><em>rdf_number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group_volume_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get specific volume details, from an RDF group.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> &#8211; the array serial number</li>
-<li><strong>rdf_number</strong> &#8211; the rdf group number</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rdf_number</strong> &#8211; the rdf group number</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of device ids</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of device ids</td>
 </tr>
 </tbody>
 </table>
@@ -3146,11 +3128,9 @@ can switch to async call if required.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="PyU4V.utils.html">PyU4V.utils package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.config_handler">PyU4V.utils.config_handler module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.constants">PyU4V.utils.constants module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils.exception">PyU4V.utils.exception module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyU4V.utils.html#module-PyU4V.utils">Module contents</a></li>
 </ul>
 </li>
 </ul>

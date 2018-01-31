@@ -1,8 +1,6 @@
 PyU4V\.utils package
 ====================
 
-Submodules
-----------
 
 PyU4V\.utils\.config\_handler module
 ------------------------------------
@@ -29,8 +27,6 @@ PyU4V\.utils\.exception module
     :show-inheritance:
 
 
-Module contents
----------------
 
 .. automodule:: PyU4V.utils
     :members:

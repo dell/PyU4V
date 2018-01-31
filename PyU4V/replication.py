@@ -345,59 +345,54 @@ class ReplicationFunctions(object):
                 rdf_grp = volume_details['rdfGroupId']
         return snapvx_tgt, snapvx_src, rdf_grp
 
-    def get_rdf_group(self, array, rdf_number):
+    def get_rdf_group(self, rdf_number):
         """Get specific rdf group details.
 
-        :param array: the array serial number
         :param rdf_number: the rdf number
         """
         return self.get_resource(
-            array, REPLICATION, 'rdf_group', rdf_number)
+            self.array_id, REPLICATION, 'rdf_group', rdf_number)
 
-    def get_rdf_group_list(self, array):
+    def get_rdf_group_list(self):
         """Get rdf group list from array.
 
-        :param array: the array serial number
         :returns: list of rdf group dicts with 'rdfgNumber' and 'label'
         """
         rdfg_dict_list = []
-        response = self.get_resource(array, REPLICATION, 'rdf_group')
+        response = self.get_resource(self.array_id, REPLICATION, 'rdf_group')
         if response and response.get('rdfGroupID'):
             rdfg_dict_list = response['rdfGroupID']
         return rdfg_dict_list
 
-    def get_rdf_group_volume(self, array, rdf_number, device_id):
+    def get_rdf_group_volume(self, rdf_number, device_id):
         """Get specific volume details, from an RDF group.
 
-        :param array: the array serial number
         :param rdf_number: the rdf group number
         :param device_id: the device id
         """
         resource_name = "%(rdf)s/volume/%(dev)s" % {
             'rdf': rdf_number, 'dev': device_id}
-        return self.get_resource(array, REPLICATION, 'rdf_group',
-                                 resource_name)
+        return self.get_resource(
+            self.array_id, REPLICATION, 'rdf_group', resource_name)
 
-    def get_rdf_group_volume_list(self, array, rdf_number):
+    def get_rdf_group_volume_list(self, rdf_number):
         """Get specific volume details, from an RDF group.
 
-        :param array: the array serial number
         :param rdf_number: the rdf group number
         :returns: list of device ids
         """
         device_list = []
         resource_name = "{}/volume".format(rdf_number)
-        response = self.get_resource(array, REPLICATION, 'rdf_group',
-                                     resource_name)
+        response = self.get_resource(
+            self.array_id, REPLICATION, 'rdf_group', resource_name)
         if response and response.get('name'):
             device_list = response['name']
         return device_list
 
-    def are_vols_rdf_paired(self, array, remote_array, device_id,
+    def are_vols_rdf_paired(self, remote_array, device_id,
                             target_device, rdf_group):
         """Check if a pair of volumes are RDF paired.
 
-        :param array: the array serial number
         :param remote_array: the remote array serial number
         :param device_id: the device id
         :param target_device: the target device id
@@ -405,7 +400,8 @@ class ReplicationFunctions(object):
         :returns: paired -- bool, state -- string
         """
         paired, local_vol_state, rdf_pair_state = False, '', ''
-        volume, _ = self.get_rdf_group_volume(array, rdf_group, device_id)
+        volume, _ = self.get_rdf_group_volume(
+            rdf_group, device_id)
         if volume:
             remote_volume = volume['remoteVolumeName']
             remote_symm = volume['remoteSymmetrixId']
@@ -418,20 +414,19 @@ class ReplicationFunctions(object):
             LOG.warning("Cannot locate source RDF volume %s", device_id)
         return paired, local_vol_state, rdf_pair_state
 
-    def get_rdf_group_number(self, array, rdf_group_label):
+    def get_rdf_group_number(self, rdf_group_label):
         """Given an rdf_group_label, return the associated group number.
 
-        :param array: the array serial number
         :param rdf_group_label: the group label
         :returns: rdf_group_number
         """
         number = None
-        rdf_list, _ = self.get_rdf_group_list(array)
+        rdf_list, _ = self.get_rdf_group_list()
         if rdf_list and rdf_list.get('rdfGroupID'):
             number = [rdf['rdfgNumber'] for rdf in rdf_list['rdfGroupID']
                       if rdf['label'] == rdf_group_label][0]
         if number:
-            rdf_group = self.get_rdf_group(array, number)
+            rdf_group = self.get_rdf_group(number)
             if not rdf_group:
                 number = None
         return number

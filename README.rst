@@ -55,23 +55,23 @@ SSL CONFIGURATION
 USAGE
 
 PyU4V could also be used as the backend for a script, or a menu etc.
-Just import the PyU4V package, create an instance of RestFunctions, and you're good to go.
-The functions are divided up into categories - common, provisioning, replication and performance
+Just import the PyU4V package, create the connection to the server by instantiating an instance of U4VConn, and you're
+good to go. The functions are divided up into categories - common, provisioning, replication and performance.
 
 .. code-block:: python
 
     import PyU4V
 
-    rf = PyU4V.RestFunctions()
-    rf.provisioning.get_host_list()
-    rf.replication.find_expired_snapvx_snapshots()
+    conn = PyU4V.U4VConn()
+    conn.provisioning.get_host_list()
+    conn.replication.find_expired_snapvx_snapshots()
 
 If you wish to query another array without changing the configuration file, call the 'set_array_id(new_array_id)'
 function, e.g.
 
 .. code-block:: python
 
-    rf.set_array_id('000197123456')
+    conn.set_array_id('000197123456')
 
 
 EXAMPLES

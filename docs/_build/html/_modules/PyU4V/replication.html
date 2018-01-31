@@ -395,59 +395,54 @@
                 <span class="n">rdf_grp</span> <span class="o">=</span> <span class="n">volume_details</span><span class="p">[</span><span class="s1">&#39;rdfGroupId&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">snapvx_tgt</span><span class="p">,</span> <span class="n">snapvx_src</span><span class="p">,</span> <span class="n">rdf_grp</span></div>
 
-<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">):</span>
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get specific rdf group details.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :param rdf_number: the rdf number</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
-            <span class="n">array</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get rdf group list from array.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :returns: list of rdf group dicts with &#39;rdfgNumber&#39; and &#39;label&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rdfg_dict_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rdfGroupID&#39;</span><span class="p">):</span>
             <span class="n">rdfg_dict_list</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;rdfGroupID&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">rdfg_dict_list</span></div>
 
-<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_volume"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">,</span> <span class="n">device_id</span><span class="p">):</span>
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_volume"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">,</span> <span class="n">device_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get specific volume details, from an RDF group.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :param rdf_number: the rdf group number</span>
 <span class="sd">        :param device_id: the device id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">resource_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(rdf)s</span><span class="s2">/volume/</span><span class="si">%(dev)s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">{</span>
             <span class="s1">&#39;rdf&#39;</span><span class="p">:</span> <span class="n">rdf_number</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="n">device_id</span><span class="p">}</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span>
-                                 <span class="n">resource_name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_volume_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_volume_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">):</span>
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_volume_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_volume_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get specific volume details, from an RDF group.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :param rdf_number: the rdf group number</span>
 <span class="sd">        :returns: list of device ids</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">device_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">resource_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/volume&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rdf_number</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span>
-                                     <span class="n">resource_name</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">):</span>
             <span class="n">device_list</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">device_list</span></div>
 
-<div class="viewcode-block" id="ReplicationFunctions.are_vols_rdf_paired"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired">[docs]</a>    <span class="k">def</span> <span class="nf">are_vols_rdf_paired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">remote_array</span><span class="p">,</span> <span class="n">device_id</span><span class="p">,</span>
+<div class="viewcode-block" id="ReplicationFunctions.are_vols_rdf_paired"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired">[docs]</a>    <span class="k">def</span> <span class="nf">are_vols_rdf_paired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_array</span><span class="p">,</span> <span class="n">device_id</span><span class="p">,</span>
                             <span class="n">target_device</span><span class="p">,</span> <span class="n">rdf_group</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Check if a pair of volumes are RDF paired.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :param remote_array: the remote array serial number</span>
 <span class="sd">        :param device_id: the device id</span>
 <span class="sd">        :param target_device: the target device id</span>
@@ -455,7 +450,8 @@
 <span class="sd">        :returns: paired -- bool, state -- string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">paired</span><span class="p">,</span> <span class="n">local_vol_state</span><span class="p">,</span> <span class="n">rdf_pair_state</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">volume</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group_volume</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">rdf_group</span><span class="p">,</span> <span class="n">device_id</span><span class="p">)</span>
+        <span class="n">volume</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group_volume</span><span class="p">(</span>
+            <span class="n">rdf_group</span><span class="p">,</span> <span class="n">device_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">volume</span><span class="p">:</span>
             <span class="n">remote_volume</span> <span class="o">=</span> <span class="n">volume</span><span class="p">[</span><span class="s1">&#39;remoteVolumeName&#39;</span><span class="p">]</span>
             <span class="n">remote_symm</span> <span class="o">=</span> <span class="n">volume</span><span class="p">[</span><span class="s1">&#39;remoteSymmetrixId&#39;</span><span class="p">]</span>
@@ -468,20 +464,19 @@
             <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot locate source RDF volume </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">paired</span><span class="p">,</span> <span class="n">local_vol_state</span><span class="p">,</span> <span class="n">rdf_pair_state</span></div>
 
-<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_number"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">rdf_group_label</span><span class="p">):</span>
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_number"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_group_label</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Given an rdf_group_label, return the associated group number.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :param rdf_group_label: the group label</span>
 <span class="sd">        :returns: rdf_group_number</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">number</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">rdf_list</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group_list</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">rdf_list</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group_list</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rdf_list</span> <span class="ow">and</span> <span class="n">rdf_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rdfGroupID&#39;</span><span class="p">):</span>
             <span class="n">number</span> <span class="o">=</span> <span class="p">[</span><span class="n">rdf</span><span class="p">[</span><span class="s1">&#39;rdfgNumber&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">rdf</span> <span class="ow">in</span> <span class="n">rdf_list</span><span class="p">[</span><span class="s1">&#39;rdfGroupID&#39;</span><span class="p">]</span>
                       <span class="k">if</span> <span class="n">rdf</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">rdf_group_label</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">number</span><span class="p">:</span>
-            <span class="n">rdf_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span>
+            <span class="n">rdf_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">rdf_group</span><span class="p">:</span>
                 <span class="n">number</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">number</span></div>
