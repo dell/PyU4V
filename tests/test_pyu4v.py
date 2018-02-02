@@ -989,6 +989,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.data.port_key_list['symmetrixPortKey'], port_key_list)
 
     def test_get_portgroup(self):
+        pass
 
 
 class PyU4VReplicationTest(testtools.TestCase):
