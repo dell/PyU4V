@@ -227,7 +227,7 @@
 <dd><p>Get the Remaining Headroom Capacity.</p>
 <p>Get the headroom capacity for a given srp/ slo/ workload combination.
 Example output:
-{&#8216;headroom&#8217;: [{&#8216;workloadType&#8217;: &#8216;OLTP&#8217;,
+[{&#8216;workloadType&#8217;: &#8216;OLTP&#8217;,
 &#8216;headroomCapacity&#8217;: 29076.34, &#8216;processingDetails&#8217;:
 {&#8216;lastProcessedSpaTimestamp&#8217;: 1485302100000,
 &#8216;nextUpdate&#8217;: 1670}, &#8216;sloName&#8217;: &#8216;Diamond&#8217;,
@@ -266,7 +266,7 @@ Example output:
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of results</p>
 </td>
 </tr>
 </tbody>
@@ -367,9 +367,14 @@ Example output:
 </dd></dl>
 
 <dl class="method">
-<dt id="PyU4V.common.CommonFunctions.get_wlp_timestamp">
-<code class="descname">get_wlp_timestamp</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/common.html#CommonFunctions.get_wlp_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_wlp_timestamp" title="Permalink to this definition">¶</a></dt>
+<dt id="PyU4V.common.CommonFunctions.get_wlp_information">
+<code class="descname">get_wlp_information</code><span class="sig-paren">(</span><em>array_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/common.html#CommonFunctions.get_wlp_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.common.CommonFunctions.get_wlp_information" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the latest timestamp from WLP for processing New Workloads.</p>
+<p>Ezample return:
+{&#8220;processingDetails&#8221;: {
+&#8220;lastProcessedSpaTimestamp&#8221;: 1517408700000,
+&#8220;nextUpdate&#8221;: 1038},
+&#8220;spaRegistered&#8221;: True}</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -919,7 +924,8 @@ on an All Flash array (where compression is on by default).</p>
 <dd><p>Create a host with the given initiators.</p>
 <p>Accepts either initiator_list, e.g.
 [10000000ba873cbf, 10000000ba873cba], or file.
-The initiators must not be associated with another host.</p>
+The initiators must not be associated with another host.
+An empty host can also be created by not passing any initiator ids.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -928,7 +934,7 @@ The initiators must not be associated with another host.</p>
 <li><strong>host_name</strong> &#8211; the name of the new host</li>
 <li><strong>initiator_list</strong> &#8211; list of initiators</li>
 <li><strong>host_flags</strong> &#8211; dictionary of optional host flags to apply</li>
-<li><strong>init_file</strong> &#8211; full path and file name.</li>
+<li><strong>init_file</strong> &#8211; full path to file that contains initiator names</li>
 <li><strong>async</strong> &#8211; Flag to indicate if call should be async</li>
 </ul>
 </td>
@@ -1443,7 +1449,7 @@ than one sg it may show up more than once.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>director</strong> &#8211; the director ID e.g. FA-1D</li>
-<li><strong>port_no</strong> &#8211; the port number e.g. 1 - optional</li>
+<li><strong>port_no</strong> &#8211; the port number e.g. 1</li>
 </ul>
 </td>
 </tr>
@@ -1771,7 +1777,7 @@ given initiator group.</p>
 <dl class="method">
 <dt id="PyU4V.provisioning.ProvisioningFunctions.get_mv_from_sg">
 <code class="descname">get_mv_from_sg</code><span class="sig-paren">(</span><em>storage_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.get_mv_from_sg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_mv_from_sg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the associated masking view(s) from a given storage group</p>
+<dd><p>Get the associated masking views from a given storage group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3012,8 +3018,8 @@ rdf_grp &#8211; list or None</td>
 <dt id="PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf">
 <code class="descname">modify_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>action</em>, <em>rdfg=None</em>, <em>options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.modify_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Modify the state of an srdf.</p>
-<p>This may be a long running task depending on the size of the SRDF group,
-can switch to async call if required.</p>
+<p>This may be a long running task depending on the size of the SRDF
+group, can switch to async call if required.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3084,7 +3090,8 @@ can switch to async call if required.</p>
 <dl class="class">
 <dt id="PyU4V.rest_requests.RestRequests">
 <em class="property">class </em><code class="descclassname">PyU4V.rest_requests.</code><code class="descname">RestRequests</code><span class="sig-paren">(</span><em>username</em>, <em>password</em>, <em>verify</em>, <em>base_url</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_requests.html#RestRequests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_requests.RestRequests" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
 <dt id="PyU4V.rest_requests.RestRequests.close_session">
 <code class="descname">close_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_requests.html#RestRequests.close_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_requests.RestRequests.close_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close the current rest session</p>
@@ -3097,7 +3104,7 @@ can switch to async call if required.</p>
 
 <dl class="method">
 <dt id="PyU4V.rest_requests.RestRequests.rest_request">
-<code class="descname">rest_request</code><span class="sig-paren">(</span><em>target_url</em>, <em>method</em>, <em>params=None</em>, <em>request_object=None</em>, <em>stream=True</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_requests.html#RestRequests.rest_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_requests.RestRequests.rest_request" title="Permalink to this definition">¶</a></dt>
+<code class="descname">rest_request</code><span class="sig-paren">(</span><em>target_url</em>, <em>method</em>, <em>params=None</em>, <em>request_object=None</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/rest_requests.html#RestRequests.rest_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.rest_requests.RestRequests.rest_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a request (GET, POST, PUT, DELETE) to the target api.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3108,7 +3115,6 @@ can switch to async call if required.</p>
 <li><strong>method</strong> &#8211; The method (GET, POST, PUT, or DELETE)</li>
 <li><strong>params</strong> &#8211; Additional URL parameters</li>
 <li><strong>request_object</strong> &#8211; request payload (dict)</li>
-<li><strong>stream</strong> &#8211; flag to indicate if the response should be streamed</li>
 <li><strong>timeout</strong> &#8211; optional timeout override</li>
 </ul>
 </td>

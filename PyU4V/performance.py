@@ -121,10 +121,11 @@ class PerformanceFunctions(object):
                         'HostMBs', 'HitReqs', 'HostIOs', 'MissReqs',
                         'AvgOptimizedReadMissSize', 'OptimizedMBReadMisses',
                         'OptimizedReadMisses', 'PercentBusy', 'PercentHitReqs',
-                        'PercentReadReqs', 'PercentReadReqHit', 'PercentWriteReqs',
-                        'PercentWriteReqHit', 'QueueDepthUtilization',
-                        'HostIOLimitIOs', 'HostIOLimitMBs', 'ReadReqs',
-                        'ReadHitReqs', 'ReadMissReqs', 'Reqs', 'ReadResponseTime',
+                        'PercentReadReqs', 'PercentReadReqHit',
+                        'PercentWriteReqs', 'PercentWriteReqHit',
+                        'QueueDepthUtilization', 'HostIOLimitIOs',
+                        'HostIOLimitMBs', 'ReadReqs', 'ReadHitReqs',
+                        'ReadMissReqs', 'Reqs', 'ReadResponseTime',
                         'WriteResponseTime', 'SlotCollisions', 'SyscallCount',
                         'Syscall_RDF_DirCounts', 'SyscallRemoteDirCounts',
                         'SystemWPEvents', 'TotalReadCount', 'TotalWriteCount',
@@ -409,7 +410,7 @@ class PerformanceFunctions(object):
             'startDate': self.start_date
         }
 
-        # Perform Director level performance REST call dependent on Director type
+        # Perform Director level performance REST call dependent on Dir type
         if 'DF' in director_id or 'DX' in director_id:
             perf_metrics_payload = self.request(
                 be_director_uri, POST, request_object=be_director_payload)
@@ -564,8 +565,10 @@ class PerformanceFunctions(object):
         :param secondthreshold: the second threshold
         :param notify: Notify user with Alert Boolean
         """
-        payload = ({"secondThresholdSamples": 5, "firstThreshold": firstthreshold,
-                    "firstThresholdSamples": 5, "metric": metric, "alert": notify,
+        payload = ({"secondThresholdSamples": 5,
+                    "firstThreshold": firstthreshold,
+                    "firstThresholdSamples": 5,
+                    "metric": metric, "alert": notify,
                     "firstThresholdOccurrrences": 3,
                     "firstThresholdSeverity": "WARNING",
                     "secondThresholdSeverity": "CRITICAL",
@@ -587,7 +590,7 @@ class PerformanceFunctions(object):
         :param outputcsvname: filename for CSV to be generated
         """
         category_list = self.get_perf_threshold_categories()
-        with open(bytes(outputcsvname, 'UTF-8'), 'w',newline='') as csvfile:
+        with open(bytes(outputcsvname, 'UTF-8'), 'w', newline='') as csvfile:
             eventwriter = csv.writer(csvfile,
                                      delimiter=',',
                                      quotechar='|',

@@ -2,6 +2,10 @@
 Welcome to PyU4V
 ================
 
+NOTE
+
+Please note that this the master branch and is subject to change -- version 3 will be released soon...
+
 A library showing some of the functionality possible using the RestAPI of Dell EMC's Unisphere for VMAX.
 See the documentation here: http://pyu4v.readthedocs.io/.
 Get the Unisphere for VMAX Rest documentation by navigating to https://<ip-address>:<port-number>/univmax/restapi/docs,
@@ -13,7 +17,7 @@ VERSION 3
 Please note that version 3 of the library is NOT BACKWARDS COMPATIBLE with existing scripts, and does not support any
 Unisphere for VMAX version earlier that 8.4 - PyU4V version 2.0.2.6 is still available on Pip, and there is a
 'stable/2.0' branch available on Github. Version 3 will be the version maintained going forward, and we do suggest
-you move to this version when possible.
+you move to this version when it is released.
 
 WHAT'S SUPPORTED
 
@@ -21,7 +25,8 @@ This package supports Unisphere version 8.4 onwards. We support VMAX3 and VMAX A
 
 INSTALLATION
 
-To give it a try, install the package using pip (pip install PyU4V). Copy the sample PyU4V.conf into your working
+To give the master branch a try, clone the package using git (see the link above), and install the package using pip
+(switch to the newly cloned PyU4V directory and run 'pip install .'). Copy the sample PyU4V.conf into your working
 directory, and add your server and array details to the top of the PyU4V.conf configuration file, under the [setup]
 heading. Alternatively, you can pass some or all of these details on initialisation.
 Password, username, server_ip, port, and array MUST be set (either in the config file or on initialisation).

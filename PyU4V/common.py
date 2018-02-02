@@ -199,7 +199,7 @@ class CommonFunctions(object):
         :param resource_type: the resource type e.g. maskingview
         :param resource_name: the name of a specific resource
         :param version: the U4V version
-        :returns: target url, string
+        :returns: target url -- string
         """
         if version is None:
             version = self.U4V_VERSION
@@ -301,9 +301,8 @@ class CommonFunctions(object):
         version = self.U4V_VERSION
         target_uri = self._build_uri(array, category, resource_type,
                                      resource_name, version=version)
-        message, status_code = self.request(target_uri, DELETE,
-                                            request_object=payload,
-                                            params=params, stream=False)
+        message, status_code = self.request(
+            target_uri, DELETE, request_object=payload, params=params)
         operation = 'delete {} resource'.format(resource_type)
         self.check_status_code_success(operation, status_code, message)
 
@@ -399,27 +398,41 @@ class CommonFunctions(object):
         :param iterator_id: the id of the iterator
         :param start: the start number
         :param end: the end number
-        :return: dict
+        :return: list of results
         """
+        page_list = []
         target_uri = 'common/Iterator/{}/page'.format(iterator_id)
         filters = {'from': start, 'to': end}
-        return self.get_request(target_uri, 'iterator', params=filters)
+        response = self.get_request(target_uri, 'iterator', params=filters)
+        if response and response.get('result'):
+            page_list = response['result']
+        return page_list
 
-    def get_wlp_timestamp(self, array_id):
+    def get_wlp_information(self, array_id):
         """Get the latest timestamp from WLP for processing New Workloads.
+
+        Ezample return:
+        {"processingDetails": {
+        "lastProcessedSpaTimestamp": 1517408700000,
+        "nextUpdate": 1038},
+        "spaRegistered": True}
 
         :return: dict
         """
+        wlp_details = None
         target_uri = ("/{}/wlp/symmetrix/{}".format(
             self.U4V_VERSION, array_id))
-        return self.get_request(target_uri, 'wlp')
+        response = self.get_request(target_uri, 'wlp')
+        if response and response.get('symmetrixDetails'):
+            wlp_details = response['symmetrixDetails']
+        return wlp_details
 
     def get_headroom(self, array_id, workload, srp="SRP_1", slo="Diamond"):
         """Get the Remaining Headroom Capacity.
 
         Get the headroom capacity for a given srp/ slo/ workload combination.
         Example output:
-        {'headroom': [{'workloadType': 'OLTP',
+        [{'workloadType': 'OLTP',
         'headroomCapacity': 29076.34, 'processingDetails':
         {'lastProcessedSpaTimestamp': 1485302100000,
         'nextUpdate': 1670}, 'sloName': 'Diamond',
@@ -431,5 +444,10 @@ class CommonFunctions(object):
         :param slo: the service level. Default Diamond.
         :return: dict
         """
+        headroom = []
         params = {'srp': srp, 'slo': slo, 'workloadtype': workload}
-        return self.get_resource(array_id, 'wlp', 'headroom', params=params)
+        response = self.get_resource(array_id, 'wlp', 'headroom',
+                                     params=params)
+        if response and response.get('headroom'):
+            headroom = response['headroom']
+        return headroom

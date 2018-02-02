@@ -171,10 +171,11 @@
                         <span class="s1">&#39;HostMBs&#39;</span><span class="p">,</span> <span class="s1">&#39;HitReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;HostIOs&#39;</span><span class="p">,</span> <span class="s1">&#39;MissReqs&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;AvgOptimizedReadMissSize&#39;</span><span class="p">,</span> <span class="s1">&#39;OptimizedMBReadMisses&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;OptimizedReadMisses&#39;</span><span class="p">,</span> <span class="s1">&#39;PercentBusy&#39;</span><span class="p">,</span> <span class="s1">&#39;PercentHitReqs&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;PercentReadReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;PercentReadReqHit&#39;</span><span class="p">,</span> <span class="s1">&#39;PercentWriteReqs&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;PercentWriteReqHit&#39;</span><span class="p">,</span> <span class="s1">&#39;QueueDepthUtilization&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;HostIOLimitIOs&#39;</span><span class="p">,</span> <span class="s1">&#39;HostIOLimitMBs&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadReqs&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;ReadHitReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadMissReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;Reqs&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadResponseTime&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;PercentReadReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;PercentReadReqHit&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;PercentWriteReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;PercentWriteReqHit&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;QueueDepthUtilization&#39;</span><span class="p">,</span> <span class="s1">&#39;HostIOLimitIOs&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;HostIOLimitMBs&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadHitReqs&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;ReadMissReqs&#39;</span><span class="p">,</span> <span class="s1">&#39;Reqs&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadResponseTime&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;WriteResponseTime&#39;</span><span class="p">,</span> <span class="s1">&#39;SlotCollisions&#39;</span><span class="p">,</span> <span class="s1">&#39;SyscallCount&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;Syscall_RDF_DirCounts&#39;</span><span class="p">,</span> <span class="s1">&#39;SyscallRemoteDirCounts&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;SystemWPEvents&#39;</span><span class="p">,</span> <span class="s1">&#39;TotalReadCount&#39;</span><span class="p">,</span> <span class="s1">&#39;TotalWriteCount&#39;</span><span class="p">,</span>
@@ -459,7 +460,7 @@
             <span class="s1">&#39;startDate&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span>
         <span class="p">}</span>
 
-        <span class="c1"># Perform Director level performance REST call dependent on Director type</span>
+        <span class="c1"># Perform Director level performance REST call dependent on Dir type</span>
         <span class="k">if</span> <span class="s1">&#39;DF&#39;</span> <span class="ow">in</span> <span class="n">director_id</span> <span class="ow">or</span> <span class="s1">&#39;DX&#39;</span> <span class="ow">in</span> <span class="n">director_id</span><span class="p">:</span>
             <span class="n">perf_metrics_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
                 <span class="n">be_director_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">be_director_payload</span><span class="p">)</span>
@@ -614,8 +615,10 @@
 <span class="sd">        :param secondthreshold: the second threshold</span>
 <span class="sd">        :param notify: Notify user with Alert Boolean</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">payload</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;secondThresholdSamples&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;firstThreshold&quot;</span><span class="p">:</span> <span class="n">firstthreshold</span><span class="p">,</span>
-                    <span class="s2">&quot;firstThresholdSamples&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">metric</span><span class="p">,</span> <span class="s2">&quot;alert&quot;</span><span class="p">:</span> <span class="n">notify</span><span class="p">,</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;secondThresholdSamples&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="s2">&quot;firstThreshold&quot;</span><span class="p">:</span> <span class="n">firstthreshold</span><span class="p">,</span>
+                    <span class="s2">&quot;firstThresholdSamples&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">metric</span><span class="p">,</span> <span class="s2">&quot;alert&quot;</span><span class="p">:</span> <span class="n">notify</span><span class="p">,</span>
                     <span class="s2">&quot;firstThresholdOccurrrences&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
                     <span class="s2">&quot;firstThresholdSeverity&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;secondThresholdSeverity&quot;</span><span class="p">:</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">,</span>
@@ -637,7 +640,7 @@
 <span class="sd">        :param outputcsvname: filename for CSV to be generated</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">category_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_perf_threshold_categories</span><span class="p">()</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">outputcsvname</span><span class="p">,</span> <span class="s1">&#39;UTF-8&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">outputcsvname</span><span class="p">,</span> <span class="s1">&#39;UTF-8&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
             <span class="n">eventwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span>
                                      <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span>
                                      <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span>

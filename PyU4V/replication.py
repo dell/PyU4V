@@ -490,8 +490,8 @@ class ReplicationFunctions(object):
             options=None, async=False):
         """Modify the state of an srdf.
 
-        This may be a long running task depending on the size of the SRDF group,
-        can switch to async call if required.
+        This may be a long running task depending on the size of the SRDF
+        group, can switch to async call if required.
 
         :param storagegroup_id: name of storage group
         :param action: the rdf action e.g. Suspend, Establish, etc

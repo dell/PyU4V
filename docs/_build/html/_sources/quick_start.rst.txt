@@ -77,12 +77,13 @@ We STRONGLY recommend that you configure the library to verify SSL. If not, you 
 and other potential security issues. However, you can disable SSL verification by setting 'verify=False' on
 initialisation, or in the configuration file.
 
-To set
+To set:
+
 1. Get the CA certificate of the Unisphere server.
 
-    # openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
+        # openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
 
-    (This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
+(This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
 
 2.	Either add the certificate to a ca-certificates bundle, OR add the path to the conf file/ pass it in as a parameter
 on initialisation:
@@ -100,6 +101,8 @@ on initialisation:
 
        - If the conf file is being used, ensure that if the 'verify' tag is present, that it is set to True
          ("verify=True") (If it is not set anywhere, 'verify' defaults to True)
+
+OR
 
     * In the conf file insert the following:
        verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.

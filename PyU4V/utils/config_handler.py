@@ -7,15 +7,18 @@ import logging.config
 import os
 
 
-def set_logger_and_config():
+def set_logger_and_config(file_path=None):
     cfg, conf_file, set_null_logger = None, None, True
     # register configuration file
     conf_file_name = 'PyU4V.conf'
-    if os.path.exists(conf_file_name):
+    if file_path is not None:
+        if os.path.isfile(file_path):
+            conf_file = file_path
+    elif os.path.isfile(conf_file_name):
         conf_file = conf_file_name
     else:
         global_path = os.path.normpath('~/.PyU4V/PyU4V.conf')
-        if os.path.exists(global_path):
+        if os.path.isfile(global_path):
             conf_file = global_path
     if conf_file is not None:
         set_null_logger = False

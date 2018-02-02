@@ -249,7 +249,7 @@
 <span class="sd">        :param resource_type: the resource type e.g. maskingview</span>
 <span class="sd">        :param resource_name: the name of a specific resource</span>
 <span class="sd">        :param version: the U4V version</span>
-<span class="sd">        :returns: target url, string</span>
+<span class="sd">        :returns: target url -- string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span>
@@ -351,9 +351,8 @@
         <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span>
         <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
                                      <span class="n">resource_name</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
-        <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">DELETE</span><span class="p">,</span>
-                                            <span class="n">request_object</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
-                                            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="n">DELETE</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
         <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;delete </span><span class="si">{}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_status_code_success</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 
@@ -449,27 +448,41 @@
 <span class="sd">        :param iterator_id: the id of the iterator</span>
 <span class="sd">        :param start: the start number</span>
 <span class="sd">        :param end: the end number</span>
-<span class="sd">        :return: dict</span>
+<span class="sd">        :return: list of results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">page_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;common/Iterator/</span><span class="si">{}</span><span class="s1">/page&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iterator_id</span><span class="p">)</span>
         <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;iterator&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">filters</span><span class="p">)</span></div>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;iterator&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">):</span>
+            <span class="n">page_list</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">page_list</span></div>
 
-<div class="viewcode-block" id="CommonFunctions.get_wlp_timestamp"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_wlp_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_wlp_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonFunctions.get_wlp_information"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_wlp_information">[docs]</a>    <span class="k">def</span> <span class="nf">get_wlp_information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the latest timestamp from WLP for processing New Workloads.</span>
+
+<span class="sd">        Ezample return:</span>
+<span class="sd">        {&quot;processingDetails&quot;: {</span>
+<span class="sd">        &quot;lastProcessedSpaTimestamp&quot;: 1517408700000,</span>
+<span class="sd">        &quot;nextUpdate&quot;: 1038},</span>
+<span class="sd">        &quot;spaRegistered&quot;: True}</span>
 
 <span class="sd">        :return: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wlp_details</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">target_uri</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/wlp/symmetrix/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">array_id</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;wlp&#39;</span><span class="p">)</span></div>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;wlp&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;symmetrixDetails&#39;</span><span class="p">):</span>
+            <span class="n">wlp_details</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;symmetrixDetails&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">wlp_details</span></div>
 
 <div class="viewcode-block" id="CommonFunctions.get_headroom"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_headroom">[docs]</a>    <span class="k">def</span> <span class="nf">get_headroom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">,</span> <span class="n">workload</span><span class="p">,</span> <span class="n">srp</span><span class="o">=</span><span class="s2">&quot;SRP_1&quot;</span><span class="p">,</span> <span class="n">slo</span><span class="o">=</span><span class="s2">&quot;Diamond&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the Remaining Headroom Capacity.</span>
 
 <span class="sd">        Get the headroom capacity for a given srp/ slo/ workload combination.</span>
 <span class="sd">        Example output:</span>
-<span class="sd">        {&#39;headroom&#39;: [{&#39;workloadType&#39;: &#39;OLTP&#39;,</span>
+<span class="sd">        [{&#39;workloadType&#39;: &#39;OLTP&#39;,</span>
 <span class="sd">        &#39;headroomCapacity&#39;: 29076.34, &#39;processingDetails&#39;:</span>
 <span class="sd">        {&#39;lastProcessedSpaTimestamp&#39;: 1485302100000,</span>
 <span class="sd">        &#39;nextUpdate&#39;: 1670}, &#39;sloName&#39;: &#39;Diamond&#39;,</span>
@@ -481,8 +494,13 @@
 <span class="sd">        :param slo: the service level. Default Diamond.</span>
 <span class="sd">        :return: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">headroom</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;srp&#39;</span><span class="p">:</span> <span class="n">srp</span><span class="p">,</span> <span class="s1">&#39;slo&#39;</span><span class="p">:</span> <span class="n">slo</span><span class="p">,</span> <span class="s1">&#39;workloadtype&#39;</span><span class="p">:</span> <span class="n">workload</span><span class="p">}</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="n">array_id</span><span class="p">,</span> <span class="s1">&#39;wlp&#39;</span><span class="p">,</span> <span class="s1">&#39;headroom&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div></div>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="n">array_id</span><span class="p">,</span> <span class="s1">&#39;wlp&#39;</span><span class="p">,</span> <span class="s1">&#39;headroom&#39;</span><span class="p">,</span>
+                                     <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;headroom&#39;</span><span class="p">):</span>
+            <span class="n">headroom</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;headroom&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">headroom</span></div></div>
 </pre></div>
 
           </div>

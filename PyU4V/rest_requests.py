@@ -23,8 +23,6 @@
 import json
 import logging
 
-from PyU4V.utils import config_handler
-
 import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
@@ -34,7 +32,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 LOG = logging.getLogger(__name__)
 
 
-class RestRequests:
+class RestRequests(object):
 
     def __init__(self, username, password, verify, base_url):
         self.username = username
@@ -54,14 +52,13 @@ class RestRequests:
         return session
 
     def rest_request(self, target_url, method,
-                     params=None, request_object=None, stream=True, timeout=None):
+                     params=None, request_object=None, timeout=None):
         """Sends a request (GET, POST, PUT, DELETE) to the target api.
 
         :param target_url: target url (string)
         :param method: The method (GET, POST, PUT, or DELETE)
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
-        :param stream: flag to indicate if the response should be streamed
         :param timeout: optional timeout override
         :return: server response object (dict), status code
         """
@@ -75,10 +72,7 @@ class RestRequests:
                {'self.base_url': self.base_url,
                 'target_url': target_url})
         try:
-            if method == 'DELETE' and stream is True:
-                # Pre 8.4, delete response hangs forever unless stream=True
-                return self.session.delete(url=url, stream=True)
-            elif request_object:
+            if request_object:
                 response = self.session.request(
                     method=method, url=url, timeout=timeout_val,
                     data=json.dumps(request_object, sort_keys=True,

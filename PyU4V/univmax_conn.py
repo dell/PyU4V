@@ -30,8 +30,9 @@ from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
 
+file_path = None
+CFG = config_handler.set_logger_and_config(file_path)
 LOG = logging.getLogger(__name__)
-CFG = config_handler.set_logger_and_config()
 
 
 class U4VConn(object):
@@ -72,7 +73,8 @@ class U4VConn(object):
                                         base_url)
         self.request = self.rest_client.rest_request
         self.U4V_VERSION = u4v_version
-        self.common = CommonFunctions(self.request, interval, retries, u4v_version)
+        self.common = CommonFunctions(
+            self.request, interval, retries, u4v_version)
         self.provisioning = ProvisioningFunctions(
             self.array_id, self.request, self.common, self.U4V_VERSION)
         self.performance = PerformanceFunctions(

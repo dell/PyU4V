@@ -116,12 +116,15 @@ those set in any configuration file, i.e. the priority goes</p>
 <p>We STRONGLY recommend that you configure the library to verify SSL. If not, you leave yourself open to MITM attacks
 and other potential security issues. However, you can disable SSL verification by setting &#8216;verify=False&#8217; on
 initialisation, or in the configuration file.</p>
-<p>To set
-1. Get the CA certificate of the Unisphere server.</p>
+<p>To set:</p>
+<ol class="arabic">
+<li><p class="first">Get the CA certificate of the Unisphere server.</p>
 <blockquote>
 <div><p># openssl s_client -showcerts -connect {server_hostname}:8443 &lt;/dev/null 2&gt;/dev/null|openssl x509 -outform PEM &gt; {server_hostname}.pem</p>
-<p>(This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)</p>
 </div></blockquote>
+</li>
+</ol>
+<p>(This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)</p>
 <p>2.      Either add the certificate to a ca-certificates bundle, OR add the path to the conf file/ pass it in as a parameter
 on initialisation:</p>
 <blockquote>
@@ -153,10 +156,14 @@ on initialisation:</p>
 </ul>
 </div></blockquote>
 </li>
+</ul>
+</div></blockquote>
+<p>OR</p>
+<blockquote>
+<div><ul class="simple">
 <li><dl class="first docutils">
 <dt>In the conf file insert the following:</dt>
-<dd><p class="first last">verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.</p>
-</dd>
+<dd>verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.</dd>
 </dl>
 </li>
 </ul>

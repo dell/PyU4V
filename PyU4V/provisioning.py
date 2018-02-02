@@ -59,18 +59,16 @@ class ProvisioningFunctions(object):
 
         :return: director list
         """
-        director_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'director')
-        if response and response.get('directorId'):
-            director_list = response['directorId']
+        director_list = response.get('directorId', []) if response else []
         return director_list
 
     def get_director_port(self, director, port_no):
         """Get details of the symmetrix director port.
 
         :param director: the director ID e.g. FA-1D
-        :param port_no: the port number e.g. 1 - optional
+        :param port_no: the port number e.g. 1
         :return: dict
         """
         res_name = "{}/port/{}".format(director, port_no)
@@ -86,11 +84,11 @@ class ProvisioningFunctions(object):
         :param filters: optional filters - dict
         :return: list of port key dicts
         """
-        port_key_list = []
-        response = self.get_resource(self.array_id, SLOPROVISIONING, 'director',
-                                     resource_name=director, params=filters)
-        if response and response.get('symmetrixPortKey'):
-            port_key_list = response['symmetrixPortKey']
+        resource_name = "{}/port".format(director)
+        response = self.get_resource(
+            self.array_id, SLOPROVISIONING, 'director',
+            resource_name=resource_name, params=filters)
+        port_key_list = response.get('symmetrixPortKey') if response else []
         return port_key_list
 
     def get_port_identifier(self, director, port_no):
@@ -126,11 +124,9 @@ class ProvisioningFunctions(object):
         :param filters: optional list of filters - dict
         :return: list of hosts
         """
-        host_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'host', params=filters)
-        if response and response.get('hostId'):
-            host_list = response['hostId']
+        host_list = response.get('hostId', []) if response else []
         return host_list
 
     def create_host(self, host_name, initiator_list=None,
@@ -140,22 +136,20 @@ class ProvisioningFunctions(object):
         Accepts either initiator_list, e.g.
         [10000000ba873cbf, 10000000ba873cba], or file.
         The initiators must not be associated with another host.
+        An empty host can also be created by not passing any initiator ids.
 
         :param host_name: the name of the new host
         :param initiator_list: list of initiators
         :param host_flags: dictionary of optional host flags to apply
-        :param init_file: full path and file name.
+        :param init_file: full path to file that contains initiator names
         :param async: Flag to indicate if call should be async
         :return: dict
         """
         if init_file:
             initiator_list = self.common.create_list_from_file(init_file)
-
-        if not init_file and not initiator_list:
-            msg = ("No file or initiator_list supplied, "
-                   "you must specify one or the other")
-            raise exception.InvalidInputException(data=msg)
-        new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
+        new_ig_data = ({"hostId": host_name})
+        if initiator_list and len(initiator_list) > 0:
+            new_ig_data.update({"initiatorId": initiator_list})
         if host_flags:
             new_ig_data.update({"hostFlags": host_flags})
         if async:
@@ -247,11 +241,9 @@ class ProvisioningFunctions(object):
         :param filters: optional list of filters - dict
         :return: dict
         """
-        hostgroup_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'hostgroup', params=filters)
-        if response and response.get('hostGroupId'):
-            hostgroup_list = response['hostGroupId']
+        hostgroup_list = response.get('hostGroupId', []) if response else []
         return hostgroup_list
 
     def create_hostgroup(self, hostgroup_id, host_list,
@@ -332,11 +324,9 @@ class ProvisioningFunctions(object):
         :param params: dict of optional params
         :returns: list of initiators
         """
-        init_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'initiator', params=params)
-        if response and response.get('initiatorId'):
-            init_list = response['initiatorId']
+        init_list = response.get('initiatorId', []) if response else []
         return init_list
 
     def modify_initiator(self, initiator_id, remove_masking_entry=None,
@@ -410,11 +400,9 @@ class ProvisioningFunctions(object):
         :param initiator: the initiator id
         :returns: found_init_group_name -- string, or None
         """
-        found_init_group_name = None
         init_details = self.get_initiator(initiator)
-        if init_details and init_details.get('host'):
-            found_init_group_name = init_details['host']
-        return found_init_group_name
+        found_ig_name = init_details.get('host') if init_details else None
+        return found_ig_name
 
     def get_masking_view_list(self, filters=None):
         """Get a masking view or list of masking views.
@@ -424,11 +412,10 @@ class ProvisioningFunctions(object):
         :param filters: dictionary of filters
         :return: list of masking views
         """
-        masking_view_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'maskingview', params=filters)
-        if response and response.get('maskingViewId'):
-            masking_view_list = response['maskingViewId']
+        masking_view_list = response.get(
+            'maskingViewId', []) if response else []
         return masking_view_list
 
     def get_masking_view(self, masking_view_name):
@@ -487,11 +474,8 @@ class ProvisioningFunctions(object):
         :param storagegroup: the storage group name
         :returns: masking view list
         """
-        maskingviewlist = []
         storagegroup = self.get_storage_group(storagegroup)
-        if storagegroup and storagegroup.get('maskingview'):
-            maskingviewlist = storagegroup['maskingview']
-        return maskingviewlist
+        return storagegroup.get('maskingview', []) if storagegroup else []
 
     def get_masking_views_by_host(self, initiatorgroup_name):
         """Given a host (initiator group), retrieve the masking view name.
@@ -502,13 +486,9 @@ class ProvisioningFunctions(object):
         :param initiatorgroup_name: the name of the initiator group
         :returns: list of masking view names
         """
-        masking_view_list = []
         ig_details = self.get_host(initiatorgroup_name)
-        if ig_details and ig_details.get('maskingview'):
-            masking_view_list = ig_details['maskingview']
-        else:
-            LOG.error("Error retrieving initiator group %(ig_name)s",
-                      {'ig_name': initiatorgroup_name})
+        masking_view_list = ig_details.get(
+            'maskingview', []) if ig_details else []
         return masking_view_list
 
     def get_element_from_masking_view(
@@ -549,12 +529,7 @@ class ProvisioningFunctions(object):
         """
         params = {'port_group_name': portgroup_name,
                   'host_or_host_group_name': ig_name}
-        masking_view_list = self.get_masking_view_list(params)
-        if not masking_view_list:
-            LOG.info("No common masking views found for %(pg_name)s "
-                     "and %(ig_name)s.",
-                     {'pg_name': portgroup_name, 'ig_name': ig_name})
-        return masking_view_list
+        return self.get_masking_view_list(params)
 
     def delete_masking_view(self, maskingview_name):
         """Delete a masking view.
@@ -594,7 +569,7 @@ class ProvisioningFunctions(object):
         :return: the name of the storage group
         """
         return self.get_element_from_masking_view(
-            self.array_id, masking_view_id, storagegroup=True)
+            masking_view_id, storagegroup=True)
 
     def get_portgroup_from_maskingview(self, masking_view_id):
         """Given a masking view, get the associated port group.
@@ -612,13 +587,12 @@ class ProvisioningFunctions(object):
         :param filters: dict of optional filter parameters
         :return: list of masking view connection dicts
         """
-        mv_conn_list = []
         res_name = "{}/connections".format(mv_name)
         response = self.get_resource(
             self.array_id, SLOPROVISIONING,
             'maskingview', resource_name=res_name, params=filters)
-        if response and response.get('maskingViewConnection'):
-            mv_conn_list = response['maskingViewConnection']
+        mv_conn_list = response.get(
+            'maskingViewConnection') if response else []
         return mv_conn_list
 
     def find_host_lun_id_for_vol(self, maskingview, device_id):
@@ -656,11 +630,10 @@ class ProvisioningFunctions(object):
         :param filters: dictionary of filters e.g. {'vnx_attached': 'true'}
         :return: list of port key dicts
         """
-        port_key_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'port', params=filters)
-        if response and response.get('symmetrixPortKey'):
-            port_key_list = response['symmetrixPortKey']
+        port_key_list = response.get(
+            'symmetrixPortKey', []) if response else []
         return port_key_list
 
     def get_portgroup(self, portgroup_id):
@@ -678,11 +651,9 @@ class ProvisioningFunctions(object):
         :param filters: dict of optional filters
         :return: list of portgroups
         """
-        port_group_list = []
         response = self.get_resource(self.array_id, SLOPROVISIONING,
                                      'portgroup', params=filters)
-        if response and response.get('portGroupId'):
-            port_group_list = response['portGroupId']
+        port_group_list = response.get('portGroupId', []) if response else []
         return port_group_list
 
     def get_ports_from_pg(self, portgroup):
@@ -721,7 +692,7 @@ class ProvisioningFunctions(object):
         :param port_id: the director port identifier
         :returns: (list of ip_addresses, iqn)
         """
-        ip_addresses, iqn = None, None
+        ip_addresses, iqn = [], []
         dir_id = port_id.split(':')[0]
         port_no = port_id.split(':')[1]
         port_details = self.get_director_port(dir_id, port_no)
@@ -839,11 +810,9 @@ class ProvisioningFunctions(object):
 
         :returns: slo_list -- list of service level names
         """
-        slo_list = []
         slo_dict = self.get_resource(
             self.array_id, SLOPROVISIONING, 'slo', params=filters)
-        if slo_dict and slo_dict.get('sloId'):
-            slo_list = slo_dict['sloId']
+        slo_list = slo_dict.get('sloId', []) if slo_dict else []
         return slo_list
 
     def get_slo(self, slo_id):
@@ -885,11 +854,9 @@ class ProvisioningFunctions(object):
         :param filters: optional dict of filter parameters
         :return: list
         """
-        srp_list = []
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'srp', params=filters)
-        if response and response.get('srpId'):
-            srp_list = response['srpId']
+        srp_list = response.get('srpId', []) if response else []
         return srp_list
 
     def get_compressibility_report(self, srp_id):
@@ -898,12 +865,11 @@ class ProvisioningFunctions(object):
         :param srp_id: the srp id
         :return: list of compressibility reports
         """
-        report_list = []
         res_name = '{}/compressibility_report'.format(srp_id)
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'srp', resource_name=res_name)
-        if response and response.get('storageGroupCompressibility'):
-            report_list = response['storageGroupCompressibility']
+        report_list = response.get(
+            'storageGroupCompressibility', []) if response else []
         return report_list
 
     def is_compression_capable(self):
@@ -911,12 +877,9 @@ class ProvisioningFunctions(object):
 
         :returns: bool
         """
-        is_compression_capable = False
         array_list = self.common.get_v3_or_newer_array_list(
             filters={'compressionCapable': 'true'})
-        if self.array_id in array_list:
-            is_compression_capable = True
-        return is_compression_capable
+        return True if self.array_id in array_list else False
 
     def get_storage_group(self, storage_group_name):
         """Given a name, return storage group details.
@@ -934,24 +897,20 @@ class ProvisioningFunctions(object):
         :param filters: optional filter parameters
         :returns: storage group list
         """
-        sg_list = []
         sg_details = self.get_resource(
             self.array_id, SLOPROVISIONING, 'storagegroup', params=filters)
-        if sg_details and sg_details.get('storageGroupId'):
-            sg_list = sg_details['storageGroupId']
+        sg_list = sg_details.get('storageGroupId', []) if sg_details else []
         return sg_list
 
     def get_mv_from_sg(self, storage_group):
-        """Get the associated masking view(s) from a given storage group
+        """Get the associated masking views from a given storage group
 
         :param storage_group: the name of the storage group
         :return: Masking view list
         """
-        masking_view_list = []
         response = self.get_storage_group(storage_group)
-        if response and response.get('maskingview'):
-            masking_view_list = response["maskingview"]
-        return masking_view_list
+        maskingview_list = response.get('maskingview', []) if response else []
+        return maskingview_list
 
     def get_num_vols_in_sg(self, storage_group_name):
         """Get the number of volumes in a storage group.
@@ -959,10 +918,9 @@ class ProvisioningFunctions(object):
         :param storage_group_name: the storage group name
         :returns: num_vols -- int
         """
-        num_vols = 0
         storagegroup = self.get_storage_group(storage_group_name)
-        if storagegroup and storagegroup.get('num_of_vols'):
-            num_vols = int(storagegroup['num_of_vols'])
+        num_vols = (int(storagegroup['num_of_vols']) if storagegroup
+                    and storagegroup.get('num_of_vols') else 0)
         return num_vols
 
     def is_child_sg_in_parent_sg(self, child_name, parent_name):
@@ -1301,7 +1259,8 @@ class ProvisioningFunctions(object):
                 self.modify_storage_group(storage_group_name, payload))
         return message
 
-    def set_host_io_limit_iops(self, storage_group, iops, dynamic_distribution):
+    def set_host_io_limit_iops(
+            self, storage_group, iops, dynamic_distribution):
         """Set the HOSTIO Limits on an existing storage group.
 
         :param storage_group: String up to 32 Characters
@@ -1416,14 +1375,8 @@ class ProvisioningFunctions(object):
         :param vol_id: the device ID of the volume
         :return: list of storage groups
         """
-        sg_list = []
         vol = self.get_volume(vol_id)
-        if vol and vol.get('storageGroupId'):
-            sg_list = vol['storageGroupId']
-        num_storage_groups = len(sg_list)
-        LOG.debug("There are %(num)d storage groups associated "
-                  "with volume %(deviceId)s.",
-                  {'num': num_storage_groups, 'deviceId': vol_id})
+        sg_list = vol.get('storageGroupId', []) if vol else []
         return sg_list
 
     def is_volume_in_storagegroup(self, device_id, storagegroup):
@@ -1463,9 +1416,7 @@ class ProvisioningFunctions(object):
         :returns: the volume identifier -- string
         """
         vol = self.get_volume(device_id)
-        if vol and vol.get('volume_identifier'):
-            return vol['volume_identifier']
-        return None
+        return vol.get('volume_identifier', None) if vol else None
 
     def get_size_of_device_on_array(self, device_id):
         """Get the size of the volume from the array.
@@ -1592,8 +1543,6 @@ class ProvisioningFunctions(object):
         :param array: the array serial number
         :returns: workload_setting -- list of workload names
         """
-        workload_setting = []
         wl_details = self.get_resource(array, SLOPROVISIONING, 'workloadtype')
-        if wl_details:
-            workload_setting = wl_details['workloadId']
-        return workload_setting
+        wl_setting = wl_details.get('workloadId', []) if wl_details else []
+        return wl_setting
