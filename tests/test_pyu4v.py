@@ -380,6 +380,8 @@ class FakeRequestsSession(object):
                 return_object = self._sloprovisioning_mv(url)
             elif 'portgroup' in url:
                 return_object = self._sloprovisioning_pg(url)
+            elif 'port' in url:
+                return_object = self._sloprovisioning_port(url)
             elif 'director' in url:
                 return_object = self._sloprovisioning_port(url)
             elif 'hostgroup' in url:
@@ -980,6 +982,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 host_lun_id2 = self.provisioning.find_host_lun_id_for_vol(
                     self.data.masking_view_name_f, self.data.device_id)
                 self.assertIsNone(host_lun_id2)
+
+    def test_get_port_list(self):
+        port_key_list = self.provisioning.get_port_list()
+        self.assertEqual(
+            self.data.port_key_list['symmetrixPortKey'], port_key_list)
+
+    def test_get_portgroup(self):
 
 
 class PyU4VReplicationTest(testtools.TestCase):
