@@ -671,14 +671,14 @@ class ProvisioningFunctions(object):
                 portlist.append(port)
         return portlist
 
-    def get_target_wwns_from_pg(self, portgroup):
+    def get_target_wwns_from_pg(self, portgroup_id):
         """Get the director ports' wwns.
 
-        :param portgroup: portgroup
+        :param portgroup_id: the name of the portgroup
         :returns: target_wwns -- the list of target wwns for the pg
         """
         target_wwns = []
-        port_ids = self.get_ports_from_pg(portgroup)
+        port_ids = self.get_ports_from_pg(portgroup_id)
         for port in port_ids:
             dir_id = port.split(':')[0]
             port_no = port.split(':')[1]
@@ -692,7 +692,7 @@ class ProvisioningFunctions(object):
         :param port_id: the director port identifier
         :returns: (list of ip_addresses, iqn)
         """
-        ip_addresses, iqn = [], []
+        ip_addresses, iqn = [], None
         dir_id = port_id.split(':')[0]
         port_no = port_id.split(':')[1]
         port_details = self.get_director_port(dir_id, port_no)
@@ -791,19 +791,6 @@ class ProvisioningFunctions(object):
         """
         self.delete_resource(self.array_id, SLOPROVISIONING,
                              'portgroup', portgroup_id)
-
-    def extract_director_id_from_portgroup(self, portgroup):
-        """Get the director information from the port group.
-
-        :param portgroup: the name of the portgroup
-        :return: the director information
-        """
-        info = self.get_portgroup(portgroup)
-        try:
-            port_key = info["portGroup"]["symmetrixPortKey"]
-            return port_key
-        except (KeyError, TypeError):
-            LOG.error("Cannot find port key information from given portgroup")
 
     def get_slo_list(self, filters=None):
         """Retrieve the list of slo's from the array
@@ -994,8 +981,8 @@ class ProvisioningFunctions(object):
         :param sg_id: the name of the new storage group
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
-        :param num_vols: the amount of volumes to be created
-        :param vol_size: the size of each volume
+        :param num_vols: the amount of volumes to be created -- int
+        :param vol_size: the size of each volume -- string
         :param cap_unit: the capacity unit (MB, GB)
         :param disable_compression: Flag for disabling compression (AF only)
         :param async: Flag to indicate if this call should be async
@@ -1111,7 +1098,7 @@ class ProvisioningFunctions(object):
         :param source_storagegroup_name: the originating storage group name
         :param target_storagegroup_name: the destination storage group name
         :param device_ids: the device ids - can be list
-        :param force: force flag (necessary on a detach)
+        :param force: force flag (necessary if volume is in masking view)
         :param async: async flag
         """
         force_flag = "true" if force else "false"
@@ -1259,18 +1246,21 @@ class ProvisioningFunctions(object):
                 self.modify_storage_group(storage_group_name, payload))
         return message
 
-    def set_host_io_limit_iops(
-            self, storage_group, iops, dynamic_distribution):
+    def set_host_io_limit_iops_or_mbps(
+            self, storage_group, iops, dynamic_distribution, mbps=None):
         """Set the HOSTIO Limits on an existing storage group.
 
         :param storage_group: String up to 32 Characters
         :param dynamic_distribution: valid values Always, Never, OnFailure
         :param iops: integer value. Min Value 100, must be specified to
                      nearest 100, e.g.202 is not a valid value
+        :param mbps: MB per second, integer value. Min Value 100
         :return: dict
         """
         qos_specs = {'maxIOPS': iops,
                      'DistributionType': dynamic_distribution}
+        if mbps:
+            qos_specs.update({'maxMBPS': mbps})
         return self.update_storagegroup_qos(storage_group, qos_specs)
 
     def delete_storagegroup(self, storagegroup_id):
@@ -1537,12 +1527,12 @@ class ProvisioningFunctions(object):
                         eventwriter.writerow(
                             [sg, vol, vol_identifier, vol_cap, allocated])
 
-    def get_workload_settings(self, array):
+    def get_workload_settings(self):
         """Get valid workload options from array.
 
-        :param array: the array serial number
         :returns: workload_setting -- list of workload names
         """
-        wl_details = self.get_resource(array, SLOPROVISIONING, 'workloadtype')
+        wl_details = self.get_resource(
+            self.array_id, SLOPROVISIONING, 'workloadtype')
         wl_setting = wl_details.get('workloadId', []) if wl_details else []
         return wl_setting

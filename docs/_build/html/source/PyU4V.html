@@ -1039,8 +1039,8 @@ is on by default).</p>
 <li><strong>sg_id</strong> &#8211; the name of the new storage group</li>
 <li><strong>slo</strong> &#8211; the service level agreement (e.g. Gold)</li>
 <li><strong>workload</strong> &#8211; the workload (e.g. DSS)</li>
-<li><strong>num_vols</strong> &#8211; the amount of volumes to be created</li>
-<li><strong>vol_size</strong> &#8211; the size of each volume</li>
+<li><strong>num_vols</strong> &#8211; the amount of volumes to be created &#8211; int</li>
+<li><strong>vol_size</strong> &#8211; the size of each volume &#8211; string</li>
 <li><strong>cap_unit</strong> &#8211; the capacity unit (MB, GB)</li>
 <li><strong>disable_compression</strong> &#8211; Flag for disabling compression (AF only)</li>
 <li><strong>async</strong> &#8211; Flag to indicate if this call should be async</li>
@@ -1272,22 +1272,6 @@ is associated with a masking view.</p>
 <li><strong>async</strong> &#8211; flag to indicate if call should be async</li>
 </ul>
 </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="PyU4V.provisioning.ProvisioningFunctions.extract_director_id_from_portgroup">
-<code class="descname">extract_director_id_from_portgroup</code><span class="sig-paren">(</span><em>portgroup</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.extract_director_id_from_portgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.extract_director_id_from_portgroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the director information from the port group.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup</strong> &#8211; the name of the portgroup</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the director information</td>
 </tr>
 </tbody>
 </table>
@@ -2069,13 +2053,13 @@ are not allowed. See UniSphere documentation for possible values.</p>
 
 <dl class="method">
 <dt id="PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg">
-<code class="descname">get_target_wwns_from_pg</code><span class="sig-paren">(</span><em>portgroup</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.get_target_wwns_from_pg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_target_wwns_from_pg</code><span class="sig-paren">(</span><em>portgroup_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.get_target_wwns_from_pg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the director ports&#8217; wwns.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup</strong> &#8211; portgroup</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>portgroup_id</strong> &#8211; the name of the portgroup</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">target_wwns &#8211; the list of target wwns for the pg</td>
 </tr>
@@ -2151,15 +2135,13 @@ and write results to a csv file.</p>
 
 <dl class="method">
 <dt id="PyU4V.provisioning.ProvisioningFunctions.get_workload_settings">
-<code class="descname">get_workload_settings</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.get_workload_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_workload_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_workload_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.get_workload_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.get_workload_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get valid workload options from array.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> &#8211; the array serial number</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">workload_setting &#8211; list of workload names</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">workload_setting &#8211; list of workload names</td>
 </tr>
 </tbody>
 </table>
@@ -2393,7 +2375,7 @@ and write results to a csv file.</p>
 <li><strong>source_storagegroup_name</strong> &#8211; the originating storage group name</li>
 <li><strong>target_storagegroup_name</strong> &#8211; the destination storage group name</li>
 <li><strong>device_ids</strong> &#8211; the device ids - can be list</li>
-<li><strong>force</strong> &#8211; force flag (necessary on a detach)</li>
+<li><strong>force</strong> &#8211; force flag (necessary if volume is in masking view)</li>
 <li><strong>async</strong> &#8211; async flag</li>
 </ul>
 </td>
@@ -2484,8 +2466,8 @@ and write results to a csv file.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops">
-<code class="descname">set_host_io_limit_iops</code><span class="sig-paren">(</span><em>storage_group</em>, <em>iops</em>, <em>dynamic_distribution</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.set_host_io_limit_iops"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops" title="Permalink to this definition">¶</a></dt>
+<dt id="PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops_or_mbps">
+<code class="descname">set_host_io_limit_iops_or_mbps</code><span class="sig-paren">(</span><em>storage_group</em>, <em>iops</em>, <em>dynamic_distribution</em>, <em>mbps=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/provisioning.html#ProvisioningFunctions.set_host_io_limit_iops_or_mbps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops_or_mbps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the HOSTIO Limits on an existing storage group.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2496,6 +2478,7 @@ and write results to a csv file.</p>
 <li><strong>dynamic_distribution</strong> &#8211; valid values Always, Never, OnFailure</li>
 <li><strong>iops</strong> &#8211; integer value. Min Value 100, must be specified to
 nearest 100, e.g.202 is not a valid value</li>
+<li><strong>mbps</strong> &#8211; MB per second, integer value. Min Value 100</li>
 </ul>
 </td>
 </tr>
@@ -2560,20 +2543,6 @@ modified. Example qos specs:
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">paired &#8211; bool, state &#8211; string</p>
 </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="PyU4V.replication.ReplicationFunctions.check_snap_capabilities">
-<code class="descname">check_snap_capabilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.check_snap_capabilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.check_snap_capabilities" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check what replication facilities are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">array_capabilities dict</td>
 </tr>
 </tbody>
 </table>
@@ -2681,6 +2650,73 @@ Synchronous, Asynchronous</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.establish_storagegroup_srdf">
+<code class="descname">establish_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>rdfg_no</em>, <em>establish_options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.establish_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.establish_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Establish io on the links for the given storagegroup.</p>
+<p>Optional parameters to set are &#8220;bypass&#8221;, &#8220;metroBias&#8221;, &#8220;star&#8221;,
+&#8220;hop2&#8221;, &#8220;force&#8221;, &#8220;symForce&#8221;, &#8220;full&#8221; - all true/false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup_id</strong> &#8211; the storagegroup id</li>
+<li><strong>rdfg_no</strong> &#8211; the rdf group no</li>
+<li><strong>establish_options</strong> &#8211; Optional dict of establish params</li>
+<li><strong>async</strong> &#8211; flag to indicate async call</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.failback_storagegroup_srdf">
+<code class="descname">failback_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>rdfg_no</em>, <em>failback_options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.failback_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.failback_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Failback a given storagegroup.</p>
+<p>Optional parameters to set are &#8220;bypass&#8221;, &#8220;recoverPoint&#8221;, &#8220;star&#8221;,
+&#8220;hop2&#8221;, &#8220;force&#8221;, &#8220;symForce&#8221;, &#8220;remote&#8221; - all true/false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup_id</strong> &#8211; the storagegroup id</li>
+<li><strong>rdfg_no</strong> &#8211; the rdf group no</li>
+<li><strong>failback_options</strong> &#8211; Optional dict of failover params</li>
+<li><strong>async</strong> &#8211; flag to indicate async call</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.failover_storagegroup_srdf">
+<code class="descname">failover_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>rdfg_no</em>, <em>failover_options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.failover_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.failover_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Failover a given storagegroup.</p>
+<p>Optional parameters to set are &#8220;bypass&#8221;, &#8220;star&#8221;, &#8220;restore&#8221;,
+&#8220;immediate&#8221;, &#8220;hop2&#8221;, &#8220;force&#8221;, &#8220;symForce&#8221;, &#8220;remote&#8221;, &#8220;establish&#8221; - all
+true/false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup_id</strong> &#8211; the storagegroup id</li>
+<li><strong>rdfg_no</strong> &#8211; the rdf group no</li>
+<li><strong>failover_options</strong> &#8211; Optional dict of failover params</li>
+<li><strong>async</strong> &#8211; flag to indicate async call</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.find_expired_snapvx_snapshots">
 <code class="descname">find_expired_snapvx_snapshots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.find_expired_snapvx_snapshots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.find_expired_snapvx_snapshots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find all expired snapvx snapshots.</p>
@@ -2698,6 +2734,20 @@ have not been deleted as they have links. Example output:
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of dicts with expired snap details,</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_array_replication_capabilities">
+<code class="descname">get_array_replication_capabilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.get_array_replication_capabilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_array_replication_capabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check what replication facilities are available.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">array_capabilities dict</td>
 </tr>
 </tbody>
 </table>
@@ -3016,7 +3066,7 @@ rdf_grp &#8211; list or None</td>
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf">
-<code class="descname">modify_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>action</em>, <em>rdfg=None</em>, <em>options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.modify_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<code class="descname">modify_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>action</em>, <em>rdfg</em>, <em>options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.modify_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Modify the state of an srdf.</p>
 <p>This may be a long running task depending on the size of the SRDF
 group, can switch to async call if required.</p>
@@ -3027,7 +3077,7 @@ group, can switch to async call if required.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>storagegroup_id</strong> &#8211; name of storage group</li>
 <li><strong>action</strong> &#8211; the rdf action e.g. Suspend, Establish, etc</li>
-<li><strong>rdfg</strong> &#8211; rdf number, optional</li>
+<li><strong>rdfg</strong> &#8211; rdf number</li>
 <li><strong>options</strong> &#8211; a dict of possible options - depends on action type</li>
 <li><strong>async</strong> &#8211; flag to indicate if call should be async</li>
 </ul>
@@ -3072,6 +3122,53 @@ group, can switch to async call if required.</p>
 <li><strong>sg_id</strong> &#8211; the name of the storage group</li>
 <li><strong>snap_name</strong> &#8211; the name of the snapshot</li>
 <li><strong>gen_num</strong> &#8211; the generation number of the snapshot (int)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.suspend_storagegroup_srdf">
+<code class="descname">suspend_storagegroup_srdf</code><span class="sig-paren">(</span><em>storagegroup_id</em>, <em>rdfg_no</em>, <em>suspend_options=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.suspend_storagegroup_srdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.suspend_storagegroup_srdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suspend io on the links for the given storagegroup.</p>
+<p>Optional parameters to set are &#8220;bypass&#8221;, &#8220;metroBias&#8221;, &#8220;star&#8221;,
+&#8220;immediate&#8221;, &#8220;hop2&#8221;, &#8220;consExempt&#8221;, &#8220;force&#8221;, &#8220;symForce&#8221; - all
+true/false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>storagegroup_id</strong> &#8211; the storagegroup id</li>
+<li><strong>rdfg_no</strong> &#8211; the rdf group no</li>
+<li><strong>suspend_options</strong> &#8211; Optional dict of suspend params</li>
+<li><strong>async</strong> &#8211; flag to indicate async call</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.unlink_gen_snapshot">
+<code class="descname">unlink_gen_snapshot</code><span class="sig-paren">(</span><em>sg_id</em>, <em>snap_name</em>, <em>unlink_sg_name</em>, <em>async=False</em>, <em>gen_num=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/replication.html#ReplicationFunctions.unlink_gen_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.unlink_gen_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unink a snapshot from another storage group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sg_id</strong> &#8211; Source storage group name</li>
+<li><strong>snap_name</strong> &#8211; name of the snapshot</li>
+<li><strong>unlink_sg_name</strong> &#8211; the target storage group name</li>
+<li><strong>async</strong> &#8211; flag to indicate if call is async</li>
+<li><strong>gen_num</strong> &#8211; generation number of a snapshot (int)</li>
 </ul>
 </td>
 </tr>

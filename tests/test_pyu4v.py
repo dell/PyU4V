@@ -51,7 +51,6 @@ class CommonData(object):
     initiatorgroup_name_i = 'PU-HostX-I-IG'
     hostgroup_id = 'PU-HostGroup-F-HG'
     storagegroup_name = 'PU-mystoragegroup-SG'
-    storagegroup_list = [storagegroup_name]
     failed_resource = 'PU-failed-resource'
     volume_wwn = '600000345'
     device_id = '00001'
@@ -65,6 +64,7 @@ class CommonData(object):
     storagegroup_name_2 = 'PU-mystoragegroup2-SG'
     group_snapshot_name = 'Grp_snapshot'
     target_group_name = 'Grp_target'
+    qos_storagegroup = "PU-QOS-SG"
     # director port info
     director_id1 = "FA-1D"
     port_id1 = "4"
@@ -144,6 +144,8 @@ class CommonData(object):
                        "portId": "SE-4E:0"}],
                   "maskingview": [masking_view_name_i]}]
 
+    pg_list = {"portGroupId": [port_group_name_i, port_group_name_f]}
+
     port_key_list = {"symmetrixPortKey": [port_key1, port_key2]}
 
     port_list = [
@@ -179,7 +181,20 @@ class CommonData(object):
                    "storageGroupId": storagegroup_name_2,
                    "slo": slo,
                    "workload": workload,
-                   "maskingview": [masking_view_name_i]}]
+                   "maskingview": [masking_view_name_i]},
+                  {"srp": "None",
+                   "num_of_vols": 2,
+                   "cap_gb": 2,
+                   "storageGroupId": parent_sg,
+                   "child_storage_group": [storagegroup_name_1],
+                   "maskingview": [masking_view_name_f]},
+                  {"srp": srp, "num_of_vols": 2, "cap_gb": 2,
+                   "storageGroupId": qos_storagegroup,
+                   "slo": slo, "workload": workload,
+                   "hostIOLimit": {"host_io_limit_io_sec": "4000",
+                                   "dynamicDistribution": "Always",
+                                   "host_io_limit_mb_sec": "4000"}}
+                  ]
 
     sg_details_rep = [{"childNames": [],
                        "numDevicesNonGk": 2,
@@ -187,7 +202,7 @@ class CommonData(object):
                        "rdf": True,
                        "capacityGB": 2.0,
                        "name": storagegroup_name,
-                       "snapVXSnapshots": ['6560405d-752f5a139'],
+                       "snapVXSnapshots": [group_snapshot_name],
                        "symmetrixId": array,
                        "numSnapVXSnapshots": 1}]
 
@@ -201,7 +216,8 @@ class CommonData(object):
                                   storagegroup_name_1,
                                   storagegroup_name_2]}
 
-    sg_list_rep = [storagegroup_name]
+    sg_list_rep = {"name": [storagegroup_name]}
+    sg_rdf_list = {"rdfgs": [rdf_group_no]}
 
     srp_details = {"srpSloDemandId": ["Bronze", "Diamond", "Gold",
                                       "None", "Optimized", "Silver"],
@@ -211,6 +227,12 @@ class CommonData(object):
                    "total_subscribed_cap_gb": 84970.1,
                    "fba_used_capacity": 5244.7,
                    "reserved_cap_percent": 10}
+
+    srp_list = {'srpId': [srp, 'SRP_2']}
+    compr_report = {"storageGroupCompressibility": [
+        {"num_of_volumes": 6, "storageGroupId": storagegroup_name,
+         "allocated_cap_gb": 0.0, "used_cap_gb": 0.0,
+         "compression_enabled": 'false'},]}
 
     volume_details = [{"cap_gb": 2,
                        "num_of_storage_groups": 1,
@@ -235,12 +257,19 @@ class CommonData(object):
     volume_list = [
         {"resultList": {"result": [{"volumeId": device_id}]}},
         {"resultList": {"result": [{"volumeId": device_id2}]}},
-        {"resultList": {"result": [{"volumeId": device_id},
-                                   {"volumeId": device_id2}]}}]
+        {"expirationTime": 1517830955979, "count": 2,  "maxPageSize": 1000,
+         "id": "123", "resultList": {"result": [
+            {"volumeId": device_id}, {"volumeId": device_id2}]}}]
 
     workloadtype = {"workloadId": ["OLTP", "OLTP_REP", "DSS", "DSS_REP"]}
-    slo_details = {"sloId": ["Bronze", "Diamond", "Gold",
-                             "Optimized", "Platinum", "Silver"]}
+    slo_list = {"sloId": ["Bronze", "Diamond", "Gold",
+                          "Optimized", "Platinum", "Silver"]}
+    slo_details = {"sloBaseId": slo, "num_of_workloads": 5, "sloId": slo,
+                   "num_of_storage_groups": 1230,
+                   "workloadId": workloadtype['workloadId'],
+                   "storageGroupId": [storagegroup_name,
+                                      storagegroup_name_1,
+                                      storagegroup_name_2]}
 
     # replication
     capabilities = {"symmetrixCapability": [{"rdfCapable": True,
@@ -260,28 +289,19 @@ class CommonData(object):
                      "isExpired": False,
                      "numSharedTracks": 0,
                      "timestamp": "00:30:50 Fri, 02 Jun 2017 IST +0100",
-                     "numSourceVolumes": 1
-                     }
-    group_snap_vx_1 = {"generation": 0,
-                       "isLinked": False,
-                       "numUniqueTracks": 0,
-                       "isRestored": False,
-                       "name": group_snapshot_name,
-                       "numStorageGroupVolumes": 1,
-                       "state": ["Copied"],
-                       "timeToLiveExpiryDate": "N/A",
-                       "isExpired": False,
-                       "numSharedTracks": 0,
-                       "timestamp": "00:30:50 Fri, 02 Jun 2017 IST +0100",
-                       "numSourceVolumes": 1,
-                       "linkedStorageGroup":
-                           {"name": target_group_name,
-                            "percentageCopied": 100},
-                       }
-    grp_snapvx_links = [{"name": target_group_name,
-                         "percentageCopied": 100},
-                        {"name": "another-target",
-                         "percentageCopied": 90}]
+                     "numSourceVolumes": 1}
+    expired_snap = {"generation": 0,
+                    "isLinked": True,
+                    "name": group_snapshot_name,
+                    "numStorageGroupVolumes": 1,
+                    "state": ["Established"],
+                    "timeToLiveExpiryDate": "01:30:50 Fri, 02 Jun 2017 IST ",
+                    "isExpired": True,
+                    "linkedStorageGroup": [{"name": target_group_name}],
+                    "timestamp": "00:30:50 Fri, 02 Jun 2017 IST +0100",
+                    "numSourceVolumes": 1}
+    sg_snap_list = {"name": [group_snapshot_name]}
+    sg_snap_gen_list = {"generations": [0]}
 
     rdf_group_list = {"rdfGroupID": [{"rdfgNumber": rdf_group_no,
                                       "label": rdf_group_name}]}
@@ -303,6 +323,10 @@ class CommonData(object):
                              "rdfMode": "Synchronous",
                              "remoteVolumeState": "Write Disabled",
                              "remoteSymmetrixId": remote_array}
+    rdf_group_vol_list = {"name": [device_id, device_id2]}
+
+    rep_info = {"symmetrixId": array, "storageGroupCount": 1486,
+                "replicationCacheUsage": 0, "rdfGroupCount": 7}
 
     # system
     job_list = [{"status": "SUCCEEDED",
@@ -348,7 +372,10 @@ class FakeRequestsSession(object):
     def request(self, method, url, params=None, data=None, timeout=None):
         return_object = ''
         status_code = 200
-        if method == 'GET':
+        if 'performance' in url:
+            return_object = self._performance(method, url)
+
+        elif method == 'GET':
             status_code, return_object = self._get_request(url, params)
 
         elif method == 'POST' or method == 'PUT':
@@ -376,6 +403,8 @@ class FakeRequestsSession(object):
                 return_object = self._sloprovisioning_volume(url, params)
             elif 'storagegroup' in url:
                 return_object = self._sloprovisioning_sg(url)
+            elif 'srp' in url:
+                return_object = self._sloprovisioning_srp(url)
             elif 'maskingview' in url:
                 return_object = self._sloprovisioning_mv(url)
             elif 'portgroup' in url:
@@ -390,14 +419,15 @@ class FakeRequestsSession(object):
                 return_object = self._sloprovisioning_ig(url)
             elif 'initiator' in url:
                 return_object = self._sloprovisioning_initiator(url)
-            elif 'srp' in url:
-                return_object = self.data.srp_details
             elif 'workloadtype' in url:
                 return_object = self.data.workloadtype
             elif 'compressionCapable' in url:
                 return_object = self.data.compression_info
-            elif '/slo/' in url:
-                return_object = self.data.slo_details
+            elif '{}/slo'.format(self.data.array) in url:
+                if self.data.slo in url:
+                    return_object = self.data.slo_details
+                else:
+                    return_object = self.data.slo_list
             else:
                 return_object = self.data.symm_list
 
@@ -450,7 +480,7 @@ class FakeRequestsSession(object):
         return return_object
 
     def _sloprovisioning_pg(self, url):
-        return_object = None
+        return_object = self.data.pg_list
         for pg in self.data.portgroup:
             if pg['portGroupId'] in url:
                 return_object = pg
@@ -497,13 +527,24 @@ class FakeRequestsSession(object):
             return_object = self.data.initiator_list[1]
         return return_object
 
+    def _sloprovisioning_srp(self, url):
+        return_object = self.data.srp_list
+        if self.data.srp in url:
+            if 'compressibility' in url:
+                return_object = self.data.compr_report
+            else:
+                return_object = self.data.srp_details
+        return return_object
+
     def _replication(self, url):
-        return_object = None
+        return_object = self.data.rep_info
         if 'storagegroup' in url:
             return_object = self._replication_sg(url)
         elif 'rdf_group' in url:
             if self.data.device_id in url:
                 return_object = self.data.rdf_group_vol_details
+            elif 'volume' in url:
+                return_object = self.data.rdf_group_vol_list
             elif self.data.rdf_group_no in url:
                 return_object = self.data.rdf_group_details
             else:
@@ -513,15 +554,22 @@ class FakeRequestsSession(object):
         return return_object
 
     def _replication_sg(self, url):
-        return_object = None
+        return_object = self.data.sg_list_rep
         if 'generation' in url:
-            return_object = self.data.group_snap_vx
+            if self.data.group_snapshot_name in url:
+                return_object = self.data.group_snap_vx
+            else:
+                return_object = self.data.sg_snap_gen_list
+        elif 'snapshot' in url:
+            return_object = self.data.sg_snap_list
         elif 'rdf_group' in url:
-            for sg in self.data.sg_rdf_details:
-                if sg['storageGroupName'] in url:
-                    return_object = sg
-                    break
-        elif 'storagegroup' in url:
+            return_object = self.data.sg_rdf_list
+            if self.data.rdf_group_no in url:
+                for sg in self.data.sg_rdf_details:
+                    if sg['storageGroupName'] in url:
+                        return_object = sg
+                        break
+        elif self.data.storagegroup_name in url:
             return_object = self.data.sg_details_rep[0]
         return return_object
 
@@ -539,6 +587,14 @@ class FakeRequestsSession(object):
                 if symm['symmetrixId'] in url:
                     return_object = symm
                     break
+        return return_object
+
+    def _performance(self, method, url):
+        if method == 'GET':
+            pass
+        elif method == 'POST':
+            pass
+        return_object = None
         return return_object
 
     def _post_or_put(self, url, payload):
@@ -989,16 +1045,683 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.data.port_key_list['symmetrixPortKey'], port_key_list)
 
     def test_get_portgroup(self):
-        pass
+        pg_details = self.provisioning.get_portgroup(
+            self.data.port_group_name_f)
+        self.assertEqual(self.data.portgroup[0], pg_details)
+
+    def test_get_portgroup_list(self):
+        pg_list = self.provisioning.get_portgroup_list()
+        self.assertEqual(self.data.pg_list['portGroupId'], pg_list)
+
+    def test_get_ports_from_pg(self):
+        port_list = self.provisioning.get_ports_from_pg(
+            self.data.port_group_name_f)
+        self.assertEqual(['FA-1D:4'], port_list)
+
+    def test_get_target_wwns_from_pg(self):
+        target_wwns = self.provisioning.get_target_wwns_from_pg(
+            self.data.port_group_name_f)
+        self.assertEqual([self.data.wwnn1], target_wwns)
+
+    def test_get_iscsi_ip_address_and_iqn(self):
+        ip_addresses, iqn = self.provisioning.get_iscsi_ip_address_and_iqn(
+            'SE-4E:0')
+        self.assertEqual([self.data.ip], ip_addresses)
+        self.assertEqual(self.data.initiator, iqn)
+
+    def test_create_portgroup(self):
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            self.provisioning.create_portgroup(
+                self.data.port_group_name_f, self.data.director_id1,
+                self.data.port_id1)
+        mock_create.assert_called_once()
+
+    def test_create_multiport_portgroup(self):
+        port_dict_list = [{"directorId": self.data.director_id1,
+                          "portId": self.data.port_id1},
+                          {"directorId": self.data.director_id2,
+                           "portId": self.data.port_id2},]
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            self.provisioning.create_multiport_portgroup(
+                self.data.port_group_name_f, port_dict_list)
+        mock_create.assert_called_once()
+
+    @mock.patch.object(provisioning.ProvisioningFunctions,
+                       'create_multiport_portgroup')
+    @mock.patch.object(common.CommonFunctions, 'create_list_from_file',
+                       return_value=['FA-1D:4', 'SE-4E:0'])
+    def test_create_portgroup_from_file(self, mock_list, mock_create):
+        payload = [{"directorId": self.data.director_id1,
+                    "portId": self.data.port_id1},
+                   {"directorId": self.data.director_id2,
+                    "portId": self.data.port_id2}]
+        self.provisioning.create_portgroup_from_file('my-file', 'pg_id')
+        mock_create.assert_called_once_with('pg_id', payload)
+
+    def test_modify_portgroup(self):
+        pg_name = self.data.port_group_name_f
+        with mock.patch.object(
+                self.provisioning, 'modify_resource') as mock_mod:
+            self.provisioning.modify_portgroup(pg_name, remove_port='FA-1D:4')
+            self.provisioning.modify_portgroup(
+                pg_name, rename_portgroup='new-name')
+            self.provisioning.modify_portgroup(pg_name, add_port='FA-1D:4')
+            self.assertEqual(3, mock_mod.call_count)
+            self.assertRaises(
+                exception.InvalidInputException,
+                self.provisioning.modify_portgroup, pg_name)
+
+    def test_delete_portgroup(self):
+        with mock.patch.object(
+                self.provisioning, 'delete_resource') as mock_del:
+            self.provisioning.delete_portgroup(self.data.port_group_name_f)
+            mock_del.assert_called_once()
+
+    def test_get_slo_list(self):
+        slo_list = self.provisioning.get_slo_list()
+        self.assertEqual(self.data.slo_list['sloId'], slo_list)
+
+    def test_get_slo(self):
+        slo_details = self.provisioning.get_slo(self.data.slo)
+        self.assertEqual(self.data.slo_details, slo_details)
+
+    def test_modify_slo(self):
+        with mock.patch.object(
+                self.provisioning, 'modify_resource') as mock_mod:
+            self.provisioning.modify_slo('Diamond', 'Diamante')
+            mock_mod.assert_called_once()
+
+    def test_get_srp(self):
+        srp_details = self.provisioning.get_srp(self.data.srp)
+        self.assertEqual(self.data.srp_details, srp_details)
+
+    def test_get_srp_list(self):
+        srp_list = self.provisioning.get_srp_list()
+        self.assertEqual(self.data.srp_list['srpId'], srp_list)
+
+    def test_get_compressibility_report(self):
+        report = self.provisioning.get_compressibility_report(self.data.srp)
+        self.assertEqual(
+            self.data.compr_report['storageGroupCompressibility'], report)
+
+    def test_is_compression_capable(self):
+        compr_capable = self.provisioning.is_compression_capable()
+        self.assertTrue(compr_capable)
+
+    def test_get_storage_group(self):
+        sg_details = self.provisioning.get_storage_group(
+            self.data.storagegroup_name)
+        self.assertEqual(self.data.sg_details[0], sg_details)
+
+    def test_get_storage_group_list(self):
+        sg_list = self.provisioning.get_storage_group_list(
+            self.data.storagegroup_name)
+        self.assertEqual(self.data.sg_list['storageGroupId'], sg_list)
+
+    def test_get_mv_from_sg(self):
+        mv_list = self.provisioning.get_mv_from_sg(
+            self.data.storagegroup_name_1)
+        self.assertEqual(self.data.sg_details[1]['maskingview'], mv_list)
+
+    def test_get_num_vols_in_sg(self):
+        num_vols = self.provisioning.get_num_vols_in_sg(
+            self.data.storagegroup_name)
+        self.assertEqual(2, num_vols)
+
+    def test_is_child_sg_in_parent_sg(self):
+        is_child = self.provisioning.is_child_sg_in_parent_sg(
+            self.data.storagegroup_name_1, self.data.parent_sg)
+        self.assertTrue(is_child)
+        is_child2 = self.provisioning.is_child_sg_in_parent_sg(
+            self.data.storagegroup_name_2, self.data.parent_sg)
+        self.assertFalse(is_child2)
+
+    def test_create_storage_group(self):
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            # 1 - no slo, not async
+            self.provisioning.create_storage_group(
+                self.data.srp, 'new-sg', None, None)
+            payload1 = {
+                "srpId": "None",
+                "storageGroupId": 'new-sg',
+                "emulation": "FBA"}
+            mock_create.assert_called_once_with(
+                self.data.array, 'sloprovisioning', 'storagegroup', payload1)
+            # 2 - slo set, is async
+            mock_create.reset_mock()
+            self.provisioning.create_storage_group(
+                self.data.srp, 'new-sg', self.data.slo, 'None', async=True)
+            payload2 = {
+                "srpId": self.data.srp,
+                "storageGroupId": 'new-sg',
+                "emulation": "FBA",
+                "sloBasedStorageGroupParam": [
+                    {"num_of_vols": 0, "sloId": self.data.slo,
+                     "workloadSelection": 'None',
+                     "noCompression": "false",
+                     "volumeAttribute": {"volume_size": "0",
+                                         "capacityUnit": "GB"}}],
+                "executionOption": "ASYNCHRONOUS"}
+            mock_create.assert_called_once_with(
+                self.data.array, 'sloprovisioning', 'storagegroup', payload2)
+
+    def test_create_non_empty_storagegroup(self):
+        with mock.patch.object(
+                self.provisioning, 'create_storage_group') as mock_create:
+            self.provisioning.create_non_empty_storagegroup(
+                self.data.srp, 'new-sg', self.data.slo, self.data.workload,
+                1, "2", "GB")
+            mock_create.assert_called_once()
+
+    def test_create_empty_sg(self):
+        with mock.patch.object(
+                self.provisioning, 'create_storage_group') as mock_create:
+            self.provisioning.create_empty_sg(
+                self.data.srp, 'new-sg', self.data.slo, self.data.workload)
+            mock_create.assert_called_once()
+
+    def test_modify_storage_group(self):
+        with mock.patch.object(
+                self.provisioning, 'modify_resource') as mock_mod:
+            self.provisioning.modify_storage_group(
+                self.data.storagegroup_name, {})
+            mock_mod.assert_called_once()
+
+    def test_add_existing_vol_to_sg(self):
+        payload1 = {"editStorageGroupActionParam": {
+            "expandStorageGroupParam": {
+                "addSpecificVolumeParam": {
+                    "volumeId": [self.data.device_id]}}}}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            # vol id, not list; not async
+            self.provisioning.add_existing_vol_to_sg(
+                self.data.storagegroup_name, self.data.device_id)
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+            # vol ids in list form; async is true
+            mock_mod.reset_mock()
+            self.provisioning.add_existing_vol_to_sg(
+                self.data.storagegroup_name, [self.data.device_id], True)
+            payload1.update({"executionOption": "ASYNCHRONOUS"})
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+
+    def test_add_new_vol_to_storagegroup(self):
+        add_vol_info = {
+            "num_of_vols": 1, "emulation": "FBA", "volumeAttribute": {
+                "volume_size": "10", "capacityUnit": "GB"}}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            # no vol name; not async
+            self.provisioning.add_new_vol_to_storagegroup(
+                self.data.storagegroup_name, 1, "10", "GB")
+            payload1 = {"editStorageGroupActionParam": {
+                "expandStorageGroupParam": {
+                    "addVolumeParam": add_vol_info}}}
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+            # vol name required; async is true
+            mock_mod.reset_mock()
+            add_vol_info.update({"volumeIdentifier": {
+                    "identifier_name": 'my-vol',
+                    "volumeIdentifierChoice": "identifier_name"}})
+            self.provisioning.add_new_vol_to_storagegroup(
+                self.data.storagegroup_name, 1, "10", "GB", True, 'my-vol')
+            payload2 = {"editStorageGroupActionParam": {
+                "expandStorageGroupParam": {"addVolumeParam": add_vol_info}},
+                "executionOption": "ASYNCHRONOUS"}
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload2)
+
+    def test_remove_vol_from_storagegroup(self):
+        payload1 = {"editStorageGroupActionParam": {
+            "removeVolumeParam": {"volumeId": [self.data.device_id]}}}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            # vol id, not list; not async
+            self.provisioning.remove_vol_from_storagegroup(
+                self.data.storagegroup_name, self.data.device_id)
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+            # vol ids in list form; async is true
+            mock_mod.reset_mock()
+            self.provisioning.remove_vol_from_storagegroup(
+                self.data.storagegroup_name, [self.data.device_id], True)
+            payload1.update({"executionOption": "ASYNCHRONOUS"})
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+
+    def test_move_volumes_between_storagegroups(self):
+        payload1 = ({"editStorageGroupActionParam": {
+            "moveVolumeToStorageGroupParam": {
+                "volumeId": [self.data.device_id],
+                "storageGroupId": self.data.storagegroup_name_1,
+                "force": "false"}}})
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            # vol id, not list; not async
+            self.provisioning.move_volumes_between_storage_groups(
+                self.data.device_id, self.data.storagegroup_name,
+                self.data.storagegroup_name_1)
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+            # vol ids in list form; async is true
+            mock_mod.reset_mock()
+            self.provisioning.move_volumes_between_storage_groups(
+                [self.data.device_id], self.data.storagegroup_name,
+                self.data.storagegroup_name_1, async=True)
+            payload1.update({"executionOption": "ASYNCHRONOUS"})
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload1)
+
+    def test_create_volume_from_sg_return_dev_id(self):
+        task = [{"description": "Creating new Volumes for MY-SG : [00001]"}]
+        with mock.patch.object(
+                self.provisioning, 'add_new_vol_to_storagegroup',
+                return_value=task):
+            device_id = self.provisioning.create_volume_from_sg_return_dev_id(
+                'volume_name', self.data.storagegroup_name_1, "2")
+            self.assertEqual(self.data.device_id, device_id)
+
+    def test_add_child_sg_to_parent_sg(self):
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            self.provisioning.add_child_sg_to_parent_sg(
+                self.data.storagegroup_name_1, self.data.parent_sg)
+            mock_mod.assert_called_once()
+
+    def test_remove_child_sg_from_parent_sg(self):
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            self.provisioning.remove_child_sg_from_parent_sg(
+                self.data.storagegroup_name_1, self.data.parent_sg)
+            mock_mod.assert_called_once()
+
+    def test_update_storagegroup_qos(self):
+        qos_specs = {'maxIOPS': '3000', 'DistributionType': 'Always'}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            self.provisioning.update_storagegroup_qos(
+                self.data.qos_storagegroup, qos_specs)
+            mock_mod.assert_called_once()
+        qos_specs2 = {'maxIOPS': '4000', 'DistributionType': 'oops'}
+        self.assertRaises(exception.InvalidInputException,
+                          self.provisioning.update_storagegroup_qos,
+                          self.data.qos_storagegroup, qos_specs2)
+
+    def test_set_host_io_limit_iops(self):
+        with mock.patch.object(
+                self.provisioning, 'update_storagegroup_qos') as mock_qos:
+            self.provisioning.set_host_io_limit_iops_or_mbps(
+                self.data.qos_storagegroup, '3000', 'Always')
+            mock_qos.assert_called_once()
+
+    def test_delete_storagegroup(self):
+        with mock.patch.object(
+                self.provisioning, 'delete_resource') as mock_delete:
+            self.provisioning.delete_storagegroup(self.data.storagegroup_name)
+            mock_delete.assert_called_once()
+
+    def test_get_volume(self):
+        vol_details = self.provisioning.get_volume(self.data.device_id)
+        self.assertEqual(self.data.volume_details[0], vol_details)
+
+    def test_get_volume_list(self):
+        vol_list = self.provisioning.get_volume_list()
+        ref_vol_list = [self.data.device_id, self.data.device_id2]
+        self.assertEqual(ref_vol_list, vol_list)
+
+    def test_get_vols_from_storagegroup(self):
+        vol_list = self.provisioning.get_vols_from_storagegroup(
+            self.data.storagegroup_name)
+        ref_vol_list = [self.data.device_id, self.data.device_id2]
+        self.assertEqual(ref_vol_list, vol_list)
+
+    def test_get_storagegroup_from_vol(self):
+        sg_list = self.provisioning.get_storagegroup_from_vol(
+            self.data.device_id)
+        self.assertEqual([self.data.storagegroup_name], sg_list)
+
+    def test_is_volume_in_storagegroup(self):
+        is_vol = self.provisioning.is_volume_in_storagegroup(
+            self.data.device_id, self.data.storagegroup_name)
+        self.assertTrue(is_vol)
+        is_vol2 = self.provisioning.is_volume_in_storagegroup(
+            self.data.device_id, self.data.storagegroup_name_1)
+        self.assertFalse(is_vol2)
+
+    def test_find_volume_device_id(self):
+        device_id = self.provisioning.find_volume_device_id('my-vol')
+        self.assertEqual(self.data.device_id, device_id)
+        with mock.patch.object(self.provisioning, 'get_volume_list',
+                               return_value=[]):
+            device_id2 = self.provisioning.find_volume_device_id('not-my-vol')
+            self.assertIsNone(device_id2)
+
+    def test_find_volume_identifier(self):
+        vol_id = self.provisioning.find_volume_identifier(self.data.device_id)
+        self.assertEqual('my-vol', vol_id)
+
+    def test_get_size_of_device_on_array(self):
+        vol_size = self.provisioning.get_size_of_device_on_array(
+            self.data.device_id)
+        self.assertEqual(2, vol_size)
+        with mock.patch.object(
+                self.provisioning, 'get_volume', return_value={}):
+            self.assertRaises(exception.ResourceNotFoundException,
+                              self.provisioning.get_size_of_device_on_array,
+                              self.data.device_id)
+
+    def test_modify_volume(self):
+        with mock.patch.object(
+                self.provisioning, 'modify_resource') as mock_mod:
+            self.provisioning._modify_volume(self.data.device_id, {})
+            mock_mod.assert_called_once()
+
+    def test_extend_volume(self):
+        with mock.patch.object(
+                self.provisioning, '_modify_volume') as mock_mod:
+            self.provisioning.extend_volume(self.data.device_id, "3")
+            mock_mod.assert_called_once()
+
+    def test_rename_volume(self):
+        with mock.patch.object(
+                self.provisioning, '_modify_volume') as mock_mod:
+            self.provisioning.rename_volume(self.data.device_id,None)
+            mock_mod.assert_called_once()
+            mock_mod.reset_mock()
+            self.provisioning.rename_volume(self.data.device_id, "new-name")
+            mock_mod.assert_called_once()
+
+    def test_deallocate_volume(self):
+        with mock.patch.object(
+                self.provisioning, '_modify_volume') as mock_mod:
+            self.provisioning.deallocate_volume(self.data.device_id)
+            mock_mod.assert_called_once()
+
+    def test_delete_volume(self):
+        with mock.patch.object(
+                self.provisioning, 'delete_resource') as mock_delete:
+            self.provisioning.delete_volume(self.data.device_id)
+            mock_delete.assert_called_once()
+
+    def test_get_workload_settings(self):
+        wl_setting = self.provisioning.get_workload_settings()
+        self.assertEqual(self.data.workloadtype['workloadId'], wl_setting)
 
 
 class PyU4VReplicationTest(testtools.TestCase):
-    pass
+
+    def setUp(self):
+        super(PyU4VReplicationTest, self).setUp()
+        self.data = CommonData()
+        rest_requests.RestRequests.establish_rest_session = mock.Mock(
+            return_value=FakeRequestsSession())
+        config_file = FakeConfigFile.create_fake_config_file()
+        univmax_conn.file_path = config_file
+        self.conn = univmax_conn.U4VConn(array_id=self.data.array)
+        self.common = self.conn.common
+        self.provisioning = self.conn.provisioning
+        self.replication = self.conn.replication
+
+    def test_get_replication_info(self):
+        rep_info = self.replication.get_replication_info()
+        self.assertEqual(self.data.rep_info, rep_info)
+
+    def test_check_snap_capabilities(self):
+        capabilities = self.replication.get_array_replication_capabilities()
+        self.assertEqual(
+            self.data.capabilities['symmetrixCapability'][1], capabilities)
+
+    def test_is_snapvx_licensed(self):
+        is_licensed = self.replication.is_snapvx_licensed()
+        self.assertTrue(is_licensed)
+
+    def test_get_storage_group_rep(self):
+        rep_details = self.replication.get_storage_group_rep(
+            self.data.storagegroup_name)
+        self.assertEqual(self.data.sg_details_rep[0], rep_details)
+
+    def test_get_storage_group_rep_list(self):
+        rep_list = self.replication.get_storage_group_rep_list(
+            has_snapshots=True)
+        self.assertEqual(self.data.sg_list_rep['name'], rep_list)
+
+    def test_get_storagegroup_snapshot_list(self):
+        snap_list = self.replication.get_storagegroup_snapshot_list(
+            self.data.storagegroup_name)
+        self.assertEqual(self.data.sg_snap_list['name'], snap_list)
+
+    def test_create_storagegroup_snap(self):
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_storagegroup_snap(
+                self.data.storagegroup_name, 'snap_name')
+            self.replication.create_storagegroup_snap(
+                self.data.storagegroup_name, 'snap_name', ttl=2, hours=True)
+            self.assertEqual(2, mock_create.call_count)
+
+    def test_get_storagegroup_snapshot_generation_list(self):
+        gen_list = self.replication.get_storagegroup_snapshot_generation_list(
+            self.data.storagegroup_name, 'snap_name')
+        self.assertEqual(self.data.sg_snap_gen_list['generations'], gen_list)
+
+    def test_get_snapshot_generation_details(self):
+        snap_details = self.replication.get_snapshot_generation_details(
+            self.data.storagegroup_name, self.data.group_snapshot_name, 0)
+        self.assertEqual(self.data.group_snap_vx, snap_details)
+
+    @mock.patch.object(replication.ReplicationFunctions,
+                       'get_snapshot_generation_details',
+                       return_value=CommonData.expired_snap)
+    @mock.patch.object(replication.ReplicationFunctions,
+                       'get_storagegroup_snapshot_generation_list',
+                       return_value=CommonData.sg_snap_gen_list)
+    def test_find_expired_snapvx_snapshots(self, mock_gen_list, mock_snap):
+        ref_expired_snap_list = [
+            {'storagegroup_name': self.data.storagegroup_name,
+             'snapshot_name': self.data.group_snapshot_name,
+             'generation_number': 0,
+             'expiration_time': self.data.expired_snap[
+                 'timeToLiveExpiryDate'],
+             'linked_sg_name': self.data.target_group_name,
+             'snap_creation_time': self.data.expired_snap['timestamp']}]
+        expired_snap_list = (
+            self.replication.find_expired_snapvx_snapshots())
+        self.assertEqual(ref_expired_snap_list, expired_snap_list)
+
+    def test_modify_storagegroup_snap(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.modify_storagegroup_snap(
+                self.data.storagegroup_name,
+                self.data.target_group_name, self.data.group_snapshot_name)
+            mock_mod.assert_called_once()
+
+    def test_restore_snapshot(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.restore_snapshot(
+                self.data.storagegroup_name, self.data.group_snapshot_name)
+            mock_mod.assert_called_once()
+
+    def test_rename_snapshot(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.rename_snapshot(
+                self.data.storagegroup_name, self.data.group_snapshot_name,
+                'new-snap-name')
+            mock_mod.assert_called_once()
+
+    def test_link_gen_snapshot(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.link_gen_snapshot(
+                self.data.storagegroup_name, self.data.group_snapshot_name,
+                self.data.target_group_name, async=True)
+            mock_mod.assert_called_once()
+
+    def test_unlink_gen_snapshot(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.unlink_gen_snapshot(
+                self.data.storagegroup_name, self.data.group_snapshot_name,
+                self.data.target_group_name, async=True)
+            mock_mod.assert_called_once()
+
+    def test_delete_storagegroup_snapshot(self):
+        with mock.patch.object(
+                self.replication, 'delete_resource') as mock_delete:
+            self.replication.delete_storagegroup_snapshot(
+                self.data.storagegroup_name, self.data.group_snapshot_name)
+            mock_delete.assert_called_once()
+
+    def test_is_vol_in_rep_session(self):
+        snap_tgt, snap_src, rdf_grp = self.replication.is_vol_in_rep_session(
+            self.data.device_id)
+        self.assertTrue(snap_src)
+
+    def test_get_rdf_group(self):
+        rdfg_details = self.replication.get_rdf_group(self.data.rdf_group_no)
+        self.assertEqual(self.data.rdf_group_details, rdfg_details)
+
+    def test_get_rdf_group_list(self):
+        rdfg_list = self.replication.get_rdf_group_list()
+        self.assertEqual(self.data.rdf_group_list['rdfGroupID'], rdfg_list)
+
+    def test_get_rdf_group_volume(self):
+        rdfg_vol = self.replication.get_rdf_group_volume(
+            self.data.rdf_group_no, self.data.device_id)
+        self.assertEqual(self.data.rdf_group_vol_details, rdfg_vol)
+
+    def test_get_rdf_group_volume_list(self):
+        rdfg_vol_list = self.replication.get_rdf_group_volume_list(
+            self.data.rdf_group_no)
+        self.assertEqual(self.data.rdf_group_vol_list['name'], rdfg_vol_list)
+
+    def test_are_vols_rdf_paired(self):
+        paired, _, _ = self.replication.are_vols_rdf_paired(
+            self.data.remote_array, self.data.device_id,
+            self.data.device_id2, self.data.rdf_group_no)
+        self.assertTrue(paired)
+        paired2, _, _ = self.replication.are_vols_rdf_paired(
+            self.data.remote_array, self.data.device_id,
+            self.data.device_id3, self.data.rdf_group_no)
+        self.assertFalse(paired2)
+
+    def test_get_rdf_group_number(self):
+        rdfn = self.replication.get_rdf_group_number(self.data.rdf_group_name)
+        self.assertEqual(self.data.rdf_group_no, rdfn)
+
+    def test_get_storagegroup_srdfg_list(self):
+        rdfg_list = self.replication.get_storagegroup_srdfg_list(
+            self.data.storagegroup_name)
+        self.assertEqual(self.data.sg_rdf_list['rdfgs'], rdfg_list)
+
+    def test_get_storagegroup_srdf_details(self):
+        sg_rdf_details = self.replication.get_storagegroup_srdf_details(
+            self.data.storagegroup_name, self.data.rdf_group_no)
+        self.assertEqual(self.data.sg_rdf_details[0], sg_rdf_details)
+
+    def test_create_storagegroup_srdf_pairings(self):
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_storagegroup_srdf_pairings(
+                self.data.storagegroup_name, self.data.remote_array, 'Active')
+            mock_create.assert_called_once()
+            mock_create.reset_mock()
+            self.replication.create_storagegroup_srdf_pairings(
+                self.data.storagegroup_name, self.data.remote_array, 'Active',
+                True, True, self.data.rdf_group_no)
+            mock_create.assert_called_once()
+
+    def test_modify_storagegroup_srdf(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.modify_storagegroup_srdf(
+                self.data.storagegroup_name, 'suspend', self.data.rdf_group_no,
+                options=None, async=False)
+            mock_mod.assert_called_once()
+
+    def test_suspend_storagegroup_srdf(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.suspend_storagegroup_srdf(
+                self.data.storagegroup_name, self.data.rdf_group_no,
+                suspend_options={'consExempt': 'true'}, async=True)
+            mock_mod.assert_called_once()
+
+    def test_establish_storagegroup_srdf(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.establish_storagegroup_srdf(
+                self.data.storagegroup_name, self.data.rdf_group_no,
+                establish_options={'full': 'true'}, async=True)
+            mock_mod.assert_called_once()
+
+    def test_failover_storagegroup_srdf(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.failover_storagegroup_srdf(
+                self.data.storagegroup_name, self.data.rdf_group_no)
+            mock_mod.assert_called_once()
+
+    def test_failback_storagegroup_srdf(self):
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.failback_storagegroup_srdf(
+                self.data.storagegroup_name, self.data.rdf_group_no)
+            mock_mod.assert_called_once()
+
+    def test_delete_storagegroup_srdf(self):
+        with mock.patch.object(
+                self.replication, 'delete_resource') as mock_delete:
+            self.replication.delete_storagegroup_srdf(
+                self.data.storagegroup_name, self.data.rdf_group_no)
+            mock_delete.assert_called_once()
 
 
 class PyU4VRestRequestsTest(testtools.TestCase):
-    pass
+
+    def setUp(self):
+        super(PyU4VRestRequestsTest, self).setUp()
+        self.data = CommonData()
+        rest_requests.RestRequests.establish_rest_session = mock.Mock(
+            return_value=FakeRequestsSession())
+        self.rest = rest_requests.RestRequests('smc', 'smc', False, 'base_url')
+
+    def test_rest_request_exception(self):
+        sc, msg = self.rest.rest_request('/fake_url', 'TIMEOUT')
+        self.assertIsNone(sc)
+        self.assertIsNone(msg)
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.rest.rest_request, '', 'EXCEPTION')
 
 
 class PyU4VUnivmaxConnTest(testtools.TestCase):
-    pass
+
+    def setUp(self):
+        super(PyU4VUnivmaxConnTest, self).setUp()
+        self.data = CommonData()
+        rest_requests.RestRequests.establish_rest_session = mock.Mock(
+            return_value=FakeRequestsSession())
+        config_file = FakeConfigFile.create_fake_config_file()
+        univmax_conn.file_path = config_file
+        self.conn = univmax_conn.U4VConn(array_id=self.data.array)
+
+    @mock.patch.object(rest_requests.RestRequests, 'close_session')
+    def test_close_session(self, mock_close):
+        self.conn.close_session()
+        mock_close.assert_called_once()
+
+    def test_set_requests_timeout(self):
+        self.conn.set_requests_timeout(300)
+        self.assertEqual(300, self.conn.rest_client.timeout)
+
+    def test_set_array_id(self):
+        self.conn.set_array_id('000123456789')
+        self.assertEqual('000123456789', self.conn.replication.array_id)

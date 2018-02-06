@@ -69,8 +69,7 @@ class U4VConn(object):
             except Exception:
                 verify = True
         base_url = 'https://{}:{}/univmax/restapi'.format(server_ip, port)
-        self.rest_client = RestRequests(username, password, verify,
-                                        base_url)
+        self.rest_client = RestRequests(username, password, verify, base_url)
         self.request = self.rest_client.rest_request
         self.U4V_VERSION = u4v_version
         self.common = CommonFunctions(

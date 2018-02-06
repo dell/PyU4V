@@ -31,22 +31,22 @@ class ReplicationFunctions(object):
             self.U4V_VERSION, self.array_id)
         return self.common.get_request(target_uri, 'replication info')
 
-    def check_snap_capabilities(self):
-        """Check what replication facilities are available
+    def get_array_replication_capabilities(self):
+        """Check what replication facilities are available.
 
         :return: array_capabilities dict
         """
         array_capabilities = {}
         target_uri = ("/{}/replication/capabilities/symmetrix".format(
             self.U4V_VERSION))
-        capabilities, _ = self.common.get_request(
+        capabilities = self.common.get_request(
             target_uri, 'replication capabilities')
-        if capabilities:
-            symm_list = capabilities['symmetrixCapability']
-            for symm in symm_list:
-                if symm['symmetrixId'] == self.array_id:
-                    array_capabilities = symm
-                    break
+        symm_list = capabilities.get(
+            'symmetrixCapability', []) if capabilities else []
+        for symm in symm_list:
+            if symm['symmetrixId'] == self.array_id:
+                array_capabilities = symm
+                break
         return array_capabilities
 
     def is_snapvx_licensed(self):
@@ -55,7 +55,7 @@ class ReplicationFunctions(object):
         :returns: True if licensed and enabled; False otherwise.
         """
         snap_capability = False
-        capabilities = self.check_snap_capabilities()
+        capabilities = self.get_array_replication_capabilities()
         if capabilities:
             snap_capability = capabilities['snapVxCapable']
         else:
@@ -80,7 +80,6 @@ class ReplicationFunctions(object):
         :param has_srdf: return only storagegroups with SRDF
         :returns: list of storage groups with associated replication
         """
-        storage_group_list = []
         filters = {}
         if has_snapshots:
             filters.update({'hasSnapshots': 'true'})
@@ -88,8 +87,7 @@ class ReplicationFunctions(object):
             filters.update({'hasSrdf': 'true'})
         response = self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', params=filters)
-        if response and response.get('name'):
-            storage_group_list = response['name']
+        storage_group_list = response.get('name', []) if response else []
         return storage_group_list
 
     def get_storagegroup_snapshot_list(self, storagegroup_id):
@@ -98,12 +96,10 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup name
         :return: list of snapshot names
         """
-        snapshot_list = []
         res_name = 'storagegroup/{}/snapshot'.format(storagegroup_id)
         response = self.get_resource(
             self.array_id, REPLICATION, res_name)
-        if response and response.get('name'):
-            snapshot_list = response['name']
+        snapshot_list = response.get('name', []) if response else []
         return snapshot_list
 
     def create_storagegroup_snap(
@@ -186,21 +182,23 @@ class ReplicationFunctions(object):
             for snapshot_name in snaplist["snapVXSnapshots"]:
                 snapcount = self.get_storagegroup_snapshot_generation_list(
                     sg, snapshot_name)
-                for x in range(0, snapcount + 1):
+                for x in range(0, len(snapcount)):
                     snapdetails = self.get_snapshot_generation_details(
                         sg, snapshot_name, x)
                     if snapdetails["isExpired"]:
                         snapcreation_time = snapdetails["timestamp"]
                         snapexpiration = snapdetails[
                             "timeToLiveExpiryDate"]
-                        for linked_sg in snapdetails["linkedStorageGroup"]:
+                        for linked_sg in snapdetails.get(
+                                "linkedStorageGroup", []):
                             linked_sg_name = linked_sg["name"]
-                            LOG.info("Storage Group {} has expired snapshots "
-                                     "Snapshot name {}, Generation "
-                                     "Number {} snapshot expired on {}, "
-                                     "linked storage group name is {}".format(
-                                        sg, snapshot_name, x,
-                                        snapexpiration, linked_sg_name))
+                            LOG.debug(
+                                "Storage Group {} has expired snapshots. "
+                                "Snapshot name {}, Generation Number {}, "
+                                "snapshot expired on {}, linked storage group "
+                                "name is {}".format(
+                                    sg, snapshot_name, x,
+                                    snapexpiration, linked_sg_name))
                             expired_snap_details = {
                                 'storagegroup_name': sg,
                                 'snapshot_name': snapshot_name,
@@ -248,10 +246,8 @@ class ReplicationFunctions(object):
         if async:
             payload.update(ASYNC_UPDATE)
 
-        resource_name = ('%(sg_name)s/snapshot/%(snap_id)s/generation/'
-                         '%(gen_num)d'
-                         % {'sg_name': source_sg_id, 'snap_id': snap_name,
-                            'gen_num': gen_num})
+        resource_name = ('{}/snapshot/{}/generation/{}'.format(
+            source_sg_id, snap_name, gen_num))
 
         return self.modify_resource(
             self.array_id, REPLICATION, 'storagegroup', payload,
@@ -298,6 +294,21 @@ class ReplicationFunctions(object):
         return self.modify_storagegroup_snap(
             sg_id, link_sg_name, snap_name,
             link=True, gen_num=gen_num, async=async)
+
+    def unlink_gen_snapshot(self, sg_id, snap_name, unlink_sg_name,
+                            async=False, gen_num=0):
+        """Unink a snapshot from another storage group.
+
+        :param sg_id: Source storage group name
+        :param snap_name: name of the snapshot
+        :param unlink_sg_name:  the target storage group name
+        :param async: flag to indicate if call is async
+        :param gen_num: generation number of a snapshot (int)
+        :return: dict
+        """
+        return self.modify_storagegroup_snap(
+            sg_id, unlink_sg_name, snap_name,
+            unlink=True, gen_num=gen_num, async=async)
 
     def delete_storagegroup_snapshot(self, storagegroup, snap_name, gen_num=0):
         """Delete the snapshot of a storagegroup.
@@ -358,10 +369,8 @@ class ReplicationFunctions(object):
 
         :returns: list of rdf group dicts with 'rdfgNumber' and 'label'
         """
-        rdfg_dict_list = []
         response = self.get_resource(self.array_id, REPLICATION, 'rdf_group')
-        if response and response.get('rdfGroupID'):
-            rdfg_dict_list = response['rdfGroupID']
+        rdfg_dict_list = response.get('rdfGroupID', []) if response else []
         return rdfg_dict_list
 
     def get_rdf_group_volume(self, rdf_number, device_id):
@@ -381,12 +390,10 @@ class ReplicationFunctions(object):
         :param rdf_number: the rdf group number
         :returns: list of device ids
         """
-        device_list = []
         resource_name = "{}/volume".format(rdf_number)
         response = self.get_resource(
             self.array_id, REPLICATION, 'rdf_group', resource_name)
-        if response and response.get('name'):
-            device_list = response['name']
+        device_list = response.get('name', []) if response else []
         return device_list
 
     def are_vols_rdf_paired(self, remote_array, device_id,
@@ -400,8 +407,7 @@ class ReplicationFunctions(object):
         :returns: paired -- bool, state -- string
         """
         paired, local_vol_state, rdf_pair_state = False, '', ''
-        volume, _ = self.get_rdf_group_volume(
-            rdf_group, device_id)
+        volume = self.get_rdf_group_volume(rdf_group, device_id)
         if volume:
             remote_volume = volume['remoteVolumeName']
             remote_symm = volume['remoteSymmetrixId']
@@ -411,7 +417,7 @@ class ReplicationFunctions(object):
                 local_vol_state = volume['localVolumeState']
                 rdf_pair_state = volume['rdfpairState']
         else:
-            LOG.warning("Cannot locate source RDF volume %s", device_id)
+            LOG.warning("Cannot find source RDF volume {}".format(device_id))
         return paired, local_vol_state, rdf_pair_state
 
     def get_rdf_group_number(self, rdf_group_label):
@@ -421,9 +427,9 @@ class ReplicationFunctions(object):
         :returns: rdf_group_number
         """
         number = None
-        rdf_list, _ = self.get_rdf_group_list()
-        if rdf_list and rdf_list.get('rdfGroupID'):
-            number = [rdf['rdfgNumber'] for rdf in rdf_list['rdfGroupID']
+        rdf_list = self.get_rdf_group_list()
+        if rdf_list:
+            number = [rdf['rdfgNumber'] for rdf in rdf_list
                       if rdf['label'] == rdf_group_label][0]
         if number:
             rdf_group = self.get_rdf_group(number)
@@ -437,12 +443,10 @@ class ReplicationFunctions(object):
         :param storagegroup_id: Storage Group Name of replicated group
         :return: list of RDFG numbers
         """
-        rdfg_list = []
         res_name = "{}/rdf_group".format(storagegroup_id)
         response = self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', res_name)
-        if response and response.get('rdfgs'):
-            rdfg_list = response['rdfgs']
+        rdfg_list = response.get('rdfgs', []) if response else []
         return rdfg_list
 
     def get_storagegroup_srdf_details(self, storagegroup_id, rdfg_num):
@@ -475,19 +479,17 @@ class ReplicationFunctions(object):
         establish_sg = "True" if establish else "False"
         rdf_payload = {"replicationMode": srdfmode,
                        "remoteSymmId": remote_sid,
-                       "remoteStorageGroupName": storagegroup_id}
+                       "remoteStorageGroupName": storagegroup_id,
+                       "establish": establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
-        if establish is not None:
-            rdf_payload["establish"] = establish_sg
         if async:
             rdf_payload.update(ASYNC_UPDATE)
         return self.create_resource(
             self.array_id, REPLICATION, res_type, rdf_payload)
 
     def modify_storagegroup_srdf(
-            self, storagegroup_id, action, rdfg=None,
-            options=None, async=False):
+            self, storagegroup_id, action, rdfg, options=None, async=False):
         """Modify the state of an srdf.
 
         This may be a long running task depending on the size of the SRDF
@@ -495,33 +497,90 @@ class ReplicationFunctions(object):
 
         :param storagegroup_id: name of storage group
         :param action: the rdf action e.g. Suspend, Establish, etc
-        :param rdfg: rdf number, optional
+        :param rdfg: rdf number
         :param options: a dict of possible options - depends on action type
         :param async: flag to indicate if call should be async
         """
-        # Get a list of SRDF groups for storage group
-        if not rdfg:
-            rdfg_list = self.get_storagegroup_srdfg_list(storagegroup_id)
-            if len(rdfg_list) < 2:  # Check to see if RDF is cascaded.
-                # Sets the RDFG for the Put call to first value in list if
-                # group is not cascasded.
-                rdfg = rdfg_list[0]
-            else:
-                msg = ("Group is cascaded, functionality not yet "
-                       "added in this python library")
-                exception.PyU4VException(data=msg)
-        if rdfg:
-            res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
-            payload = {"action": action}
-            if async:
-                payload.update(ASYNC_UPDATE)
-            if options:
-                option_header = action.lower()
-                payload.update({option_header: options})
-            return self.modify_resource(
-                self.array_id, REPLICATION, 'storagegroup',
-                payload, resource_name=res_name)
-        return None
+        res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
+        payload = {"action": action.capitalize()}
+        if async:
+            payload.update(ASYNC_UPDATE)
+        if options:
+            option_header = action.lower()
+            payload.update({option_header: options})
+        return self.modify_resource(
+            self.array_id, REPLICATION, 'storagegroup',
+            payload, resource_name=res_name)
+
+    def suspend_storagegroup_srdf(
+            self, storagegroup_id, rdfg_no,
+            suspend_options=None, async=False):
+        """Suspend io on the links for the given storagegroup.
+
+        Optional parameters to set are "bypass", "metroBias", "star",
+        "immediate", "hop2", "consExempt", "force", "symForce" - all
+        true/false.
+
+        :param storagegroup_id: the storagegroup id
+        :param rdfg_no: the rdf group no
+        :param suspend_options: Optional dict of suspend params
+        :param async: flag to indicate async call
+        """
+        return self.modify_storagegroup_srdf(
+            storagegroup_id, 'suspend', rdfg_no,
+            options=suspend_options, async=async)
+
+    def establish_storagegroup_srdf(
+            self, storagegroup_id, rdfg_no,
+            establish_options=None, async=False):
+        """Establish io on the links for the given storagegroup.
+
+        Optional parameters to set are "bypass", "metroBias", "star",
+        "hop2", "force", "symForce", "full" - all true/false.
+
+        :param storagegroup_id: the storagegroup id
+        :param rdfg_no: the rdf group no
+        :param establish_options: Optional dict of establish params
+        :param async: flag to indicate async call
+        """
+        return self.modify_storagegroup_srdf(
+            storagegroup_id, 'establish', rdfg_no,
+            options=establish_options, async=async)
+
+    def failover_storagegroup_srdf(
+            self, storagegroup_id, rdfg_no,
+            failover_options=None, async=False):
+        """Failover a given storagegroup.
+
+        Optional parameters to set are "bypass", "star", "restore",
+        "immediate", "hop2", "force", "symForce", "remote", "establish" - all
+        true/false.
+
+        :param storagegroup_id: the storagegroup id
+        :param rdfg_no: the rdf group no
+        :param failover_options: Optional dict of failover params
+        :param async: flag to indicate async call
+        """
+        return self.modify_storagegroup_srdf(
+            storagegroup_id, 'failover', rdfg_no,
+            options=failover_options, async=async)
+
+    def failback_storagegroup_srdf(
+            self, storagegroup_id, rdfg_no, failback_options=None,
+            async=False):
+        """Failback a given storagegroup.
+
+        Optional parameters to set are "bypass", "recoverPoint", "star",
+        "hop2", "force", "symForce", "remote" - all true/false.
+
+        :param storagegroup_id: the storagegroup id
+        :param rdfg_no: the rdf group no
+        :param failback_options: Optional dict of failover params
+        :param async: flag to indicate async call
+        """
+        return self.modify_storagegroup_srdf(
+            storagegroup_id, 'failback', rdfg_no,
+            options=failback_options, async=async)
 
     def delete_storagegroup_srdf(
             self, storagegroup_id, rdfg_num=None):

@@ -27,6 +27,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
 
+from PyU4V.utils import exception
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 LOG = logging.getLogger(__name__)
@@ -68,9 +70,7 @@ class RestRequests(object):
             timeout_val = self.timeout
         if not self.session:
             self.establish_rest_session()
-        url = ("%(self.base_url)s%(target_url)s" %
-               {'self.base_url': self.base_url,
-                'target_url': target_url})
+        url = ("{}{}".format(self.base_url, target_url))
         try:
             if request_object:
                 response = self.session.request(
@@ -88,27 +88,22 @@ class RestRequests(object):
             try:
                 response = response.json()
             except ValueError:
-                LOG.info("No response received from API. Status code "
-                         "received is: %(status_code)s" %
-                         {'status_code': status_code})
+                LOG.debug("No response received from API. Status code "
+                          "received is: {}".format(status_code))
                 response = None
-            LOG.info("%(method)s request to %(url)s has returned with "
-                     "a status code of: %(status_code)s"
-                     % {'method': method, 'url': url,
-                        'status_code': status_code})
+            LOG.debug("{} request to {} has returned with a status "
+                      "code of: {}".format(method, url, status_code))
             return response, status_code
 
         except (requests.Timeout, requests.ConnectionError) as e:
-            LOG.error(("The %(method)s request to URL %(url)s "
-                       "timed-out, but may have been successful."
-                       "Please check the array. Exception received:"
-                       "%(e)s.")
-                      % {'method': method, 'url': url, 'e': e})
+            LOG.error("The {} request to URL {} timed-out, but may have been "
+                      "successful. Please check the array. Exception "
+                      "received: {}.".format(method, url, e))
+            return None, None
         except Exception as e:
-                LOG.error(("The %(method)s request to URL %(url)s "
-                           "failed with exception %(e)s")
-                          % {'method': method, 'url': url, 'e': e})
-                raise
+                exp_message = ("The {} request to URL: {} failed with "
+                               "exception {}".format(method, url, e))
+                raise exception.VolumeBackendAPIException(data=exp_message)
 
     def close_session(self):
         """

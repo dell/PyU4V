@@ -721,14 +721,14 @@
                 <span class="n">portlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">portlist</span></div>
 
-<div class="viewcode-block" id="ProvisioningFunctions.get_target_wwns_from_pg"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_wwns_from_pg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portgroup</span><span class="p">):</span>
+<div class="viewcode-block" id="ProvisioningFunctions.get_target_wwns_from_pg"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_wwns_from_pg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portgroup_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the director ports&#39; wwns.</span>
 
-<span class="sd">        :param portgroup: portgroup</span>
+<span class="sd">        :param portgroup_id: the name of the portgroup</span>
 <span class="sd">        :returns: target_wwns -- the list of target wwns for the pg</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target_wwns</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">port_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ports_from_pg</span><span class="p">(</span><span class="n">portgroup</span><span class="p">)</span>
+        <span class="n">port_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ports_from_pg</span><span class="p">(</span><span class="n">portgroup_id</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">port_ids</span><span class="p">:</span>
             <span class="n">dir_id</span> <span class="o">=</span> <span class="n">port</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">port_no</span> <span class="o">=</span> <span class="n">port</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
@@ -742,7 +742,7 @@
 <span class="sd">        :param port_id: the director port identifier</span>
 <span class="sd">        :returns: (list of ip_addresses, iqn)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ip_addresses</span><span class="p">,</span> <span class="n">iqn</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="n">ip_addresses</span><span class="p">,</span> <span class="n">iqn</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">None</span>
         <span class="n">dir_id</span> <span class="o">=</span> <span class="n">port_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">port_no</span> <span class="o">=</span> <span class="n">port_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">port_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_director_port</span><span class="p">(</span><span class="n">dir_id</span><span class="p">,</span> <span class="n">port_no</span><span class="p">)</span>
@@ -841,19 +841,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">SLOPROVISIONING</span><span class="p">,</span>
                              <span class="s1">&#39;portgroup&#39;</span><span class="p">,</span> <span class="n">portgroup_id</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ProvisioningFunctions.extract_director_id_from_portgroup"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.extract_director_id_from_portgroup">[docs]</a>    <span class="k">def</span> <span class="nf">extract_director_id_from_portgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portgroup</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the director information from the port group.</span>
-
-<span class="sd">        :param portgroup: the name of the portgroup</span>
-<span class="sd">        :return: the director information</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_portgroup</span><span class="p">(</span><span class="n">portgroup</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">port_key</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;portGroup&quot;</span><span class="p">][</span><span class="s2">&quot;symmetrixPortKey&quot;</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">port_key</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot find port key information from given portgroup&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProvisioningFunctions.get_slo_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_slo_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_slo_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Retrieve the list of slo&#39;s from the array</span>
@@ -1044,8 +1031,8 @@
 <span class="sd">        :param sg_id: the name of the new storage group</span>
 <span class="sd">        :param slo: the service level agreement (e.g. Gold)</span>
 <span class="sd">        :param workload: the workload (e.g. DSS)</span>
-<span class="sd">        :param num_vols: the amount of volumes to be created</span>
-<span class="sd">        :param vol_size: the size of each volume</span>
+<span class="sd">        :param num_vols: the amount of volumes to be created -- int</span>
+<span class="sd">        :param vol_size: the size of each volume -- string</span>
 <span class="sd">        :param cap_unit: the capacity unit (MB, GB)</span>
 <span class="sd">        :param disable_compression: Flag for disabling compression (AF only)</span>
 <span class="sd">        :param async: Flag to indicate if this call should be async</span>
@@ -1161,7 +1148,7 @@
 <span class="sd">        :param source_storagegroup_name: the originating storage group name</span>
 <span class="sd">        :param target_storagegroup_name: the destination storage group name</span>
 <span class="sd">        :param device_ids: the device ids - can be list</span>
-<span class="sd">        :param force: force flag (necessary on a detach)</span>
+<span class="sd">        :param force: force flag (necessary if volume is in masking view)</span>
 <span class="sd">        :param async: async flag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">force_flag</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">force</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span>
@@ -1309,18 +1296,21 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">modify_storage_group</span><span class="p">(</span><span class="n">storage_group_name</span><span class="p">,</span> <span class="n">payload</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">message</span></div>
 
-<div class="viewcode-block" id="ProvisioningFunctions.set_host_io_limit_iops"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops">[docs]</a>    <span class="k">def</span> <span class="nf">set_host_io_limit_iops</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group</span><span class="p">,</span> <span class="n">iops</span><span class="p">,</span> <span class="n">dynamic_distribution</span><span class="p">):</span>
+<div class="viewcode-block" id="ProvisioningFunctions.set_host_io_limit_iops_or_mbps"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.set_host_io_limit_iops_or_mbps">[docs]</a>    <span class="k">def</span> <span class="nf">set_host_io_limit_iops_or_mbps</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group</span><span class="p">,</span> <span class="n">iops</span><span class="p">,</span> <span class="n">dynamic_distribution</span><span class="p">,</span> <span class="n">mbps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set the HOSTIO Limits on an existing storage group.</span>
 
 <span class="sd">        :param storage_group: String up to 32 Characters</span>
 <span class="sd">        :param dynamic_distribution: valid values Always, Never, OnFailure</span>
 <span class="sd">        :param iops: integer value. Min Value 100, must be specified to</span>
 <span class="sd">                     nearest 100, e.g.202 is not a valid value</span>
+<span class="sd">        :param mbps: MB per second, integer value. Min Value 100</span>
 <span class="sd">        :return: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">qos_specs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;maxIOPS&#39;</span><span class="p">:</span> <span class="n">iops</span><span class="p">,</span>
                      <span class="s1">&#39;DistributionType&#39;</span><span class="p">:</span> <span class="n">dynamic_distribution</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">mbps</span><span class="p">:</span>
+            <span class="n">qos_specs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;maxMBPS&#39;</span><span class="p">:</span> <span class="n">mbps</span><span class="p">})</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_storagegroup_qos</span><span class="p">(</span><span class="n">storage_group</span><span class="p">,</span> <span class="n">qos_specs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProvisioningFunctions.delete_storagegroup"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.delete_storagegroup">[docs]</a>    <span class="k">def</span> <span class="nf">delete_storagegroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">):</span>
@@ -1587,13 +1577,13 @@
                         <span class="n">eventwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
                             <span class="p">[</span><span class="n">sg</span><span class="p">,</span> <span class="n">vol</span><span class="p">,</span> <span class="n">vol_identifier</span><span class="p">,</span> <span class="n">vol_cap</span><span class="p">,</span> <span class="n">allocated</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ProvisioningFunctions.get_workload_settings"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_workload_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_workload_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+<div class="viewcode-block" id="ProvisioningFunctions.get_workload_settings"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_workload_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_workload_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get valid workload options from array.</span>
 
-<span class="sd">        :param array: the array serial number</span>
 <span class="sd">        :returns: workload_setting -- list of workload names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">wl_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">SLOPROVISIONING</span><span class="p">,</span> <span class="s1">&#39;workloadtype&#39;</span><span class="p">)</span>
+        <span class="n">wl_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">SLOPROVISIONING</span><span class="p">,</span> <span class="s1">&#39;workloadtype&#39;</span><span class="p">)</span>
         <span class="n">wl_setting</span> <span class="o">=</span> <span class="n">wl_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;workloadId&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">wl_details</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">wl_setting</span></div></div>
 </pre></div>
