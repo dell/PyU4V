@@ -1124,11 +1124,12 @@ class ProvisioningFunctions(object):
         :param cap_unit: the capacity unit, default 'GB'
         :returns: device_id
         """
-        task = self.add_new_vol_to_storagegroup(
+        job = self.add_new_vol_to_storagegroup(
             storagegroup_name, 1, vol_size, cap_unit,
             async=True, vol_name=volume_name)
 
         # Find the newly created volume.
+        task = job.get('task', None)
         device_id = None
         if task:
             for t in task:
