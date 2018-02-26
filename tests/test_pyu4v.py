@@ -666,16 +666,55 @@ class PyU4VCommonTest(testtools.TestCase):
 
     def test_check_status_code_success(self):
         self.common.check_status_code_success(
-            'test-success', 201, '')
-        self.assertRaises(exception.ResourceNotFoundException,
-                          self.common.check_status_code_success,
-                          'test-404', 404, '')
-        self.assertRaises(exception.UnauthorizedRequestException,
-                          self.common.check_status_code_success,
-                          'test-401', 401, '')
+            'test-200-success', 200, '')
+        self.common.check_status_code_success(
+            'test-201-success', 201, '')
+        self.common.check_status_code_success(
+            'test-202-success', 202, '')
+        self.common.check_status_code_success(
+            'test-204-success', 204, '')
+
+        message_dict = {'message': 'Dummy Message'}
+
         self.assertRaises(exception.VolumeBackendAPIException,
                           self.common.check_status_code_success,
-                          'test-500', 500, '')
+                          'test-401', 401, 'Dummy Message')
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-401-message-dict', 401, message_dict)
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-401-no-message', 401, '')
+
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-404', 404, 'Dummy Message')
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-404-message-dict', 404, message_dict)
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-404-no-message', 404, '')
+
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-500', 500, 'Dummy Message')
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-500-message-dict', 500, message_dict)
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-500-no-message', 500, '')
+
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-999', 999, 'Dummy Message')
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-999-message-dict', 999, message_dict)
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.common.check_status_code_success,
+                          'test-999-no-message', 999, '')
 
     @mock.patch.object(common.CommonFunctions, 'wait_for_job_complete',
                        side_effect=[(0, '', '', ''), (1, '', '', '')])
@@ -1889,6 +1928,24 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         self.assertIsNone(msg)
         self.assertRaises(exception.VolumeBackendAPIException,
                           self.rest.rest_request, '', 'EXCEPTION')
+
+    @mock.patch.object(rest_requests.RestRequests, 'rest_request',
+                       side_effect=requests.ConnectionError)
+    def test_rest_request_connection_exception(self, mock_request):
+        self.assertRaises(requests.ConnectionError,
+                          self.rest.rest_request, '/fake_url', 'CONN_ERROR')
+
+    @mock.patch.object(rest_requests.RestRequests, 'rest_request',
+                       side_effect=requests.RequestException)
+    def test_rest_request_requests_exception(self, mock_request):
+        self.assertRaises(requests.RequestException,
+                          self.rest.rest_request, '/fake_url', 'REQ_ERROR')
+
+    @mock.patch.object(rest_requests.RestRequests, 'rest_request',
+                       side_effect=requests.exceptions.ChunkedEncodingError)
+    def test_rest_request_encoding_exception(self, mock_request):
+        self.assertRaises(requests.exceptions.ChunkedEncodingError,
+                          self.rest.rest_request, '/fake_url', 'ENCODE_ERROR')
 
 
 class PyU4VUnivmaxConnTest(testtools.TestCase):

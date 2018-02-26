@@ -24,6 +24,7 @@ import json
 import logging
 
 import requests
+import requests.exceptions
 from requests.auth import HTTPBasicAuth
 import urllib3
 
@@ -53,11 +54,11 @@ class RestRequests(object):
         session.verify = self.verifySSL
         return session
 
-    def rest_request(self, target_url, method,
+    def rest_request(self, target_uri, method,
                      params=None, request_object=None, timeout=None):
         """Sends a request (GET, POST, PUT, DELETE) to the target api.
 
-        :param target_url: target url (string)
+        :param target_uri: target URI (string)
         :param method: The method (GET, POST, PUT, or DELETE)
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
@@ -70,7 +71,7 @@ class RestRequests(object):
             timeout_val = self.timeout
         if not self.session:
             self.establish_rest_session()
-        url = ("{}{}".format(self.base_url, target_url))
+        url = ("{}{}".format(self.base_url, target_uri))
         try:
             if request_object:
                 response = self.session.request(
@@ -95,15 +96,40 @@ class RestRequests(object):
                       "code of: {}".format(method, url, status_code))
             return response, status_code
 
-        except (requests.Timeout, requests.ConnectionError) as e:
-            LOG.error("The {} request to URL {} timed-out, but may have been "
-                      "successful. Please check the array. Exception "
-                      "received: {}.".format(method, url, e))
+        # Connection exception handling
+        except (requests.ConnectionError, requests.exceptions.ProxyError,
+                requests.exceptions.SSLError, requests.Timeout,
+                requests.HTTPError, requests.exceptions.RetryError,
+                requests.TooManyRedirects) as e:
+            LOG.error("The {} request to URL {} has failed due to a "
+                      "connection exception. Please check the connection to "
+                      "the array. Exception received: {}.".format(method,
+                                                                  url, e))
             return None, None
+
+        # Request/Response exception handling
+        except (requests.RequestException, requests.URLRequired,
+                requests.exceptions.InvalidURL) as e:
+            LOG.error("The {} request to URL {} has encountered an issue with "
+                      "the request but may still have been successful. Please "
+                      "check the array. Exception received: {}.".format(method,
+                                                                        url, e))
+            return None, None
+
+        # Encoding exception handling
+        except (requests.exceptions.ChunkedEncodingError,
+                requests.exceptions.ContentDecodingError,
+                requests.exceptions.StreamConsumedError) as e:
+            LOG.error("The {} request to URL {} has encountered an encoding "
+                      "error but may have been successful. Please check the "
+                      "array. Exception received: {}.".format(method, url, e))
+            return None, None
+
+        # Unknown exception handling
         except Exception as e:
-                exp_message = ("The {} request to URL: {} failed with "
-                               "exception {}".format(method, url, e))
-                raise exception.VolumeBackendAPIException(data=exp_message)
+            exp_message = ("The {} request to URL: {} failed with "
+                           "exception {}".format(method, url, e))
+            raise exception.VolumeBackendAPIException(data=exp_message)
 
     def close_session(self):
         """

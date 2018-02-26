@@ -153,18 +153,77 @@ class CommonFunctions(object):
         """
         if status_code not in [STATUS_200, STATUS_201,
                                STATUS_202, STATUS_204]:
-            exception_message = (
-                'Error {operation}. The status code received '
-                'is {sc} and the message is {message}.'.format(
-                    operation=operation, sc=status_code, message=message))
-            if status_code == STATUS_404:
-                raise exception.ResourceNotFoundException(
-                    data=exception_message)
-            if status_code == STATUS_401:
-                raise exception.UnauthorizedRequestException()
-            else:
-                raise exception.VolumeBackendAPIException(
-                    data=exception_message)
+
+            response_codes = {
+                203: "Non-Authoritative Information",
+                205: "Reset Content",
+                206: "Partial Content",
+                301: "Moved Permanently",
+                304: "Not Modified",
+                305: "Use Proxy",
+                400: "Bad Request",
+                401: "Unauthorized - Please check Username & Password",
+                403: "Forbidden",
+                404: "Not Found",
+                405: "Method Not Allowed",
+                406: "Not Acceptable",
+                407: "Proxy Authentication Required",
+                408: "Request Timeout",
+                409: "Conflict",
+                410: "Gone",
+                412: "Precondition Failed",
+                413: "Request Entity Too Large",
+                414: "414 Request-URI Too Long",
+                415: "415 Unsupported Media Type",
+                417: "Expectation Failed",
+                500: "Internal Server Error",
+                501: "Not Implemented",
+                502: "Bad Gateway",
+                503: "Service Unavailable",
+                504: "Gateway Timeout",
+                505: "HTTP Version Not Supported"
+            }
+
+            exception_message = None
+
+            try:
+                # If Unisphere returns a message return that message to user
+                if message['message']:
+                    exception_message = (
+                        "Error {operation} - Status code {sc} - "
+                        "Message: {message}.".format(
+                            operation=operation, sc=status_code,
+                            message=message))
+                elif message:
+                    exception_message = (
+                        "Error {operation} - Status code {sc} - "
+                        "Message: {message}.".format(
+                            operation=operation, sc=status_code,
+                            message=message))
+                elif not message:
+                    # No message returned, raise ValueError to return message
+                    # based on status code
+                    raise UserWarning
+
+            except (TypeError, UserWarning):
+                # No message returned,, return HTTP response code information if
+                # known in response_codes list above
+                try:
+                    exception_message = (
+                        "Error {operation} - Status code {sc} - "
+                        "Message: {message}.".format(
+                            operation=operation,
+                            sc=response_codes[int(status_code)],
+                            message=message))
+                except KeyError:
+                    exception_message = (
+                        "Error {operation} - Status code {sc} - Message: "
+                        "Unknown Response Code, please check online for "
+                        "HTTP response code breakdown.".format(
+                            operation=operation, sc=status_code))
+
+            raise exception.VolumeBackendAPIException(
+                data=exception_message)
 
     def wait_for_job(self, operation, status_code, job):
         """Check if call is async, wait for it to complete.
