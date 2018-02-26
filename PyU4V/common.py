@@ -154,9 +154,9 @@ class CommonFunctions(object):
         if status_code not in [STATUS_200, STATUS_201,
                                STATUS_202, STATUS_204]:
             exception_message = (
-                    'Error {operation}. The status code received '
-                    'is {sc} and the message is {message}.'.format(
-                        operation=operation, sc=status_code, message=message))
+                'Error {operation}. The status code received '
+                'is {sc} and the message is {message}.'.format(
+                    operation=operation, sc=status_code, message=message))
             if status_code == STATUS_404:
                 raise exception.ResourceNotFoundException(
                     data=exception_message)
@@ -190,29 +190,77 @@ class CommonFunctions(object):
                     data=exception_message)
         return task
 
-    def _build_uri(self, array, category, resource_type,
-                   resource_name=None, version=None):
-        """Build the target url.
-.
-        :param array: the array serial number
-        :param category: the resource category e.g. sloprovisioning
-        :param resource_type: the resource type e.g. maskingview
-        :param resource_name: the name of a specific resource
-        :param version: the U4V version
-        :returns: target url -- string
+    def _build_uri(self, *args, **kwargs):
+        """ Build the target URI.
+
+        :param args: optional arguments passed in to form URI
+        :param kwargs: optional key word arguments passed in to form URI
+        :return: target URI -- string
         """
-        if version is None:
+        target_uri = ''
+        version = None
+
+        # Version control logic
+        if kwargs.get('version') and not kwargs.get('no_version'):
+            version = kwargs['version']
+        elif kwargs.get('version') and kwargs.get('no_version'):
+            version = kwargs['version']
+        elif not kwargs.get('version') and not kwargs.get('no_version'):
+            LOG.debug("Version has been specified along with no_version "
+                      "flag, ignoring no_version flag and using version "
+                      "{ver}".format(ver=kwargs.get('version')))
             version = self.U4V_VERSION
-        target_uri = ('/{category}/symmetrix/'
-                      '{array}/{resource_type}'.format(
-                       version=version, category=category, array=array,
-                       resource_type=resource_type))
-        if resource_name:
-            target_uri += '/{resource_name}'.format(
-                resource_name=resource_name)
-        if version:
-            target_uri = ('/{version}{target}'.format(
-                version=version, target=target_uri))
+        elif kwargs['no_version'] and not kwargs.get('version'):
+            pass
+
+        # Old method - has arguments passed which define URI
+        if args:
+            if version:
+                target_uri += ('/{version}'.format(version=version))
+
+            array_id = args[0]
+            category = args[1]
+            resource_type = args[2]
+            resource_name = kwargs.get('resource_name')
+
+            target_uri += ('/{cat}/symmetrix/{array_id}/{res_type}'.format(
+                cat=category,
+                array_id=array_id,
+                res_type=resource_type))
+
+            if resource_name:
+                target_uri += '/{resource_name}'.format(
+                    resource_name=kwargs.get('resource_name'))
+
+        # New method - new method is to have only keyword arguments passed
+        if not args and kwargs:
+            if kwargs.get('category') in ['performance', 'common']:
+                version = None
+            if version:
+                target_uri += '/{}'.format(version)
+
+            target_uri += '/{category}/{resource_level}'.format(
+                category=kwargs.get('category'),
+                resource_level=kwargs.get('resource_level'))
+
+            if kwargs.get('resource_level_id'):
+                target_uri += '/{}'.format(kwargs.get('resource_level_id'))
+
+            if kwargs.get('resource_type'):
+                target_uri += '/{}'.format(kwargs.get('resource_type'))
+                if kwargs.get('resource_type_id'):
+                    target_uri += '/{}'.format(kwargs.get('resource_type_id'))
+
+            if kwargs.get('resource'):
+                target_uri += '/{}'.format(kwargs.get('resource'))
+                if kwargs.get('resource_id'):
+                    target_uri += '/{}'.format(kwargs.get('resource_id'))
+
+            if kwargs.get('object_type'):
+                target_uri += '/{}'.format(kwargs.get('object_type'))
+                if kwargs.get('object_type_id'):
+                    target_uri += '/{}'.format(kwargs.get('object_type_id'))
+
         return target_uri
 
     def get_request(self, target_uri, resource_type, params=None):
@@ -229,81 +277,190 @@ class CommonFunctions(object):
         self.check_status_code_success(operation, sc, message)
         return message
 
-    def get_resource(self, array, category, resource_type,
-                     resource_name=None, params=None):
-        """Get resource details from array.
+    def get_resource(self, *args, **kwargs):
+        """Get resource details from the array. The args passed in are
+        positional and should be passed in using the order they are listed in
+        below.
 
-        :param array: the array serial number
-        :param category: the resource category e.g. sloprovisioning
-        :param resource_type: the resource type e.g. maskingview
-        :param resource_name: the name of a specific resource
-        :param params: query parameters
-        :returns: resource object -- dict
+        Traditional Method:
+        :param args:
+            param0 array_id: the array serial number
+            param1 category: the resource category e.g. sloprovisioning
+            param2 resource_type: the resource type e.g. maskingview
+        :param kwargs:
+            param version: optional version of Unisphere
+            param resource_name: optional name of a specific resource
+            param params: optional dict of filter params
+
+        New Method:
+        :param kwargs:
+            param version: the version of Unisphere
+            param no_version: (boolean) if the URI required no version
+            param category: the resource category e.g. sloprovisioning, system
+            param resource_level: the resource level e.g. storagegroup, alert
+            param resource_level_id: the resource level ID
+            param resource_type: the name of a specific resource
+            param resource_type_id: the name of a specific resource
+            param resource: the name of a specific resource
+            param resource_id: the name of a specific resource
+            param object_type: the name of a specific resource
+            param object_type_id: the name of a specific resource
+            param params: query parameters
+
+        :return: resource object -- dict
         """
-        target_uri = self._build_uri(array, category, resource_type,
-                                     resource_name)
-        return self.get_request(target_uri, resource_type, params)
+        target_uri = self._build_uri(*args, **kwargs)
 
-    def create_resource(self, array, category, resource_type, payload,
-                        version=None):
-        """Create a resource.
+        if args:
+            resource_type = args[2]
+        elif not args and kwargs:
+            resource_type = kwargs.get('resource_level')
+        else:
+            resource_type = None
 
-        :param array: the array serial number
-        :param category: the category
-        :param resource_type: the resource type
-        :param payload: the payload
-        :param version: the U4V version
-        :returns: message -- string, server response
+        return self.get_request(target_uri, resource_type, kwargs.get('params'))
+
+    def create_resource(self, *args, **kwargs):
+        """Create a resource. The args passed in are positional and should be
+        passed in using the order they are listed in below.
+
+        Traditional Method:
+        :param args:
+            param0 array_id: the array serial number
+            param1 category: the resource category e.g. sloprovisioning
+            param2 resource_type: the resource type e.g. maskingview
+        :param kwargs:
+            param version: optional version of Unisphere
+            param resource_name: optional name of a specific resource
+            param payload: optional payload dict
+
+        New Method:
+        :param kwargs:
+            param version: the version of Unisphere
+            param no_version: (boolean) if the URI required no version
+            param category: the resource category e.g. sloprovisioning, system
+            param resource_level: the resource level e.g. storagegroup, alert
+            param resource_level_id: the resource level ID
+            param resource_type: the name of a specific resource
+            param resource_type_id: the name of a specific resource
+            param resource: the name of a specific resource
+            param resource_id: the name of a specific resource
+            param object_type: the name of a specific resource
+            param object_type_id: the name of a specific resource
+            param payload: optional payload dict
+
+        :return: message -- string, server response
         """
-        target_uri = self._build_uri(array, category, resource_type,
-                                     version)
-        message, status_code = self.request(target_uri, POST,
-                                            request_object=payload)
+        target_uri = self._build_uri(*args, **kwargs)
+
+        message, status_code = self.request(
+            target_uri, POST, request_object=kwargs.get('payload'))
+
+        if args:
+            resource_type = args[2]
+        elif not args and kwargs:
+            resource_type = kwargs.get('resource_level')
+        else:
+            resource_type = None
+
         operation = 'Create {} resource'.format(resource_type)
+
         self.check_status_code_success(
             operation, status_code, message)
         return message
 
-    def modify_resource(self, array, category, resource_type, payload,
-                        version=None, resource_name=None):
-        """Modify a resource.
+    def modify_resource(self, *args, **kwargs):
+        """Modify a resource. The args passed in are positional and should be
+        passed in using the order they are listed in below.
 
-        :param array: the array serial number
-        :param category: the category
-        :param resource_type: the resource type
-        :param payload: the payload
-        :param version: the uv4 version
-        :param resource_name: the resource name
-        :returns: message -- string (server response)
+        Traditional Method:
+        :param args:
+            param0 array_id: the array serial number
+            param1 category: the resource category e.g. sloprovisioning
+            param2 resource_type: the resource type e.g. maskingview
+        :param kwargs:
+            param version: optional version of Unisphere
+            param resource_name: optional name of a specific resource
+            param payload: optional payload dict
+
+        New Method:
+        :param kwargs:
+            param version: the version of Unisphere
+            param no_version: (boolean) if the URI required no version
+            param category: the resource category e.g. sloprovisioning, system
+            param resource_level: the resource level e.g. storagegroup, alert
+            param resource_level_id: the resource level ID
+            param resource_type: the name of a specific resource
+            param resource_type_id: the name of a specific resource
+            param resource: the name of a specific resource
+            param resource_id: the name of a specific resource
+            param object_type: the name of a specific resource
+            param object_type_id: the name of a specific resource
+            param payload: optional payload dict
+
+        :return: message -- string (server response)
         """
-        if version is None:
-            version = self.U4V_VERSION
-        target_uri = self._build_uri(array, category, resource_type,
-                                     resource_name, version)
-        message, status_code = self.request(target_uri, PUT,
-                                            request_object=payload)
-        operation = 'modify {} resource'.format(resource_type)
+        target_uri = self._build_uri(*args, **kwargs)
+
+        message, status_code = self.request(
+            target_uri, PUT, request_object=kwargs.get('payload'))
+
+        if args:
+            resource_type = args[2]
+        elif not args and kwargs:
+            resource_type = kwargs.get('resource_level')
+        else:
+            resource_type = None
+
+        operation = 'Modify {} resource'.format(resource_type)
+
         self.check_status_code_success(operation, status_code, message)
         return message
 
-    def delete_resource(
-            self, array, category, resource_type, resource_name,
-            payload=None, params=None):
-        """Delete a resource.
+    def delete_resource(self, *args, **kwargs):
+        """Delete a resource. The args passed in are positional and should be
+        passed in using the order they are listed in below.
 
-        :param array: the array serial number
-        :param category: the resource category e.g. sloprovisioning
-        :param resource_type: the type of resource to be deleted
-        :param resource_name: the name of the resource to be deleted
-        :param payload: the payload, optional
-        :param params: dict of optional query params
+        Traditional Method:
+        :param args:
+            param0 array_id: the array serial number
+            param1 category: the resource category e.g. sloprovisioning
+            param2 resource_type: the resource type e.g. maskingview
+        :param kwargs:
+            param version: optional version of Unisphere
+            param resource_name: optional name of a specific resource
+            param payload: optional payload dict
+
+        New Method:
+        :param kwargs:
+            param version: the version of Unisphere
+            param no_version: (boolean) if the URI required no version
+            param category: the resource category e.g. sloprovisioning, system
+            param resource_level: the resource level e.g. storagegroup, alert
+            param resource_level_id: the resource level ID
+            param resource_type: the name of a specific resource
+            param resource_type_id: the name of a specific resource
+            param resource: the name of a specific resource
+            param resource_id: the name of a specific resource
+            param object_type: the name of a specific resource
+            param object_type_id: the name of a specific resource
+            param payload: optional payload dict
         """
-        version = self.U4V_VERSION
-        target_uri = self._build_uri(array, category, resource_type,
-                                     resource_name, version=version)
+        target_uri = self._build_uri(*args, **kwargs)
+
         message, status_code = self.request(
-            target_uri, DELETE, request_object=payload, params=params)
-        operation = 'delete {} resource'.format(resource_type)
+            target_uri, DELETE, request_object=kwargs.get('payload'),
+            params=kwargs.get('payload'))
+
+        if args:
+            resource_type = args[2]
+        elif not args and kwargs:
+            resource_type = kwargs.get('resource_level')
+        else:
+            resource_type = None
+
+        operation = 'Delete {} resource'.format(resource_type)
+
         self.check_status_code_success(operation, status_code, message)
 
     @staticmethod
