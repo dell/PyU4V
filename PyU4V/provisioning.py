@@ -52,7 +52,7 @@ class ProvisioningFunctions(object):
         :return: dict
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'director',
-                                 director)
+                                 resource_name=director)
 
     def get_director_list(self):
         """Queries for details of Symmetrix directors for a symmetrix
@@ -1128,7 +1128,7 @@ class ProvisioningFunctions(object):
             storagegroup_name, 1, vol_size, cap_unit,
             async=True, vol_name=volume_name)
 
-        task = self.common.wait_for_job("Create volume", 202, job)
+        task = self.common.wait_for_job("Create volume from sg", 200, job)
 
         # Find the newly created volume.
         device_id = None
