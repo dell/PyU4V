@@ -65,6 +65,7 @@ class CommonData(object):
     group_snapshot_name = 'Grp_snapshot'
     target_group_name = 'Grp_target'
     qos_storagegroup = "PU-QOS-SG"
+    snapshot_name = "snap_01234"
     # director port info
     director_id1 = "FA-1D"
     port_id1 = "4"
@@ -106,7 +107,7 @@ class CommonData(object):
                  "hostGroupId": hostgroup_id,
                  "maskingview": [masking_view_name_f]}
 
-    hostgroup_list = { "hostGroupId": [hostgroup_id]}
+    hostgroup_list = {"hostGroupId": [hostgroup_id]}
 
     initiator_list = [{"host": initiatorgroup_name_f,
                        "initiatorId": wwpn1,
@@ -232,7 +233,7 @@ class CommonData(object):
     compr_report = {"storageGroupCompressibility": [
         {"num_of_volumes": 6, "storageGroupId": storagegroup_name,
          "allocated_cap_gb": 0.0, "used_cap_gb": 0.0,
-         "compression_enabled": 'false'},]}
+         "compression_enabled": 'false'}, ]}
 
     volume_details = [{"cap_gb": 2,
                        "num_of_storage_groups": 1,
@@ -257,7 +258,7 @@ class CommonData(object):
     volume_list = [
         {"resultList": {"result": [{"volumeId": device_id}]}},
         {"resultList": {"result": [{"volumeId": device_id2}]}},
-        {"expirationTime": 1517830955979, "count": 2,  "maxPageSize": 1000,
+        {"expirationTime": 1517830955979, "count": 2, "maxPageSize": 1000,
          "id": "123", "resultList": {"result": [
             {"volumeId": device_id}, {"volumeId": device_id2}]}}]
 
@@ -636,7 +637,7 @@ class FakeConfigFile(object):
             port='8443', array=CommonData.array, verify=False):
         data = ("[setup] \nusername={} \npassword={} \nserver_ip={}"
                 "\nport={} \narray={} \nverify={}".format(
-                    user, password, ip, port, array, verify))
+            user, password, ip, port, array, verify))
         filename = 'PyU4V.conf'
         config_file_path = os.path.normpath(
             tempfile.mkdtemp() + '/' + filename)
@@ -689,13 +690,168 @@ class PyU4VCommonTest(testtools.TestCase):
         self.assertRaises(exception.VolumeBackendAPIException,
                           self.common.wait_for_job, 'sync-job', 202, {})
 
-    def test_build_uri(self):
-        resource_name_list = [None, self.data.device_id, self.data.device_id]
-        version_list = [None, '', '90']
-        for x in range(0, 3):
-            self.common._build_uri(
-                self.data.array, 'sloprovisioning', 'volume',
-                resource_name=resource_name_list[x], version=version_list[x])
+    def test_build_uri_version_control(self):
+        # No version supplied, use self.U4V_VERSION
+        resource_name_1 = None
+        version_1 = None
+        built_uri_1 = self.common._build_uri(
+            self.data.array, 'sloprovisioning', 'volume',
+            resource_name=resource_name_1, version=version_1)
+        temp_uri_1 = (
+            '/84/sloprovisioning/symmetrix/{array}/volume'.format(
+                ver=version_1, array=self.data.array))
+        self.assertEqual(temp_uri_1, built_uri_1)
+
+        # version supplied as keyword argument
+        resource_name_2 = self.data.device_id
+        version_2 = '90'
+        built_uri_2 = self.common._build_uri(
+            self.data.array, 'sloprovisioning', 'volume',
+            resource_name=resource_name_2, version=version_2)
+        temp_uri_2 = (
+            '/{ver}/sloprovisioning/symmetrix/{array}/volume/{res}'.format(
+                ver=version_2, array=self.data.array, res=resource_name_2))
+        self.assertEqual(temp_uri_2, built_uri_2)
+
+        # version and no_version keywords supplied, no_version overruled
+        resource_name_3 = self.data.device_id
+        version_3 = '90'
+        built_uri_3 = self.common._build_uri(
+            self.data.array, 'sloprovisioning', 'volume',
+            resource_name=resource_name_3, version=version_3, no_version=True)
+        temp_uri_3 = (
+            '/{ver}/sloprovisioning/symmetrix/{array}/volume/{res}'.format(
+                ver=version_3, array=self.data.array, res=resource_name_3))
+        self.assertEqual(temp_uri_3, built_uri_3)
+
+        # no_version flag passed, no version required for URI
+        resource_name_4 = self.data.device_id
+        built_uri_4 = self.common._build_uri(
+            self.data.array, 'sloprovisioning', 'volume',
+            resource_name=resource_name_4, no_version=True)
+        temp_uri_4 = (
+            '/sloprovisioning/symmetrix/{array}/volume/{res}'.format(
+                array=self.data.array, res=resource_name_3))
+        self.assertEqual(temp_uri_4, built_uri_4)
+
+    def test_traditional_build_uri(self):
+        # Only default args arrayID, category, resource_type passed
+        built_uri = self.common._build_uri(
+            self.data.array, 'sloprovisioning', 'volume')
+        temp_uri = (
+            '/84/sloprovisioning/symmetrix/{array}/volume'.format(
+                array=self.data.array))
+        self.assertEqual(temp_uri, built_uri)
+
+        # Default args passed along with resource_name and version kwarg
+        built_uri_2 = self.common._build_uri(
+            self.data.array, 'sloprovisioning', 'volume', version='90',
+            resource_name=self.data.device_id)
+        temp_uri_2 = (
+            '/90/sloprovisioning/symmetrix/{array}/volume/{res}'.format(
+                array=self.data.array, res=self.data.device_id))
+        self.assertEqual(temp_uri_2, built_uri_2)
+
+    def test_new_build_uri(self):
+        # Pass in only minimum required kwargs - version is optional
+        built_uri_1 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix',
+        )
+        temp_uri_1 = '/90/sloprovisioning/symmetrix'
+        self.assertEqual(temp_uri_1, built_uri_1)
+
+        # Pass in minimum kwargs with specified resource_level_id
+        built_uri_2 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+        )
+        temp_uri_2 = ('/90/sloprovisioning/symmetrix/{}'.format(
+            self.data.array))
+        self.assertEqual(temp_uri_2, built_uri_2)
+
+        # Pass in same as before bus with resource_type
+        built_uri_3 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+            resource_type='storagegroup'
+        )
+        temp_uri_3 = ('/90/sloprovisioning/symmetrix/{}/{}'.format(
+            self.data.array, 'storagegroup'))
+        self.assertEqual(temp_uri_3, built_uri_3)
+
+        # Pass in same as before bus with resource_type_id
+        built_uri_4 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+            resource_type='storagegroup',
+            resource_type_id=self.data.storagegroup_name_1
+        )
+        temp_uri_4 = ('/90/sloprovisioning/symmetrix/{}/{}/{}'.format(
+            self.data.array, 'storagegroup', self.data.storagegroup_name_1))
+        self.assertEqual(temp_uri_4, built_uri_4)
+
+        # Pass in same as before bus with resource
+        built_uri_5 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+            resource_type='storagegroup',
+            resource_type_id=self.data.storagegroup_name_1,
+            resource='snap'
+        )
+        temp_uri_5 = ('/90/sloprovisioning/symmetrix/{}/{}/{}/{}'.format(
+            self.data.array, 'storagegroup', self.data.storagegroup_name_1,
+            'snap'))
+        self.assertEqual(temp_uri_5, built_uri_5)
+
+        # Pass in same as before bus with resource_id
+        built_uri_6 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+            resource_type='storagegroup',
+            resource_type_id=self.data.storagegroup_name_1,
+            resource='snap', resource_id=self.data.snapshot_name
+        )
+        temp_uri_6 = ('/90/sloprovisioning/symmetrix/{}/{}/{}/{}/{}'.format(
+            self.data.array, 'storagegroup', self.data.storagegroup_name_1,
+            'snap', self.data.snapshot_name))
+        self.assertEqual(temp_uri_6, built_uri_6)
+
+        # Pass in same as before bus with object_type
+        built_uri_7 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+            resource_type='storagegroup',
+            resource_type_id=self.data.storagegroup_name_1,
+            resource='snap', resource_id=self.data.snapshot_name,
+            object_type='generation'
+        )
+        temp_uri_7 = ('/90/sloprovisioning/symmetrix/{}/{}/{}/{}/{}/{}'.format(
+            self.data.array, 'storagegroup', self.data.storagegroup_name_1,
+            'snap', self.data.snapshot_name, 'generation'))
+        self.assertEqual(temp_uri_7, built_uri_7)
+
+        # Pass in same as before bus with object_type_id
+        built_uri_8 = self.common._build_uri(
+            version='90', category='sloprovisioning',
+            resource_level='symmetrix', resource_level_id=self.data.array,
+            resource_type='storagegroup',
+            resource_type_id=self.data.storagegroup_name_1,
+            resource='snap', resource_id=self.data.snapshot_name,
+            object_type='generation', object_type_id='1'
+        )
+        temp_uri_8 = (
+            '/90/sloprovisioning/symmetrix/{}/{}/{}/{}/{}/{}/{}'.format(
+                self.data.array, 'storagegroup', self.data.storagegroup_name_1,
+                'snap', self.data.snapshot_name, 'generation', '1'))
+        self.assertEqual(temp_uri_8, built_uri_8)
+
+        # Category is performance so no use of version in URI
+        built_uri_9 = self.common._build_uri(
+            category='performance', resource_level='Array',
+            resource_type='keys')
+        temp_uri_9 = '/performance/Array/keys'
+        self.assertEqual(temp_uri_9, built_uri_9)
 
     def test_get_request(self):
         message = self.common.get_request(
@@ -703,25 +859,58 @@ class PyU4VCommonTest(testtools.TestCase):
         self.assertEqual(self.data.server_version, message)
 
     def test_get_resource(self):
+        # Traditional Method
         message = self.common.get_resource(
             self.data.array, 'sloprovisioning', 'volume',
             resource_name=None, params=None)
         self.assertEqual(self.data.volume_list[2], message)
 
+        # New Method
+        message_1 = self.common.get_resource(
+            category='sloprovisioning',
+            resource_level='symmetrix',
+            resource_level_id=self.data.array,
+            resource_type='volume')
+        self.assertEqual(self.data.volume_list[2], message_1)
+
     def test_create_resource(self):
+        # Traditional Method
         message = self.common.create_resource(
             self.data.array, 'sloprovisioning', 'storagegroup', {})
         self.assertEqual(self.data.job_list[0], message)
 
+        # New Method
+        message_1 = self.common.create_resource(
+            category='sloprovisioning',
+            resource_level='storagegroup',
+            resource_level_id=self.data.array)
+        self.assertEqual(self.data.job_list[0], message_1)
+
     def test_modify_resource(self):
+        # Traditional Method
         message = self.common.modify_resource(
             self.data.array, 'sloprovisioning', 'storagegroup', {})
         self.assertEqual(self.data.job_list[0], message)
 
+        # New Method
+        message_1 = self.common.modify_resource(
+            category='sloprovisioning',
+            resource_level='storagegroup',
+            resource_level_id=self.data.array)
+        self.assertEqual(self.data.job_list[0], message_1)
+
     def test_delete_resource(self):
+        # Traditional Method
         self.common.delete_resource(
             self.data.array, 'sloprovisioning',
             'storagegroup', self.data.storagegroup_name)
+
+        # New Method
+        self.common.delete_resource(
+            category='sloprovisioning',
+            resource_level='storagegroup',
+            resource_level_id=self.data.array,
+            resource_type_id=self.data.storagegroup_name)
 
     def test_get_uni_version(self):
         version, major_version = self.common.get_uni_version()
@@ -1079,9 +1268,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_create_multiport_portgroup(self):
         port_dict_list = [{"directorId": self.data.director_id1,
-                          "portId": self.data.port_id1},
+                           "portId": self.data.port_id1},
                           {"directorId": self.data.director_id2,
-                           "portId": self.data.port_id2},]
+                           "portId": self.data.port_id2}, ]
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_multiport_portgroup(
@@ -1267,8 +1456,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
             # vol name required; async is true
             mock_mod.reset_mock()
             add_vol_info.update({"volumeIdentifier": {
-                    "identifier_name": 'my-vol',
-                    "volumeIdentifierChoice": "identifier_name"}})
+                "identifier_name": 'my-vol',
+                "volumeIdentifierChoice": "identifier_name"}})
             self.provisioning.add_new_vol_to_storagegroup(
                 self.data.storagegroup_name, 1, "10", "GB", True, 'my-vol')
             payload2 = {"editStorageGroupActionParam": {
@@ -1431,7 +1620,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
     def test_rename_volume(self):
         with mock.patch.object(
                 self.provisioning, '_modify_volume') as mock_mod:
-            self.provisioning.rename_volume(self.data.device_id,None)
+            self.provisioning.rename_volume(self.data.device_id, None)
             mock_mod.assert_called_once()
             mock_mod.reset_mock()
             self.provisioning.rename_volume(self.data.device_id, "new-name")
