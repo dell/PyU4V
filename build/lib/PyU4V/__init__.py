@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-from .rest_univmax import rest_functions
-from .rest_univmax2 import RestFunctions
+
+#   __
+#  /__)      /  /   / | \   /
+# /    ( /  / _/  / _ |  \ /
+#       /             |
+
+from .univmax_conn import U4VConn
 
 __title__ = 'pyu4v'
 __version__ = '2.0'
