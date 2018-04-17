@@ -14,7 +14,7 @@ array_list=conn.common.get_array_list()
 
 
 print ("Congratulations you have just connected to Unisphere for "
-       "PowerMax your Version is ", version[1])
+       "VMax your Version is ", version[1])
 print ("This Unisphere instance manages the following arrays", array_list)
 
 local_array_list = []
