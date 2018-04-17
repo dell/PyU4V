@@ -59,7 +59,8 @@ The Configuration File - PyU4V.conf
 
 Instead of passing the Unisphere server details in on initialisation, there is also the option to put them in a
 configuration file, 'PyU4V.conf'. This file also provides the option to setup logging in whatever way suits your
-project. The configuration file should be placed in your working directory, or it can be placed in '~/.PyU4V/'.
+project (please see `here for further information on logging configuration <https://docs.python.org/2/library/logging.config.html#logging-config-fileformat>`_).
+The configuration file should be placed in your working directory, or it can be placed in '~/.PyU4V/'.
 A local PyU4V file (i.e. in the current working directory) will override a conf file in '~/.PyU4V/'. Please see
 `PyU4V.conf.example <https://github.com/ciarams87/PyU4V/blob/master/PyU4V.conf.example>`_ for an example conf file.
 
