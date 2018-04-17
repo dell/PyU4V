@@ -4,8 +4,6 @@ Welcome to PyU4V
 
 NOTE
 
-Please note that this the master branch and is subject to change -- version 3 will be released soon...
-
 A library showing some of the functionality possible using the RestAPI of Dell EMC's Unisphere for VMAX.
 See the documentation here: http://pyu4v.readthedocs.io/.
 Get the Unisphere for VMAX Rest documentation by navigating to https://<ip-address>:<port-number>/univmax/restapi/docs,

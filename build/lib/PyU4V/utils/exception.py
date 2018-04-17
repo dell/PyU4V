@@ -4,8 +4,8 @@ import six
 # register configuration file
 from PyU4V.utils import config_handler
 
-logger = logging.getLogger(__name__)
-LOG, CFG = config_handler.set_logger_and_config(logger)
+LOG = logging.getLogger(__name__)
+CFG = config_handler.set_logger_and_config()
 
 
 class PyU4VException(Exception):
@@ -65,3 +65,7 @@ class ResourceNotFoundException(PyU4VException):
 
 class InvalidInputException(PyU4VException):
     message = "Invalid input received: %(data)s"
+
+
+class UnauthorizedRequestException(PyU4VException):
+    meesage = "Unauthorized request - please check credentials"

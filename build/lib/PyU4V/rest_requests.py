@@ -23,19 +23,18 @@
 import json
 import logging
 
-from PyU4V.utils import config_handler
-
 import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
 
+from PyU4V.utils import exception
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-logger = logging.getLogger(__name__)
-LOG, CFG = config_handler.set_logger_and_config(logger)
+LOG = logging.getLogger(__name__)
 
 
-class RestRequests:
+class RestRequests(object):
 
     def __init__(self, username, password, verify, base_url):
         self.username = username
@@ -44,7 +43,7 @@ class RestRequests:
         self.base_url = base_url
         self.headers = {'content-type': 'application/json',
                         'accept': 'application/json'}
-        self.timeout = 60
+        self.timeout = 120
         self.session = self.establish_rest_session()
 
     def establish_rest_session(self):
@@ -55,14 +54,13 @@ class RestRequests:
         return session
 
     def rest_request(self, target_url, method,
-                     params=None, request_object=None, stream=True, timeout=None):
+                     params=None, request_object=None, timeout=None):
         """Sends a request (GET, POST, PUT, DELETE) to the target api.
 
         :param target_url: target url (string)
         :param method: The method (GET, POST, PUT, or DELETE)
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
-        :param stream: flag to indicate if the response should be streamed
         :param timeout: optional timeout override
         :return: server response object (dict), status code
         """
@@ -72,14 +70,9 @@ class RestRequests:
             timeout_val = self.timeout
         if not self.session:
             self.establish_rest_session()
-        url = ("%(self.base_url)s%(target_url)s" %
-               {'self.base_url': self.base_url,
-                'target_url': target_url})
+        url = ("{}{}".format(self.base_url, target_url))
         try:
-            if method == 'DELETE' and stream is True:
-                # Pre 8.4, delete response hangs forever unless stream=True
-                return self.session.delete(url=url, stream=True)
-            elif request_object:
+            if request_object:
                 response = self.session.request(
                     method=method, url=url, timeout=timeout_val,
                     data=json.dumps(request_object, sort_keys=True,
@@ -95,28 +88,23 @@ class RestRequests:
             try:
                 response = response.json()
             except ValueError:
-                LOG.info("No response received from API. Status code "
-                         "received is: %(status_code)s" %
-                         {'status_code': status_code})
+                LOG.debug("No response received from API. Status code "
+                          "received is: {}".format(status_code))
                 response = None
-            LOG.info("%(method)s request to %(url)s has returned with "
-                     "a status code of: %(status_code)s"
-                     % {'method': method, 'url': url,
-                        'status_code': status_code})
+            LOG.debug("{} request to {} has returned with a status "
+                      "code of: {}".format(method, url, status_code))
             return response, status_code
 
         except (requests.Timeout, requests.ConnectionError) as e:
-            LOG.error(("The %(method)s request to URL %(url)s "
-                       "timed-out, but may have been successful."
-                       "Please check the array. Exception received:"
-                       "%(e)s.")
-                      % {'method': method, 'url': url, 'e': e})
+            LOG.error("The {} request to URL {} timed-out, but may have been "
+                      "successful. Please check the array. Exception "
+                      "received: {}.".format(method, url, e))
+            return None, None
         except Exception as e:
-                LOG.error(("The %(method)s request to URL %(url)s "
-                           "failed with exception %(e)s")
-                          % {'method': method, 'url': url, 'e': e})
-                raise
-            
+                exp_message = ("The {} request to URL: {} failed with "
+                               "exception {}".format(method, url, e))
+                raise exception.VolumeBackendAPIException(data=exp_message)
+
     def close_session(self):
         """
         Close the current rest session

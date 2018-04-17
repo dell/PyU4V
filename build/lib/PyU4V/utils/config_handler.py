@@ -2,36 +2,42 @@ try:
     import ConfigParser as Config
 except ImportError:
     import configparser as Config
-
+import logging
 import logging.config
+import os
 
 
-def set_logger_and_config(logger):
-    CFG = None
+def set_logger_and_config(file_path=None):
+    cfg, conf_file, set_null_logger = None, None, True
     # register configuration file
-    try:
-        CONF_FILE = 'PyU4V.conf'
-        logging.config.fileConfig(CONF_FILE)
-        CFG = Config.ConfigParser()
-        CFG.read(CONF_FILE)
-        LOG = logging.getLogger(logger.__name__)
-    except Exception:
-        # Set logging handlers if there is no config file
-        logger.setLevel(logging.INFO)
-        # create console handler and set level to info
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
-        # create file handler, set level to debug
-        fh = logging.FileHandler('PyU4V.log')
-        fh.setLevel(logging.DEBUG)
-        # create formatter
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        # add formatter to ch and fh
-        ch.setFormatter(formatter)
-        fh.setFormatter(formatter)
-        # add ch and fh to logger
-        logger.addHandler(ch)
-        logger.addHandler(fh)
-        LOG = logger
-    return LOG, CFG
+    conf_file_name = 'PyU4V.conf'
+    if file_path is not None:
+        if os.path.isfile(file_path):
+            conf_file = file_path
+    elif os.path.isfile(conf_file_name):
+        conf_file = conf_file_name
+    else:
+        global_path = os.path.normpath('~/.PyU4V/PyU4V.conf')
+        if os.path.isfile(global_path):
+            conf_file = global_path
+    if conf_file is not None:
+        set_null_logger = False
+        try:
+            logging.config.fileConfig(conf_file)
+            cfg = Config.ConfigParser()
+            cfg.read(conf_file)
+            logging.getLogger(__name__)
+        except Exception:
+            set_null_logger = True
+    if set_null_logger is True:
+        # Set default logging handler to avoid "No handler found" warnings.
+        try:  # Python 2.7+
+            from logging import NullHandler
+        except ImportError:
+            class NullHandler(logging.Handler):
+                def emit(self, record):
+                    pass
+
+        logging.getLogger(__name__).addHandler(NullHandler())
+
+    return cfg

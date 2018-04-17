@@ -158,7 +158,8 @@ class ReplicationFunctions(object):
         resource_name = ('{}/snapshot/{}/generation/{}'.format(
             sg_id, snap_name, gen_num))
         return self.get_resource(
-            self.array_id, REPLICATION, 'storagegroup', resource_name)
+            self.array_id, REPLICATION, 'storagegroup',
+            resource_name=resource_name)
 
     def find_expired_snapvx_snapshots(self):
         """Find all expired snapvx snapshots.
@@ -362,7 +363,7 @@ class ReplicationFunctions(object):
         :param rdf_number: the rdf number
         """
         return self.get_resource(
-            self.array_id, REPLICATION, 'rdf_group', rdf_number)
+            self.array_id, REPLICATION, 'rdf_group', resource_name=rdf_number)
 
     def get_rdf_group_list(self):
         """Get rdf group list from array.
@@ -382,7 +383,8 @@ class ReplicationFunctions(object):
         resource_name = "%(rdf)s/volume/%(dev)s" % {
             'rdf': rdf_number, 'dev': device_id}
         return self.get_resource(
-            self.array_id, REPLICATION, 'rdf_group', resource_name)
+            self.array_id, REPLICATION, 'rdf_group',
+            resource_name=resource_name)
 
     def get_rdf_group_volume_list(self, rdf_number):
         """Get specific volume details, from an RDF group.
@@ -392,7 +394,8 @@ class ReplicationFunctions(object):
         """
         resource_name = "{}/volume".format(rdf_number)
         response = self.get_resource(
-            self.array_id, REPLICATION, 'rdf_group', resource_name)
+            self.array_id, REPLICATION, 'rdf_group',
+            resource_name=resource_name)
         device_list = response.get('name', []) if response else []
         return device_list
 
@@ -445,7 +448,7 @@ class ReplicationFunctions(object):
         """
         res_name = "{}/rdf_group".format(storagegroup_id)
         response = self.get_resource(
-            self.array_id, REPLICATION, 'storagegroup', res_name)
+            self.array_id, REPLICATION, 'storagegroup', resource_name=res_name)
         rdfg_list = response.get('rdfgs', []) if response else []
         return rdfg_list
 
@@ -458,7 +461,7 @@ class ReplicationFunctions(object):
         """
         res_name = "{}/rdf_group/{}".format(storagegroup_id, rdfg_num)
         return self.get_resource(
-            self.array_id, REPLICATION, 'storagegroup', res_name)
+            self.array_id, REPLICATION, 'storagegroup', resource_name=res_name)
 
     def create_storagegroup_srdf_pairings(
             self, storagegroup_id, remote_sid, srdfmode, establish=None,
