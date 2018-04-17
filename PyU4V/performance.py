@@ -616,8 +616,12 @@ class PerformanceFunctions(object):
         used with generate_threshold_settings_csv to produce CSV file that
         can be edited and uploaded. The CSV file should have the following
         headers format category,metric,firstthreshold,secondthreshold,
-        notify,kpi,array,HostReads,100000,300000,true,true
-        array,HostWrites,100000,300000,true,false cur
+        notify,kpi,array,HostReads,100000,300000,True,True
+        array,HostWrites,100000,300000,True,False
+        Boolean values are case sensitive ensure that when editing file that
+        they are True or False.  KPI setting can not be changed with REST
+        API in current implementation, if you change this value it will not
+        be updated in the UI.  Only notify alert Boolean can be changed with REST
 
         :param csvfilename: the path to the csv file
         """
