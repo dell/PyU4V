@@ -622,6 +622,10 @@ class PerformanceFunctions(object):
         they are True or False.  KPI setting can not be changed with REST
         API in current implementation, if you change this value it will not
         be updated in the UI.  Only notify alert Boolean can be changed with REST
+        Only KPI Metrics should be alterted on, note if you are changing
+        default threshold values for metrics used for dashboard views these
+        will also update the numbers used for your dashboards.  It's not
+        recommended to alert on every value as this will just create noise.
 
         :param csvfilename: the path to the csv file
         """
@@ -637,10 +641,5 @@ class PerformanceFunctions(object):
                                     firstthreshold_list,
                                     secondthreshold_list, notify_list,
                                     kpimetric_list):
-            # if k :
-            # uncomment line above if you only want to update KPI values,
-            # doing this will reduce runtime of set_perfthresholds_csv
-            # you can restrict futher by filtering on category values e.g.
-            # if c ="Array" or "RDFS": to restrict to update certain array
-            # categories
-            self.set_perf_threshold_and_alert(c, m, f, s, n)
+            if k :
+                self.set_perf_threshold_and_alert(c, m, f, s, n)
