@@ -123,7 +123,7 @@ class ReplicationFunctions(object):
         resource_type = ('storagegroup/%(sg_name)s/snapshot'
                          % {'sg_name': sg_name})
         return self.create_resource(
-            self.array_id, REPLICATION, resource_type, payload)
+            self.array_id, REPLICATION, resource_type, payload=payload)
 
     def get_storagegroup_snapshot_generation_list(
             self, storagegroup_id, snap_name):
@@ -251,7 +251,7 @@ class ReplicationFunctions(object):
             source_sg_id, snap_name, gen_num))
 
         return self.modify_resource(
-            self.array_id, REPLICATION, 'storagegroup', payload,
+            self.array_id, REPLICATION, 'storagegroup', payload=payload,
             resource_name=resource_name)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num=0):
@@ -489,7 +489,7 @@ class ReplicationFunctions(object):
         if async:
             rdf_payload.update(ASYNC_UPDATE)
         return self.create_resource(
-            self.array_id, REPLICATION, res_type, rdf_payload)
+            self.array_id, REPLICATION, res_type, payload=rdf_payload)
 
     def modify_storagegroup_srdf(
             self, storagegroup_id, action, rdfg, options=None, async=False):
@@ -513,7 +513,7 @@ class ReplicationFunctions(object):
             payload.update({option_header: options})
         return self.modify_resource(
             self.array_id, REPLICATION, 'storagegroup',
-            payload, resource_name=res_name)
+            payload=payload, resource_name=res_name)
 
     def suspend_storagegroup_srdf(
             self, storagegroup_id, rdfg_no,
