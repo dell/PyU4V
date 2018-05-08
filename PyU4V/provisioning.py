@@ -878,6 +878,17 @@ class ProvisioningFunctions(object):
             self.array_id, SLOPROVISIONING, 'storagegroup',
             resource_name=storage_group_name)
 
+    def get_storage_group_demand_report(self):
+        """
+        function to get the storage group demand report from Unisphere
+        functionality only available in unisphere 9.0
+        assumes single SRP SRP_1
+        :return: returns report
+        """
+        return self.get_resource(
+            self.array_id, SLOPROVISIONING, 'srp',
+            resource_name="SRP_1/storage_group_demand_report")
+
     def get_storage_group_list(self, filters=None):
         """"Return a list of storage groups.
 
