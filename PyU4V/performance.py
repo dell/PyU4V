@@ -524,6 +524,12 @@ class PerformanceFunctions(object):
         host_results['reporting_level'] = "Host"
         host_results['HostID'] = host
         host_results['perf_data'] = host_perf_data[0]['resultList']['result']
+        if 'resultList' in host_perf_data[0]:
+            host_results['perf_data'] = host_perf_data[0]['resultList'][
+                'result']
+        else:
+            host_results['perf_data'] = []
+
         return host_results
 
     def get_perf_threshold_categories(self):
