@@ -79,6 +79,25 @@ class PerformanceFunctions(object):
             port_list.append(port_details)
         return port_list
 
+    def get_days_to_full(self, category, array_id=None,):
+        """
+        Requests Days to Full Metrics from performance stats
+        requires at least 10 Days of Perfomance data
+        ;
+
+        :return: Requested stats
+        """
+        if not array_id:
+            array_id=self.array_id
+
+        target_uri = '/performance/daystofull'
+        port_perf_payload = ({
+                              "symmetrixId": array_id,
+                              "category": category})
+        return self.request(
+            target_uri, POST, request_object=port_perf_payload)
+
+
     def get_fe_port_util_last4hrs(self, dir_id, port_id):
         """Get stats for last 4 hours.
 
