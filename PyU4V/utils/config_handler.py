@@ -23,9 +23,9 @@ def set_logger_and_config(file_path=None):
     if conf_file is not None:
         set_null_logger = False
         try:
-            logging.config.fileConfig(conf_file)
             cfg = Config.ConfigParser()
             cfg.read(conf_file)
+            logging.config.fileConfig(conf_file)
             logging.getLogger(__name__)
         except Exception:
             set_null_logger = True

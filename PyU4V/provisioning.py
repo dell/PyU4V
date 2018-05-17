@@ -155,7 +155,7 @@ class ProvisioningFunctions(object):
         if async:
             new_ig_data.update(ASYNC_UPDATE)
         return self.create_resource(self.array_id, SLOPROVISIONING,
-                                    'host', new_ig_data)
+                                    'host', payload=new_ig_data)
 
     def modify_host(self, host_id, host_flag_dict=None,
                     remove_init_list=None, add_init_list=None, new_name=None):
@@ -188,7 +188,7 @@ class ProvisioningFunctions(object):
                    "add_init_list, or new_name.")
             raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'host', edit_host_data,
+            self.array_id, SLOPROVISIONING, 'host', payload=edit_host_data,
             resource_name=host_id)
 
     def delete_host(self, host_id):
@@ -262,7 +262,7 @@ class ProvisioningFunctions(object):
         if async:
             new_ig_data.update(ASYNC_UPDATE)
         return self.create_resource(self.array_id, SLOPROVISIONING,
-                                    'hostgroup', new_ig_data)
+                                    'hostgroup', payload=new_ig_data)
 
     def modify_hostgroup(self, hostgroup_id, host_flag_dict=None,
                          remove_host_list=None, add_host_list=None,
@@ -296,8 +296,8 @@ class ProvisioningFunctions(object):
                    "remove_host_list, add_host_list, or new_name.")
             raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'hostgroup', edit_host_data,
-            resource_name=hostgroup_id)
+            self.array_id, SLOPROVISIONING, 'hostgroup',
+            payload=edit_host_data, resource_name=hostgroup_id)
 
     def delete_hostgroup(self, hostgroup_id):
         """Delete a given hostgroup.
@@ -368,8 +368,8 @@ class ProvisioningFunctions(object):
                    "initiator_flags.")
             raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'initiator', edit_init_data,
-            resource_name=initiator_id)
+            self.array_id, SLOPROVISIONING, 'initiator',
+            payload=edit_init_data, resource_name=initiator_id)
 
     def is_initiator_in_host(self, initiator):
         """Check to see if a given initiator is already assigned to a host
@@ -466,7 +466,7 @@ class ProvisioningFunctions(object):
             payload.update(ASYNC_UPDATE)
 
         return self.create_resource(
-            self.array_id, SLOPROVISIONING, 'maskingview', payload)
+            self.array_id, SLOPROVISIONING, 'maskingview', payload=payload)
 
     def get_masking_views_from_storage_group(self, storagegroup):
         """Return any masking views associated with a storage group.
@@ -551,7 +551,7 @@ class ProvisioningFunctions(object):
         mv_payload = {"editMaskingViewActionParam": {
             "renameMaskingViewParam": {"new_masking_view_name": new_name}}}
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'maskingview', mv_payload,
+            self.array_id, SLOPROVISIONING, 'maskingview', payload=mv_payload,
             version='', resource_name=masking_view_id)
 
     def get_host_from_maskingview(self, masking_view_id):
@@ -716,7 +716,7 @@ class ProvisioningFunctions(object):
                     "symmetrixPortKey": [{"directorId": director_id,
                                           "portId": port_id}]})
         return self.create_resource(
-            self.array_id, SLOPROVISIONING, 'portgroup', payload)
+            self.array_id, SLOPROVISIONING, 'portgroup', payload=payload)
 
     def create_multiport_portgroup(self, portgroup_id, ports):
         """Create a new portgroup.
@@ -729,7 +729,7 @@ class ProvisioningFunctions(object):
         payload = ({"portGroupId": portgroup_id,
                     "symmetrixPortKey": ports})
         return self.create_resource(
-            self.array_id, SLOPROVISIONING, 'portgroup', payload)
+            self.array_id, SLOPROVISIONING, 'portgroup', payload=payload)
 
     def create_portgroup_from_file(self, file_name, portgroup_id):
         """Given a file with director:port pairs, create a portgroup.
@@ -781,7 +781,7 @@ class ProvisioningFunctions(object):
                        "rename_portgroup.")
             raise exception.InvalidInputException(data=message)
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'portgroup', edit_pg_data,
+            self.array_id, SLOPROVISIONING, 'portgroup', payload=edit_pg_data,
             resource_name=portgroup_id)
 
     def delete_portgroup(self, portgroup_id):
@@ -823,7 +823,7 @@ class ProvisioningFunctions(object):
         edit_slo_data = ({"editSloActionParam": {
             "renameSloParam": {"sloId": new_name}}})
         return self.modify_resource(
-            self.array_id, SLOPROVISIONING, 'host', edit_slo_data,
+            self.array_id, SLOPROVISIONING, 'host', payload=edit_slo_data,
             resource_name=slo_id)
 
     def get_srp(self, srp):
@@ -878,6 +878,17 @@ class ProvisioningFunctions(object):
             self.array_id, SLOPROVISIONING, 'storagegroup',
             resource_name=storage_group_name)
 
+    def get_storage_group_demand_report(self):
+        """
+        function to get the storage group demand report from Unisphere
+        functionality only available in unisphere 9.0
+        assumes single SRP SRP_1
+        :return: returns report
+        """
+        return self.get_resource(
+            self.array_id, SLOPROVISIONING, 'srp',
+            resource_name="SRP_1/storage_group_demand_report")
+
     def get_storage_group_list(self, filters=None):
         """"Return a list of storage groups.
 
@@ -924,7 +935,7 @@ class ProvisioningFunctions(object):
                 return True
         return False
 
-    def create_storage_group(self, srp_id, sg_id, slo, workload,
+    def create_storage_group(self, srp_id, sg_id, slo, workload=None,
                              do_disable_compression=False,
                              num_vols=0, vol_size="0", cap_unit="GB",
                              async=False):
@@ -964,7 +975,7 @@ class ProvisioningFunctions(object):
             payload.update(ASYNC_UPDATE)
 
         return self.create_resource(
-            self.array_id, SLOPROVISIONING, 'storagegroup', payload)
+            self.array_id, SLOPROVISIONING, 'storagegroup', payload=payload)
 
     def create_non_empty_storagegroup(
             self, srp_id, sg_id, slo, workload, num_vols, vol_size,
@@ -1022,7 +1033,7 @@ class ProvisioningFunctions(object):
         """
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'storagegroup',
-            payload, resource_name=storagegroup)
+            payload=payload, resource_name=storagegroup)
 
     def add_existing_vol_to_sg(self, sg_id, vol_ids, async=False):
         """Expand an existing storage group by adding existing volumes.
@@ -1432,7 +1443,7 @@ class ProvisioningFunctions(object):
         :param payload: the request payload
         """
         return self.modify_resource(self.array_id, SLOPROVISIONING, 'volume',
-                                    payload, resource_name=device_id)
+                                    payload=payload, resource_name=device_id)
 
     def extend_volume(self, device_id, new_size, async=False):
         """Extend a VMAX volume.

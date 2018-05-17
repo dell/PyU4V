@@ -1006,13 +1006,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                            "hostFlags": host_flags,
                            "executionOption": "ASYNCHRONOUS"}
             mock_create.assert_called_once_with(
-                self.data.array, 'sloprovisioning', 'host', new_ig_data)
+                self.data.array, 'sloprovisioning', 'host',
+                payload=new_ig_data)
             mock_create.reset_mock()
             self.provisioning.create_host(
                 self.data.initiatorgroup_name_i)
             new_ig_data2 = {"hostId": self.data.initiatorgroup_name_i}
             mock_create.assert_called_once_with(
-                self.data.array, 'sloprovisioning', 'host', new_ig_data2)
+                self.data.array, 'sloprovisioning', 'host',
+                payload=new_ig_data2)
 
     def test_modify_host(self):
         host_name = self.data.initiatorgroup_name_i
@@ -1378,7 +1380,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 "storageGroupId": 'new-sg',
                 "emulation": "FBA"}
             mock_create.assert_called_once_with(
-                self.data.array, 'sloprovisioning', 'storagegroup', payload1)
+                self.data.array, 'sloprovisioning', 'storagegroup',
+                payload=payload1)
             # 2 - slo set, is async
             mock_create.reset_mock()
             self.provisioning.create_storage_group(
@@ -1395,7 +1398,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                          "capacityUnit": "GB"}}],
                 "executionOption": "ASYNCHRONOUS"}
             mock_create.assert_called_once_with(
-                self.data.array, 'sloprovisioning', 'storagegroup', payload2)
+                self.data.array, 'sloprovisioning', 'storagegroup',
+                payload=payload2)
 
     def test_create_non_empty_storagegroup(self):
         with mock.patch.object(
