@@ -79,6 +79,25 @@ class PerformanceFunctions(object):
             port_list.append(port_details)
         return port_list
 
+    def get_days_to_full(self, category, array_id=None,):
+        """
+        Requests Days to Full Metrics from performance stats
+        requires at least 10 Days of Perfomance data
+        ;
+
+        :return: Requested stats
+        """
+        if not array_id:
+            array_id=self.array_id
+
+        target_uri = '/performance/daystofull'
+        port_perf_payload = ({
+                              "symmetrixId": array_id,
+                              "category": category})
+        return self.request(
+            target_uri, POST, request_object=port_perf_payload)
+
+
     def get_fe_port_util_last4hrs(self, dir_id, port_id):
         """Get stats for last 4 hours.
 
@@ -524,6 +543,12 @@ class PerformanceFunctions(object):
         host_results['reporting_level'] = "Host"
         host_results['HostID'] = host
         host_results['perf_data'] = host_perf_data[0]['resultList']['result']
+        if 'resultList' in host_perf_data[0]:
+            host_results['perf_data'] = host_perf_data[0]['resultList'][
+                'result']
+        else:
+            host_results['perf_data'] = []
+
         return host_results
 
     def get_perf_threshold_categories(self):
@@ -616,8 +641,16 @@ class PerformanceFunctions(object):
         used with generate_threshold_settings_csv to produce CSV file that
         can be edited and uploaded. The CSV file should have the following
         headers format category,metric,firstthreshold,secondthreshold,
-        notify,kpi,array,HostReads,100000,300000,true,true
-        array,HostWrites,100000,300000,true,false cur
+        notify,kpi,array,HostReads,100000,300000,True,True
+        array,HostWrites,100000,300000,True,False
+        Boolean values are case sensitive ensure that when editing file that
+        they are True or False.  KPI setting can not be changed with REST
+        API in current implementation, if you change this value it will not
+        be updated in the UI.  Only notify alert Boolean can be changed with REST
+        Only KPI Metrics should be alterted on, note if you are changing
+        default threshold values for metrics used for dashboard views these
+        will also update the numbers used for your dashboards.  It's not
+        recommended to alert on every value as this will just create noise.
 
         :param csvfilename: the path to the csv file
         """
@@ -633,10 +666,5 @@ class PerformanceFunctions(object):
                                     firstthreshold_list,
                                     secondthreshold_list, notify_list,
                                     kpimetric_list):
-            # if k :
-            # uncomment line above if you only want to update KPI values,
-            # doing this will reduce runtime of set_perfthresholds_csv
-            # you can restrict futher by filtering on category values e.g.
-            # if c ="Array" or "RDFS": to restrict to update certain array
-            # categories
-            self.set_perf_threshold_and_alert(c, m, f, s, n)
+            if k :
+                self.set_perf_threshold_and_alert(c, m, f, s, n)
