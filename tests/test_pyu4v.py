@@ -1512,12 +1512,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.data.storagegroup_name, payload1)
 
     def test_create_volume_from_sg_return_dev_id(self):
-        task = [{"description": "Creating new Volumes for MY-SG : [00001]"}]
+        sg_name = self.data.storagegroup_name_1
+        job = {"status": "SUCCEEDED", "jobId": "12345", "result": "created",
+               "resourceLink": "storagegroup/%s" % sg_name,
+               "description": "Creating new Volumes for MY-SG : [00001]"}
         with mock.patch.object(
                 self.provisioning, 'add_new_vol_to_storagegroup',
-                return_value=task):
+                return_value=job):
             device_id = self.provisioning.create_volume_from_sg_return_dev_id(
-                'volume_name', self.data.storagegroup_name_1, "2")
+                'volume_name', sg_name, "2")
             self.assertEqual(self.data.device_id, device_id)
 
     def test_add_child_sg_to_parent_sg(self):
