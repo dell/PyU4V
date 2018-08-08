@@ -37,7 +37,7 @@ LOG = logging.getLogger(__name__)
 
 class U4VConn(object):
     def __init__(self, username=None, password=None, server_ip=None,
-                 port=None, verify=None,
+                 port='8443', verify=None,
                  u4v_version=constants.UNIVMAX_VERSION,
                  interval=5, retries=200, array_id=None):
         self.end_date = int(round(time.time() * 1000))
