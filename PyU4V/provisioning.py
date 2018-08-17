@@ -1141,7 +1141,7 @@ class ProvisioningFunctions(object):
             storagegroup_name, 1, vol_size, cap_unit,
             async=True, vol_name=volume_name)
 
-        task = self.common.wait_for_job("Create volume from sg", 200, job)
+        task = self.common.wait_for_job("Create volume from sg", 202, job)
 
         # Find the newly created volume.
         device_id = None
