@@ -198,7 +198,8 @@ class ProvisioningFunctions(object):
 
         :param host_id: name of the host
         """
-        self.delete_resource(self.array_id, SLOPROVISIONING, 'host', host_id)
+        self.delete_resource(self.array_id, SLOPROVISIONING, 'host',
+                             resource_name=host_id)
 
     def get_mvs_from_host(self, host_id):
         """Retrieve masking view information for a specified host.
@@ -307,7 +308,7 @@ class ProvisioningFunctions(object):
         :param hostgroup_id: name of the hostgroup
         """
         self.delete_resource(self.array_id, SLOPROVISIONING,
-                             'hostgroup', hostgroup_id)
+                             'hostgroup', resource_name=hostgroup_id)
 
     def get_initiator(self, initiator_id):
         """Gets details of an initiator.
@@ -537,7 +538,8 @@ class ProvisioningFunctions(object):
         :param maskingview_name: the masking view name
         """
         self.delete_resource(
-            self.array_id, SLOPROVISIONING, 'maskingview', maskingview_name)
+            self.array_id, SLOPROVISIONING, 'maskingview',
+            resource_name=maskingview_name)
 
     def rename_masking_view(self, masking_view_id, new_name):
         """Rename an existing masking view.
@@ -790,7 +792,7 @@ class ProvisioningFunctions(object):
         :param portgroup_id: the name of the portgroup
         """
         self.delete_resource(self.array_id, SLOPROVISIONING,
-                             'portgroup', portgroup_id)
+                             'portgroup', resource_name=portgroup_id)
 
     def get_slo_list(self, filters=None):
         """Retrieve the list of slo's from the array
@@ -1285,7 +1287,8 @@ class ProvisioningFunctions(object):
         :param storagegroup_id: the name of the storage group
         """
         self.delete_resource(
-            self.array_id, SLOPROVISIONING, 'storagegroup', storagegroup_id)
+            self.array_id, SLOPROVISIONING, 'storagegroup',
+            resource_name=storagegroup_id)
 
     def get_volume(self, device_id):
         """Get a VMAX volume from array.
@@ -1499,7 +1502,7 @@ class ProvisioningFunctions(object):
         :param device_id: volume device id
         """
         self.delete_resource(
-            self.array_id, SLOPROVISIONING, "volume", device_id)
+            self.array_id, SLOPROVISIONING, "volume", resource_name=device_id)
 
     def find_low_volume_utilization(self, low_utilization_percentage, csvname):
         """Find volumes under a certain utilization threshold.
