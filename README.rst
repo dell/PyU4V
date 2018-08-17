@@ -19,7 +19,7 @@ you move to this version when it is released.
 
 WHAT'S SUPPORTED
 
-This package supports Unisphere version 8.4 onwards. We support VMAX3 and VMAX All-Flash.
+This package supports Unisphere version 8.4 onwards. We support VMAX3 and VMAX All-Flash and PowerMAX.
 
 INSTALLATION
 
