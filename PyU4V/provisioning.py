@@ -940,7 +940,7 @@ class ProvisioningFunctions(object):
     def create_storage_group(self, srp_id, sg_id, slo, workload=None,
                              do_disable_compression=False,
                              num_vols=0, vol_size="0", cap_unit="GB",
-                             async=False):
+                             async=False,vol_name=None):
         """Create the volume in the specified storage group.
 
         :param srp_id: the SRP (String)
@@ -952,6 +952,7 @@ class ProvisioningFunctions(object):
         :param vol_size: the volume size
         :param cap_unit: the capacity unit (MB, GB, TB, CYL)
         :param async: Flag to indicate if call should be async
+        :param vol_name: name to give to the volume, optional
         :returns: dict
         """
         srp_id = srp_id if slo else "None"
@@ -970,6 +971,11 @@ class ProvisioningFunctions(object):
                 slo_param.update({"noCompression": "true"})
             elif self.is_compression_capable():
                 slo_param.update({"noCompression": "false"})
+        if vol_name:
+            slo_param.update({
+                "volumeIdentifier": {
+                    "identifier_name": vol_name,
+                    "volumeIdentifierChoice": "identifier_name"}})
 
             payload.update({"sloBasedStorageGroupParam": [slo_param]})
 
