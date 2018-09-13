@@ -971,11 +971,11 @@ class ProvisioningFunctions(object):
                 slo_param.update({"noCompression": "true"})
             elif self.is_compression_capable():
                 slo_param.update({"noCompression": "false"})
-        if vol_name:
-            slo_param.update({
-                "volumeIdentifier": {
-                    "identifier_name": vol_name,
-                    "volumeIdentifierChoice": "identifier_name"}})
+            if vol_name:
+                slo_param.update({
+                    "volumeIdentifier": {
+                        "identifier_name": vol_name,
+                        "volumeIdentifierChoice": "identifier_name"}})
 
             payload.update({"sloBasedStorageGroupParam": [slo_param]})
 

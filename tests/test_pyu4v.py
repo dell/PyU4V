@@ -1401,6 +1401,33 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.data.array, 'sloprovisioning', 'storagegroup',
                 payload=payload2)
 
+    def test_create_storage_group_vol_name(self):
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            # 1 - no slo, not async
+            self.provisioning.create_storage_group(
+                self.data.srp, 'new-sg', slo="Diamond", workload=None,
+                num_vols=1, vol_size="1", vol_name="ID4TEST")
+            payload1 = {
+                "srpId": "SRP_1",
+                "storageGroupId": 'new-sg',
+                "emulation": "FBA",
+                "sloBasedStorageGroupParam": [
+                    {"num_of_vols": 1,
+                     "sloId": "Diamond",
+                     "workloadSelection": None,
+                     "noCompression": "false",
+                     "volumeIdentifier": {
+                         "identifier_name": "ID4TEST",
+                         "volumeIdentifierChoice": "identifier_name"},
+                     "volumeAttribute": {"volume_size": "1",
+                                         "capacityUnit": "GB"}}]}
+
+            mock_create.assert_called_once_with(
+                self.data.array, 'sloprovisioning', 'storagegroup',
+                payload=payload1)
+
+
     def test_create_non_empty_storagegroup(self):
         with mock.patch.object(
                 self.provisioning, 'create_storage_group') as mock_create:
