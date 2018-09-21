@@ -217,6 +217,7 @@ class ReplicationFunctions(object):
         """Modify a storage group snapshot.
 
         Please note that only one parameter can be modified at a time.
+        Default action is not to create full copy
 
         :param source_sg_id: the source sg id
         :param target_sg_id: the target sg id (Can be None)
@@ -231,7 +232,7 @@ class ReplicationFunctions(object):
         payload = {}
         if link:
             payload = {"link": {"linkStorageGroupName": target_sg_id,
-                                "copy": "true"},
+                                "copy": False},
                        "action": "Link"}
         elif unlink:
             payload = {"unlink": {"unlinkStorageGroupName": target_sg_id},
