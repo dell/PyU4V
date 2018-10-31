@@ -1328,7 +1328,7 @@ class ProvisioningFunctions(object):
                         end = count
                     vol_page = self.common.get_iterator_page_list(
                         iterator_id, start, end)
-                    for vol in vol_page['result']:
+                    for vol in vol_page:
                         vol_id_list.append(vol['volumeId'])
             else:
                 for vol in response['resultList']['result']:
