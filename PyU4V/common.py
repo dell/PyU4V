@@ -558,7 +558,7 @@ class CommonFunctions(object):
         :return: list of results
         """
         page_list = []
-        target_uri = 'common/Iterator/{}/page'.format(iterator_id)
+        target_uri = '/common/Iterator/{}/page'.format(iterator_id)
         filters = {'from': start, 'to': end}
         response = self.get_request(target_uri, 'iterator', params=filters)
         if response and response.get('result'):

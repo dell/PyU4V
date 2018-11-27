@@ -605,7 +605,7 @@ class ProvisioningFunctions(object):
         :returns: host_lun_id -- int
         """
         host_lun_id = None
-        filters = {'volumeId': device_id}
+        filters = {'volume_id': device_id}
         connection_info = self.get_maskingview_connections(
             maskingview, filters)
         if len(connection_info) == 0:
