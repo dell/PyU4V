@@ -940,7 +940,7 @@ class ProvisioningFunctions(object):
     def create_storage_group(self, srp_id, sg_id, slo, workload=None,
                              do_disable_compression=False,
                              num_vols=0, vol_size="0", cap_unit="GB",
-                             async=False,vol_name=None):
+                             allocate_full=False, async=False, vol_name=None):
         """Create the volume in the specified storage group.
 
         :param srp_id: the SRP (String)
@@ -951,6 +951,7 @@ class ProvisioningFunctions(object):
         :param num_vols: number of volumes to be created
         :param vol_size: the volume size
         :param cap_unit: the capacity unit (MB, GB, TB, CYL)
+        :param allocate_full: boolean to indicate if you want a thick volume
         :param async: Flag to indicate if call should be async
         :param vol_name: name to give to the volume, optional
         :returns: dict
@@ -976,6 +977,15 @@ class ProvisioningFunctions(object):
                     "volumeIdentifier": {
                         "identifier_name": vol_name,
                         "volumeIdentifierChoice": "identifier_name"}})
+
+            if allocate_full:
+                # If case of full volume allocation, we must set the
+                # noCompression parameter at true because fully
+                # allocations and compression are exclusive parameters
+                slo_param.update({"noCompression": "true"})
+                slo_param.update({"allocate_capacity_for_each_vol": "true"})
+                slo_param.update({"persist_preallocated_capacity_through_"
+                                  "reclaim_or_copy": "true"})
 
             payload.update({"sloBasedStorageGroupParam": [slo_param]})
 
