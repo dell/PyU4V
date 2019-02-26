@@ -1025,7 +1025,7 @@ class ProvisioningFunctions(object):
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
         :param disable_compression: flag for disabling compression (AF only)
-        :param _async: Flag to indicate if this call should be _async
+        :param _async: Flag to indicate if this call should be async
         :return: dict
         """
         return self.create_storage_group(
