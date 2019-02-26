@@ -1000,7 +1000,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 mock_create:
             self.provisioning.create_host(
                 self.data.initiatorgroup_name_i, host_flags=host_flags,
-                initiator_list=data, async=True)
+                initiator_list=data, _async=True)
             new_ig_data = {"hostId": self.data.initiatorgroup_name_i,
                            "initiatorId": data,
                            "hostFlags": host_flags,
@@ -1065,7 +1065,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_hostgroup(
                 self.data.hostgroup_id, [self.data.initiatorgroup_name_f],
-                host_flags={'flag': 1}, async=True)
+                host_flags={'flag': 1}, _async=True)
             self.provisioning.create_hostgroup(
                 self.data.hostgroup_id, [self.data.initiatorgroup_name_f])
         self.assertEqual(2, mock_create.call_count)
@@ -1149,9 +1149,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_masking_view_existing_components(
                 pg_name, 'my_masking_view', sg_name,
-                host_group_name=self.data.hostgroup_id, async=True)
+                host_group_name=self.data.hostgroup_id, _async=True)
             self.provisioning.create_masking_view_existing_components(
-                pg_name, 'my_masking_view', sg_name, async=True,
+                pg_name, 'my_masking_view', sg_name, _async=True,
                 host_name=self.data.initiatorgroup_name_f)
         self.assertEqual(2, mock_create.call_count)
         self.assertRaises(
@@ -1385,7 +1385,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             # 2 - slo set, is async
             mock_create.reset_mock()
             self.provisioning.create_storage_group(
-                self.data.srp, 'new-sg', self.data.slo, 'None', async=True)
+                self.data.srp, 'new-sg', self.data.slo, 'None', _async=True)
             payload2 = {
                 "srpId": self.data.srp,
                 "storageGroupId": 'new-sg',
@@ -1457,12 +1457,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     "volumeId": [self.data.device_id]}}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            # vol id, not list; not async
+            # vol id, not list; not _async
             self.provisioning.add_existing_vol_to_sg(
                 self.data.storagegroup_name, self.data.device_id)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
-            # vol ids in list form; async is true
+            # vol ids in list form; _async is true
             mock_mod.reset_mock()
             self.provisioning.add_existing_vol_to_sg(
                 self.data.storagegroup_name, [self.data.device_id], True)
@@ -1476,7 +1476,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 "volume_size": "10", "capacityUnit": "GB"}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            # no vol name; not async
+            # no vol name; not _async
             self.provisioning.add_new_vol_to_storagegroup(
                 self.data.storagegroup_name, 1, "10", "GB")
             payload1 = {"editStorageGroupActionParam": {
@@ -1484,7 +1484,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     "addVolumeParam": add_vol_info}}}
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
-            # vol name required; async is true
+            # vol name required; _async is true
             mock_mod.reset_mock()
             add_vol_info.update({"volumeIdentifier": {
                 "identifier_name": 'my-vol',
@@ -1502,12 +1502,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
             "removeVolumeParam": {"volumeId": [self.data.device_id]}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            # vol id, not list; not async
+            # vol id, not list; not _async
             self.provisioning.remove_vol_from_storagegroup(
                 self.data.storagegroup_name, self.data.device_id)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
-            # vol ids in list form; async is true
+            # vol ids in list form; _async is true
             mock_mod.reset_mock()
             self.provisioning.remove_vol_from_storagegroup(
                 self.data.storagegroup_name, [self.data.device_id], True)
@@ -1523,17 +1523,17 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 "force": "false"}}})
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            # vol id, not list; not async
+            # vol id, not list; not _async
             self.provisioning.move_volumes_between_storage_groups(
                 self.data.device_id, self.data.storagegroup_name,
                 self.data.storagegroup_name_1)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
-            # vol ids in list form; async is true
+            # vol ids in list form; _async is true
             mock_mod.reset_mock()
             self.provisioning.move_volumes_between_storage_groups(
                 [self.data.device_id], self.data.storagegroup_name,
-                self.data.storagegroup_name_1, async=True)
+                self.data.storagegroup_name_1, _async=True)
             payload1.update({"executionOption": "ASYNCHRONOUS"})
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
@@ -1785,7 +1785,7 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.replication, 'modify_resource') as mock_mod:
             self.replication.link_gen_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
-                self.data.target_group_name, async=True)
+                self.data.target_group_name, _async=True)
             mock_mod.assert_called_once()
 
     def test_unlink_gen_snapshot(self):
@@ -1793,7 +1793,7 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.replication, 'modify_resource') as mock_mod:
             self.replication.unlink_gen_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
-                self.data.target_group_name, async=True)
+                self.data.target_group_name, _async=True)
             mock_mod.assert_called_once()
 
     def test_delete_storagegroup_snapshot(self):
@@ -1867,7 +1867,7 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.replication, 'modify_resource') as mock_mod:
             self.replication.modify_storagegroup_srdf(
                 self.data.storagegroup_name, 'suspend', self.data.rdf_group_no,
-                options=None, async=False)
+                options=None, _async=False)
             mock_mod.assert_called_once()
 
     def test_suspend_storagegroup_srdf(self):
@@ -1875,7 +1875,7 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.replication, 'modify_resource') as mock_mod:
             self.replication.suspend_storagegroup_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no,
-                suspend_options={'consExempt': 'true'}, async=True)
+                suspend_options={'consExempt': 'true'}, _async=True)
             mock_mod.assert_called_once()
 
     def test_establish_storagegroup_srdf(self):
@@ -1883,7 +1883,7 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.replication, 'modify_resource') as mock_mod:
             self.replication.establish_storagegroup_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no,
-                establish_options={'full': 'true'}, async=True)
+                establish_options={'full': 'true'}, _async=True)
             mock_mod.assert_called_once()
 
     def test_failover_storagegroup_srdf(self):
