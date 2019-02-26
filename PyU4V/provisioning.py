@@ -130,7 +130,7 @@ class ProvisioningFunctions(object):
         return host_list
 
     def create_host(self, host_name, initiator_list=None,
-                    host_flags=None, init_file=None, async=False):
+                    host_flags=None, init_file=None, _async=False):
         """Create a host with the given initiators.
 
         Accepts either initiator_list, e.g.
@@ -142,7 +142,7 @@ class ProvisioningFunctions(object):
         :param initiator_list: list of initiators
         :param host_flags: dictionary of optional host flags to apply
         :param init_file: full path to file that contains initiator names
-        :param async: Flag to indicate if call should be async
+        :param _async: Flag to indicate if call should be _async
         :return: dict
         """
         if init_file:
@@ -152,7 +152,7 @@ class ProvisioningFunctions(object):
             new_ig_data.update({"initiatorId": initiator_list})
         if host_flags:
             new_ig_data.update({"hostFlags": host_flags})
-        if async:
+        if _async:
             new_ig_data.update(ASYNC_UPDATE)
         return self.create_resource(self.array_id, SLOPROVISIONING,
                                     'host', payload=new_ig_data)
@@ -248,19 +248,19 @@ class ProvisioningFunctions(object):
         return hostgroup_list
 
     def create_hostgroup(self, hostgroup_id, host_list,
-                         host_flags=None, async=False):
+                         host_flags=None, _async=False):
         """Create a hostgroup containing the given hosts.
 
         :param hostgroup_id: the name of the new hostgroup
         :param host_list: list of hosts
         :param host_flags: dictionary of optional host flags to apply
-        :param async: Flag to indicate if call should be async
+        :param _async: Flag to indicate if call should be async
         :return: dict
         """
         new_ig_data = ({"hostId": host_list, "hostGroupId": hostgroup_id})
         if host_flags:
             new_ig_data.update({"hostFlags": host_flags})
-        if async:
+        if _async:
             new_ig_data.update(ASYNC_UPDATE)
         return self.create_resource(self.array_id, SLOPROVISIONING,
                                     'hostgroup', payload=new_ig_data)
@@ -432,7 +432,7 @@ class ProvisioningFunctions(object):
     def create_masking_view_existing_components(
             self, port_group_name, masking_view_name,
             storage_group_name, host_name=None,
-            host_group_name=None, async=False):
+            host_group_name=None, _async=False):
         """Create a new masking view using existing groups.
 
         Must enter either a host name or a host group name, but
@@ -443,7 +443,7 @@ class ProvisioningFunctions(object):
         :param storage_group_name: name of the storage group
         :param host_name: name of the host (initiator group)
         :param host_group_name: name of host group
-        :param async: flag to indicate if command should be run asynchronously
+        :param _async: flag to indicate if command should be run asynchronously
         :return: dict
         :raises: InvalidInputException
         """
@@ -463,7 +463,7 @@ class ProvisioningFunctions(object):
                     "storageGroupSelection": {
                         "useExistingStorageGroupParam": {
                             "storageGroupId": storage_group_name}}})
-        if async:
+        if _async:
             payload.update(ASYNC_UPDATE)
 
         return self.create_resource(
@@ -940,7 +940,7 @@ class ProvisioningFunctions(object):
     def create_storage_group(self, srp_id, sg_id, slo, workload=None,
                              do_disable_compression=False,
                              num_vols=0, vol_size="0", cap_unit="GB",
-                             async=False,vol_name=None):
+                             _async=False,vol_name=None):
         """Create the volume in the specified storage group.
 
         :param srp_id: the SRP (String)
@@ -951,7 +951,7 @@ class ProvisioningFunctions(object):
         :param num_vols: number of volumes to be created
         :param vol_size: the volume size
         :param cap_unit: the capacity unit (MB, GB, TB, CYL)
-        :param async: Flag to indicate if call should be async
+        :param _async: Flag to indicate if call should be async
         :param vol_name: name to give to the volume, optional
         :returns: dict
         """
@@ -979,7 +979,7 @@ class ProvisioningFunctions(object):
 
             payload.update({"sloBasedStorageGroupParam": [slo_param]})
 
-        if async:
+        if _async:
             payload.update(ASYNC_UPDATE)
 
         return self.create_resource(
@@ -987,7 +987,7 @@ class ProvisioningFunctions(object):
 
     def create_non_empty_storagegroup(
             self, srp_id, sg_id, slo, workload, num_vols, vol_size,
-            cap_unit, disable_compression=False, async=False):
+            cap_unit, disable_compression=False, _async=False):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the
@@ -1004,17 +1004,17 @@ class ProvisioningFunctions(object):
         :param vol_size: the size of each volume -- string
         :param cap_unit: the capacity unit (MB, GB)
         :param disable_compression: Flag for disabling compression (AF only)
-        :param async: Flag to indicate if this call should be async
+        :param _async: Flag to indicate if this call should be async
         :return: dict
         """
         return self.create_storage_group(
             srp_id, sg_id, slo, workload,
             do_disable_compression=disable_compression,
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-            async=async)
+            _async=_async)
 
     def create_empty_sg(self, srp_id, sg_id, slo, workload,
-                        disable_compression=False, async=False):
+                        disable_compression=False, _async=False):
         """Create an empty storage group.
 
         Set the disable_compression flag for disabling compression
@@ -1025,12 +1025,12 @@ class ProvisioningFunctions(object):
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
         :param disable_compression: flag for disabling compression (AF only)
-        :param async: Flag to indicate if this call should be async
+        :param _async: Flag to indicate if this call should be _async
         :return: dict
         """
         return self.create_storage_group(
             srp_id, sg_id, slo, workload,
-            do_disable_compression=disable_compression, async=async)
+            do_disable_compression=disable_compression, _async=_async)
 
     def modify_storage_group(self, storagegroup, payload):
         """Modify a storage group (PUT operation).
@@ -1043,12 +1043,12 @@ class ProvisioningFunctions(object):
             self.array_id, SLOPROVISIONING, 'storagegroup',
             payload=payload, resource_name=storagegroup)
 
-    def add_existing_vol_to_sg(self, sg_id, vol_ids, async=False):
+    def add_existing_vol_to_sg(self, sg_id, vol_ids, _async=False):
         """Expand an existing storage group by adding existing volumes.
 
         :param sg_id: the name of the storage group
         :param vol_ids: the device id of the volume - can be list
-        :param async: Flag to indicate if the call should be async
+        :param _async: Flag to indicate if the call should be async
         :return: dict
         """
         if not isinstance(vol_ids, list):
@@ -1057,20 +1057,23 @@ class ProvisioningFunctions(object):
             "expandStorageGroupParam": {
                 "addSpecificVolumeParam": {
                     "volumeId": vol_ids}}}}
-        if async:
+        if _async:
             add_vol_data.update(ASYNC_UPDATE)
         return self.modify_storage_group(sg_id, add_vol_data)
 
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size,
-                                    cap_unit, async=False, vol_name=None):
+                                    cap_unit, _async=False, vol_name=None,
+                                    create_new_volumes=None):
         """Expand an existing storage group by adding new volumes.
 
         :param sg_id: the name of the storage group
         :param num_vols: the number of volumes
         :param vol_size: the size of the volumes
         :param cap_unit: the capacity unit
-        :param async: Flag to indicate if call should be async
+        :param _async: Flag to indicate if call should be async
         :param vol_name: name to give to the volume, optional
+        :param create_new_volumes: when true will force create new
+        volumes, optional
         :return: dict
         """
         add_vol_info = {
@@ -1087,29 +1090,32 @@ class ProvisioningFunctions(object):
         expand_sg_data = {"editStorageGroupActionParam": {
             "expandStorageGroupParam": {
                 "addVolumeParam": add_vol_info}}}
-        if async:
+        if create_new_volumes == False:
+            add_vol_info.update({
+                    "create_new_volumes": False})
+        if _async:
             expand_sg_data.update(ASYNC_UPDATE)
         return self.modify_storage_group(sg_id, expand_sg_data)
 
-    def remove_vol_from_storagegroup(self, sg_id, vol_id, async=False):
+    def remove_vol_from_storagegroup(self, sg_id, vol_id, _async=False):
         """Remove a volume from a given storage group
 
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume
-        :param async: Flag to indicate if call should be async
+        :param _async: Flag to indicate if call should be async
         :return: dict
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
         payload = {"editStorageGroupActionParam": {
             "removeVolumeParam": {"volumeId": vol_id}}}
-        if async:
+        if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_storage_group(sg_id, payload)
 
     def move_volumes_between_storage_groups(
             self, device_ids, source_storagegroup_name,
-            target_storagegroup_name, force=False, async=False):
+            target_storagegroup_name, force=False, _async=False):
         """Move volumes to a different storage group.
 
         Note: 8.4.0.7 or later
@@ -1118,7 +1124,7 @@ class ProvisioningFunctions(object):
         :param target_storagegroup_name: the destination storage group name
         :param device_ids: the device ids - can be list
         :param force: force flag (necessary if volume is in masking view)
-        :param async: async flag
+        :param _async: _async flag
         """
         force_flag = "true" if force else "false"
         if not isinstance(device_ids, list):
@@ -1128,7 +1134,7 @@ class ProvisioningFunctions(object):
                             "volumeId": device_ids,
                             "storageGroupId": target_storagegroup_name,
                             "force": force_flag}}})
-        if async:
+        if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_storage_group(source_storagegroup_name, payload)
 
@@ -1145,7 +1151,7 @@ class ProvisioningFunctions(object):
         """
         job = self.add_new_vol_to_storagegroup(
             storagegroup_name, 1, vol_size, cap_unit,
-            async=True, vol_name=volume_name)
+            _async=True, vol_name=volume_name)
 
         task = self.common.wait_for_job("Create volume from sg", 202, job)
 
@@ -1454,19 +1460,19 @@ class ProvisioningFunctions(object):
         return self.modify_resource(self.array_id, SLOPROVISIONING, 'volume',
                                     payload=payload, resource_name=device_id)
 
-    def extend_volume(self, device_id, new_size, async=False):
+    def extend_volume(self, device_id, new_size, _async=False):
         """Extend a VMAX volume.
 
         :param device_id: volume device id
         :param new_size: the new required size for the device
-        :param async: flag to indicate if call should be async
+        :param _async: flag to indicate if call should be async
         """
         extend_vol_payload = {"editVolumeActionParam": {
             "expandVolumeParam": {
                 "volumeAttribute": {
                     "volume_size": new_size,
                     "capacityUnit": "GB"}}}}
-        if async:
+        if _async:
             extend_vol_payload.update(ASYNC_UPDATE)
         return self._modify_volume(device_id, extend_vol_payload)
 

@@ -213,7 +213,7 @@ class ReplicationFunctions(object):
     def modify_storagegroup_snap(
             self, source_sg_id, target_sg_id, snap_name, link=False,
             unlink=False, restore=False, new_name=None, gen_num=0,
-            async=False):
+            _async=False):
         """Modify a storage group snapshot.
 
         Please note that only one parameter can be modified at a time.
@@ -227,7 +227,7 @@ class ReplicationFunctions(object):
         :param restore: Flag to indicate action = Restore
         :param new_name: the new name for the snapshot
         :param gen_num: the generation number
-        :param async: flag to indicate if call should be async
+        :param _async: flag to indicate if call should be async
         """
         payload = {}
         if link:
@@ -245,7 +245,7 @@ class ReplicationFunctions(object):
             payload = ({"rename": {"newSnapshotName": new_name},
                         "action": "Rename"})
 
-        if async:
+        if _async:
             payload.update(ASYNC_UPDATE)
 
         resource_name = ('{}/snapshot/{}/generation/{}'.format(
@@ -281,7 +281,7 @@ class ReplicationFunctions(object):
             new_name=new_name, gen_num=gen_num)
 
     def link_gen_snapshot(self, sg_id, snap_name, link_sg_name,
-                          async=False, gen_num=0):
+                          _async=False, gen_num=0):
         """Link a snapshot to another storage group.
 
         Target storage group will be created if it does not exist.
@@ -289,28 +289,28 @@ class ReplicationFunctions(object):
         :param sg_id: Source storage group name
         :param snap_name: name of the snapshot
         :param link_sg_name:  the target storage group name
-        :param async: flag to indicate if call is async
+        :param _async: flag to indicate if call is async
         :param gen_num: generation number of a snapshot (int)
         :return: dict
         """
         return self.modify_storagegroup_snap(
             sg_id, link_sg_name, snap_name,
-            link=True, gen_num=gen_num, async=async)
+            link=True, gen_num=gen_num, _async=_async)
 
     def unlink_gen_snapshot(self, sg_id, snap_name, unlink_sg_name,
-                            async=False, gen_num=0):
+                            _async=False, gen_num=0):
         """Unink a snapshot from another storage group.
 
         :param sg_id: Source storage group name
         :param snap_name: name of the snapshot
         :param unlink_sg_name:  the target storage group name
-        :param async: flag to indicate if call is async
+        :param _async: flag to indicate if call is async
         :param gen_num: generation number of a snapshot (int)
         :return: dict
         """
         return self.modify_storagegroup_snap(
             sg_id, unlink_sg_name, snap_name,
-            unlink=True, gen_num=gen_num, async=async)
+            unlink=True, gen_num=gen_num, _async=_async)
 
     def delete_storagegroup_snapshot(self, storagegroup, snap_name, gen_num=0):
         """Delete the snapshot of a storagegroup.
@@ -466,7 +466,7 @@ class ReplicationFunctions(object):
 
     def create_storagegroup_srdf_pairings(
             self, storagegroup_id, remote_sid, srdfmode, establish=None,
-            async=False, rdfg_number=None):
+            _async=False, rdfg_number=None):
         """SRDF protect a storage group.
 
         :param storagegroup_id: Unique string up to 32 Characters
@@ -474,7 +474,7 @@ class ReplicationFunctions(object):
         :param srdfmode: String, values can be Active, AdaptiveCopyDisk,
                          Synchronous, Asynchronous
         :param establish: default is none. Bool
-        :param async: Flag to indicate if call should be async
+        :param _async: Flag to indicate if call should be async
                       (NOT to be confused with the SRDF mode)
         :param rdfg_number: the required RDFG number (optional)
         :return: message and status Type JSON
@@ -487,13 +487,13 @@ class ReplicationFunctions(object):
                        "establish": establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
-        if async:
+        if _async:
             rdf_payload.update(ASYNC_UPDATE)
         return self.create_resource(
             self.array_id, REPLICATION, res_type, payload=rdf_payload)
 
     def modify_storagegroup_srdf(
-            self, storagegroup_id, action, rdfg, options=None, async=False):
+            self, storagegroup_id, action, rdfg, options=None, _async=False):
         """Modify the state of an srdf.
 
         This may be a long running task depending on the size of the SRDF
@@ -503,11 +503,11 @@ class ReplicationFunctions(object):
         :param action: the rdf action e.g. Suspend, Establish, etc
         :param rdfg: rdf number
         :param options: a dict of possible options - depends on action type
-        :param async: flag to indicate if call should be async
+        :param _async: flag to indicate if call should be async
         """
         res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
         payload = {"action": action.capitalize()}
-        if async:
+        if _async:
             payload.update(ASYNC_UPDATE)
         if options:
             option_header = action.lower()
@@ -518,7 +518,7 @@ class ReplicationFunctions(object):
 
     def suspend_storagegroup_srdf(
             self, storagegroup_id, rdfg_no,
-            suspend_options=None, async=False):
+            suspend_options=None, _async=False):
         """Suspend io on the links for the given storagegroup.
 
         Optional parameters to set are "bypass", "metroBias", "star",
@@ -528,15 +528,15 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup id
         :param rdfg_no: the rdf group no
         :param suspend_options: Optional dict of suspend params
-        :param async: flag to indicate async call
+        :param _async: flag to indicate async call
         """
         return self.modify_storagegroup_srdf(
             storagegroup_id, 'suspend', rdfg_no,
-            options=suspend_options, async=async)
+            options=suspend_options, _async=_async)
 
     def establish_storagegroup_srdf(
             self, storagegroup_id, rdfg_no,
-            establish_options=None, async=False):
+            establish_options=None, _async=False):
         """Establish io on the links for the given storagegroup.
 
         Optional parameters to set are "bypass", "metroBias", "star",
@@ -545,15 +545,15 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup id
         :param rdfg_no: the rdf group no
         :param establish_options: Optional dict of establish params
-        :param async: flag to indicate async call
+        :param _async: flag to indicate async call
         """
         return self.modify_storagegroup_srdf(
             storagegroup_id, 'establish', rdfg_no,
-            options=establish_options, async=async)
+            options=establish_options, _async=_async)
 
     def failover_storagegroup_srdf(
             self, storagegroup_id, rdfg_no,
-            failover_options=None, async=False):
+            failover_options=None, _async=False):
         """Failover a given storagegroup.
 
         Optional parameters to set are "bypass", "star", "restore",
@@ -563,15 +563,15 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup id
         :param rdfg_no: the rdf group no
         :param failover_options: Optional dict of failover params
-        :param async: flag to indicate async call
+        :param _async: flag to indicate async call
         """
         return self.modify_storagegroup_srdf(
             storagegroup_id, 'failover', rdfg_no,
-            options=failover_options, async=async)
+            options=failover_options, _async=_async)
 
     def failback_storagegroup_srdf(
             self, storagegroup_id, rdfg_no, failback_options=None,
-            async=False):
+            _async=False):
         """Failback a given storagegroup.
 
         Optional parameters to set are "bypass", "recoverPoint", "star",
@@ -580,11 +580,11 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup id
         :param rdfg_no: the rdf group no
         :param failback_options: Optional dict of failover params
-        :param async: flag to indicate async call
+        :param _async: flag to indicate async call
         """
         return self.modify_storagegroup_srdf(
             storagegroup_id, 'failback', rdfg_no,
-            options=failback_options, async=async)
+            options=failback_options, _async=_async)
 
     def delete_storagegroup_srdf(
             self, storagegroup_id, rdfg_num=None):
