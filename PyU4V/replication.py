@@ -545,7 +545,7 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup id
         :param rdfg_no: the rdf group no
         :param establish_options: Optional dict of establish params
-        :param _async: flag to indicate async  call
+        :param _async: flag to indicate async call
         """
         return self.modify_storagegroup_srdf(
             storagegroup_id, 'establish', rdfg_no,
