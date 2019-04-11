@@ -466,7 +466,7 @@ class ReplicationFunctions(object):
 
     def create_storagegroup_srdf_pairings(
             self, storagegroup_id, remote_sid, srdfmode, establish=None,
-            _async=False, rdfg_number=None):
+            _async=False, rdfg_number=None, forceNewRdfGroup=False):
         """SRDF protect a storage group.
 
         :param storagegroup_id: Unique string up to 32 Characters
@@ -487,8 +487,11 @@ class ReplicationFunctions(object):
                        "establish": establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
+        if forceNewRdfGroup:
+            rdf_payload.update({'forceNewRdfGroup': True})
         if _async:
             rdf_payload.update(ASYNC_UPDATE)
+
         return self.create_resource(
             self.array_id, REPLICATION, res_type, payload=rdf_payload)
 
