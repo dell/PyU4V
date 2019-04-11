@@ -1401,6 +1401,41 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.data.array, 'sloprovisioning', 'storagegroup',
                 payload=payload2)
 
+    def test_create_storage_group_full_allocated(self):
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            # 1 - no slo, not async
+            self.provisioning.create_storage_group(
+                self.data.srp, 'new-sg', None, None)
+            payload1 = {
+                "srpId": "None",
+                "storageGroupId": 'new-sg',
+                "emulation": "FBA"}
+            mock_create.assert_called_once_with(
+                self.data.array, 'sloprovisioning', 'storagegroup',
+                payload=payload1)
+            # 2 - slo set, is async
+            mock_create.reset_mock()
+            self.provisioning.create_storage_group(
+                self.data.srp, 'new-sg', self.data.slo, 'None',
+                allocate_full=True, _async=True)
+            payload2 = {
+                "srpId": self.data.srp,
+                "storageGroupId": 'new-sg',
+                "emulation": "FBA",
+                "sloBasedStorageGroupParam": [
+                    {"num_of_vols": 0, "sloId": self.data.slo,
+                     "workloadSelection": 'None',
+                     "noCompression": "true",
+                     "allocate_capacity_for_each_vol": "true",
+                     "persist_preallocated_capacity_through_reclaim_or_copy": "true",
+                     "volumeAttribute": {"volume_size": "0",
+                                         "capacityUnit": "GB"}}],
+                "executionOption": "ASYNCHRONOUS"}
+            mock_create.assert_called_once_with(
+                self.data.array, 'sloprovisioning', 'storagegroup',
+                payload=payload2)
+
     def test_create_storage_group_vol_name(self):
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:

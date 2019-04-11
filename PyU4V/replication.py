@@ -277,7 +277,7 @@ class ReplicationFunctions(object):
         :return: dict
         """
         return self.modify_storagegroup_snap(
-            self.array_id, sg_id, None, snap_name,
+            sg_id, None, snap_name,
             new_name=new_name, gen_num=gen_num)
 
     def link_gen_snapshot(self, sg_id, snap_name, link_sg_name,
@@ -319,10 +319,10 @@ class ReplicationFunctions(object):
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number
         """
-        resource_name = ('{}/snapshot/{}/generation/{}'.format(
+        resource_name = ('storagegroup/{}/snapshot/{}/generation/{}'.format(
             storagegroup, snap_name, gen_num))
         return self.delete_resource(
-            self.array_id, REPLICATION, 'storagegroup', resource_name)
+            self.array_id, REPLICATION, resource_name)
 
     def choose_snapshot_from_list_in_console(self, storagegroup_id):
         """Allow a user to select a snapshot from a list.
