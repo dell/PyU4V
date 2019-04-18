@@ -503,18 +503,20 @@ class ReplicationFunctions(object):
         group, can switch to async call if required.
 
         :param storagegroup_id: name of storage group
-        :param action: the rdf action e.g. Suspend, Establish, etc
+        :param action: the rdf action e.g. Suspend, Establish, SetMode etc
         :param rdfg: rdf number
-        :param options: a dict of possible options - depends on action type
+        :param options: a dict of possible options - depends on action type,
+        example options={setMode': {'mode': 'Asynchronous'}}
         :param _async: flag to indicate if call should be async
         """
         res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
-        payload = {"action": action.capitalize()}
+        payload = {"action": action}
         if _async:
             payload.update(ASYNC_UPDATE)
-        if options:
-            option_header = action.lower()
-            payload.update({option_header: options})
+
+        if options and action:
+            payload.update(options)
+
         return self.modify_resource(
             self.array_id, REPLICATION, 'storagegroup',
             payload=payload, resource_name=res_name)

@@ -1897,6 +1897,18 @@ class PyU4VReplicationTest(testtools.TestCase):
                 True, True, self.data.rdf_group_no)
             mock_create.assert_called_once()
 
+    def test_create_storagegroup_srdf_pairings_newrdfg(self):
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_storagegroup_srdf_pairings(
+                self.data.storagegroup_name, self.data.remote_array, 'Active')
+            mock_create.assert_called_once()
+            mock_create.reset_mock()
+            self.replication.create_storagegroup_srdf_pairings(
+                self.data.storagegroup_name, self.data.remote_array, 'Active',
+                True, True, self.data.rdf_group_no,True)
+            mock_create.assert_called_once()
+
     def test_modify_storagegroup_srdf(self):
         with mock.patch.object(
                 self.replication, 'modify_resource') as mock_mod:
