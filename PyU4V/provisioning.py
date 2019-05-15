@@ -51,7 +51,7 @@ class ProvisioningFunctions(object):
         :param director: the director ID e.g. FA-1D
         :return: dict
         """
-        return self.get_resource(self.array_id, SLOPROVISIONING, 'director',
+        return self.get_resource(self.array_id, "system", 'director',
                                  resource_name=director)
 
     def get_director_list(self):
@@ -60,7 +60,7 @@ class ProvisioningFunctions(object):
         :return: director list
         """
         response = self.get_resource(
-            self.array_id, SLOPROVISIONING, 'director')
+            self.array_id, "system", 'director')
         director_list = response.get('directorId', []) if response else []
         return director_list
 
@@ -72,7 +72,7 @@ class ProvisioningFunctions(object):
         :return: dict
         """
         res_name = "{}/port/{}".format(director, port_no)
-        return self.get_resource(self.array_id, SLOPROVISIONING, 'director',
+        return self.get_resource(self.array_id, "system", 'director',
                                  resource_name=res_name)
 
     def get_director_port_list(self, director, filters=None):
@@ -86,7 +86,7 @@ class ProvisioningFunctions(object):
         """
         resource_name = "{}/port".format(director)
         response = self.get_resource(
-            self.array_id, SLOPROVISIONING, 'director',
+            self.array_id, "system", 'director',
             resource_name=resource_name, params=filters)
         port_key_list = response.get('symmetrixPortKey') if response else []
         return port_key_list
