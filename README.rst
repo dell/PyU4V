@@ -14,16 +14,15 @@ VERSION 3
 
 Please note that version '3.0.0.14' of the library is NOT BACKWARDS
 COMPATIBLE with existing scripts, and does not support any
-Unisphere for VMAX version earlier than 9.0 - PyU4V version 2.0.2.6 is still
+Unisphere for VMAX version earlier than 8.4 - PyU4V version 2.0.2.6 is still
 available on Pip, and there is a 'stable/2.0' branch available on Github.
 Version 3 will be the version maintained going forward, and we do suggest
 you move to this version when it is released.
 
 WHAT'S SUPPORTED
 
-This package supports Unisphere version 9.0 onwards. We support VMAX3 and
-VMAX All-Flash and PowerMAX.  For Unisphere 8.4 please use version '3.0.0
-.13' or earler of PyU4V
+This package supports Unisphere version 8.4 onwards. We support VMAX3 and
+VMAX All-Flash and PowerMAX.
 
 INSTALLATION
 
