@@ -51,7 +51,7 @@ class ProvisioningFunctions(object):
         :param director: the director ID e.g. FA-1D
         :return: dict
         """
-        if int(u4v_version) >=90:
+        if int(self.U4V_VERSION) >=90:
             return self.get_resource(self.array_id, "system", 'director',
                                  resource_name=director)
         else:
@@ -64,12 +64,12 @@ class ProvisioningFunctions(object):
 
         :return: director list
         """
-        if int(self.U4V_VERSION) >= 90:
-            response = self.get_resource(
-            self.array_id, "system", 'director')
-        else:
+        if int(self.U4V_VERSION) < 90:
             response = self.get_resource(
                 self.array_id, SLOPROVISIONING, 'director')
+        else:
+            response = self.get_resource(
+                self.array_id, "system", 'director')
         director_list = response.get('directorId', []) if response else []
         return director_list
 
@@ -81,11 +81,12 @@ class ProvisioningFunctions(object):
         :return: dict
         """
         res_name = "{}/port/{}".format(director, port_no)
-        if self.U4V_VERSION >= 90:
-            return self.get_resource(self.array_id, "system", 'director',
-                                 resource_name=res_name)
+        if int(self.U4V_VERSION) < 90:
+            return self.get_resource(self.array_id, SLOPROVISIONING,
+                                     'director',
+                                     resource_name=res_name)
         else:
-            return self.get_resource(self.array_id, SLOPROVISIONING, 'director',
+            return self.get_resource(self.array_id, "system", 'director',
                                      resource_name=res_name)
 
     def get_director_port_list(self, director, filters=None):
@@ -98,13 +99,13 @@ class ProvisioningFunctions(object):
         :return: list of port key dicts
         """
         resource_name = "{}/port".format(director)
-        if int(self.U4V_VERSION) >= 90:
+        if int(self.U4V_VERSION) < 90:
             response = self.get_resource(
-                self.array_id, "system", 'director',
+                self.array_id, SLOPROVISIONING, 'director',
                 resource_name=resource_name, params=filters)
         else:
             response = self.get_resource(
-                self.array_id, SLOPROVISIONING, 'director',
+                self.array_id, "system", 'director',
                 resource_name=resource_name, params=filters)
 
         port_key_list = response.get('symmetrixPortKey') if response else []
