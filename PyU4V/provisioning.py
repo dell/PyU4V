@@ -51,7 +51,7 @@ class ProvisioningFunctions(object):
         :param director: the director ID e.g. FA-1D
         :return: dict
         """
-        if u4v_version <=90:
+        if int(u4v_version) >=90:
             return self.get_resource(self.array_id, "system", 'director',
                                  resource_name=director)
         else:
@@ -64,7 +64,7 @@ class ProvisioningFunctions(object):
 
         :return: director list
         """
-        if self.U4V_VERSION >= 90:
+        if int(self.U4V_VERSION) >= 90:
             response = self.get_resource(
             self.array_id, "system", 'director')
         else:
@@ -98,7 +98,7 @@ class ProvisioningFunctions(object):
         :return: list of port key dicts
         """
         resource_name = "{}/port".format(director)
-        if self.U4V_VERSION >= 90:
+        if int(self.U4V_VERSION) >= 90:
             response = self.get_resource(
                 self.array_id, "system", 'director',
                 resource_name=resource_name, params=filters)
