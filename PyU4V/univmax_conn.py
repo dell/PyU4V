@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -19,16 +19,17 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""univmax_conn.py."""
 import logging
 import time
 
-from PyU4V.rest_requests import RestRequests
-from PyU4V.utils import config_handler
-from PyU4V.utils import constants
 from PyU4V.common import CommonFunctions
 from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
+from PyU4V.rest_requests import RestRequests
+from PyU4V.utils import config_handler
+from PyU4V.utils import constants
 
 file_path = None
 CFG = config_handler.set_logger_and_config(file_path)
@@ -36,10 +37,13 @@ LOG = logging.getLogger(__name__)
 
 
 class U4VConn(object):
+    """U4VConn."""
+
     def __init__(self, username=None, password=None, server_ip=None,
                  port=None, verify=None,
                  u4v_version=constants.UNIVMAX_VERSION,
                  interval=5, retries=200, array_id=None):
+        """__init__."""
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = array_id
@@ -84,8 +88,7 @@ class U4VConn(object):
             self.provisioning, self.U4V_VERSION)
 
     def close_session(self):
-        """Close the current rest session
-        """
+        """Close the current rest session."""
         self.rest_client.close_session()
 
     def set_requests_timeout(self, timeout_value):

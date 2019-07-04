@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -20,7 +20,9 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Link snapshot."""
 import argparse
+
 from PyU4V import U4VConn
 
 ru = U4VConn(u4v_version='84')
@@ -48,10 +50,12 @@ mvname = ln_sg_id + "_MV"
 
 
 def main():
+    """Run main for link snapshot."""
     mysnap = ru.replication.set_snapshot_id(sg_id)
     print("You Chose Snap %s" % mysnap)
     snap_job = ru.replication.link_gen_snapshot(
-        sg_id=sg_id, snap_name=mysnap, gen_num=0, link_sg_name=ln_sg_id, async=True)
+        sg_id=sg_id, snap_name=mysnap, gen_num=0,
+        link_sg_name=ln_sg_id, asynchronous=True)
     ru.common.wait_for_job("", snap_job)
     ru.provisioning.create_masking_view_existing_components(
         port_group_name="REST_TEST_PG", masking_view_name=mvname,

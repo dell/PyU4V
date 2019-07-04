@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -19,11 +19,11 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""performance.py."""
 import csv
 import logging
 import time
 
-from PyU4V.utils import config_handler
 from PyU4V.utils import constants
 
 LOG = logging.getLogger(__name__)
@@ -34,7 +34,10 @@ PUT = constants.PUT
 
 
 class PerformanceFunctions(object):
+    """PerformanceFunctions."""
+
     def __init__(self, array_id, request, common, provisioning, u4v_version):
+        """__init__."""
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = array_id
@@ -46,7 +49,7 @@ class PerformanceFunctions(object):
     def get_fe_director_list(self):
         """Get list of all FE Directors.
 
-        :return: director list
+        :returns: director list
         """
         target_uri = "/performance/FEDirector/keys"
         dir_payload = ({"symmetrixId": self.array_id})
@@ -59,9 +62,9 @@ class PerformanceFunctions(object):
         return dir_list
 
     def get_fe_port_list(self):
-        """Function to get a list of all front end ports in the array.
+        """Get a list of all front end ports in the array.
 
-        :return: List of Directors and Ports
+        :returns: List of Directors and Ports
         """
         target_uri = "/performance/FEPort/keys"
         port_list = []
@@ -80,30 +83,27 @@ class PerformanceFunctions(object):
         return port_list
 
     def get_days_to_full(self, category, array_id=None,):
-        """
-        Requests Days to Full Metrics from performance stats
-        requires at least 10 Days of Perfomance data
-        ;
+        """Get days to full.
 
-        :return: Requested stats
+        Requests Days to Full Metrics from performance stats
+        requires at least 10 Days of Performance data
+
+        :returns: Requested stats
         """
         if not array_id:
-            array_id=self.array_id
+            array_id = self.array_id
 
         target_uri = '/performance/daystofull'
-        port_perf_payload = ({
-                              "symmetrixId": array_id,
-                              "category": category})
+        port_perf_payload = ({"symmetrixId": array_id, "category": category})
         return self.request(
             target_uri, POST, request_object=port_perf_payload)
-
 
     def get_fe_port_util_last4hrs(self, dir_id, port_id):
         """Get stats for last 4 hours.
 
         Currently only coded for one metric - can be adapted for multiple.
 
-        :return: Requested stats
+        :returns: Requested stats
         """
         end_date = int(round(time.time() * 1000))
         start_date = (end_date - 14400000)
@@ -121,13 +121,13 @@ class PerformanceFunctions(object):
 
     def get_fe_director_metrics(self, start_date, end_date,
                                 director, dataformat):
-        """Function to get one or more metrics for front end directors.
+        """Get one or more metrics for front end directors.
 
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
         :param director: List of FE Directors
         :param dataformat: Average or Maximum
-        :return: JSON Payload, and RETURN CODE 200 for success
+        :returns: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEDirector/metrics"
         fe_director_param = ({
@@ -155,7 +155,7 @@ class PerformanceFunctions(object):
 
     def get_fe_port_metrics(self, start_date, end_date, director_id,
                             port_id, dataformat, metriclist):
-        """Function to get one or more Metrics for Front end Director ports.
+        """Get one or more Metrics for Front end Director ports.
 
         The metric list can contain a list of one or more of PercentBusy,
         IOs, MBRead, MBWritten, MBs, AvgIOSize, SpeedGBs, MaxSpeedGBs,
@@ -434,8 +434,8 @@ class PerformanceFunctions(object):
             perf_metrics_payload = self.request(
                 be_director_uri, POST, request_object=be_director_payload)
             director_type = 'BE'
-        elif ('EF' in director_id or 'FA' in director_id
-              or 'FE' in director_id or 'SE' in director_id):
+        elif ('EF' in director_id or 'FA' in director_id or (
+                'FE' in director_id or 'SE' in director_id)):
             perf_metrics_payload = self.request(
                 fe_director_uri, POST, request_object=fe_director_payload)
             director_type = 'FE'
@@ -478,7 +478,6 @@ class PerformanceFunctions(object):
             combined_payload['perf_data'] = False
             combined_payload['perf_msg'] = ("No active Director "
                                             "performance data available")
-
         else:
             # Performance metrics returned...
             combined_payload['perf_data'] = (
@@ -628,11 +627,11 @@ class PerformanceFunctions(object):
                     self.get_perf_category_threshold_settings(category)[0][
                         'performanceThreshold'])
                 for metric in metric_setting:
-                        eventwriter.writerow(
-                            [category, metric.get('metric'),
-                             metric.get('firstThreshold'), metric.get(
-                                'secondThreshold'), metric.get('alertError'),
-                             metric.get('kpi')])
+                    eventwriter.writerow(
+                        [category, metric.get('metric'),
+                         metric.get('firstThreshold'), metric.get(
+                            'secondThreshold'), metric.get('alertError'),
+                         metric.get('kpi')])
 
     def set_perfthresholds_csv(self, csvfilename):
         """Set performance thresholds using a CSV file.
@@ -646,8 +645,8 @@ class PerformanceFunctions(object):
         Boolean values are case sensitive ensure that when editing file that
         they are True or False.  KPI setting can not be changed with REST
         API in current implementation, if you change this value it will not
-        be updated in the UI.  Only notify alert Boolean can be changed with REST
-        Only KPI Metrics should be alterted on, note if you are changing
+        be updated in the UI. Only notify alert Boolean can be changed with
+        REST. Only KPI Metrics should be alterted on, note if you are changing
         default threshold values for metrics used for dashboard views these
         will also update the numbers used for your dashboards.  It's not
         recommended to alert on every value as this will just create noise.
@@ -666,5 +665,5 @@ class PerformanceFunctions(object):
                                     firstthreshold_list,
                                     secondthreshold_list, notify_list,
                                     kpimetric_list):
-            if k :
+            if k:
                 self.set_perf_threshold_and_alert(c, m, f, s, n)

@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -19,15 +19,17 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+"""Unisphere for VMAX REST."""
 import csv
 import logging
 import time
 
-import six
-
 from PyU4V.rest_requests import RestRequests
 from PyU4V.utils import config_handler
 from PyU4V.utils import exception
+
+import six
 
 logger = logging.getLogger(__name__)
 LOG, CFG = config_handler.set_logger_and_config(logger)
@@ -60,10 +62,13 @@ CREATE_VOL_STRING = "Creating new Volumes"
 ASYNCHRONOUS = "ASYNCHRONOUS"
 
 
-class RestFunctions:
+class RestFunctions(object):
+    """Unisphere for VMAX REST functions."""
+
     def __init__(self, username=None, password=None, server_ip=None,
                  port=None, verify=None, u4v_version='84',
                  interval=5, retries=200, array_id=None):
+        """Initialize REST functions."""
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = array_id
@@ -101,8 +106,7 @@ class RestFunctions:
         self.U4V_VERSION = u4v_version
 
     def close_session(self):
-        """Close the current rest session
-        """
+        """Close the current rest session."""
         self.rest_client.close_session()
 
     def set_requests_timeout(self, timeout_value):
@@ -243,7 +247,8 @@ class RestFunctions:
     def _build_uri(self, array, category, resource_type,
                    resource_name=None, version=None):
         """Build the target url.
-.
+
+        Build the target url.
         :param array: the array serial number
         :param category: the resource category e.g. sloprovisioning
         :param resource_type: the resource type e.g. maskingview
@@ -369,7 +374,7 @@ class RestFunctions:
         """Given a file, create a list from its contents.
 
         :param file_name: the path to the file
-        :return: list of contents
+        :returns: list of contents
         """
         with open(file_name) as f:
             list_item = f.readlines()
@@ -378,7 +383,7 @@ class RestFunctions:
 
     @staticmethod
     def read_csv_values(file_name):
-        """Reads any csv file with headers.
+        """Read any csv file with headers.
 
         You can extract the multiple lists from the headers in the CSV file.
         In your own script, call this function and assign to data variable,
@@ -387,7 +392,7 @@ class RestFunctions:
         sgnamelist = data['sgname']
         policylist = data['policy']
         :param file_name CSV file
-        :return: Dictionary of data parsed from CSV
+        :returns: Dictionary of data parsed from CSV
         """
         # open the file in universal line ending mode
         with open(file_name, 'rU') as infile:
@@ -403,18 +408,18 @@ class RestFunctions:
         return data
 
     def get_all_alerts(self, filters=None):
-        """Queries for a list of All Alert ids across all symmetrix arrays.
+        """Query for a list of All Alert ids across all symmetrix arrays.
 
         Optionally can be filtered by: create_date_milliseconds(=<>),
         description(=<>), type, severity, state, created_date, acknowledged.
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/%s/univmax/restapi/system/alert" % self.U4V_VERSION
         return self._get_request(target_uri, 'alert', params=filters)
 
     def get_all_jobs(self, filters=None):
-        """Queries for a list of Job ids across all symmetrix arrays.
+        """Query for a list of Job ids across all symmetrix arrays.
 
         Optionally can be filtered by: scheduled_date, name, completed_date,
         username, scheduled_date_milliseconds,
@@ -422,16 +427,16 @@ class RestFunctions:
         completed_date_milliseconds (all params including =,<, or >),
         status (=).
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/%s/system/job" % self.U4V_VERSION
         return self._get_request(target_uri, 'job', params=filters)
 
     def get_symmetrix_array(self, array_id=None):
-        """Returns a list of arrays, or details on a specific array.
+        """Return a list of arrays, or details on a specific array.
 
         :param array_id: the array serial number
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/%s/system/symmetrix" % self.U4V_VERSION
         if array_id:
@@ -439,7 +444,7 @@ class RestFunctions:
         return self._get_request(target_uri, 'symmetrix')
 
     def get_array_jobs(self, job_id=None, filters=None):
-        """Call queries for a list of Job ids for the specified symmetrix.
+        """Query for a list of Job ids for the specified symmetrix.
 
         The optional filters are: scheduled_date, name, completed_date,
         username, scheduled_date_milliseconds,
@@ -448,7 +453,7 @@ class RestFunctions:
         status (=).
         :param job_id: specific ID of the job (optional)
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if job_id and filters:
             msg = "job_id and filters are mutually exclusive options"
@@ -458,13 +463,13 @@ class RestFunctions:
                                  resource_name=job_id, params=filters)
 
     def get_array_alerts(self, alert_id=None, filters=None):
-        """Queries for a list of Alert ids for the specified symmetrix.
+        """Query for a list of Alert ids for the specified symmetrix.
 
         The optional filters are: create_date_milliseconds(=<>),
         description(=<>), type, severity, state, created_date, acknowledged.
         :param alert_id: specific id of the alert - optional
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if alert_id and filters:
             msg = "alert_id and filters are mutually exclusive options"
@@ -478,7 +483,7 @@ class RestFunctions:
 
         Acknowledge is the only "PUT" (edit) option available.
         :param alert_id: the alert id - string
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         payload = {"editAlertActionParam": "ACKNOWLEDGE"}
         return self.modify_resource(self.array_id, 'system', 'alert', payload,
@@ -488,19 +493,23 @@ class RestFunctions:
         """Delete a specified alert.
 
         :param alert_id: the alert id - string
-        :return: None, status code
+        :returns: None, status code
         """
         return self.delete_resource(self.array_id, 'system',
                                     'alert', alert_id)
 
     def get_uni_version(self):
+        """Return a list of V3 arrays in the environment.
+
+        :returns: unisphere version
+        """
         target_uri = "/%s/system/version" % self.U4V_VERSION
         return self._get_request(target_uri, 'version')
 
     def get_vmax3_array_list(self):
-        """Returns a list of V3 arrays in the environment.
+        """Return a list of V3 arrays in the environment.
 
-        :return: server response
+        :returns: server response
         """
         target_uri = "/%s/sloprovisioning/symmetrix" % self.U4V_VERSION
         return self._get_request(target_uri, 'symmetrix')
@@ -512,7 +521,7 @@ class RestFunctions:
         if no host is specified.
         :param host_id: the name of the host, optional
         :param filters: optional list of filters - dict
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if host_id and filters:
             LOG.error("Host_id and filters are mutually exclusive options")
@@ -521,7 +530,7 @@ class RestFunctions:
                                  resource_name=host_id, params=filters)
 
     def create_host(self, host_name, initiator_list=None,
-                    host_flags=None, init_file=None, async=False):
+                    host_flags=None, init_file=None, asynchronous=False):
         """Create a host with the given initiators.
 
         Accepts either initiator_list or file.
@@ -531,8 +540,8 @@ class RestFunctions:
                                e.g.[10000000ba873cbf, 10000000ba873cba]
         :param host_flags: dictionary of optional host flags to apply
         :param init_file: full path and file name.
-        :param async: Flag to indicate if call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if call should be async
+        :returns: dict, status_code
         """
         if init_file:
             initiator_list = self.create_list_from_file(init_file)
@@ -544,7 +553,7 @@ class RestFunctions:
         new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
         if host_flags:
             new_ig_data.update({"hostFlags": host_flags})
-        if async:
+        if asynchronous:
             new_ig_data.update({"executionOption": ASYNCHRONOUS})
         return self.create_resource(self.array_id, SLOPROVISIONING,
                                     'host', new_ig_data)
@@ -559,7 +568,7 @@ class RestFunctions:
         :param remove_init_list: list of initiators to be removed
         :param add_init_list: list of initiators to be added
         :param new_name: new host name
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if host_flag_dict:
             edit_host_data = ({"editHostActionParam": {
@@ -587,7 +596,7 @@ class RestFunctions:
 
         Cannot delete if associated with a masking view
         :param host_id: name of the host
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.delete_resource(self.array_id, SLOPROVISIONING,
                                     'host', host_id)
@@ -596,7 +605,7 @@ class RestFunctions:
         """Retrieve masking view information for a specified host.
 
         :param host_id: the name of the host
-        :return: list of masking views or None
+        :returns: list of masking views or None
         """
         response, sc = self.get_hosts(host_id=host_id)
         try:
@@ -610,7 +619,7 @@ class RestFunctions:
         """Get initiator details from a host.
 
         :param host_id: the name of the host
-        :return: list of initiator IDs, or None
+        :returns: list of initiator IDs, or None
         """
         response, sc = self.get_hosts(host_id=host_id)
         try:
@@ -626,7 +635,7 @@ class RestFunctions:
         if no host is specified.
         :param hostgroup_id: the name of the hostgroup, optional
         :param filters: optional list of filters - dict
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if hostgroup_id and filters:
             LOG.error("hostgroup_id and filters are mutually exclusive "
@@ -636,19 +645,19 @@ class RestFunctions:
                                  resource_name=hostgroup_id, params=filters)
 
     def create_hostgroup(self, hostgroup_id, host_list,
-                         host_flags=None, async=False):
+                         host_flags=None, asynchronous=False):
         """Create a hostgroup containing the given hosts.
 
         :param hostgroup_id: the name of the new hostgroup
         :param host_list: list of hosts
         :param host_flags: dictionary of optional host flags to apply
-        :param async: Flag to indicate if call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if call should be async
+        :returns: dict, status_code
         """
         new_ig_data = ({"hostId": host_list, "hostGroupId": hostgroup_id})
         if host_flags:
             new_ig_data.update({"hostFlags": host_flags})
-        if async:
+        if asynchronous:
             new_ig_data.update({"executionOption": ASYNCHRONOUS})
         return self.create_resource(self.array_id, SLOPROVISIONING,
                                     'hostgroup', new_ig_data)
@@ -664,7 +673,7 @@ class RestFunctions:
         :param remove_host_list: list of hosts to be removed
         :param add_host_list: list of hosts to be added
         :param new_name: new name of the hostgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if host_flag_dict:
             edit_host_data = ({"editHostGroupActionParam": {
@@ -692,19 +701,19 @@ class RestFunctions:
 
         Cannot delete if associated with a masking view
         :param hostgroup_id: name of the hostgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.delete_resource(self.array_id, SLOPROVISIONING,
                                     'hostgroup', hostgroup_id)
 
     def get_initiators(self, initiator_id=None, filters=None):
-        """Lists initiators on a given array.
+        """List initiators on a given array.
 
         See UniSphere documenation for full list of filters.
         Can filter by initiator_id OR filters.
         :param initiator_id: initiator id, optional
         :param filters: Optional filters - dict
-        :return: initiator list
+        :returns: initiator list
         """
         if initiator_id and filters:
             msg = "Initiator_id and filters are mutually exclusive"
@@ -725,7 +734,7 @@ class RestFunctions:
         :param rename_alias: tuple ('new node name', 'new port name')
         :param set_fcid: set fcid value - string
         :param initiator_flags: dictionary of initiator flags to set
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if remove_masking_entry:
             edit_init_data = ({"editInitiatorActionParam": {
@@ -756,10 +765,10 @@ class RestFunctions:
             version='', resource_name=initiator_id)
 
     def is_initiator_in_host(self, initiator):
-        """Check to see if a given initiator is already assigned to a host
+        """Check to see if a given initiator is already assigned to a host.
 
         :param initiator: the initiator ID
-        :return: bool
+        :returns: bool
         """
         param = {'in_a_host': 'true', 'initiator_hba': initiator}
         response, sc = self.get_initiators(filters=param)
@@ -815,7 +824,7 @@ class RestFunctions:
         Either masking_view_id or filters can be set
         :param masking_view_id: the name of the masking view
         :param filters: dictionary of filters
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if masking_view_id and filters:
             LOG.error("masking_view_id and filters are mutually exclusive")
@@ -849,7 +858,7 @@ class RestFunctions:
     def create_masking_view_existing_components(
             self, port_group_name, masking_view_name,
             storage_group_name, host_name=None,
-            host_group_name=None, async=False):
+            host_group_name=None, asynchronous=False):
         """Create a new masking view using existing groups.
 
         Must enter either a host name or a host group name, but
@@ -859,8 +868,9 @@ class RestFunctions:
         :param storage_group_name: name of the storage group
         :param host_name: name of the host (initiator group)
         :param host_group_name: name of host group
-        :param async: flag to indicate if command should be run asynchronously
-        :return: dict, status_code
+        :param asynchronous: flag to indicate if command should be run
+        asynchronously
+        :returns: dict, status_code
         """
         if host_name:
             host_details = {"useExistingHostParam": {"hostId": host_name}}
@@ -870,15 +880,16 @@ class RestFunctions:
         else:
             LOG.error("Must enter either a host name or a host group name")
             raise Exception()
-        payload = ({"portGroupSelection": {
-                        "useExistingPortGroupParam": {
-                            "portGroupId": port_group_name}},
-                    "maskingViewId": masking_view_name,
-                    "hostOrHostGroupSelection": host_details,
-                    "storageGroupSelection": {
-                        "useExistingStorageGroupParam": {
-                            "storageGroupId": storage_group_name}}})
-        if async:
+        payload = ({
+            "portGroupSelection": {
+                "useExistingPortGroupParam": {
+                    "portGroupId": port_group_name}},
+                "maskingViewId": masking_view_name,
+                "hostOrHostGroupSelection": host_details,
+                "storageGroupSelection": {
+                    "useExistingStorageGroupParam": {
+                        "storageGroupId": storage_group_name}}})
+        if asynchronous:
             payload.update({"executionOption": ASYNCHRONOUS})
 
         return self.create_resource(
@@ -975,7 +986,7 @@ class RestFunctions:
         Currently, the only supported modification is "rename".
         :param masking_view_id: the current name of the masking view
         :param new_name: the new name of the masking view
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         mv_payload = {"editMaskingViewActionParam": {
             "renameMaskingViewParam": {"new_masking_view_name": new_name}}}
@@ -987,7 +998,7 @@ class RestFunctions:
         """Given a masking view, get the associated host or host group.
 
         :param masking_view_id: the name of the masking view
-        :return: host ID
+        :returns: host ID
         """
         return self.get_element_from_masking_view(masking_view_id, host=True)
 
@@ -995,7 +1006,7 @@ class RestFunctions:
         """Given a masking view, get the associated storage group.
 
         :param masking_view_id: the masking view name
-        :return: the name of the storage group
+        :returns: the name of the storage group
         """
         return self.get_element_from_masking_view(
             self.array_id, masking_view_id, storagegroup=True)
@@ -1004,7 +1015,7 @@ class RestFunctions:
         """Given a masking view, get the associated port group.
 
         :param masking_view_id: the masking view name
-        :return: the name of the port group
+        :returns: the name of the port group
         """
         return self.get_element_from_masking_view(
             masking_view_id, portgroup=True)
@@ -1013,19 +1024,19 @@ class RestFunctions:
         """Get all connection information for a given masking view.
 
         :param mv_name: the name of the masking view
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         res_name = "%s/connections" % mv_name
         return self.get_resource(self.array_id, SLOPROVISIONING,
                                  'maskingview', resource_name=res_name)
 
     def get_ports(self, filters=None):
-        """Queries for a list of Symmetrix port keys.
+        """Query for a list of Symmetrix port keys.
 
         Note a mixture of Front end, back end and RDF port specific values
         are not allowed. See UniSphere documentation for possible values.
         :param filters: dictionary of filters e.g. {'vnx_attached': 'true'}
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'port',
                                  params=filters)
@@ -1035,7 +1046,7 @@ class RestFunctions:
 
         :param portgroup_id: the name of the portgroup
         :param filters: dictionary of filters
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if portgroup_id and filters:
             LOG.error("portgroup_id and filters are mutually exclusive")
@@ -1044,10 +1055,10 @@ class RestFunctions:
                                  resource_name=portgroup_id, params=filters)
 
     def get_director(self, director=None):
-        """Queries for details of Symmetrix directors for a symmetrix
+        """Query for details of Symmetrix directors for a symmetrix.
 
         :param director: the director ID e.g. FA-1D - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'director',
                                  director)
@@ -1059,7 +1070,7 @@ class RestFunctions:
         :param director: the director ID e.g. FA-1D
         :param port_no: the port number e.g. 1 - optional
         :param filters: optional filters - dict
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         res_name = "%s/port/%s" % (director, port_no) if port_no else director
         if port_no and filters:
@@ -1073,7 +1084,7 @@ class RestFunctions:
 
         :param director: the ID of the director
         :param port_no: the number of the port
-        :return: wwn (FC) or iqn (iscsi), or None
+        :returns: wwn (FC) or iqn (iscsi), or None
         """
         wwn = None
         port_info, _ = self.get_director_port(director, port_no)
@@ -1135,7 +1146,7 @@ class RestFunctions:
         :param portgroup_id: the name of the new port group
         :param director_id: the directoy id
         :param port_id: the port id
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         payload = ({"portGroupId": portgroup_id,
                     "symmetrixPortKey": [{"directorId": director_id,
@@ -1149,7 +1160,7 @@ class RestFunctions:
         :param portgroup_id: the name of the new port group
         :param ports: list of port dicts - {"directorId": director_id,
                                             "portId": port_id}
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         payload = ({"portGroupId": portgroup_id,
                     "symmetrixPortKey": ports})
@@ -1164,7 +1175,7 @@ class RestFunctions:
         Each director:port pair must be on a new line
         :param file_name: the path to the file
         :param portgroup_id: the name for the portgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         port_list = self.create_list_from_file(file_name)
         combined_payload = []
@@ -1185,7 +1196,7 @@ class RestFunctions:
         :param remove_port: tuple of port details ($director_id, $portId)
         :param add_port: tuple of port details ($director_id, $portId)
         :param rename_portgroup: new portgroup name
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if remove_port:
             edit_pg_data = ({"editPortGroupActionParam": {"removePortParam": {
@@ -1212,7 +1223,7 @@ class RestFunctions:
         """Delete a portgroup.
 
         :param portgroup_id: the name of the portgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.delete_resource(self.array_id, SLOPROVISIONING,
                                     'portgroup', portgroup_id)
@@ -1221,7 +1232,7 @@ class RestFunctions:
         """Get the symm director information from the port group.
 
         :param portgroup: the name of the portgroup
-        :return: the director information
+        :returns: the director information
         """
         info, sc = self.get_portgroups(portgroup_id=portgroup)
         try:
@@ -1237,17 +1248,20 @@ class RestFunctions:
         :returns: workload_setting -- list of workload names
         """
         workload_setting = []
-        wl_details, _ = self.get_resource(array, SLOPROVISIONING, 'workloadtype')
+        wl_details, _ = self.get_resource(
+            array, SLOPROVISIONING, 'workloadtype')
         if wl_details:
             workload_setting = wl_details['workloadId']
         return workload_setting
 
     def get_SLO(self, slo_id=None):
-        """Gets a list of available SLO's on a given array, or returns
+        """Get a list of available SLO's on a given array.
+
+        Gets a list of available SLO's on a given array, or returns
         details on a specific SLO if one is passed in in the parameters.
 
         :param slo_id: the service level agreement, optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'slo',
                                  resource_name=slo_id)
@@ -1258,7 +1272,7 @@ class RestFunctions:
         Currently, the only modification permitted is renaming.
         :param slo_id: the current name of the slo
         :param new_name: the new name for the slo
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         edit_slo_data = ({"editSloActionParam": {
             "renameSloParam": {"sloId": new_name}}})
@@ -1269,7 +1283,7 @@ class RestFunctions:
     def get_wlp_timestamp(self):
         """Get the latest timestamp from WLP for processing New Workloads.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/%s/wlp/symmetrix/%s"
                       % (self.U4V_VERSION, self.array_id))
@@ -1282,7 +1296,7 @@ class RestFunctions:
         :param workload: the workload type (DSS, OLTP, DSS_REP, OLTP_REP)
         :param srp: the storage resource pool. Default SRP_1.
         :param slo: the service level. Default Diamond.
-        :return: dict, status_code (sample response
+        :returns: dict, status_code (sample response
             {'headroom': [{'workloadType': 'OLTP',
             'headroomCapacity': 29076.34, 'processingDetails':
                 {'lastProcessedSpaTimestamp': 1485302100000,
@@ -1309,17 +1323,19 @@ class RestFunctions:
         return remaining_capacity
 
     def get_srp(self, srp=None):
-        """Gets a list of available SRP's on a given array, or returns
+        """Get a list of available SRP's on a given array.
+
+        Gets a list of available SRP's on a given array, or returns
         details on a specific SRP if one is passed in in the parameters.
 
         :param srp: the storage resource pool, optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'srp',
                                  resource_name=srp)
 
     def get_slo_list(self):
-        """Retrieve the list of slo's from the array
+        """Retrieve the list of slo's from the array.
 
         :returns: slo_list -- list of service level names
         """
@@ -1346,13 +1362,15 @@ class RestFunctions:
         return is_compression_capable
 
     def get_sg(self, sg_id=None, filters=None):
-        """Gets details of all storage groups on a given array, or returns
+        """Get details of all storage groups on a given array.
+
+        Gets details of all storage groups on a given array, or returns
         details on a specific sg if one is passed in in the parameters.
 
         :param sg_id: the storage group name, optional
         :param filters: dictionary of filters e.g.
                        {'child': 'true', 'srp_name': '=SRP_1'}
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if sg_id and filters:
             LOG.error("sg_id and filters are mutually exclusive")
@@ -1371,7 +1389,7 @@ class RestFunctions:
         return sg_details
 
     def get_storage_group_list(self, params=None):
-        """"Return a list of storage groups.
+        """Return a list of storage groups.
 
         :param params: optional filter parameters
         :returns: storage group list
@@ -1384,7 +1402,7 @@ class RestFunctions:
 
     def create_non_empty_storagegroup(
             self, srpID, sg_id, slo, workload, num_vols, vol_size,
-            capUnit, disable_compression=False, async=False):
+            capUnit, disable_compression=False, asynchronous=False):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the
@@ -1400,18 +1418,20 @@ class RestFunctions:
         :param vol_size: the size of each volume
         :param capUnit: the capacity unit (MB, GB)
         :param disable_compression: Flag for disabling compression (AF only)
-        :param async: Flag to indicate if this call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if this call should be async
+        :returns: dict, status_code
         """
         return self.create_storage_group(
             srpID, sg_id, slo, workload,
             do_disable_compression=disable_compression,
             num_vols=num_vols, vol_size=vol_size, cap_unit=capUnit,
-            async=async)
+            asynchronous=asynchronous)
 
     def create_empty_sg(self, srp_id, sg_id, slo, workload,
-                        disable_compression=False, async=False):
-        """Generates a dictionary for json formatting and calls
+                        disable_compression=False, asynchronous=False):
+        """Generate a dictionary for json formatting.
+
+        Generates a dictionary for json formatting and calls
         the create_sg function to create an empty storage group
         Set the disable_compression flag for
         disabling compression on an All Flash array (where compression
@@ -1421,31 +1441,32 @@ class RestFunctions:
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
         :param disable_compression: flag for disabling compression (AF only)
-        :param async: Flag to indicate if this call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if this call should be async
+        :returns: dict, status_code
         """
         return self.create_storage_group(
             srp_id, sg_id, slo, workload,
-            do_disable_compression=disable_compression, async=async)
+            do_disable_compression=disable_compression,
+            asynchronous=asynchronous)
 
     def modify_storagegroup(self, sg_id, edit_sg_data):
-        """Edits an existing storage group
+        """Edit an existing storage group.
 
         :param sg_id: the name of the storage group
         :param edit_sg_data: the payload of the request
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'storagegroup', edit_sg_data,
             version=None, resource_name=sg_id)
 
-    def add_existing_vol_to_sg(self, sg_id, vol_id, async=False):
+    def add_existing_vol_to_sg(self, sg_id, vol_id, asynchronous=False):
         """Expand an existing storage group by adding new volumes.
 
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume - can be list
-        :param async: Flag to indicate if the call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if the call should be async
+        :returns: dict, status_code
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
@@ -1453,7 +1474,7 @@ class RestFunctions:
             "expandStorageGroupParam": {
                 "addSpecificVolumeParam": {
                     "volumeId": vol_id}}}}
-        if async:
+        if asynchronous:
             add_vol_data.update({'executionOption': ASYNCHRONOUS})
         if self.U4V_VERSION == '83':
             add_vol_data = {"editStorageGroupActionParam": {
@@ -1461,23 +1482,24 @@ class RestFunctions:
         return self.modify_storagegroup(sg_id, add_vol_data)
 
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size,
-                                    capUnit, async=False, vol_name=None):
+                                    capUnit, asynchronous=False,
+                                    vol_name=None):
         """Expand an existing storage group by adding new volumes.
 
         :param sg_id: the name of the storage group
         :param num_vols: the number of volumes
         :param vol_size: the size of the volumes
         :param capUnit: the capacity unit
-        :param async: Flag to indicate if call should be async
+        :param asynchronous: Flag to indicate if call should be async
         :param vol_name: name to give to the volume, optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         add_vol_info = {
-                    "num_of_vols": num_vols,
-                    "emulation": "FBA",
-                    "volumeAttribute": {
-                        "volume_size": vol_size,
-                        "capacityUnit": capUnit}}
+            "num_of_vols": num_vols,
+            "emulation": "FBA",
+            "volumeAttribute": {
+                "volume_size": vol_size,
+                "capacityUnit": capUnit}}
         if vol_name:
             add_vol_info.update({
                 "volumeIdentifier": {
@@ -1486,35 +1508,35 @@ class RestFunctions:
         expand_sg_data = {"editStorageGroupActionParam": {
             "expandStorageGroupParam": {
                 "addVolumeParam": add_vol_info}}}
-        if async:
+        if asynchronous:
             expand_sg_data.update({"executionOption": ASYNCHRONOUS})
         return self.modify_storagegroup(sg_id, expand_sg_data)
 
-    def remove_vol_from_storagegroup(self, sg_id, vol_id, async=False):
-        """Remove a volume from a given storage group
+    def remove_vol_from_storagegroup(self, sg_id, vol_id, asynchronous=False):
+        """Remove a volume from a given storage group.
 
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume
-        :param async: Flag to indicate if call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if call should be async
+        :returns: dict, status_code
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
         payload = {"editStorageGroupActionParam": {
             "removeVolumeParam": {"volumeId": vol_id}}}
-        if async:
+        if asynchronous:
             payload.update({'executionOption': ASYNCHRONOUS})
         return self.modify_storagegroup(sg_id, payload)
 
     def move_vol_between_storagegroup(self, src_sg_id, tgt_sg_id,
-                                      vol_id, async=False):
-        """MOve volumes between storage groups.
+                                      vol_id, asynchronous=False):
+        """Move volumes between storage groups.
 
         :param src_sg_id: the name of the source storage group
         :param tgt_sg_id: the name of the target sg
         :param vol_id: the device id of the volume
-        :param async: Flag to indicate if call should be async
-        :return: dict, status_code
+        :param asynchronous: Flag to indicate if call should be async
+        :returns: dict, status_code
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
@@ -1522,7 +1544,7 @@ class RestFunctions:
             "moveVolumeToStorageGroupParam": {
                 "storageGroupId": tgt_sg_id,
                 "volumeId": vol_id, "force": 'true'}}}
-        if async:
+        if asynchronous:
             payload.update({'executionOption': ASYNCHRONOUS})
         return self.modify_storagegroup(src_sg_id, payload)
 
@@ -1532,16 +1554,16 @@ class RestFunctions:
         A storage group cannot be deleted if it
         is associated with a masking view
         :param sg_id: the name of the storage group
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.delete_resource(
             self.array_id, SLOPROVISIONING, 'storagegroup', sg_id)
 
     def get_mv_from_sg(self, storage_group):
-        """Get the associated masking view(s) from a given storage group
+        """Get the associated masking view(s) from a given storage group.
 
         :param storage_group: the name of the storage group
-        :return: Masking view list, or None
+        :returns: Masking view list, or None
         """
         response, sc = self.get_sg(storage_group)
         mvlist = response["maskingview"]
@@ -1557,7 +1579,7 @@ class RestFunctions:
         :param dynamic_distribution: valid values Always, Never, OnFailure
         :param iops: integer value. Min Value 100, must be specified to
                      nearest 100, e.g.202 is not a valid value
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         qos_specs = {'maxIOPS': iops,
                      'DistributionType': dynamic_distribution}
@@ -1629,7 +1651,7 @@ class RestFunctions:
     def create_storage_group(self, srp_id, sg_id, slo, workload,
                              do_disable_compression=False,
                              num_vols=0, vol_size="0", cap_unit="GB",
-                             async=False):
+                             asynchronous=False):
         """Create the volume in the specified storage group.
 
         :param srp_id: the SRP (String)
@@ -1662,7 +1684,7 @@ class RestFunctions:
 
             payload.update({"sloBasedStorageGroupParam": [slo_param]})
 
-        if async:
+        if asynchronous:
             payload.update({"executionOption": ASYNCHRONOUS})
 
         return self._create_storagegroup(payload)
@@ -1691,7 +1713,7 @@ class RestFunctions:
         """
         job, status_code = self.add_new_vol_to_storagegroup(
             storagegroup_name, 1, vol_size, "GB",
-            async=True, vol_name=volume_name)
+            asynchronous=True, vol_name=volume_name)
         LOG.debug("Create Volume: %(volumename)s. Status code: %(sc)lu.",
                   {'volumename': volume_name,
                    'sc': status_code})
@@ -1762,7 +1784,7 @@ class RestFunctions:
             if maxmbps != sg_maxmbps:
                 propertylist.append(maxmbps)
         if 'DistributionType' in qos_specs and (
-                    propertylist or sg_qos_details):
+                propertylist or sg_qos_details):
             dynamic_list = ['never', 'onfailure', 'always']
             if (qos_specs.get('DistributionType').lower() not
                     in dynamic_list):
@@ -1811,11 +1833,11 @@ class RestFunctions:
         return self.modify_storage_group(source_storagegroup_name, payload)
 
     def get_volumes(self, vol_id=None, filters=None):
-        """Gets details of volume(s) from array.
+        """Get details of volume(s) from array.
 
         :param vol_id: the volume's device ID
         :param filters: dictionary of filters
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if vol_id and filters:
             LOG.error("volID and filters are mutually exclusive.")
@@ -1824,14 +1846,15 @@ class RestFunctions:
                                  resource_name=vol_id, params=filters)
 
     def get_vol_effectivewwn_details_84(self, vollist):
-        """
+        """Get wwn details using 84 endpoint.
+
         Get volume details for a list of volumes usually
         obtained for get_vols_from_SG
         using 84 endpoint as this gives wwn details
         :param vollist:
-        :return: Dictionary
+        :returns: Dictionary
         """
-        """Create CSV and set headings"""
+        # Create CSV and set headings
         with open(bytes('wwn_data.csv', 'UTF-8'), 'wt') as csvfile:
             eventwriter = csv.writer(csvfile,
                                      delimiter=',',
@@ -1856,18 +1879,18 @@ class RestFunctions:
                                       has_effective_wwn, storageGroupId])
 
     def get_deviceId_from_volume(self, vol_identifier):
-        """Given the volume identifier (name), return the device ID
+        """Given the volume identifier (name), return the device ID.
 
         :param vol_identifier: the identifier of the volume
-        :return: the device ID of the volume
+        :returns: the device ID of the volume
         """
         return self.find_volume_device_id(vol_identifier)
 
     def get_vols_from_SG(self, sg_id):
-        """Retrieve volume information associated with a particular sg
+        """Retrieve volume information associated with a particular sg.
 
         :param sg_id: the name of the storage group
-        :return: list of device IDs of associated volumes
+        :returns: list of device IDs of associated volumes
         """
         params = {"storageGroupId": sg_id}
 
@@ -1878,12 +1901,12 @@ class RestFunctions:
         return volume_list
 
     def get_SG_from_vols(self, vol_id):
-        """Retrieves sg information for a specified volume.
+        """Retrieve sg information for a specified volume.
 
         Note that a FAST managed volume cannot be a
         member of more than one storage group.
         :param vol_id: the device ID of the volume
-        :return: list of storage groups, or None
+        :returns: list of storage groups, or None
         """
         sg_list = []
         vol = self.get_volume(vol_id)
@@ -1938,19 +1961,19 @@ class RestFunctions:
         return self.modify_resource(self.array_id, SLOPROVISIONING, 'volume',
                                     payload, resource_name=device_id)
 
-    def extend_volume(self, device_id, new_size, async=False):
+    def extend_volume(self, device_id, new_size, asyncronous=False):
         """Extend a VMAX volume.
 
         :param device_id: volume device id
         :param new_size: the new required size for the device
-        :param async: flag to indicate if call should be async
+        :param asyncronous: flag to indicate if call should be async
         """
         extend_vol_payload = {"editVolumeActionParam": {
             "expandVolumeParam": {
                 "volumeAttribute": {
                     "volume_size": new_size,
                     "capacityUnit": "GB"}}}}
-        if async:
+        if asyncronous:
             extend_vol_payload.update({"executionOption": ASYNCHRONOUS})
         return self._modify_volume(device_id, extend_vol_payload)
 
@@ -1984,7 +2007,7 @@ class RestFunctions:
 
         Necessary before deletion.
         :param device_id: the device id
-        :return: dict, sc
+        :returns: dict, sc
         """
         payload = {"editVolumeActionParam": {
             "freeVolumeParam": {"free_volume": 'true'}}}
@@ -2076,16 +2099,16 @@ class RestFunctions:
         return cap
 
     def find_low_volume_utilization(self, low_utilization_percentage, csvname):
-        """
+        """Find volumes under a specified percentage.
+
         Function to find volumes under a specified percentage, may be long
         running as will check all sg on array and all storage group.  Only
         identifies volumes in storage group,  note if volume is in more
         than one sg it may show up more than once.
         :param low_utilization_percentage: low utilization watermark
-        percentage,
-        e.g. find volumes with utilization less than 10%
+        percentage, e.g. find volumes with utilization less than 10%
         :param csvname: filename for CFV output file
-        :return: will create csvfile with name passed
+        :returns: will create csvfile with name passed
         """
         sg_dict, rc = self.get_sg()
         sg_list = sg_dict.get('storageGroupId')
@@ -2104,12 +2127,12 @@ class RestFunctions:
 
                 for vol in vollist:
                     volume = self.get_volume(vol)
-                    if volume[
-                        "allocated_percent"] < low_utilization_percentage:
+                    if volume["allocated_percent"] < (
+                            low_utilization_percentage):
                         allocated = volume["allocated_percent"]
                         try:
                             vol_identifiers = (volume["volume_identifier"])
-                        except:
+                        except Exception:
                             vol_identifiers = ("No Identifier")
                     vol_cap = (volume["cap_gb"])
                     eventwriter.writerow(
@@ -2118,15 +2141,15 @@ class RestFunctions:
     def get_replication_info(self):
         """Return replication information for an array.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = '/83/replication/symmetrix/%s' % self.array_id
         return self._get_request(target_uri, 'replication info')
 
     def check_snap_capabilities(self):
-        """Check what replication facilities are available
+        """Check what replication facilities are available.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         array_capabilities = None
         target_uri = ("/%s/replication/capabilities/symmetrix"
@@ -2188,7 +2211,7 @@ class RestFunctions:
     def modify_storagegroup_snap(
             self, source_sg_id, target_sg_id, snap_name, link=False,
             unlink=False, restore=False, new_name=None, gen_num=0,
-            async=False):
+            asyncronous=False):
         """Modify a storage group snapshot.
 
         Please note that only one parameter can be modiffied at a time.
@@ -2200,7 +2223,7 @@ class RestFunctions:
         :param restore: Flag to indicate action = Restore
         :param new_name: the new name for the snapshot
         :param gen_num: the generation number
-        :param async: flag to indicate if call should be async
+        :param asyncronous: flag to indicate if call should be async
         """
         payload = {}
         if link:
@@ -2218,7 +2241,7 @@ class RestFunctions:
             payload = ({"rename": {"newSnapshotName": new_name},
                         "action": "Rename"})
 
-        if async:
+        if asyncronous:
             payload.update({"executionOption": ASYNCHRONOUS})
 
         resource_name = ('%(sg_name)s/snapshot/%(snap_id)s/generation/'
@@ -2234,13 +2257,13 @@ class RestFunctions:
         """Get snapshot information on a particular sg.
 
         :param sg_id: the name of the storage group
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.get_resource(self.array_id, REPLICATION, 'storagegroup',
                                  resource_name=sg_id)
 
     def get_snap_sg_generation(self, sg_id, snap_name):
-        """Gets a snapshot and its generation count information for an sg.
+        """Get a snapshot and its generation count information for an sg.
 
         The most recent snapshot will have a gen number of 0.
         The oldest snapshot will have a gen number = genCount - 1
@@ -2248,18 +2271,18 @@ class RestFunctions:
         the oldest will have a gen num of 3)
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         res_name = "%s/snapshot/%s" % (sg_id, snap_name)
         return self.get_resource(self.array_id, REPLICATION, 'storagegroup',
                                  resource_name=res_name)
 
     def create_new_gen_snap(self, sg_id, snap_name):
-        """Establish a new generation of a SnapVX snapshot for a source SG
+        """Establish a new generation of a SnapVX snapshot for a source SG.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the existing snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         resource_type = ("storagegroup/%s/snapshot/%s/generation"
                          % (sg_id, snap_name))
@@ -2268,32 +2291,32 @@ class RestFunctions:
             self.array_id, REPLICATION, resource_type, payload)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num=0):
-        """Restore a storage group to its snapshot
+        """Restore a storage group to its snapshot.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.modify_storagegroup_snap(
             self.array_id, sg_id, None, snap_name,
             restore=True, gen_num=gen_num)
 
     def rename_gen_snapshot(self, sg_id, snap_name, gen_num, new_name):
-        """Rename an existing storage group snapshot
+        """Rename an existing storage group snapshot.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
         :param new_name: the new name of the snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         return self.modify_storagegroup_snap(
             self.array_id, sg_id, None, snap_name,
             new_name=new_name, gen_num=gen_num)
 
     def link_gen_snapshot(self, sg_id, snap_name, gen_num, link_sg_name,
-                          async=False):
+                          asyncronous=False):
         """Link a snapshot to another storage group.
 
         Target storage group will be created if it does not exist.
@@ -2301,17 +2324,17 @@ class RestFunctions:
         :param snap_name: name of the snapshot
         :param gen_num: generation number of a snapshot (int)
         :param link_sg_name:  the target storage group name
-        :param async: flag to indicate if call is async
-        :return: dict, status_code
+        :param asyncronous: flag to indicate if call is async
+        :returns: dict, status_code
         """
         return self.modify_storagegroup_snap(sg_id, link_sg_name, snap_name,
                                              link=True, gen_num=gen_num,
-                                             async=async)
+                                             asyncronous=asyncronous)
 
     def set_snapshot_id(self, sgname):
         """Parse a list of snaps for storage group and select from menu.
 
-        :return:String returned with the name of the selected snapshot
+        :returns:String returned with the name of the selected snapshot
         """
         snaplist = self.get_snap_sg(sgname)
         print(snaplist)
@@ -2363,7 +2386,7 @@ class RestFunctions:
         """Get the SRDF number for a storage group.
 
         :param sg_id: Storage Group Name of replicated group
-        :return:JSON dictionary Message and Status
+        :returns:JSON dictionary Message and Status
         {
           "storageGroupName": "REST_TEST_SG",
           "symmetrixId": "0001970xxxxx",
@@ -2418,8 +2441,8 @@ class RestFunctions:
         if volume:
             remote_volume = volume['remoteVolumeName']
             remote_symm = volume['remoteSymmetrixId']
-            if (remote_volume == target_device
-                    and remote_array == remote_symm):
+            if (remote_volume == target_device and (
+                    remote_array == remote_symm)):
                 paired = True
                 local_vol_state = volume['localVolumeState']
                 rdf_pair_state = volume['rdfpairState']
@@ -2446,7 +2469,7 @@ class RestFunctions:
         return number
 
     def srdf_protect_sg(self, sg_id, remote_sid, srdfmode, establish=None,
-                        async=False, rdfg_number=None):
+                        asyncronous=False, rdfg_number=None):
         """SRDF protect a storage group.
 
         :param sg_id: Unique string up to 32 Characters
@@ -2454,10 +2477,10 @@ class RestFunctions:
         :param srdfmode: String, values can be Active, AdaptiveCopyDisk,
                          Synchronous, Asynchronous
         :param establish: default is none. Bool
-        :param async: Flag to indicate if call should be async
+        :param asyncronous: Flag to indicate if call should be async
                       (NOT to be confused with the SRDF mode)
         :param rdfg_number: the required RDFG number (optional)
-        :return: message and status Type JSON
+        :returns: message and status Type JSON
         """
         res_type = "storagegroup/%s/rdf_group" % sg_id
         establish_sg = "True" if establish else "False"
@@ -2468,7 +2491,7 @@ class RestFunctions:
             rdf_payload['rdfgNumber'] = rdfg_number
         if establish is not None:
             rdf_payload["establish"] = establish_sg
-        if async:
+        if asyncronous:
             rdf_payload.update({'executionOption': ASYNCHRONOUS})
         return self.create_resource(
             self.array_id, REPLICATION, res_type, rdf_payload)
@@ -2478,7 +2501,7 @@ class RestFunctions:
 
         :param sg_id: name of storage group
         :param rdfg: rdf number, optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if not rdfg:
             # Get a list of SRDF groups for storage group
@@ -2489,11 +2512,11 @@ class RestFunctions:
             self.array_id, REPLICATION, 'storagegroup', res_name)
 
     def change_srdf_state(self, sg_id, action, rdfg=None,
-                          options=None, async=False):
+                          options=None, asyncronous=False):
         """Modify the state of an srdf.
 
-        This may be a long running task depending on the size of the SRDF group,
-        can switch to async call if required.
+        This may be a long running task depending on the size of the
+        SRDF group, can switch to async call if required.
         :param sg_id: name of storage group
         :param action: the rdf action e.g. Suspend, Establish, etc
         :param rdfg: rdf number, optional
@@ -2513,7 +2536,7 @@ class RestFunctions:
         if rdfg:
             res_name = "%s/rdf_group/%s" % (sg_id, rdfg)
             payload = {"action": action}
-            if async:
+            if asyncronous:
                 payload.update({"executionOption": "ASYNCHRONOUS"})
             if options:
                 option_header = action.lower()
@@ -2526,7 +2549,7 @@ class RestFunctions:
     def get_fe_director_list(self):
         """Get list of all FE Directors.
 
-        :return: director list
+        :returns: director list
         """
         target_uri = "/performance/FEDirector/keys"
         dir_payload = ({"symmetrixId": self.array_id})
@@ -2539,9 +2562,9 @@ class RestFunctions:
         return dir_list
 
     def get_fe_port_list(self):
-        """Function to get a list of all front end ports in the array.
+        """Get a list of all front end ports in the array.
 
-        :return: List of Directors and Ports
+        :returns: List of Directors and Ports
         """
         target_uri = "/performance/FEPort/keys"
         port_list = []
@@ -2563,7 +2586,7 @@ class RestFunctions:
         """Get stats for last 4 hours.
 
         Currently only coded for one metric - can be adapted for multiple
-        :return:Requested stats
+        :returns:Requested stats
         """
         end_date = int(round(time.time() * 1000))
         start_date = (end_date - 14400000)
@@ -2581,14 +2604,14 @@ class RestFunctions:
 
     def get_fe_director_metrics(self, start_date, end_date,
                                 director, dataformat):
-        """Function to get one or more metrics for front end directors.
+        """Get one or more metrics for front end directors.
 
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
         :param director:List of FE Directors
         :param dataformat:Average or Maximum
         :param dataformat:
-        :return: JSON Payload, and RETURN CODE 200 for success
+        :returns: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEDirector/metrics"
         fe_director_param = ({
@@ -2597,15 +2620,18 @@ class RestFunctions:
             "endDate": end_date,
             "dataFormat": dataformat,
             "metrics": ['AvgRDFSWriteResponseTime', 'AvgReadMissResponseTime',
-                        'AvgWPDiscTime', 'AvgTimePerSyscall', 'DeviceWPEvents',
-                        'HostMBs', 'HitReqs', 'HostIOs', 'MissReqs',
+                        'AvgWPDiscTime', 'AvgTimePerSyscall',
+                        'DeviceWPEvents', 'HostMBs',
+                        'HitReqs', 'HostIOs', 'MissReqs',
                         'AvgOptimizedReadMissSize', 'OptimizedMBReadMisses',
-                        'OptimizedReadMisses', 'PercentBusy', 'PercentHitReqs',
-                        'PercentReadReqs', 'PercentReadReqHit', 'PercentWriteReqs',
+                        'OptimizedReadMisses', 'PercentBusy',
+                        'PercentHitReqs', 'PercentReadReqs',
+                        'PercentReadReqHit', 'PercentWriteReqs',
                         'PercentWriteReqHit', 'QueueDepthUtilization',
                         'HostIOLimitIOs', 'HostIOLimitMBs', 'ReadReqs',
-                        'ReadHitReqs', 'ReadMissReqs', 'Reqs', 'ReadResponseTime',
-                        'WriteResponseTime', 'SlotCollisions', 'SyscallCount',
+                        'ReadHitReqs', 'ReadMissReqs', 'Reqs',
+                        'ReadResponseTime', 'WriteResponseTime',
+                        'SlotCollisions', 'SyscallCount',
                         'Syscall_RDF_DirCounts', 'SyscallRemoteDirCounts',
                         'SystemWPEvents', 'TotalReadCount', 'TotalWriteCount',
                         'WriteReqs', 'WriteHitReqs', 'WriteMissReqs'],
@@ -2616,7 +2642,7 @@ class RestFunctions:
 
     def get_fe_port_metrics(self, start_date, end_date, director_id,
                             port_id, dataformat, metriclist):
-        """Function to get one or more Metrics for Front end Director ports
+        """Get one or more Metrics for Front end Director ports.
 
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
@@ -2626,7 +2652,7 @@ class RestFunctions:
         :param metriclist: Can contain a list of one or more of PercentBusy,
         IOs, MBRead, MBWritten, MBs, AvgIOSize, SpeedGBs, MaxSpeedGBs,
         HostIOLimitIOs, HostIOLimitMBs
-        :return: JSON Payload, and RETURN CODE 200 for success
+        :returns: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEPort/metrics"
         fe_director_param = ({"symmetrixId": self.array_id,
@@ -2651,7 +2677,7 @@ class RestFunctions:
         period return in JSON
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return: array_results_combined
+        :returns: array_results_combined
         """
         target_uri = "/performance/Array/metrics"
         array_perf_payload = {
@@ -2697,7 +2723,7 @@ class RestFunctions:
         :param sg_id: the storage group id
         :param start_date: the start date
         :param end_date: the end date
-        :return: sg_results_combined
+        :returns: sg_results_combined
         """
         target_uri = '/performance/StorageGroup/metrics'
         sg_perf_payload = {
@@ -2763,14 +2789,13 @@ class RestFunctions:
         return sg_results_combined
 
     def get_all_fe_director_metrics(self, start_date, end_date):
-        """
+        """Get a list of all Directors.
 
-        Get a list of all Directors.
         Calculate start and End Dates for Gathering Performance Stats
         Last 1 Hour.
         :param start_date: start date
         :param end_date: end date
-        :return:
+        :returns: list
         """
         dir_list = self.get_fe_director_list()
         director_results_combined = dict()
@@ -2797,7 +2822,7 @@ class RestFunctions:
         :param director_id: Director ID
         :param start_date: start date
         :param end_date: end date
-        :return: Combined payload of all Director level information
+        :returns: Combined payload of all Director level information
                  & performance metrics
         """
         # Create Director level target URIs
@@ -2891,13 +2916,14 @@ class RestFunctions:
             'startDate': self.start_date
         }
 
-        # Perform Director level performance REST call dependent on Director type
+        # Perform Director level performance REST call dependent on
+        # Director type
         if 'DF' in director_id or 'DX' in director_id:
             perf_metrics_payload = self.rest_client.rest_request(
                 be_director_uri, POST, request_object=be_director_payload)
             director_type = 'BE'
-        elif ('EF' in director_id or 'FA' in director_id
-              or 'FE' in director_id or 'SE' in director_id):
+        elif ('EF' in director_id or 'FA' in director_id or (
+                'FE' in director_id or 'SE' in director_id)):
             perf_metrics_payload = self.rest_client.rest_request(
                 fe_director_uri, POST, request_object=fe_director_payload)
             director_type = 'FE'
@@ -2954,7 +2980,7 @@ class RestFunctions:
         :param pg_id:
         :param start_date:
         :param end_date:
-        :return:
+        :returns:
         """
         target_uri = '/performance/PortGroup/metrics'
         pg_perf_payload = {
@@ -2985,7 +3011,7 @@ class RestFunctions:
         :param host: the host name
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return: Formatted results
+        :returns: Formatted results
         """
         target_uri = "/performance/Host/metrics"
         host_perf_payload = {
@@ -3012,7 +3038,7 @@ class RestFunctions:
 
         Written for Unisphere 84, if you are on ealier, append /83 to the
         endpoint.
-        :return: category_list
+        :returns: category_list
         """
         target_uri = "/performance/threshold/categories"
         categories = self.rest_client.rest_request(target_uri, GET)
@@ -3027,15 +3053,15 @@ class RestFunctions:
         Written for Unisphere 84, if earlier version append
         /83/ to start of uri
         :param category:
-        :return: dict, sc
+        :returns: dict, sc
         """
         target_uri = "/performance/threshold/list/%s" % category
         return self.rest_client.rest_request(target_uri, GET)
 
+    def set_perf_threshold_and_alert(
+            self, category, metric, firstthreshold, secondthreshold, notify):
+        """Set performance alerts.
 
-    def set_perf_threshold_and_alert(self, category, metric, firstthreshold,
-                                 secondthreshold, notify):
-        """
         Function to set performance alerts, suggested use with CSV file to
         get parameter settings from user template.
         Default is to check for 3 out of 5 samples before returning alert,
@@ -3047,65 +3073,63 @@ class RestFunctions:
         :param firstthreshold:
         :param secondthreshold:
         :param notify: Notify user with Alert Boolean
-        :return:
         """
-        payload=({"secondThresholdSamples": 5,"firstThreshold": firstthreshold,
-              "firstThresholdSamples": 5,"metric": metric, "alert": notify,
-              "firstThresholdOccurrrences": 3,
-              "firstThresholdSeverity": "WARNING",
-              "secondThresholdSeverity": "CRITICAL",
-              "secondThreshold": secondthreshold,
-              "secondThresholdOccurrrences": 3
-
-              })
+        payload = ({
+            "secondThresholdSamples": 5,
+            "firstThreshold": firstthreshold,
+            "firstThresholdSamples": 5,
+            "metric": metric,
+            "alert": notify,
+            "firstThresholdOccurrrences": 3,
+            "firstThresholdSeverity": "WARNING",
+            "secondThresholdSeverity": "CRITICAL",
+            "secondThreshold": secondthreshold,
+            "secondThresholdOccurrrences": 3
+        })
         target_uri = "/performance/threshold/update/%s" % category
 
-        return self.rest_client.rest_request(target_uri,PUT,
+        return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=payload)
 
-    def generate_threshold_settings_csv(self,outputcsvname):
-        """
-        Creates a CSV file with the following headers format containing current
-        alert configuration for the given unisphere instance
-        category,metric,firstthreshold,secondthreshold,notify,kpi
-        array,HostReads,100000,300000,true,true
-        array,HostWrites,100000,300000,true,false
+    def generate_threshold_settings_csv(self, outputcsvname):
+        """Create a CSV file and generate threshold settings.
+
+        Creates a CSV file with the following headers format containing
+        current alert configuration for the given unisphere instance
+        category, metric, firstthreshold, secondthreshold, notify, kpi
+        array, HostReads, 100000, 300000, true, true
+        array, HostWrites, 100000, 300000, true, false
         :param outputcsvname: filename for CSV to be generated
-        :return:
         """
         category_list = self.get_perf_threshold_categories()
-        with open(bytes(outputcsvname, 'UTF-8'), 'w',newline='') as csvfile:
+        with open(bytes(outputcsvname, 'UTF-8'), 'w', newline='') as csvfile:
             eventwriter = csv.writer(csvfile,
                                      delimiter=',',
                                      quotechar='|',
                                      quoting=csv.QUOTE_MINIMAL)
 
-            eventwriter.writerow(["category","metric","firstthreshold",
-                                  "secondthreshold","notify", "kpi"])
+            eventwriter.writerow(["category", "metric", "firstthreshold",
+                                  "secondthreshold", "notify", "kpi"])
             for category in category_list:
-                metric_setting = \
-                self.get_perf_category_threshold_settings(category)[0][
-                    'performanceThreshold']
+                metric_setting = (
+                    self.get_perf_category_threshold_settings(
+                        category)[0]['performanceThreshold'])
                 for metric in metric_setting:
-                        eventwriter.writerow([category, metric.get('metric'),
-                          metric.get('firstThreshold'), metric.get(
-                                'secondThreshold'),metric.get('alertError'),
-                                              metric.get('kpi')])
+                    eventwriter.writerow([category, metric.get('metric'),
+                                          metric.get('firstThreshold'),
+                                          metric.get('secondThreshold'),
+                                          metric.get('alertError'),
+                                          metric.get('kpi')])
 
+    def set_perfthresholds_csv(self, csvfilename):
+        """Read CSV file and set perforamnce threshold metrics.
 
-    def set_perfthresholds_csv(self,csvfilename):
-        """
-        reads CSV file, and sets perforamnce threshold metrics, should be
-        used with generate_threshold_settings_csv to produce CSV file that
-        can be edited and uploaded.
+        Reads a CSV file with the following headers format
+        category, metric, firstthreshold, secondthreshold, notify,kpi
+        array, HostReads, 100000, 300000, true, true
+        array, HostWrites, 100000, 300000, true, false
 
         :param csvfilename:
-        :return:
-        Reads a CSV file with the following headers format
-        category,metric,firstthreshold,secondthreshold,notify,kpi
-        array,HostReads,100000,300000,true,true
-        array,HostWrites,100000,300000,true,false
-        cur
         """
         data = self.read_csv_values(csvfilename)
         firstthreshold_list = data.get("firstthreshold")
@@ -3116,14 +3140,13 @@ class RestFunctions:
         kpimetric_list = data.get("kpi")
 
         for c, m, f, s, n, k in zip(categrory_list, metric_list,
-                                 firstthreshold_list,
-                                 secondthreshold_list, notify_list,
+                                    firstthreshold_list,
+                                    secondthreshold_list, notify_list,
                                     kpimetric_list):
-            #if k :
-            #unhash line above if you only want to update KPI values,
+            # if k :
+            # unhash line above if you only want to update KPI values,
             # doing this will reduce runtime of set_perfthresholds_csv
-            #you can restrict futher by filtering on category values e.g.
+            # you can restrict futher by filtering on category values e.g.
             # if c ="Array" or "RDFS": to restrict to update certain array
             # categories
             self.set_perf_threshold_and_alert(c, m, f, s, n)
-

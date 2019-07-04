@@ -1,8 +1,28 @@
+# The MIT License (MIT)
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify,
+# merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""replication.py."""
 import logging
 
-from PyU4V.utils import config_handler
 from PyU4V.utils import constants
-from PyU4V.utils import exception
 
 LOG = logging.getLogger(__name__)
 
@@ -11,7 +31,10 @@ ASYNC_UPDATE = constants.ASYNC_UPDATE
 
 
 class ReplicationFunctions(object):
+    """ReplicationFunctions."""
+
     def __init__(self, array_id, request, common, provisioning, u4v_version):
+        """__init__."""
         self.array_id = array_id
         self.common = common
         self.request = request
@@ -74,7 +97,7 @@ class ReplicationFunctions(object):
             resource_name=storage_group_name)
 
     def get_storage_group_rep_list(self, has_snapshots=False, has_srdf=False):
-        """Returns list of storage groups with replication.
+        """Return list of storage groups with replication.
 
         :param has_snapshots: return only storagegroups with snapshots
         :param has_srdf: return only storagegroups with SRDF
@@ -127,7 +150,7 @@ class ReplicationFunctions(object):
 
     def get_storagegroup_snapshot_generation_list(
             self, storagegroup_id, snap_name):
-        """Gets a snapshot and its generation count information for an sg.
+        """Get a snapshot and its generation count information for an sg.
 
         The most recent snapshot will have a gen number of 0.
         The oldest snapshot will have a gen number = genCount - 1
@@ -194,12 +217,15 @@ class ReplicationFunctions(object):
                                 "linkedStorageGroup", []):
                             linked_sg_name = linked_sg["name"]
                             LOG.debug(
-                                "Storage Group {} has expired snapshots. "
-                                "Snapshot name {}, Generation Number {}, "
-                                "snapshot expired on {}, linked storage group "
-                                "name is {}".format(
-                                    sg, snapshot_name, x,
-                                    snapexpiration, linked_sg_name))
+                                "Storage group %(sg)s has expired snapshot. "
+                                "Snapshot name %(ss)s, Generation Number "
+                                "%(gen_no)s, snapshot expired on %(snap_ex)s, "
+                                "linked storage group name is %(sg_name)s",
+                                {'sg': sg,
+                                 'ss': snapshot_name,
+                                 'gen_no': x,
+                                 'snap_ex': snapexpiration,
+                                 'sg_name': linked_sg_name})
                             expired_snap_details = {
                                 'storagegroup_name': sg,
                                 'snapshot_name': snapshot_name,
@@ -256,7 +282,7 @@ class ReplicationFunctions(object):
             resource_name=resource_name)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num=0):
-        """Restore a storage group to its snapshot
+        """Restore a storage group to its snapshot.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
@@ -268,7 +294,7 @@ class ReplicationFunctions(object):
             restore=True, gen_num=gen_num)
 
     def rename_snapshot(self, sg_id, snap_name, new_name, gen_num=0):
-        """Rename an existing storage group snapshot
+        """Rename an existing storage group snapshot.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
@@ -415,13 +441,14 @@ class ReplicationFunctions(object):
         if volume:
             remote_volume = volume['remoteVolumeName']
             remote_symm = volume['remoteSymmetrixId']
-            if (remote_volume == target_device
-                    and remote_array == remote_symm):
+            if (remote_volume == target_device and (
+                    remote_array == remote_symm)):
                 paired = True
                 local_vol_state = volume['localVolumeState']
                 rdf_pair_state = volume['rdfpairState']
         else:
-            LOG.warning("Cannot find source RDF volume {}".format(device_id))
+            LOG.warning("Cannot find source RDF volume %(device_id)s.",
+                        {'device_id': device_id})
         return paired, local_vol_state, rdf_pair_state
 
     def get_rdf_group_number(self, rdf_group_label):

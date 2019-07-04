@@ -19,13 +19,12 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
+"""REST call create_new_snap for a storage group.
 
-This python scrtipt will create a snapvx snapshot on the specified
+This python script will create a snapvx snapshot on the specified
 storage group and timestamp the name.  Each snapshot is preserved
 for 24 hours.
 
-REST call create_new_snap for a storage group.
 """
 import argparse
 from time import strftime
@@ -54,11 +53,11 @@ sg_id = ARGS.sg
 
 
 def main():
-    # assign name to snap with date and time appended to name
+    """Run main to snap with date and time appended to name."""
     snap_name = "REST_Snap_" + strftime("%d%m%Y%H%M%S")
     ru.replication.create_storagegroup_snap(sg_id, snap_name)
-    print ("Check the Gui now or REST Client to see if snapshot %s "
-           "was created for Storge Group %s" % (snap_name, sg_id))
+    print("Check the Gui now or REST Client to see if snapshot %s "
+          "was created for Storge Group %s" % (snap_name, sg_id))
 
 
 main()

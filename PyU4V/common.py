@@ -19,15 +19,16 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""common.py."""
+
 import csv
 import logging
 import time
 
-import six
-
-from PyU4V.utils import config_handler
 from PyU4V.utils import constants
 from PyU4V.utils import exception
+
+import six
 
 LOG = logging.getLogger(__name__)
 
@@ -51,7 +52,10 @@ SUCCEEDED = constants.SUCCEEDED
 
 
 class CommonFunctions(object):
+    """CommonFunctions."""
+
     def __init__(self, request, interval, retries, u4v_version):
+        """__init__."""
         self.request = request
         self.interval = interval
         self.retries = retries
@@ -191,11 +195,11 @@ class CommonFunctions(object):
         return task
 
     def _build_uri(self, *args, **kwargs):
-        """ Build the target URI.
+        """Build the target URI.
 
         :param args: optional arguments passed in to form URI
         :param kwargs: optional key word arguments passed in to form URI
-        :return: target URI -- string
+        :returns: target URI -- string
         """
         target_uri = ''
         version = None
@@ -208,7 +212,8 @@ class CommonFunctions(object):
         elif not kwargs.get('version') and not kwargs.get('no_version'):
             LOG.debug("Version has been specified along with no_version "
                       "flag, ignoring no_version flag and using version "
-                      "{ver}".format(ver=kwargs.get('version')))
+                      "%(version)s.",
+                      {'version': version})
             version = self.U4V_VERSION
         elif kwargs['no_version'] and not kwargs.get('version'):
             pass
@@ -278,7 +283,9 @@ class CommonFunctions(object):
         return message
 
     def get_resource(self, *args, **kwargs):
-        """Get resource details from the array. The args passed in are
+        """Get resource details from the array.
+
+        The args passed in are
         positional and should be passed in using the order they are listed in
         below.
 
@@ -307,7 +314,7 @@ class CommonFunctions(object):
             param object_type_id: the name of a specific resource
             param params: query parameters
 
-        :return: resource object -- dict
+        :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
 
@@ -318,10 +325,13 @@ class CommonFunctions(object):
         else:
             resource_type = None
 
-        return self.get_request(target_uri, resource_type, kwargs.get('params'))
+        return self.get_request(
+            target_uri, resource_type, kwargs.get('params'))
 
     def create_resource(self, *args, **kwargs):
-        """Create a resource. The args passed in are positional and should be
+        """Create a resource.
+
+        The args passed in are positional and should be
         passed in using the order they are listed in below.
 
         Traditional Method:
@@ -349,7 +359,7 @@ class CommonFunctions(object):
             param object_type_id: the name of a specific resource
             param payload: optional payload dict
 
-        :return: message -- string, server response
+        :returns: message -- string, server response
         """
         target_uri = self._build_uri(*args, **kwargs)
 
@@ -370,7 +380,9 @@ class CommonFunctions(object):
         return message
 
     def modify_resource(self, *args, **kwargs):
-        """Modify a resource. The args passed in are positional and should be
+        """Modify a resource.
+
+        The args passed in are positional and should be
         passed in using the order they are listed in below.
 
         Traditional Method:
@@ -398,7 +410,7 @@ class CommonFunctions(object):
             param object_type_id: the name of a specific resource
             param payload: optional payload dict
 
-        :return: message -- string (server response)
+        :returns: message -- string (server response)
         """
         target_uri = self._build_uri(*args, **kwargs)
 
@@ -418,7 +430,9 @@ class CommonFunctions(object):
         return message
 
     def delete_resource(self, *args, **kwargs):
-        """Delete a resource. The args passed in are positional and should be
+        """Delete a resource.
+
+        The args passed in are positional and should be
         passed in using the order they are listed in below.
 
         Traditional Method:
@@ -477,7 +491,7 @@ class CommonFunctions(object):
 
     @staticmethod
     def read_csv_values(file_name):
-        """Reads any csv file with headers.
+        """Read any csv file with headers.
 
         You can extract the multiple lists from the headers in the CSV file.
         In your own script, call this function and assign to data variable,
@@ -517,7 +531,7 @@ class CommonFunctions(object):
         return version, major_version
 
     def get_array_list(self, filters=None):
-        """Returns a list of arrays.
+        """Return a list of arrays.
 
         :param filters: optional dict of filters
         :return: dict
@@ -529,7 +543,7 @@ class CommonFunctions(object):
         return []
 
     def get_v3_or_newer_array_list(self, filters=None):
-        """Returns a list of V3 or newer arrays in the environment.
+        """Return a list of V3 or newer arrays in the environment.
 
         :param filters: optional dict of filters
         :return: list of array ids

@@ -19,15 +19,15 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-Sample Script to show graphing of performanc metrics using matplotlib
-
-"""
-import PyU4V
-import matplotlib.pyplot as plt
-import matplotlib.dates as md
+"""Sample Script to show graphing of performance metrics using matplotlib."""
 import datetime as dt
 import time
+
+import PyU4V
+
+import matplotlib.dates as md
+import matplotlib.pyplot as plt
+
 import numpy as np
 
 
@@ -39,22 +39,24 @@ start_date = (end_date - 3600000)
 
 
 def get_array_kpi():
+    """Get array KPIs."""
     array_metrics = ru.performance.get_array_metrics(start_date, end_date)
     return array_metrics
 
 
 def main():
+    """Run main for graphic performance metrics."""
     array_metrics = get_array_kpi()
     perfdatalist = array_metrics.get('perf_data')
     hostiolist = []
     dtstimelist = []
     readresponselist = []
-    print (perfdatalist)
+    print(perfdatalist)
     for perf_host in perfdatalist:
         hostiolist.append(perf_host.get('HostIOs'))
         readresponselist.append(perf_host.get('ReadResponseTime'))
         epochtime = (perf_host.get('timestamp'))
-        dtstime = round(epochtime/1000)
+        dtstime = round(epochtime / 1000)
         dtstimelist.append(dtstime)
 
     dateconv = np.vectorize(dt.datetime.fromtimestamp)

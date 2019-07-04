@@ -16,6 +16,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+
+"""PyU4V documentation build configuration file."""
+
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
@@ -153,6 +156,3 @@ texinfo_documents = [
      author, 'PyU4V', 'Python library for Unisphere for VMAX RestAPI.',
      'Miscellaneous'),
 ]
-
-
-

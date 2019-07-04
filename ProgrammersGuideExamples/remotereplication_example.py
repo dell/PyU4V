@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -23,8 +23,9 @@
 # This Script can be used to protect a storage group with SRDF Metro,
 # Syncronous or Asyncronous, or Adaptive copy.
 
-
+"""Remote replication example."""
 import argparse
+
 import PyU4V
 
 ####################################

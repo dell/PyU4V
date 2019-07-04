@@ -19,6 +19,8 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+"""Provisioning example."""
 import argparse
 
 from PyU4V import U4VConn
@@ -59,9 +61,11 @@ initiator_list = ru.common.create_list_from_file(hba_file)
 
 
 def provision_storage():
+    """Provisioning storage."""
     if headroom_check():
         sg_job = ru.provisioning.create_non_empty_storagegroup(
-            "SRP_1", sg_id, "Diamond", "OLTP", 1, requested_capacity, "GB", True)
+            "SRP_1", sg_id, "Diamond", "OLTP", 1, requested_capacity,
+            "GB", True)
         # showing how async functions can be worked in.
         ru.common.wait_for_job("", sg_job)
         print("Storage Group Created.")
@@ -70,14 +74,16 @@ def provision_storage():
         ru.provisioning.create_portgroup_from_file(port_file, pg_id)
         print("Port Group Created.")
         ru.provisioning.create_masking_view_existing_components(
-             pg_id, mv_id, sg_id, ig_id)
+            pg_id, mv_id, sg_id, ig_id)
         print("Masking View Created.")
     else:
         print("Headroom Check Failed, Check array Capacity Usage")
 
 
 def headroom_check():
-    headroom_cp = ru.common.get_headroom("OLTP")[0]["headroom"][0]["headroomCapacity"]
+    """Headroom check."""
+    headroom_cp = ru.common.get_headroom(
+        "OLTP")[0]["headroom"][0]["headroomCapacity"]
     if int(requested_capacity) <= int(headroom_cp):
         return True
     else:

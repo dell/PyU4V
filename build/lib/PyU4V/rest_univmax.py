@@ -20,12 +20,14 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Unisphere for VMAX REST."""
 import csv
 import logging
 import time
 
 from PyU4V.rest_requests import RestRequests
 from PyU4V.utils import config_handler
+from PyU4V.utils import exception
 
 logger = logging.getLogger(__name__)
 LOG, CFG = config_handler.set_logger_and_config(logger)
@@ -37,9 +39,12 @@ PUT = 'PUT'
 DELETE = 'DELETE'
 
 
-class rest_functions:
+class rest_functions(object):
+    """Unisphere for VMAX REST functions."""
+
     def __init__(self, username=None, password=None, server_ip=None,
                  port=None, verify=None):
+        """Initialize REST functions."""
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = CFG.get('setup', 'array')
@@ -71,8 +76,7 @@ class rest_functions:
         self.array_id = array
 
     def close_session(self):
-        """Close the current rest session
-        """
+        """Close the current rest session."""
         self.rest_client.close_session()
 
     ###############################
@@ -80,10 +84,10 @@ class rest_functions:
     ###############################
 
     def create_list_from_file(self, file_name):
-        """Given a file, create a list from its contents.  
+        """Given a file, create a list from its contents.
 
         :param file_name: the path to the file
-        :return: list of contents
+        :returns: list of contents
         """
         with open(file_name) as f:
             list_item = f.readlines()
@@ -91,21 +95,21 @@ class rest_functions:
         return list(raw_list)
 
     def read_csv_values(self, file_name):
-        """Reads any csv file with headers.
-        
+        """Read any csv file with headers.
+
         You can extract the multiple lists from the headers in the CSV file.
-        In your own script, call this function and assign to data variable, 
+        In your own script, call this function and assign to data variable,
         then extract the lists to the variables. Example:
         data=ru.read_csv_values(mycsv.csv)
         sgnamelist = data['sgname']
         policylist = data['policy']
 
         :param file_name CSV file
-        :return: Dictionary of data parsed from CSV
+        :returns: Dictionary of data parsed from CSV
         """
-        # open the file in universal line ending mode
+        # Open the file in universal line ending mode
         with open(file_name, 'rU') as infile:
-            # read the file as a dictionary for each row ({header : value})
+            # Read the file as a dictionary for each row ({header : value})
             reader = csv.DictReader(infile)
             data = {}
             for row in reader:
@@ -121,18 +125,18 @@ class rest_functions:
     ###############################
 
     def get_all_alerts(self, filters=None):
-        """Queries for a list of All Alert ids across all symmetrix arrays.
+        """Query for a list of All Alert ids across all symmetrix arrays.
 
         Optionally can be filtered by: create_date_milliseconds(=<>),
         description(=<>), type, severity, state, created_date, acknowledged.
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "univmax/restapi/system/alert"
         return self.rest_client.rest_request(target_uri, GET, filters)
 
     def get_all_jobs(self, filters=None):
-        """Queries for a list of Job ids across all symmetrix arrays.
+        """Query for a list of Job ids across all symmetrix arrays.
 
         Optionally can be filtered by: scheduled_date, name, completed_date,
         username, scheduled_date_milliseconds,
@@ -140,16 +144,16 @@ class rest_functions:
         completed_date_milliseconds (all params including =,<, or >),
         status (=).
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/system/job"
         return self.rest_client.rest_request(target_uri, GET, params=filters)
 
     def get_symmetrix_array(self, array_id=None):
-        """Returns a list of arrays, or details on a specific array.
+        """Return a list of arrays, or details on a specific array.
 
         :param array_id: the array serial number
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/system/symmetrix"
         if array_id:
@@ -166,7 +170,7 @@ class rest_functions:
         status (=).
         :param job_id: specific ID of the job (optional)
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/system/symmetrix/%s/job" % self.array_id
         if job_id:
@@ -177,13 +181,13 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, GET, params=filters)
 
     def get_array_alerts(self, alert_id=None, filters=None):
-        """Queries for a list of Alert ids for the specified symmetrix.
+        """Query for a list of Alert ids for the specified symmetrix.
 
         The optional filters are: create_date_milliseconds(=<>),
         description(=<>), type, severity, state, created_date, acknowledged.
         :param alert_id: specific id of the alert - optional
         :param filters: dict of filters - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/system/symmetrix/%s/alert" % self.array_id
         if alert_id:
@@ -198,7 +202,7 @@ class rest_functions:
 
         Acknowledge is the only "PUT" (edit) option available.
         :param alert_id: the alert id - string
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/system/symmetrix/%s/alert/%s" %
                       (self.array_id, alert_id))
@@ -210,13 +214,14 @@ class rest_functions:
         """Delete a specified alert.
 
         :param alert_id: the alert id - string
-        :return: None, status code
+        :returns: None, status code
         """
         target_uri = ("/system/symmetrix/%s/alert/%s" %
                       (self.array_id, alert_id))
         return self.rest_client.rest_request(target_uri, DELETE)
 
     def get_uni_version(self):
+        """Get the unisphere version."""
         target_uri = "/system/version"
         return self.rest_client.rest_request(target_uri, GET)
 
@@ -225,18 +230,18 @@ class rest_functions:
     #############################
 
     def get_vmax3_array_list(self):
-        """Returns a list of V3 arrays in the environment.
-        
-        :return: dict, status_code
+        """Return a list of V3 arrays in the environment.
+
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix"
         return self.rest_client.rest_request(target_uri, GET)
 
     def get_director(self, director=None):
-        """Queries for details of Symmetrix directors for a symmetrix
+        """Query for details of Symmetrix directors for a symmetrix.
 
         :param director: the director ID e.g. FA-1D - optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/director" % self.array_id
         if director:
@@ -250,7 +255,7 @@ class rest_functions:
         :param director: the director ID e.g. FA-1D
         :param port_no: the port number e.g. 1 - optional
         :param filters: optional filters - dict
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/director/%s/port"
                       % (self.array_id, director))
@@ -266,7 +271,7 @@ class rest_functions:
 
         :param director: the ID of the director
         :param port_no: the number of the port
-        :return: wwn (FC) or iqn (iscsi), or None
+        :returns: wwn (FC) or iqn (iscsi), or None
         """
         info, sc = self.get_director_port(director, port_no)
         try:
@@ -285,7 +290,7 @@ class rest_functions:
         if no host is specified.
         :param host_id: the name of the host, optional
         :param filters: optional list of filters - dict
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/host" % self.array_id
         if host_id:
@@ -297,22 +302,23 @@ class rest_functions:
 
     def create_host(self, host_name, initiator_list=None,
                     host_flags=None, init_file=None):
-        """Create a host with the given initiators. 
-        
+        """Create a host with the given initiators.
+
         Accepts either initiator_list or file.
         The initiators must not be associated with another host.
         :param host_name: the name of the new host
-        :param initiator_list: list of initiators e.g.[10000000ba873cbf,10000000ba873cba]
+        :param initiator_list: list of initiators
+        e.g.[10000000ba873cbf,10000000ba873cba]
         :param host_flags: dictionary of optional host flags to apply
         :param init_file: full path and file name.
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if init_file:
             initiator_list = self.create_list_from_file(init_file)
 
         if not init_file and not initiator_list:
-            print ("No file or initiator_list supplied, "
-                   "you must specify one or the other")
+            print("No file or initiator_list supplied, "
+                  "you must specify one or the other")
             exit()
         target_uri = "/sloprovisioning/symmetrix/%s/host" % self.array_id
         new_ig_data = ({"hostId": host_name, "initiatorId": initiator_list})
@@ -331,7 +337,7 @@ class rest_functions:
         :param remove_init_list: list of initiators to be removed
         :param add_init_list: list of initiators to be added
         :param new_name: new host name
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if host_flag_dict:
             edit_host_data = ({"editHostActionParam": {
@@ -360,7 +366,7 @@ class rest_functions:
 
         Cannot delete if associated with a masking view
         :param host_id: name of the host
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/host/%s"
                       % (self.array_id, host_id))
@@ -370,7 +376,7 @@ class rest_functions:
         """Retrieve masking view information for a specified host.
 
         :param host_id: the name of the host
-        :return: list of masking views or None
+        :returns: list of masking views or None
         """
         response, sc = self.get_hosts(host_id=host_id)
         try:
@@ -384,7 +390,7 @@ class rest_functions:
         """Get initiator details from a host.
 
         :param host_id: the name of the host
-        :return: list of initiator IDs, or None
+        :returns: list of initiator IDs, or None
         """
         response, sc = self.get_hosts(host_id=host_id)
         try:
@@ -402,7 +408,7 @@ class rest_functions:
         if no host is specified.
         :param hostgroup_id: the name of the hostgroup, optional
         :param filters: optional list of filters - dict
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/hostgroup" % self.array_id
         if hostgroup_id:
@@ -419,7 +425,7 @@ class rest_functions:
         :param hostgroup_id: the name of the new hostgroup
         :param host_list: list of hosts
         :param host_flags: dictionary of optional host flags to apply
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/hostgroup" % self.array_id
         new_ig_data = ({"hostId": host_list, "hostGroupId": hostgroup_id})
@@ -439,7 +445,7 @@ class rest_functions:
         :param remove_host_list: list of hosts to be removed
         :param add_host_list: list of hosts to be added
         :param new_name: new name of the hostgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if host_flag_dict:
             edit_host_data = ({"editHostGroupActionParam": {
@@ -468,7 +474,7 @@ class rest_functions:
 
         Cannot delete if associated with a masking view
         :param hostgroup_id: name of the hostgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/hostgroup/%s"
                       % (self.array_id, hostgroup_id))
@@ -477,13 +483,13 @@ class rest_functions:
     # initiators
 
     def get_initiators(self, initiator_id=None, filters=None):
-        """Lists initiators on a given array.
+        """List initiators on a given array.
 
         See UniSphere documenation for full list of filters.
         Can filter by initiator_id OR filters.
         :param initiator_id: initiator id, optional
         :param filters: Optional filters - dict
-        :return: initiator list
+        :returns: initiator list
         """
         target_uri = "/sloprovisioning/symmetrix/%s/initiator" % self.array_id
         if initiator_id:
@@ -505,7 +511,7 @@ class rest_functions:
         :param rename_alias: tuple ('new node name', 'new port name')
         :param set_fcid: set fcid value - string
         :param initiator_flags: dictionary of initiator flags to set
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if remove_masking_entry:
             edit_init_data = ({"editInitiatorActionParam": {
@@ -536,10 +542,10 @@ class rest_functions:
                                              request_object=edit_init_data)
 
     def is_initiator_in_host(self, initiator):
-        """Check to see if a given initiator is already assigned to a host
+        """Check to see if a given initiator is already assigned to a host.
 
         :param initiator: the initiator ID
-        :return: bool
+        :returns: bool
         """
         param = {'in_a_host': 'true', 'initiator_hba': initiator}
         response, sc = self.get_initiators(filters=param)
@@ -558,7 +564,7 @@ class rest_functions:
         Either masking_view_id or filters can be set
         :param masking_view_id: the name of the masking view
         :param filters: dictionary of filters
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview"
                       % self.array_id)
@@ -582,7 +588,7 @@ class rest_functions:
         :param storage_group_name: name of the storage group
         :param host_name: name of the host (initiator group)
         :param host_group_name: name of host group
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if host_name:
             host_details = {"useExistingHostParam": {"hostId": host_name}}
@@ -612,7 +618,7 @@ class rest_functions:
         Currently, the only supported modification is "rename".
         :param masking_view_id: the current name of the masking view
         :param new_name: the new name of the masking view
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
                       % (self.array_id, masking_view_id))
@@ -625,7 +631,7 @@ class rest_functions:
         """Delete a given masking view.
 
         :param masking_view_id: the name of the masking view
-        :return: None, status code
+        :returns: None, status code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s"
                       % (self.array_id, masking_view_id))
@@ -635,7 +641,7 @@ class rest_functions:
         """Given a masking view, get the associated host or host group.
 
         :param masking_view_id: the name of the masking view
-        :return: host ID
+        :returns: host ID
         """
         mv_details = None
         host_id = None
@@ -655,7 +661,7 @@ class rest_functions:
         """Given a masking view, get the associated storage group.
 
         :param masking_view_id: the masking view name
-        :return: the name of the storage group
+        :returns: the name of the storage group
         """
         response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
@@ -668,7 +674,7 @@ class rest_functions:
         """Given a masking view, get the associated port group.
 
         :param masking_view_id: the masking view name
-        :return: the name of the port group
+        :returns: the name of the port group
         """
         response, sc = self.get_masking_views(masking_view_id=masking_view_id)
         try:
@@ -681,7 +687,7 @@ class rest_functions:
         """Get all connection information for a given masking view.
 
         :param mv_name: the name of the masking view
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/maskingview/%s/"
                       "connections" % (self.array_id, mv_name))
@@ -690,12 +696,12 @@ class rest_functions:
     # port
 
     def get_ports(self, filters=None):
-        """Queries for a list of Symmetrix port keys.
+        """Query for a list of Symmetrix port keys.
 
         Note a mixture of Front end, back end and RDF port specific values
         are not allowed. See UniSphere documentation for possible values.
         :param filters: dictionary of filters e.g. {'vnx_attached': 'true'}
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/port" % self.array_id
         return self.rest_client.rest_request(target_uri, GET, params=filters)
@@ -707,7 +713,7 @@ class rest_functions:
 
         :param portgroup_id: the name of the portgroup
         :param filters: dictionary of filters
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
                       % self.array_id)
@@ -724,7 +730,7 @@ class rest_functions:
         :param portgroup_id: the name of the new port group
         :param director_id: the directoy id
         :param port_id: the port id
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
                       % self.array_id)
@@ -740,7 +746,7 @@ class rest_functions:
         :param portgroup_id: the name of the new port group
         :param ports: list of port dicts - {"directorId": director_id,
                                             "portId": port_id}
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup"
                       % self.array_id)
@@ -757,7 +763,7 @@ class rest_functions:
         Each director:port pair must be on a new line
         :param file_name: the path to the file
         :param portgroup_id: the name for the portgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         port_list = self.create_list_from_file(file_name)
         combined_payload = []
@@ -778,7 +784,7 @@ class rest_functions:
         :param remove_port: tuple of port details ($director_id, $portId)
         :param add_port: tuple of port details ($director_id, $portId)
         :param rename_portgroup: new portgroup name
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         if remove_port:
             edit_pg_data = ({"editPortGroupActionParam": {"removePortParam": {
@@ -806,7 +812,7 @@ class rest_functions:
         """Delete a portgroup.
 
         :param portgroup_id: the name of the portgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/portgroup/%s"
                       % (self.array_id, portgroup_id))
@@ -816,7 +822,7 @@ class rest_functions:
         """Get the symm director information from the port group.
 
         :param portgroup: the name of the portgroup
-        :return: the director information
+        :returns: the director information
         """
         info, sc = self.get_portgroups(portgroup_id=portgroup)
         try:
@@ -825,14 +831,14 @@ class rest_functions:
         except KeyError:
             LOG.error("Cannot find port key information from given portgroup")
 
-    # SLO
-
     def get_SLO(self, slo_id=None):
-        """Gets a list of available SLO's on a given array, or returns
+        """Get a list of available SLO's on a given array.
+
+        Gets a list of available SLO's on a given array, or returns
         details on a specific SLO if one is passed in in the parameters.
 
         :param slo_id: the service level agreement, optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/slo" % self.array_id
         if slo_id:
@@ -845,7 +851,7 @@ class rest_functions:
         Currently, the only modification permitted is renaming.
         :param slo_id: the current name of the slo
         :param new_name: the new name for the slo
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         edit_slo_data = ({"editSloActionParam": {
             "renameSloParam": {"sloId": new_name}}})
@@ -857,11 +863,13 @@ class rest_functions:
     # SRP
 
     def get_srp(self, srp=None):
-        """Gets a list of available SRP's on a given array, or returns
+        """Get a list of available SRP's on a given array.
+
+        Gets a list of available SRP's on a given array, or returns
         details on a specific SRP if one is passed in in the parameters.
 
         :param srp: the storage resource pool, optional
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/srp" % self.array_id
         if srp:
@@ -872,13 +880,15 @@ class rest_functions:
     #  Note: Can only create a volume in relation to a sg
 
     def get_sg(self, sg_id=None, filters=None):
-        """Gets details of all storage groups on a given array, or returns
+        """Get details of all storage groups on a given array.
+
+        Gets details of all storage groups on a given array, or returns
         details on a specific sg if one is passed in in the parameters.
 
         :param sg_id: the storage group name, optional
         :param filters: dictionary of filters e.g.
                        {'child': 'true', 'srp_name': '=SRP_1'}
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
@@ -907,7 +917,7 @@ class rest_functions:
         :param vol_size: the size of each volume
         :param capUnit: the capacity unit (MB, GB)
         :param disable_compression: Flag for disabling compression (AF only)
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         sg_params = {"sloId": slo, "workloadSelection": workload,
                      "volumeAttribute": {
@@ -928,7 +938,9 @@ class rest_functions:
     # create an empty storage group
     def create_empty_sg(self, srp_id, sg_id, slo, workload,
                         disable_compression=False):
-        """Generates a dictionary for json formatting and calls
+        """Generate a dictionary for json formatting.
+
+        Generates a dictionary for json formatting and calls
         the create_sg function to create an empty storage group
         Set the disable_compression flag for
         disabling compression on an All Flash array (where compression
@@ -938,7 +950,7 @@ class rest_functions:
         :param slo: the service level agreement (e.g. Gold)
         :param workload: the workload (e.g. DSS)
         :param disable_compression: flag for disabling compression (AF only)
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         sg_params = {"sloId": slo, "workloadSelection": workload,
                      "volumeAttribute": {
@@ -958,11 +970,13 @@ class rest_functions:
             return self._create_sg(new_sg_data)
 
     def _create_sg_83(self, new_sg_data):
-        """Creates a new storage group with supplied specifications,
+        """Create a new storage group with supplied specification.
+
+        Creates a new storage group with supplied specifications,
         given in dictionary form for json formatting
 
         :param new_sg_data: the payload of the request
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/83/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
@@ -970,11 +984,13 @@ class rest_functions:
             target_uri, POST, request_object=new_sg_data)
 
     def _create_sg(self, new_sg_data):
-        """Creates a new storage group with supplied specifications,
+        """Create a new storage group with supplied specifications.
+
+        Creates a new storage group with supplied specifications,
         given in dictionary form for json formatting
 
         :param new_sg_data: the payload of the request
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup"
                       % self.array_id)
@@ -982,11 +998,11 @@ class rest_functions:
             target_uri, POST, request_object=new_sg_data)
 
     def modify_storagegroup(self, sg_id, edit_sg_data):
-        """Edits an existing storage group
+        """Edit an existing storage group.
 
         :param sg_id: the name of the storage group
         :param edit_sg_data: the payload of the request
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
                       % (self.array_id, sg_id))
@@ -998,11 +1014,12 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume
-        :return: dict, status_code
+        :returns: dict, status_code
         """
-        add_vol_data = {"editStorageGroupActionParam": {
-                                    "addVolumeParam": {
-                                            "volumeId": [vol_id]}}}
+        add_vol_data = {
+            "editStorageGroupActionParam": {
+                "addVolumeParam": {
+                    "volumeId": [vol_id]}}}
         return self.modify_storagegroup(sg_id, add_vol_data)
 
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size, capUnit):
@@ -1012,7 +1029,7 @@ class rest_functions:
         :param num_vols: the number of volumes
         :param vol_size: the size of the volumes
         :param capUnit: the capacity unit
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         expand_sg_data = ({"editStorageGroupActionParam": {
             "expandStorageGroupParam": {
@@ -1023,11 +1040,11 @@ class rest_functions:
         return self.modify_storagegroup(sg_id, expand_sg_data)
 
     def remove_vol_from_storagegroup(self, sg_id, vol_id):
-        """Remove a volume from a given storage group
+        """Remove a volume from a given storage group.
 
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         del_vol_data = ({"editStorageGroupActionParam": {
             "removeVolumeParam": {
@@ -1040,17 +1057,17 @@ class rest_functions:
         A storage group cannot be deleted if it
         is associated with a masking view
         :param sg_id: the name of the storage group
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
                       % (self.array_id, sg_id))
         return self.rest_client.rest_request(target_uri, DELETE)
 
     def get_mv_from_sg(self, storage_group):
-        """Get the associated masking view(s) from a given storage group
+        """Get the associated masking view(s) from a given storage group.
 
         :param storage_group: the name of the storage group
-        :return: Masking view list, or None
+        :returns: Masking view list, or None
         """
         response, sc = self.get_sg(storage_group)
         mvlist = response["storageGroup"][0]["maskingview"]
@@ -1064,27 +1081,26 @@ class rest_functions:
 
         :param storage_group: String up to 32 Characters
         :param dynamic_distribution: valid values Always, Never, OnFailure
-        :param iops: integer value. Min Value 100, must be specified to 
+        :param iops: integer value. Min Value 100, must be specified to
                      nearest 100, e.g.202 is not a valid value
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/storagegroup/%s"
                       % (self.array_id, storage_group))
-        iolimits = {"editStorageGroupActionParam": {
-                        "setHostIOLimitsParam": {
-                            "host_io_limit_io_sec": iops,
-                            "dynamicDistribution": dynamic_distribution}}}
+        iolimits = {
+            "editStorageGroupActionParam": {
+                "setHostIOLimitsParam": {
+                    "host_io_limit_io_sec": iops,
+                    "dynamicDistribution": dynamic_distribution}}}
         return self.rest_client.rest_request(target_uri, PUT,
                                              request_object=iolimits)
 
-    # volume
-
     def get_volumes(self, vol_id=None, filters=None):
-        """Gets details of volume(s) from array.
+        """Get details of volume(s) from array.
 
         :param vol_id: the volume's device ID
         :param filters: dictionary of filters
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/sloprovisioning/symmetrix/%s/volume" % self.array_id
         if vol_id:
@@ -1096,11 +1112,12 @@ class rest_functions:
                                              params=filters)
 
     def get_vol_effectivewwn_details_84(self, vollist):
-        """
-        Get volume details for a list of volumes usually obtained for get_vols_from_SG
-        using 84 endpoint as this gives wwn details
-        :param vollist: 
-        :return: Dictionary 
+        """Get volume details for a list of volumes.
+
+        Get volume details for a list of volumes usually obtained
+        forget_vols_from_SG using 84 endpoint as this gives wwn details
+        :param vollist:
+        :returns: Dictionary
         """
         """Create CSV and set headings"""
         with open(bytes('wwn_data.csv', 'UTF-8'), 'wt') as csvfile:
@@ -1109,7 +1126,8 @@ class rest_functions:
                                      quotechar='|',
                                      quoting=csv.QUOTE_MINIMAL)
 
-            eventwriter.writerow(['volumeId', 'effective_wwn', 'wwn', 'has_effective_wwn', 'storageGroupId'])
+            eventwriter.writerow(['volumeId', 'effective_wwn', 'wwn',
+                                  'has_effective_wwn', 'storageGroupId'])
         for volume in vollist:
             target_uri = ("/84/sloprovisioning/symmetrix/%s/volume/%s"
                           % (self.array_id, volume))
@@ -1124,25 +1142,26 @@ class rest_functions:
                                          delimiter=',',
                                          quotechar='|',
                                          quoting=csv.QUOTE_MINIMAL)
-                eventwriter.writerow([volumeId, effective_wwn, wwn, has_effective_wwn, storageGroupId])
-
+                eventwriter.writerow([volumeId, effective_wwn, wwn,
+                                      has_effective_wwn, storageGroupId])
 
     def delete_volume(self, vol_id):
         """Delete a specified volume off the array.
+
         Note that you cannot delete volumes with any associations/ allocations
 
         :param vol_id: the device ID of the volume
-        :return: None, status_code
+        :returns: None, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/volume/%s"
                       % (self.array_id, vol_id))
         return self.rest_client.rest_request(target_uri, DELETE)
 
     def get_deviceId_from_volume(self, vol_identifier):
-        """Given the volume identifier (name), return the device ID
+        """Given the volume identifier (name), return the device ID.
 
         :param vol_identifier: the identifier of the volume
-        :return: the device ID of the volume
+        :returns: the device ID of the volume
         """
         response, sc = self.get_volumes(filters=(
             {'volume_identifier': vol_identifier}))
@@ -1150,10 +1169,10 @@ class rest_functions:
         return result['volumeId']
 
     def get_vols_from_SG(self, sg_id):
-        """Retrieve volume information associated with a particular sg
+        """Retrieve volume information associated with a particular SG.
 
         :param sg_id: the name of the storage group
-        :return: list of device IDs of associated volumes
+        :returns: list of device IDs of associated volumes
         """
         vols = []
         response, sc = self.get_volumes(filters={'storageGroupId': sg_id})
@@ -1164,12 +1183,12 @@ class rest_functions:
         return vols
 
     def get_SG_from_vols(self, vol_id):
-        """Retrieves sg information for a specified volume.
+        """Retrieve sg information for a specified volume.
 
         Note that a FAST managed volume cannot be a
         member of more than one storage group.
         :param vol_id: the device ID of the volume
-        :return: list of storage groups, or None
+        :returns: list of storage groups, or None
         """
         response, sc = self.get_volumes(vol_id=vol_id)
         try:
@@ -1195,14 +1214,15 @@ class rest_functions:
         return volume_dict
 
     def find_low_volume_utilization(self, low_utilization_percentage, csvname):
-        """
+        """Find volumes under a specified percentage.
+
         Function to find volumes under a specified percentage, may be long
         running as will check all sg on array and all storage group.  Only
         identifies volumes in storage group,  note if volume is in more
         than one sg it may show up more than once.
         :param low_utilization_percentage:
         :param csvname: filename for CFV output file
-        :return: will create csvfile with name passed
+        :returns: will create csvfile with name passed
         """
         sg_dict, rc = self.get_sg()
         sg_list = sg_dict.get('storageGroupId')
@@ -1221,27 +1241,27 @@ class rest_functions:
                     vollist = self.get_vols_from_SG(sg)
                     for vol in vollist:
                         volume = self.get_volume(vol)
-                        vol_attributes=volume.get("volume")
-                        vol_attributes_dict=vol_attributes[0]
-                        if vol_attributes_dict.get("allocated_percent") < \
-                                low_utilization_percentage:
-                            allocated = vol_attributes_dict["allocated_percent"]
+                        vol_attributes = volume.get("volume")
+                        vol_attributes_dict = vol_attributes[0]
+                        if vol_attributes_dict.get("allocated_percent") < (
+                                low_utilization_percentage):
+                            allocated = (
+                                vol_attributes_dict["allocated_percent"])
                             try:
                                 vol_identifiers = vol_attributes_dict[
                                     "volume_identifier"]
-                            except:
+                            except Exception:
                                 vol_identifiers = ("No Identifier")
                         vol_cap = (vol_attributes_dict["cap_gb"])
                         eventwriter.writerow(
                             [sg, vol, vol_identifiers, vol_cap, allocated])
-                except:
-                    eventwriter.writerow([sg,"no volumes found"])
-
+                except Exception:
+                    eventwriter.writerow([sg, "no volumes found"])
 
     def get_workload(self):
-        """Gets details of all available workload types.
+        """Get details of all available workload types.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/sloprovisioning/symmetrix/%s/workloadtype"
                       % self.array_id)
@@ -1254,32 +1274,33 @@ class rest_functions:
     def get_replication_info(self):
         """Return replication information for an array.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = '/83/replication/symmetrix/%s' % self.array_id
         return self.rest_client.rest_request(target_uri, GET)
     # snapshots
 
     def check_snap_capabilities(self):
-        """Check what replication facilities are available
+        """Check what replication facilities are available.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/replication/capabilities/symmetrix"
         return self.rest_client.rest_request(target_uri, GET)
 
     def get_snap_sg(self, sg_id):
-        """get snapshot information on a particular sg
+        """Get snapshot information on a particular SG.
 
         :param sg_id: the name of the storage group
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot"
                       % (self.array_id, sg_id))
         return self.rest_client.rest_request(target_uri, GET)
 
     def get_snap_sg_generation(self, sg_id, snap_name):
-        """Gets a snapshot and its generation count information for a Storage Group.
+        """Get a snapshot and it's generation count information for a SG.
+
         The most recent snapshot will have a gen number of 0.
         The oldest snapshot will have a gen number = genCount - 1
         (i.e. if there are 4 generations of particular snapshot,
@@ -1287,18 +1308,18 @@ class rest_functions:
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot/%s"
                       % (self.array_id, sg_id, snap_name))
         return self.rest_client.rest_request(target_uri, GET)
 
     def create_sg_snapshot(self, sg_id, snap_name):
-        """Creates a new snapshot of a specified sg
+        """Create a new snapshot of a specified SG.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/snapshot"
                       % (self.array_id, sg_id))
@@ -1307,11 +1328,11 @@ class rest_functions:
             target_uri, POST, request_object=snap_data)
 
     def create_sg_snapshot_83(self, sg_id, snap_name):
-        """Creates a new snapshot of a specified sg
+        """Create a new snapshot of a specified sg.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/snapshot"
                       % (self.array_id, sg_id))
@@ -1322,11 +1343,11 @@ class rest_functions:
             target_uri, POST, request_object=snap_data)
 
     def create_new_gen_snap(self, sg_id, snap_name):
-        """Establish a new generation of a SnapVX snapshot for a source SG
+        """Establish a new generation of a SnapVX snapshot for a source SG.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the existing snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = (
             "/replication/symmetrix/%s/storagegroup/%s/snapshot/%s/generation"
@@ -1336,12 +1357,12 @@ class rest_functions:
                                              request_object=data)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num):
-        """Restore a storage group to its snapshot
+        """Restore a storage group to its snapshot.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/"
                       "%s/snapshot/%s/generation/%d"
@@ -1351,13 +1372,13 @@ class rest_functions:
                                              request_object=snap_data)
 
     def rename_gen_snapshot(self, sg_id, snap_name, gen_num, new_name):
-        """Rename an existing storage group snapshot
+        """Rename an existing storage group snapshot.
 
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
         :param new_name: the new name of the snapshot
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
                       "snapshot/%s/generation/%d"
@@ -1368,13 +1389,13 @@ class rest_functions:
                                              request_object=snap_data)
 
     def link_gen_snapshot(self, sg_id, snap_name, gen_num, link_sg_name):
-        """Link a snapshot to another storage group
+        """Link a snapshot to another storage group.
 
         :param sg_id: Source storage group name
         :param snap_name: name of the snapshot
         :param gen_num: generation number of a snapshot (int)
         :param link_sg_name:  the target storage group name
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/%s/"
                       "snapshot/%s/generation/%d"
@@ -1387,7 +1408,7 @@ class rest_functions:
     def set_snapshot_id(self, sgname):
         """Parse a list of snaps for storage group and select from menu.
 
-        :return:String returned with the name of the selected snapshot
+        :returns:String returned with the name of the selected snapshot
         """
         snaplist = self.get_snap_sg(sgname)
         print(snaplist)
@@ -1400,8 +1421,9 @@ class rest_functions:
         snapshot_id = (snaplist[0]["name"][int(snapselection)])
         return snapshot_id
 
-    def link_gen_snapsthot_83(self, sg_id, snap_name, generation, link_sg_name):
-        """Creates a new snapshot of a specified sg
+    def link_gen_snapsthot_83(
+            self, sg_id, snap_name, generation, link_sg_name):
+        """Create a new snapshot of a specified sg.
 
         83 version will automatically create linked SG if one of the specified
         name doesn't exist
@@ -1409,7 +1431,7 @@ class rest_functions:
         :param snap_name: name of the snapshot
         :param generation: generation number of a snapshot (int)
         :param link_sg_name:  the target storage group name
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/"
                       "snapshot/%s/generation/%s"
@@ -1420,13 +1442,13 @@ class rest_functions:
             target_uri, PUT, request_object=snap_data)
 
     def delete_sg_snapshot(self, sg_id, snap_name, gen_num):
-        """Deletes a specified snapshot.
+        """Delete a specified snapshot.
 
         Can only delete snap if generation number is known
         :param sg_id: name of the storage group
         :param snap_name: name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/replication/symmetrix/%s/storagegroup/"
                       "%s/snapshot/%s/generation/%d"
@@ -1437,7 +1459,7 @@ class rest_functions:
         """Check what replication features are licensed and enabled.
 
         :param array: the Symm array serial number
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = "/replication/capabilities/symmetrix/%s" % array
         return self.rest_client.rest_request(target_uri, GET)
@@ -1446,7 +1468,7 @@ class rest_functions:
         """Check if the snapVx feature is licensed and enabled.
 
         :param array: the Symm array serial number
-        :return: True if licensed and enabled; False otherwise
+        :returns: True if licensed and enabled; False otherwise
         """
         snap_capability = False
         response, sc = self.get_replication_capabilities(array)
@@ -1465,7 +1487,7 @@ class rest_functions:
     def get_wlp_timestamp(self):
         """Get the latest timestamp from WLP for processing New Worlkloads.
 
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         target_uri = ("/82/wlp/symmetrix/%s" % self.array_id)
         return self.rest_client.rest_request(target_uri, GET)
@@ -1477,7 +1499,7 @@ class rest_functions:
         :param workload: the workload type (DSS, OLTP, DSS_REP, OLTP_REP)
         :param srp: the storage resource pool. Default SRP_1.
         :param slo: the service level. Default Diamond.
-        :return: dict, status_code (sample response
+        :returns: dict, status_code (sample response
             {'headroom': [{'workloadType': 'OLTP',
             'headroomCapacity': 29076.34, 'processingDetails':
                 {'lastProcessedSpaTimestamp': 1485302100000,
@@ -1491,14 +1513,14 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, GET)
 
     def srdf_protect_sg(self, sg_id, remote_sid, srdfmode, establish=None):
-        """
+        """SRDF protect storage group.
 
         :param sg_id: Unique string up to 32 Characters
         :param remote_sid: Type Integer 12 digit VMAX ID e.g. 000197000008
         :param srdfmode: String, values can be Active, AdaptiveCopyDisk,
                          Synchronous,Asynchronous
         :param establish: default is none. Bool
-        :return: message and status Type JSON
+        :returns: message and status Type JSON
         """
         target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/rdf_group"
                       % (self.array_id, sg_id))
@@ -1510,16 +1532,17 @@ class rest_functions:
                         "remoteStorageGroupName": sg_id,
                         "establish": establish_sg})
         print(rdf_payload)
-        return self.rest_client.rest_request(target_uri, POST, request_object=rdf_payload)
+        return self.rest_client.rest_request(
+            target_uri, POST, request_object=rdf_payload)
 
     def get_srdf_groups(self, rdfg=None):
-        """Get the SRDF groups
+        """Get the SRDF groups.
 
         :param rdfg: Optional Parameter if SRDF group is known
-        :return:
+        :returns:
         """
-
-        target_uri = ("/84/replication/symmetrix/%s/rdf_group" % self.array_id)
+        target_uri = ("/84/replication/symmetrix/%s/rdf_group"
+                      % self.array_id)
         if rdfg:
             target_uri += '/%s' % rdfg
         return self.rest_client.rest_request(target_uri, GET)
@@ -1528,7 +1551,7 @@ class rest_functions:
         """Get the SRDF number for a storage group.
 
         :param sg_id: Storage Group Name of replicated group.
-        :return:JSON dictionary Message and Status Sample returned
+        :returns:JSON dictionary Message and Status Sample returned
         {
           "storageGroupName": "REST_TEST_SG",
           "symmetrixId": "0001970xxxxx",
@@ -1542,15 +1565,14 @@ class rest_functions:
         return self.rest_client.rest_request(target_uri, GET)
 
     def get_srdf_pairs(self, rdfg, vol_id=None):
-        """Get the SRDF pairs and details about volumes
+        """Get the SRDF pairs and details about volumes.
 
         :param rdfg: SRDF group
         :param vol_id: Optional Parameter volume id for detailed informations
-        :return:
+        :returns:
         """
-
-        target_uri = ("/84/replication/symmetrix/%s/rdf_group/%s" %
-                     (self.array_id, rdfg))
+        target_uri = ("/84/replication/symmetrix/%s/rdf_group/%s"
+                      % (self.array_id, rdfg))
 
         if vol_id:
             target_uri += '/volume/%s' % vol_id
@@ -1560,14 +1582,15 @@ class rest_functions:
         """Get the current SRDF state.
 
         :param sg_id: name of storage group
-        :return:
+        :returns:
         """
         # Get a list of SRDF groups for storage group
 
         rdfg_list = self.get_srdf_num(sg_id)[0]["rdfgs"]
         # Sets the RDFG for the Get Call
         rdfg_num = rdfg_list[0]
-        target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/rdf_group/%s"
+        target_uri = ("/83/replication/symmetrix/%s/storagegroup"
+                      "/%s/rdf_group/%s"
                       % (self.array_id, sg_id, rdfg_num))
 
         return self.rest_client.rest_request(target_uri, GET)
@@ -1575,16 +1598,18 @@ class rest_functions:
     def change_srdf_state(self, sg_id, action):
         """Modify the state of an srdf.
 
-        This may be a long running task depending on the size of the SRDF group,
-        will switch to Async call when supported in 8.4 version of Unisphere.
+        This may be a long running task depending on the size of the SRDF
+        group, will switch to Async call when supported in 8.4 version of
+        Unisphere.
         :param sg_id: name of storage group
         :param action
-        :return:
+        :returns:
         """
         # Get a list of SRDF groups for storage group
         rdfg_num = None
         rdfg_list = self.get_srdf_num(sg_id)[0]["rdfgs"]
-        if len(rdfg_list) < 2:        # Check to see if RDF is cascaded.
+        if len(rdfg_list) < 2:
+            # Check to see if RDF is cascaded.
             # Sets the RDFG for the Put call to first value in list if
             # group is not cascasded.
             rdfg_num = rdfg_list[0]
@@ -1592,17 +1617,19 @@ class rest_functions:
             LOG.exception("Group is cascaded, functionality not yet added in "
                           "this python library")
         if rdfg_num:
-            target_uri = ("/83/replication/symmetrix/%s/storagegroup/%s/rdf_group/%s"
+            target_uri = ("/83/replication/symmetrix/%s/storagegroup"
+                          "/%s/rdf_group/%s"
                           % (self.array_id, sg_id, rdfg_num))
             action_payload = ({"action": action})
-            return self.rest_client.rest_request(target_uri, PUT, request_object=action_payload)
+            return self.rest_client.rest_request(
+                target_uri, PUT, request_object=action_payload)
 
     # Performance Metrics
 
     def get_fe_director_list(self):
         """Get list of all FE Directors.
 
-        :return: director list
+        :returns: director list
         """
         target_uri = "/performance/FEDirector/keys"
         dir_payload = ({"symmetrixId": self.array_id})
@@ -1615,9 +1642,9 @@ class rest_functions:
         return dir_list
 
     def get_fe_port_list(self):
-        """Function to get a list of all front end ports in the array.
+        """Get a list of all front end ports in the array.
 
-        :return: List of Directors and Ports
+        :returns: List of Directors and Ports
         """
         target_uri = "/performance/FEPort/keys"
         port_list = []
@@ -1639,7 +1666,7 @@ class rest_functions:
         """Get stats for last 4 hours.
 
         Currently only coded for one metric - can be adapted for multiple
-        :return:Requested stats
+        :returns:Requested stats
         """
         end_date = int(round(time.time() * 1000))
         start_date = (end_date - 14400000)
@@ -1657,42 +1684,51 @@ class rest_functions:
 
     def get_fe_director_metrics(self, start_date, end_date,
                                 director, dataformat):
-        """Function to get one or more metrics for front end directors.
+        """Get one or more metrics for front end directors.
 
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
         :param director:List of FE Directors
         :param dataformat:Average or Maximum
         :param dataformat:
-        :return: JSON Payload, and RETURN CODE 200 for success
+        :returns: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEDirector/metrics"
         fe_director_param = ({
-                        "symmetrixId": self.array_id,
-                        "directorId": director,
-                        "endDate": end_date,
-                        "dataFormat": dataformat,
-                        "metrics": ['AvgRDFSWriteResponseTime', 'AvgReadMissResponseTime',
-                                    'AvgWPDiscTime', 'AvgTimePerSyscall', 'DeviceWPEvents',
-                                    'HostMBs', 'HitReqs', 'HostIOs', 'MissReqs',
-                                    'AvgOptimizedReadMissSize', 'OptimizedMBReadMisses',
-                                    'OptimizedReadMisses', 'PercentBusy', 'PercentHitReqs',
-                                    'PercentReadReqs', 'PercentReadReqHit', 'PercentWriteReqs',
-                                    'PercentWriteReqHit', 'QueueDepthUtilization',
-                                    'HostIOLimitIOs', 'HostIOLimitMBs', 'ReadReqs',
-                                    'ReadHitReqs', 'ReadMissReqs', 'Reqs', 'ReadResponseTime',
-                                    'WriteResponseTime', 'SlotCollisions', 'SyscallCount',
-                                    'Syscall_RDF_DirCounts', 'SyscallRemoteDirCounts',
-                                    'SystemWPEvents', 'TotalReadCount', 'TotalWriteCount',
-                                    'WriteReqs', 'WriteHitReqs', 'WriteMissReqs'],
-                        "startDate": start_date})
+            "symmetrixId": self.array_id,
+            "directorId": director,
+            "endDate": end_date,
+            "dataFormat": dataformat,
+            "metrics": ['AvgRDFSWriteResponseTime',
+                        'AvgReadMissResponseTime',
+                        'AvgWPDiscTime',
+                        'AvgTimePerSyscall', 'DeviceWPEvents',
+                        'HostMBs', 'HitReqs', 'HostIOs',
+                        'MissReqs', 'AvgOptimizedReadMissSize',
+                        'OptimizedMBReadMisses',
+                        'OptimizedReadMisses', 'PercentBusy',
+                        'PercentHitReqs', 'PercentReadReqs',
+                        'PercentReadReqHit', 'PercentWriteReqs',
+                        'PercentWriteReqHit',
+                        'QueueDepthUtilization', 'HostIOLimitIOs',
+                        'HostIOLimitMBs', 'ReadReqs',
+                        'ReadHitReqs', 'ReadMissReqs',
+                        'Reqs', 'ReadResponseTime',
+                        'WriteResponseTime', 'SlotCollisions',
+                        'SyscallCount',
+                        'Syscall_RDF_DirCounts',
+                        'SyscallRemoteDirCounts',
+                        'SystemWPEvents', 'TotalReadCount',
+                        'TotalWriteCount', 'WriteReqs',
+                        'WriteHitReqs', 'WriteMissReqs'],
+            "startDate": start_date})
 
         return self.rest_client.rest_request(target_uri, POST,
                                              request_object=fe_director_param)
 
     def get_fe_port_metrics(self, start_date, end_date, director_id,
                             port_id, dataformat, metriclist):
-        """Function to get one or more Metrics for Front end Director ports
+        """Get one or more Metrics for Front end Director ports.
 
         :param start_date: Date EPOCH Time in Milliseconds
         :param end_date: Date EPOCH Time in Milliseconds
@@ -1702,7 +1738,7 @@ class rest_functions:
         :param metriclist: Can contain a list of one or more of PercentBusy,
         IOs, MBRead, MBWritten, MBs, AvgIOSize, SpeedGBs, MaxSpeedGBs,
         HostIOLimitIOs, HostIOLimitMBs
-        :return: JSON Payload, and RETURN CODE 200 for success
+        :returns: JSON Payload, and RETURN CODE 200 for success
         """
         target_uri = "/performance/FEPort/metrics"
         fe_director_param = ({"symmetrixId": self.array_id,
@@ -1722,11 +1758,11 @@ class rest_functions:
     def get_array_metrics(self, start_date, end_date):
         """Get array metrics.
 
-        Get all avaliable performance statistics for specified time 
+        Get all avaliable performance statistics for specified time
         period return in JSON
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return: array_results_combined
+        :returns: array_results_combined
         """
         target_uri = "/performance/Array/metrics"
         array_perf_payload = {
@@ -1772,11 +1808,11 @@ class rest_functions:
 
     def get_storage_group_metrics(self, sg_id, start_date, end_date):
         """Get storage group metrics.
-        
+
         :param sg_id: the storage group id
         :param start_date: the start date
         :param end_date: the end date
-        :return: sg_results_combined
+        :returns: sg_results_combined
         """
         target_uri = '/performance/StorageGroup/metrics'
         sg_perf_payload = {
@@ -1846,14 +1882,13 @@ class rest_functions:
     #####################################
 
     def get_all_fe_director_metrics(self, start_date, end_date):
-        """
-        
-        Get a list of all Directors.
-        Calculate start and End Dates for Gathering Performance Stats 
+        """Get a list of all Directors.
+
+        Calculate start and End Dates for Gathering Performance Stats
         Last 1 Hour.
         :param start_date: start date
         :param end_date: end date
-        :return: 
+        :returns:
         """
         dir_list = self.get_fe_director_list()
         director_results_combined = dict()
@@ -1875,12 +1910,12 @@ class rest_functions:
     def get_director_info(self, director_id, start_date, end_date):
         """Get director performance information.
 
-        Get Director level information and performance metrics for 
+        Get Director level information and performance metrics for
         specified time frame, hard coded to average numbers.
         :param director_id: Director ID
         :param start_date: start date
         :param end_date: end date
-        :return: Combined payload of all Director level information 
+        :returns: Combined payload of all Director level information
                  & performance metrics
         """
         # Create Director level target URIs
@@ -1974,13 +2009,14 @@ class rest_functions:
             'startDate': self.start_date
         }
 
-        # Perform Director level performance REST call dependent on Director type
+        # Perform Director level performance REST call dependent on
+        # Director type
         if 'DF' in director_id or 'DX' in director_id:
             perf_metrics_payload = self.rest_client.rest_request(
                 be_director_uri, POST, request_object=be_director_payload)
             director_type = 'BE'
-        elif ('EF' in director_id or 'FA' in director_id
-              or 'FE' in director_id or 'SE' in director_id):
+        elif ('EF' in director_id or 'FA' in director_id or (
+                'FE' in director_id or 'SE' in director_id)):
             perf_metrics_payload = self.rest_client.rest_request(
                 fe_director_uri, POST, request_object=fe_director_payload)
             director_type = 'FE'
@@ -1990,7 +2026,7 @@ class rest_functions:
             director_type = 'RDF'
         elif 'IM' in director_id:
             perf_metrics_payload = self.rest_client.rest_request(
-                im_director_uri, POST,  request_object=im_director_payload)
+                im_director_uri, POST, request_object=im_director_payload)
             director_type = 'IM'
         elif 'ED' in director_id:
             perf_metrics_payload = self.rest_client.rest_request(
@@ -2038,10 +2074,10 @@ class rest_functions:
     def get_port_group_metrics(self, pg_id, start_date, end_date):
         """Get Port Group Performance Metrics.
 
-        :param pg_id: 
-        :param start_date: 
-        :param end_date: 
-        :return: 
+        :param pg_id:
+        :param start_date:
+        :param end_date:
+        :returns:
         """
         target_uri = '/performance/PortGroup/metrics'
         pg_perf_payload = {
@@ -2070,13 +2106,13 @@ class rest_functions:
 
     def get_host_metrics(self, host, start_date, end_date):
         """Get host metrics.
-        
-        Get all avaliable host performance statiscics for specified 
+
+        Get all avaliable host performance statiscics for specified
         time period return in JSON.
         :param host: the host name
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return: Formatted results
+        :returns: Formatted results
         """
         target_uri = "/81/performance/Host/metrics"
         host_perf_payload = {
@@ -2101,10 +2137,10 @@ class rest_functions:
     # Alert Threshold Configuration
     def get_perf_threshold_categories(self):
         """Get performance threshold categories.
-        
-        Written for Unisphere 84, if you are on ealier, append /83 to the 
+
+        Written for Unisphere 84, if you are on ealier, append /83 to the
         endpoint.
-        :return: category_list
+        :returns: category_list
         """
         target_uri = "/performance/threshold/categories"
         categories = self.rest_client.rest_request(target_uri, GET)
@@ -2113,23 +2149,23 @@ class rest_functions:
 
     def get_perf_category_threshold_settings(self, category):
         """Get performance threshold category settings.
-        
-        Will accept valid category (categories listed from 
-        get_threshold_categories). 
-        Written for Unisphere 84, if earlier version append 
+
+        Will accept valid category (categories listed from
+        get_threshold_categories).
+        Written for Unisphere 84, if earlier version append
         /83/ to start of uri
-        :param category: 
-        :return: dict, sc
+        :param category:
+        :returns: dict, sc
         """
         target_uri = "/performance/threshold/list/%s" % category
         return self.rest_client.rest_request(target_uri, GET)
 
     def get_kpi_metrics_config(self):
         """Get KPI metrics configurations.
-        
-        Checks all Performance Alerting Thresholds and returns 
+
+        Checks all Performance Alerting Thresholds and returns
         settings for KPI Metrics.
-        :return: list of KPI metrics organised by category with each setting.
+        :returns: list of KPI metrics organised by category with each setting.
         """
         categories = self.get_perf_threshold_categories()
         perf_threshold_combined = dict()
@@ -2150,7 +2186,7 @@ class rest_functions:
             perf_threshold_list.append(perf_threshold)
         perf_threshold_combined['perf_threshold'] = perf_threshold_list
         print(perf_threshold_combined)
-        # TODO export this to CSV that can be easily modified.
+        # TODO(export this to CSV that can be easily modified).
         # Also create set function to read CSV
 
         return perf_threshold_combined
