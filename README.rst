@@ -97,6 +97,21 @@ CONTRIBUTION
 
 Please do! Create a fork of the project into your own repository. Make all your necessary changes and create a pull
 request with a description on what was added or removed and details explaining the changes in lines of code.
+Please run the following:
+
+.. code-block:: bash
+
+   # tox -e py27
+   # tox -e py36
+   # tox -e py37
+   # tox -e pep8
+   # tox -e pylint
+
+.. note::
+
+   If you do not have all the versions of python installed, just run tox on
+   the versions you have. pep8 and pylint must run clean also.
+
 If it all looks good, I'll merge it.
 
 SUPPORT
