@@ -65,7 +65,7 @@ class rest_functions(object):
                     verify = False
             except Exception:
                 verify = True
-        base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
+        base_url = "https://%s:%s/univmax/restapi" % (server_ip, port)
         self.rest_client = RestRequests(username, password, verify, base_url)
 
     def set_array(self, array):

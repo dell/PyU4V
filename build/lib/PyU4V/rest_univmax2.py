@@ -97,7 +97,7 @@ class RestFunctions(object):
                     verify = True
             except Exception:
                 verify = True
-        base_url = 'https://%s:%s/univmax/restapi' % (server_ip, port)
+        base_url = "https://%s:%s/univmax/restapi" % (server_ip, port)
         self.rest_client = RestRequests(username, password, verify,
                                         base_url)
         self.request = self.rest_client.rest_request
@@ -281,7 +281,7 @@ class RestFunctions(object):
         """
         resource_object = None
         message, sc = self.request(target_uri, GET, params=params)
-        operation = 'get %(res)s' % {'res': resource_type}
+        operation = "get %(res)s" % {'res': resource_type}
         try:
             self.check_status_code_success(operation, sc, message)
         except Exception as e:
@@ -321,7 +321,7 @@ class RestFunctions(object):
                                      version)
         message, status_code = self.request(target_uri, POST,
                                             request_object=payload)
-        operation = 'Create %(res)s resource' % {'res': resource_type}
+        operation = "Create %(res)s resource" % {'res': resource_type}
         self.check_status_code_success(
             operation, status_code, message)
         return message, status_code
@@ -344,7 +344,7 @@ class RestFunctions(object):
                                      resource_name, version)
         message, status_code = self.request(target_uri, PUT,
                                             request_object=payload)
-        operation = 'modify %(res)s resource' % {'res': resource_type}
+        operation = "modify %(res)s resource" % {'res': resource_type}
         self.check_status_code_success(operation, status_code, message)
         return message, status_code
 
@@ -366,7 +366,7 @@ class RestFunctions(object):
         message, status_code = self.request(target_uri, DELETE,
                                             request_object=payload,
                                             params=params, stream=False)
-        operation = 'delete %(res)s resource' % {'res': resource_type}
+        operation = "delete %(res)s resource" % {'res': resource_type}
         self.check_status_code_success(operation, status_code, message)
 
     @staticmethod
@@ -612,7 +612,7 @@ class RestFunctions(object):
             mv_list = response["host"][0]["maskingview"]
             return mv_list
         except KeyError:
-            LOG.debug("No masking views found for host %s." % host_id)
+            LOG.debug("No masking views found for host %s.", host_id)
             return None
 
     def get_initiator_ids_from_host(self, host_id):
@@ -2143,7 +2143,7 @@ class RestFunctions(object):
 
         :returns: dict, status_code
         """
-        target_uri = '/83/replication/symmetrix/%s' % self.array_id
+        target_uri = "/83/replication/symmetrix/%s" % self.array_id
         return self._get_request(target_uri, 'replication info')
 
     def check_snap_capabilities(self):
@@ -2203,7 +2203,7 @@ class RestFunctions(object):
             payload.update({"timeToLive": ttl})
         if hours and ttl:
             payload.update({"timeInHours": "True"})
-        resource_type = ('storagegroup/%(sg_name)s/snapshot'
+        resource_type = ("storagegroup/%(sg_name)s/snapshot"
                          % {'sg_name': sg_name})
         return self.create_resource(
             self.array_id, REPLICATION, resource_type, payload)
@@ -2354,8 +2354,8 @@ class RestFunctions(object):
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number
         """
-        resource_name = ('%(sg_name)s/snapshot/%(snap_id)s/generation/'
-                         '%(gen_num)d'
+        resource_name = ("%(sg_name)s/snapshot/%(snap_id)s/generation/"
+                         "%(gen_num)d"
                          % {'sg_name': sg_id, 'snap_id': snap_name,
                             'gen_num': gen_num})
         return self.delete_resource(

@@ -108,14 +108,14 @@ class RestRequests(object):
         except (requests.Timeout, requests.ConnectionError) as e:
             LOG.error("The %(method)s request to URL %(url)s "
                       "timed-out, but may have been successful. Please check "
-                      "the array. Exception received: %(e)s.",
+                      "the array. Exception received: %(e)s." %
                       {'method': method,
                        'url': url,
                        'e': e})
             return None, None
         except Exception as e:
             exp_message = ("The %(method)s request to URL %(url)s failed "
-                           "with exception %(e)s.",
+                           "with exception %(e)s." %
                            {'method': method,
                             'url': url,
                             'e': e})

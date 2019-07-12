@@ -50,7 +50,7 @@ class ReplicationFunctions(object):
 
         :return: dict
         """
-        target_uri = '{}/replication/symmetrix/{}'.format(
+        target_uri = "%s/replication/symmetrix/%s" % (
             self.U4V_VERSION, self.array_id)
         return self.common.get_request(target_uri, 'replication info')
 
@@ -60,8 +60,8 @@ class ReplicationFunctions(object):
         :return: array_capabilities dict
         """
         array_capabilities = {}
-        target_uri = ("/{}/replication/capabilities/symmetrix".format(
-            self.U4V_VERSION))
+        target_uri = "/%s/replication/capabilities/symmetrix" % (
+            self.U4V_VERSION)
         capabilities = self.common.get_request(
             target_uri, 'replication capabilities')
         symm_list = capabilities.get(
@@ -119,7 +119,7 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegroup name
         :return: list of snapshot names
         """
-        res_name = 'storagegroup/{}/snapshot'.format(storagegroup_id)
+        res_name = "storagegroup/%s/snapshot" % storagegroup_id
         response = self.get_resource(
             self.array_id, REPLICATION, res_name)
         snapshot_list = response.get('name', []) if response else []
@@ -143,8 +143,8 @@ class ReplicationFunctions(object):
             payload.update({"timeToLive": ttl})
             if hours:
                 payload.update({"timeInHours": "True"})
-        resource_type = ('storagegroup/%(sg_name)s/snapshot'
-                         % {'sg_name': sg_name})
+        resource_type = "storagegroup/%(sg_name)s/snapshot" % (
+            {'sg_name': sg_name})
         return self.create_resource(
             self.array_id, REPLICATION, resource_type, payload=payload)
 
@@ -162,7 +162,7 @@ class ReplicationFunctions(object):
         :return: list of generation numbers
         """
         gen_list = []
-        res_name = "{}/snapshot/{}/generation".format(
+        res_name = "%s/snapshot/%s/generation" % (
             storagegroup_id, snap_name)
         response = self.get_resource(self.array_id, REPLICATION,
                                      'storagegroup', resource_name=res_name)
@@ -178,8 +178,8 @@ class ReplicationFunctions(object):
         :param gen_num: Generation number
         :return: dict
         """
-        resource_name = ('{}/snapshot/{}/generation/{}'.format(
-            sg_id, snap_name, gen_num))
+        resource_name = "%s/snapshot/%s/generation/%s" % (
+            sg_id, snap_name, gen_num)
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup',
             resource_name=resource_name)
@@ -274,7 +274,7 @@ class ReplicationFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
 
-        resource_name = ('{}/snapshot/{}/generation/{}'.format(
+        resource_name = ("%s/snapshot/%s/generation/%s" % (
             source_sg_id, snap_name, gen_num))
 
         return self.modify_resource(
@@ -345,8 +345,8 @@ class ReplicationFunctions(object):
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number
         """
-        resource_name = ('storagegroup/{}/snapshot/{}/generation/{}'.format(
-            storagegroup, snap_name, gen_num))
+        resource_name = "storagegroup/%s/snapshot/%s/generation/%s" % (
+            storagegroup, snap_name, gen_num)
         return self.delete_resource(
             self.array_id, REPLICATION, resource_name)
 
@@ -358,7 +358,7 @@ class ReplicationFunctions(object):
         snaplist = self.get_storagegroup_snapshot_list(storagegroup_id)
         print("Choose the snapshot you want from the below list: \n")
         for counter, value in enumerate(snaplist):
-            print("{}: {}".format(counter, value))
+            print("%s: %s" % (counter, value))
         snapselection = input("Choice: ")
         snapshot_id = (snaplist[int(snapselection)])
         return snapshot_id
@@ -407,8 +407,8 @@ class ReplicationFunctions(object):
         :param rdf_number: the rdf group number
         :param device_id: the device id
         """
-        resource_name = "%(rdf)s/volume/%(dev)s" % {
-            'rdf': rdf_number, 'dev': device_id}
+        resource_name = "%(rdf)s/volume/%(dev)s" % (
+            {'rdf': rdf_number, 'dev': device_id})
         return self.get_resource(
             self.array_id, REPLICATION, 'rdf_group',
             resource_name=resource_name)
@@ -419,7 +419,7 @@ class ReplicationFunctions(object):
         :param rdf_number: the rdf group number
         :returns: list of device ids
         """
-        resource_name = "{}/volume".format(rdf_number)
+        resource_name = "%s/volume" % rdf_number
         response = self.get_resource(
             self.array_id, REPLICATION, 'rdf_group',
             resource_name=resource_name)
@@ -474,7 +474,7 @@ class ReplicationFunctions(object):
         :param storagegroup_id: Storage Group Name of replicated group
         :return: list of RDFG numbers
         """
-        res_name = "{}/rdf_group".format(storagegroup_id)
+        res_name = "%s/rdf_group" % storagegroup_id
         response = self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', resource_name=res_name)
         rdfg_list = response.get('rdfgs', []) if response else []
@@ -487,7 +487,7 @@ class ReplicationFunctions(object):
         :param rdfg_num: rdf number
         :return: dict
         """
-        res_name = "{}/rdf_group/{}".format(storagegroup_id, rdfg_num)
+        res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg_num)
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', resource_name=res_name)
 
@@ -506,7 +506,7 @@ class ReplicationFunctions(object):
         :param rdfg_number: the required RDFG number (optional)
         :return: message and status Type JSON
         """
-        res_type = "storagegroup/{}/rdf_group".format(storagegroup_id)
+        res_type = "storagegroup/%s/rdf_group" % storagegroup_id
         establish_sg = "True" if establish else "False"
         rdf_payload = {"replicationMode": srdfmode,
                        "remoteSymmId": remote_sid,

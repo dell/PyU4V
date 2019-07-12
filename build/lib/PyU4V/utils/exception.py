@@ -105,4 +105,4 @@ class InvalidInputException(PyU4VException):
 class UnauthorizedRequestException(PyU4VException):
     """UnauthorizedRequestException class."""
 
-    meesage = "Unauthorized request - please check credentials"
+    message = "Unauthorized request - please check credentials"

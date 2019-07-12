@@ -75,7 +75,7 @@ class RestRequests(object):
             timeout_val = self.timeout
         if not self.session:
             self.establish_rest_session()
-        url = ("{}{}".format(self.base_url, target_url))
+        url = "%s%s" % (self.base_url, target_url)
         try:
             if request_object:
                 response = self.session.request(

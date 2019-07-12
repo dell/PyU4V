@@ -82,7 +82,7 @@ class ProvisioningFunctions(object):
         :param port_no: the port number e.g. 1
         :return: dict
         """
-        res_name = "{}/port/{}".format(director, port_no)
+        res_name = "%s/port/%s" % (director, port_no)
         if int(self.U4V_VERSION) < 90:
             return self.get_resource(self.array_id, SLOPROVISIONING,
                                      'director',
@@ -100,7 +100,7 @@ class ProvisioningFunctions(object):
         :param filters: optional filters - dict
         :return: list of port key dicts
         """
-        resource_name = "{}/port".format(director)
+        resource_name = "%s/port" % director
         if int(self.U4V_VERSION) < 90:
             response = self.get_resource(
                 self.array_id, SLOPROVISIONING, 'director',
@@ -541,7 +541,8 @@ class ProvisioningFunctions(object):
                 element = masking_view_details['storageGroupId']
         else:
             exception_message = "Error retrieving masking group."
-            raise exception.ResourceNotFoundException(data=exception_message)
+            raise exception.ResourceNotFoundException(
+                data=exception_message)
         return element
 
     def get_common_masking_views(self, portgroup_name, ig_name):
@@ -612,7 +613,7 @@ class ProvisioningFunctions(object):
         :param filters: dict of optional filter parameters
         :return: list of masking view connection dicts
         """
-        res_name = "{}/connections".format(mv_name)
+        res_name = "%s/connections" % mv_name
         response = self.get_resource(
             self.array_id, SLOPROVISIONING,
             'maskingview', resource_name=res_name, params=filters)
@@ -632,7 +633,7 @@ class ProvisioningFunctions(object):
         connection_info = self.get_maskingview_connections(
             maskingview, filters)
         if len(connection_info) == 0:
-            LOG.error("Cannot retrive masking view connection information"
+            LOG.error("Cannot retrieve masking view connection information "
                       "for %(device_id)s in %(maskingview)s.",
                       {'device_id': device_id,
                        'maskingview': maskingview})
@@ -642,7 +643,7 @@ class ProvisioningFunctions(object):
                 host_lun_id = int(host_lun_id, 16)
             except Exception as e:
                 LOG.error("Unable to retrieve connection information "
-                          "for volume %(vol)s in masking view %(mv)s"
+                          "for volume %(vol)s in masking view %(mv)s. "
                           "Exception received: %(e)s.",
                           {'vol': device_id, 'mv': maskingview,
                            'e': e})
@@ -879,7 +880,7 @@ class ProvisioningFunctions(object):
         :param srp_id: the srp id
         :returns: list of compressibility reports
         """
-        res_name = '{}/compressibility_report'.format(srp_id)
+        res_name = "%s/compressibility_report" % srp_id
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'srp', resource_name=res_name)
         report_list = response.get(
@@ -962,6 +963,18 @@ class ProvisioningFunctions(object):
             if child_name in child_sg_list:
                 return True
         return False
+
+    def get_child_sg_from_parent(self, parent_name):
+        """Get child storage group list.
+
+        :param parent_name: the parent sg name
+        :returns: list
+        """
+        child_list = []
+        parent_sg = self.get_storage_group(parent_name)
+        if parent_sg and parent_sg.get('child_storage_group'):
+            return parent_sg['child_storage_group']
+        return child_list
 
     def create_storage_group(self, srp_id, sg_id, slo, workload=None,
                              do_disable_compression=False,
@@ -1485,7 +1498,7 @@ class ProvisioningFunctions(object):
             cap = vol['cap_gb']
         else:
             exception_message = ("Unable to retrieve size of device "
-                                 "{} on the array".format(device_id))
+                                 "%s on the array" % device_id)
             raise exception.ResourceNotFoundException(data=exception_message)
         return cap
 
