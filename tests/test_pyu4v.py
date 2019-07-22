@@ -629,7 +629,8 @@ class FakeRequestsSession(object):
         if 'storagegroup' in url:
             return_object = self._migration_sg(url)
         elif 'environment' in url:
-            if "/environment/" + self.data.migration_environment_list["arrayId"][0] in url:
+            env_name = self.data.migration_environment_list["arrayId"][0]
+            if "/environment/" + env_name in url:
                 return_object = self.data.migration_environment_details
             else:
                 return_object = self.data.migration_environment_list
@@ -2177,6 +2178,7 @@ class PyU4VReplicationTest(testtools.TestCase):
 
 
 class PyU4VMigrationTest(testtools.TestCase):
+    """Test migration."""
 
     def setUp(self):
         """Setup."""
@@ -2191,57 +2193,71 @@ class PyU4VMigrationTest(testtools.TestCase):
         self.migration = self.conn.migration
 
     def test_get_migration_info(self):
-        """Test get_migration_info"""
+        """Test get_migration_info."""
         migration_info = self.migration.get_migration_info()
         self.assertEqual(self.data.migration_info, migration_info)
 
     def test_get_array_migration_capabilities(self):
-        """Test get_array_migration_capabilities"""
+        """Test get_array_migration_capabilities."""
         capabilities = self.migration.get_array_migration_capabilities()
-        self.assertEqual(self.data.migration_capabilities['storageArrayCapability'][0], capabilities)
+        capabilities_ref = \
+            self.data.migration_capabilities['storageArrayCapability'][0]
+        self.assertEqual(capabilities_ref, capabilities)
 
     def test_get_environment_list(self):
-        """Test get_environment_list"""
+        """Test get_environment_list."""
         environment_list = self.migration.get_environment_list()
-        self.assertEqual(self.data.migration_environment_list["arrayId"], environment_list)
+        env_list_ref = self.data.migration_environment_list["arrayId"]
+        self.assertEqual(env_list_ref, environment_list)
 
     def test_get_environment(self):
-        """Test get_environment"""
-        environment_details = self.migration.get_environment(self.data.migration_environment_list["arrayId"][0])
-        self.assertEqual(self.data.migration_environment_details, environment_details)
+        """Test get_environment."""
+        env_name = self.data.migration_environment_list["arrayId"][0]
+        environment_details = self.migration.get_environment(env_name)
+        env_details_ref = self.data.migration_environment_details
+        self.assertEqual(env_details_ref, environment_details)
 
     def test_delete_environment(self):
-        """Test delete_environment"""
-        with mock.patch.object(self.migration, 'delete_resource') as mock_delete:
-            self.migration.delete_environment(self.data.migration_environment_list["arrayId"][0])
+        """Test delete_environment."""
+        with mock.patch.object(self.migration, 'delete_resource') \
+                as mock_delete:
+            env_name = self.data.migration_environment_list["arrayId"][0]
+            self.migration.delete_environment(env_name)
             mock_delete.assert_called_once()
 
     def test_get_storage_group_list(self):
-        """Test get_storage_group_list"""
+        """Test get_storage_group_list."""
         storage_group_list = self.migration.get_storage_group_list()
-        self.assertEqual(self.data.sg_list_migration['name'], storage_group_list)
+        sg_list_ref = self.data.sg_list_migration['name']
+        self.assertEqual(sg_list_ref, storage_group_list)
 
     def test_get_storage_group(self):
-        """Test get_storage_group"""
-        storage_group = self.migration.get_storage_group(self.data.sg_list_migration["name"][0])
+        """Test get_storage_group."""
+        sg_name_ref = self.data.sg_list_migration['name'][0]
+        storage_group = self.migration.get_storage_group(sg_name_ref)
         self.assertEqual(self.data.sg_details_migration[0], storage_group)
 
     def test_create_storage_group_migration(self):
-        """Test create_storage_group_migration"""
-        with mock.patch.object(self.migration, 'create_resource') as mock_create:
-            self.migration.create_storage_group_migration(self.data.storagegroup_name, self.data.remote_array)
+        """Test create_storage_group_migration."""
+        with mock.patch.object(self.migration, 'create_resource') \
+                as mock_create:
+            self.migration.create_storage_group_migration(
+                self.data.storagegroup_name, self.data.remote_array)
             self.assertEqual(1, mock_create.call_count)
 
     def test_modify_storage_group_migration(self):
-        """Test modify_storage_group_migration"""
+        """Test modify_storage_group_migration."""
         with mock.patch.object(self.migration, 'modify_resource') as mock_mod:
-            self.migration.modify_storage_group_migration(self.data.storagegroup_name, 'Recover')
+            self.migration.modify_storage_group_migration(
+                self.data.storagegroup_name, 'Recover')
             mock_mod.assert_called_once()
 
     def test_delete_storage_group_migration(self):
-        """Test delete_storage_group_migration"""
-        with mock.patch.object(self.migration, 'delete_resource') as mock_delete:
-            self.migration.delete_storage_group_migration(self.data.storagegroup_name)
+        """Test delete_storage_group_migration."""
+        with mock.patch.object(self.migration, 'delete_resource') \
+                as mock_delete:
+            self.migration.delete_storage_group_migration(
+                self.data.storagegroup_name)
             mock_delete.assert_called_once()
 
 

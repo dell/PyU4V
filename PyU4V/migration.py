@@ -31,6 +31,8 @@ ASYNC_UPDATE = constants.ASYNC_UPDATE
 
 
 class MigrationFunctions(object):
+    """MigrationFunctions."""
+
     def __init__(self, array_id, request, common, u4v_version):
         """__init__."""
         self.array_id = array_id
@@ -47,7 +49,8 @@ class MigrationFunctions(object):
 
         :return: dict
         """
-        target_uri = '/{}/migration/symmetrix/{}'.format(self.U4V_VERSION, self.array_id)
+        target_uri = '/{}/migration/symmetrix/{}'.format(
+            self.U4V_VERSION, self.array_id)
         return self.common.get_request(target_uri, 'migration info')
 
     def get_array_migration_capabilities(self):
@@ -56,9 +59,12 @@ class MigrationFunctions(object):
         :return: array_capabilities dict
         """
         array_capabilities = {}
-        target_uri = ("/{}/migration/capabilities/symmetrix".format(self.U4V_VERSION))
-        capabilities = self.common.get_request(target_uri, 'migration capabilities')
-        symm_list = capabilities.get('storageArrayCapability', []) if capabilities else []
+        target_uri = ("/{}/migration/capabilities/symmetrix".format(
+            self.U4V_VERSION))
+        capabilities = self.common.get_request(
+            target_uri, 'migration capabilities')
+        symm_list = capabilities.get('storageArrayCapability', []) \
+            if capabilities else []
         for symm in symm_list:
             if symm['arrayId'] == self.array_id:
                 array_capabilities = symm
@@ -81,26 +87,31 @@ class MigrationFunctions(object):
         :param environment_name: the name of the migration environment
         returns: environment dict
         """
-        return self.get_resource(self.array_id, MIGRATION, 'environment', resource_name=environment_name)
+        return self.get_resource(
+            self.array_id, MIGRATION, 'environment',
+            resource_name=environment_name)
 
     def delete_environment(self, environment_name):
         """Given a name, delete the migration environment.
 
         :param environment_name: the name of the environment
         """
-        return self.delete_resource(self.array_id, MIGRATION, 'environment', resource_name=environment_name)
+        return self.delete_resource(
+            self.array_id, MIGRATION, 'environment',
+            resource_name=environment_name)
 
     # Storage group endpoints
     def get_storage_group_list(self, include_migrations=False):
         """Get list of all storage groups.
 
-        :param include_migrations: return only storage groups with migration sessions
+        :param include_migrations: return only SGs with migration sessions
         :return: list of storage groups or migrating storage groups
         """
         filters = {}
         if include_migrations:
             filters.update({'includeMigrations': True})
-        response = self.get_resource(self.array_id, MIGRATION, 'storagegroup', params=filters)
+        response = self.get_resource(
+            self.array_id, MIGRATION, 'storagegroup', params=filters)
         key = 'migratingName' if include_migrations else 'name'
         storage_group_list = response.get(key, []) if response else []
         return storage_group_list
@@ -111,14 +122,17 @@ class MigrationFunctions(object):
         :param storage_group_name: the name of the storage group
         :returns: storage group dict
         """
-        return self.get_resource(self.array_id, MIGRATION, 'storagegroup', resource_name=storage_group_name)
+        return self.get_resource(
+            self.array_id, MIGRATION, 'storagegroup',
+            resource_name=storage_group_name)
 
     def create_storage_group_migration(
-            self, storage_group_name, target_array_id, srp_id=None, port_group_id=None,
-            no_compression=None, pre_copy=None, validate=None):
+            self, storage_group_name, target_array_id, srp_id=None,
+            port_group_id=None, no_compression=None, pre_copy=None,
+            validate=None):
         """Create a migration session for a storage group.
 
-        :param storage_group_name: the name of the new storage group migration session
+        :param storage_group_name: the name of the new SG migration session
         :param target_array_id: the id of the target array
         :param srp_id: the id of the storage resource pool to use
         :param port_group_id: the id of the port group to use
@@ -138,15 +152,19 @@ class MigrationFunctions(object):
             payload.update({'preCopy': pre_copy})
         if validate:
             payload.update({'validate': validate})
-        return self.create_resource(self.array_id, MIGRATION, 'storagegroup', resource_name=storage_group_name, payload=payload)
+        return self.create_resource(
+            self.array_id, MIGRATION, 'storagegroup',
+            resource_name=storage_group_name, payload=payload)
 
-    def modify_storage_group_migration(self, storage_group_name, action, options=None, _async=False):
+    def modify_storage_group_migration(
+            self, storage_group_name, action, options=None, _async=False):
         """Modify the state of a storage group's migration session.
 
         :param storage_group_name: name of the storage group
-        :param action: the migration action e.g. Cutover, Sync, Commit, Recover, ReadyTgt
-        :param options: a dict of possible options - depends on action type, example
-        options={'cutover': {'force': True}}
+        :param action: the migration action e.g. Cutover, Sync, Commit,
+                       Recover, ReadyTgt
+        :param options: a dict of possible options - depends on action type.
+                        example options={'cutover': {'force': True}}
         :param _async: flag to indicate if call should be async
         """
         payload = {'action': action}
@@ -155,11 +173,14 @@ class MigrationFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_resource(
-            self.array_id, MIGRATION, 'storagegroup', resource_name=storage_group_name, payload=payload)
+            self.array_id, MIGRATION, 'storagegroup',
+            resource_name=storage_group_name, payload=payload)
 
     def delete_storage_group_migration(self, storage_group_name):
         """Given a name, delete the storage group migration session.
 
         :param storage_group_name: the name of the migrating storage group
         """
-        self.delete_resource(self.array_id, MIGRATION, 'storagegroup', resource_name=storage_group_name)
+        self.delete_resource(
+            self.array_id, MIGRATION, 'storagegroup',
+            resource_name=storage_group_name)

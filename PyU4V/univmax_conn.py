@@ -24,10 +24,10 @@ import logging
 import time
 
 from PyU4V.common import CommonFunctions
+from PyU4V.migration import MigrationFunctions
 from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
-from PyU4V.migration import MigrationFunctions
 from PyU4V.rest_requests import RestRequests
 from PyU4V.utils import config_handler
 from PyU4V.utils import constants
