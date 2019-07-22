@@ -27,6 +27,7 @@ from PyU4V.common import CommonFunctions
 from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
+from PyU4V.migration import MigrationFunctions
 from PyU4V.rest_requests import RestRequests
 from PyU4V.utils import config_handler
 from PyU4V.utils import constants
@@ -86,6 +87,8 @@ class U4VConn(object):
         self.replication = ReplicationFunctions(
             self.array_id, self.request, self.common,
             self.provisioning, self.U4V_VERSION)
+        self.migration = MigrationFunctions(
+            self.array_id, self.request, self.common, self.U4V_VERSION)
 
     def close_session(self):
         """Close the current rest session."""
@@ -107,3 +110,4 @@ class U4VConn(object):
         self.performance.array_id = array_id
         self.provisioning.array_id = array_id
         self.replication.array_id = array_id
+        self.migration.array_id = array_id
