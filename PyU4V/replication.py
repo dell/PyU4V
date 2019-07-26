@@ -23,11 +23,22 @@
 import logging
 
 from PyU4V.utils import constants
+from PyU4V.utils import exception
 
 LOG = logging.getLogger(__name__)
 
 REPLICATION = constants.REPLICATION
 ASYNC_UPDATE = constants.ASYNC_UPDATE
+ESTABLISH = constants.ESTABLISH
+FAILBACK = constants.FAILBACK
+FAILOVER = constants.FAILOVER
+RESTORE = constants.RESTORE
+RESUME = constants.RESUME
+SETBIAS = constants.SETBIAS
+SETMODE = constants.SETMODE
+SPLIT = constants.SPLIT
+SUSPEND = constants.SUSPEND
+SWAP = constants.SWAP
 
 
 class ReplicationFunctions(object):
@@ -537,10 +548,23 @@ class ReplicationFunctions(object):
         :param _async: flag to indicate if call should be async
         """
         res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
-        payload = {"action": action}
+        srdf_actions = {
+            'ESTABLISH': ESTABLISH, 'SPLIT': SPLIT, 'SUSPEND': SUSPEND,
+            'RESTORE': RESTORE, 'RESUME': RESUME, 'FAILOVER': FAILOVER,
+            'FAILBACK': FAILBACK, 'SWAP': SWAP, 'SETBIAS': SETBIAS,
+            'SETMODE': SETMODE}
+        srdf_action = srdf_actions.get(action.upper())
+
+        if srdf_action:
+            payload = {"action": srdf_action}
+        else:
+            msg = ("SRDF Action must be one of [Establish, Split, Suspend, "
+                   "Restore, Resume, Failover, Failback, Swap, SetBias, "
+                   "SetMode]")
+            LOG.exception(msg)
+            raise exception.VolumeBackendAPIException(data=msg)
         if _async:
             payload.update(ASYNC_UPDATE)
-
         if options and action:
             payload.update(options)
 

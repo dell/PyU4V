@@ -2067,11 +2067,36 @@ class PyU4VReplicationTest(testtools.TestCase):
         """Test test_modify_storagegroup_srdf."""
         with mock.patch.object(
                 self.replication, 'modify_resource') as mock_mod:
-
+            # Lowercase action
             self.replication.modify_storagegroup_srdf(
                 self.data.storagegroup_name, 'suspend', self.data.rdf_group_no,
                 options=None, _async=False)
             mock_mod.assert_called_once()
+            mock_mod.reset_mock()
+            # Uppercase action
+            self.replication.modify_storagegroup_srdf(
+                self.data.storagegroup_name, 'SUSPEND', self.data.rdf_group_no,
+                options=None, _async=False)
+            mock_mod.assert_called_once()
+            mock_mod.reset_mock()
+            # Correct case action
+            self.replication.modify_storagegroup_srdf(
+                self.data.storagegroup_name, 'SetMode', self.data.rdf_group_no,
+                options=None, _async=False)
+            mock_mod.assert_called_once()
+            mock_mod.reset_mock()
+            # Mixed case action
+            self.replication.modify_storagegroup_srdf(
+                self.data.storagegroup_name, 'sEtBIAs', self.data.rdf_group_no,
+                options=None, _async=False)
+            mock_mod.assert_called_once()
+            mock_mod.reset_mock()
+
+        # Invalid action passed, exception raised
+        self.assertRaises(exception.VolumeBackendAPIException,
+                          self.replication.modify_storagegroup_srdf,
+                          self.data.storagegroup_name, 'None',
+                          self.data.rdf_group_no,)
 
     def test_suspend_storagegroup_srdf(self):
         """Test suspend_storagegroup_srdf."""
