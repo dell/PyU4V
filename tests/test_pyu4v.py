@@ -2219,8 +2219,8 @@ class PyU4VMigrationTest(testtools.TestCase):
 
     def test_delete_environment(self):
         """Test delete_environment."""
-        with mock.patch.object(self.migration,
-                               'delete_resource') as mock_delete:
+        with mock.patch.object(
+                self.migration, 'delete_resource') as mock_delete:
             env_name = self.data.migration_environment_list["arrayId"][0]
             self.migration.delete_environment(env_name)
             mock_delete.assert_called_once()
@@ -2239,8 +2239,8 @@ class PyU4VMigrationTest(testtools.TestCase):
 
     def test_create_storage_group_migration(self):
         """Test create_storage_group_migration."""
-        with mock.patch.object(self.migration,
-                               'create_resource') as mock_create:
+        with mock.patch.object(
+                self.migration, 'create_resource') as mock_create:
             self.migration.create_storage_group_migration(
                 self.data.storagegroup_name, self.data.remote_array)
             self.assertEqual(1, mock_create.call_count)
@@ -2254,8 +2254,8 @@ class PyU4VMigrationTest(testtools.TestCase):
 
     def test_delete_storage_group_migration(self):
         """Test delete_storage_group_migration."""
-        with mock.patch.object(self.migration,
-                                'delete_resource') as mock_delete:
+        with mock.patch.object(
+                self.migration, 'delete_resource') as mock_delete:
             self.migration.delete_storage_group_migration(
                 self.data.storagegroup_name)
             mock_delete.assert_called_once()
