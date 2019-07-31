@@ -63,8 +63,8 @@ class MigrationFunctions(object):
             self.U4V_VERSION))
         capabilities = self.common.get_request(
             target_uri, 'migration capabilities')
-        symm_list = capabilities.get('storageArrayCapability', []) \
-            if capabilities else []
+        symm_list = (capabilities.get('storageArrayCapability', [])
+            if capabilities else [])
         for symm in symm_list:
             if symm['arrayId'] == self.array_id:
                 array_capabilities = symm
