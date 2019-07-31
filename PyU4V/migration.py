@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -47,7 +47,7 @@ class MigrationFunctions(object):
     def get_migration_info(self):
         """Return migration information for an array.
 
-        :return: dict
+        :returns: dict
         """
         target_uri = '/{}/migration/symmetrix/{}'.format(
             self.U4V_VERSION, self.array_id)
@@ -56,7 +56,7 @@ class MigrationFunctions(object):
     def get_array_migration_capabilities(self):
         """Check what migration facilities are available.
 
-        :return: array_capabilities dict
+        :returns: array_capabilities dict
         """
         array_capabilities = {}
         target_uri = ("/{}/migration/capabilities/symmetrix".format(
@@ -75,7 +75,7 @@ class MigrationFunctions(object):
     def get_environment_list(self):
         """Get list of all environments.
 
-        :return: list of all environments
+        :returns: list of all environments
         """
         response = self.get_resource(self.array_id, MIGRATION, 'environment')
         environment_list = response.get('arrayId', []) if response else []
@@ -105,7 +105,7 @@ class MigrationFunctions(object):
         """Get list of all storage groups.
 
         :param include_migrations: return only SGs with migration sessions
-        :return: list of storage groups or migrating storage groups
+        :returns: list of storage groups or migrating storage groups
         """
         filters = {}
         if include_migrations:
@@ -139,7 +139,7 @@ class MigrationFunctions(object):
         :param no_compression: boolean, whether or not to use compression
         :param pre_copy: boolean, whether or not to pre copy
         :param validate: boolean, whether or not to validate
-        :return: the new storage group dict
+        :returns: the new storage group dict
         """
         payload = {"otherArrayId": target_array_id}
         if srp_id:
