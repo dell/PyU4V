@@ -14,7 +14,7 @@
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
 # IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -22,8 +22,11 @@
 """setup.py."""
 from setuptools import setup
 
+with open("README.rst", "r") as fh:
+    long_description = fh.read()
+
 setup(name='PyU4V',
-      version='3.0.0.15',
+      version='3.0.0.16',
       url='https://github.com/MichaelMcAleer/PyU4V/',
       author='Dell Inc. or its subsidiaries',
       author_email='Michael.Mcaleer@dell.com',
@@ -47,7 +50,8 @@ setup(name='PyU4V',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'Topic :: Internet :: WWW/HTTP',
-          'Topic :: Software Development :: Libraries :: Python Modules', ],
+          'Topic :: Software Development :: Libraries :: Python Modules'],
       tests_require=['mock', 'testtools'],
-      test_suite='tests'
-      )
+      test_suite='tests',
+      long_description=long_description,
+      long_description_content_type="text/markdown")
