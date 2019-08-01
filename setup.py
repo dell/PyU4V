@@ -54,4 +54,4 @@ setup(name='PyU4V',
       tests_require=['mock', 'testtools'],
       test_suite='tests',
       long_description=long_description,
-      long_description_content_type="text/markdown")
+      long_description_content_type="text/x-rst")
