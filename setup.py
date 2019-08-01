@@ -22,9 +22,6 @@
 """setup.py."""
 from setuptools import setup
 
-with open("README.rst", "r") as fh:
-    long_description = fh.read()
-
 setup(name='PyU4V',
       version='3.0.0.16',
       url='https://github.com/MichaelMcAleer/PyU4V/',
@@ -52,6 +49,4 @@ setup(name='PyU4V',
           'Topic :: Internet :: WWW/HTTP',
           'Topic :: Software Development :: Libraries :: Python Modules'],
       tests_require=['mock', 'testtools'],
-      test_suite='tests',
-      long_description=long_description,
-      long_description_content_type="text/x-rst")
+      test_suite='tests')
