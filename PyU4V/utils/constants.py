@@ -51,3 +51,15 @@ SUCCEEDED = 'succeeded'
 ASYNCHRONOUS = "ASYNCHRONOUS"
 ASYNC_UPDATE = {'executionOption': ASYNCHRONOUS}
 CREATE_VOL_STRING = "Creating new Volumes"
+
+# Replication Modes
+ESTABLISH = 'Establish'
+FAILBACK = 'Failback'
+FAILOVER = 'Failover'
+RESTORE = 'Restore'
+RESUME = 'Resume'
+SETBIAS = 'SetBias'
+SETMODE = 'SetMode'
+SPLIT = 'Split'
+SUSPEND = 'Suspend'
+SWAP = 'Swap'
