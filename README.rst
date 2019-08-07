@@ -163,7 +163,7 @@ For neatness and readability we will enforce the following conventions going for
     def public_function_does_exactly_what_it_says_it_does(self):
         """Function does exactly what it says on the tin."""
 
-7. Public Methods are prefixed and separated by underscores _.  Make the name as meaningful as possible
+7. Private Methods are prefixed and separated by underscores _.  Make the name as meaningful as possible
 
 .. code-block::
 
