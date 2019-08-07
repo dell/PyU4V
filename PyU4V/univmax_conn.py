@@ -52,9 +52,9 @@ class U4VConn(object):
             try:
                 self.array_id = CFG.get('setup', 'array')
             except Exception:
-                LOG.warning('No array id specified. Please set '
-                            'array ID using the "set_array_id(array_id)" '
-                            'function.')
+                LOG.warning("No array id specified. Please set "
+                            "array ID using the 'set_array_id(array_id)' "
+                            "function.")
         if CFG is not None:
             if not username:
                 username = CFG.get('setup', 'username')
@@ -73,8 +73,7 @@ class U4VConn(object):
                     verify = True
             except Exception:
                 verify = True
-        base_url = 'https://{server_ip}:{port}/univmax/restapi'.format(
-            server_ip=server_ip, port=port)
+        base_url = "https://%s:%s/univmax/restapi" % (server_ip, port)
         self.rest_client = RestRequests(username, password, verify, base_url)
         self.request = self.rest_client.rest_request
         self.U4V_VERSION = u4v_version
