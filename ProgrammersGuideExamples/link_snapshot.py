@@ -52,7 +52,7 @@ mvname = ln_sg_id + '_MV'
 def main():
     """Run main for link snapshot."""
     mysnap = ru.replication.set_snapshot_id(sg_id)
-    print('You Chose Snap %s' % mysnap)
+    print('You Chose Snap {mysnap}'.format(mysnap=mysnap))
     snap_job = ru.replication.link_gen_snapshot(
         sg_id=sg_id, snap_name=mysnap, gen_num=0,
         link_sg_name=ln_sg_id, asynchronous=True)

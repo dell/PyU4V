@@ -56,8 +56,9 @@ def main():
     """Run main to snap with date and time appended to name."""
     snap_name = 'REST_Snap_' + strftime('%d%m%Y%H%M%S')
     ru.replication.create_storagegroup_snap(sg_id, snap_name)
-    print('Check the Gui now or REST Client to see if snapshot %s '
-          'was created for Storge Group %s' % (snap_name, sg_id))
+    print('Check the Gui now or REST Client to see if snapshot '
+          '{snap_name} was created for Storge Group {sg_id}'
+          .format(snap_name=snap_name, sg_id=sg_id))
 
 
 main()
