@@ -67,7 +67,7 @@ class RestRequests(object):
         :param params: Additional URL parameters
         :param request_object: request payload (dict)
         :param timeout: optional timeout override
-        :return: server response object (dict), status code
+        :returns: server response object (dict), status code
         """
         if timeout:
             timeout_val = timeout
@@ -75,7 +75,8 @@ class RestRequests(object):
             timeout_val = self.timeout
         if not self.session:
             self.establish_rest_session()
-        url = "%s%s" % (self.base_url, target_url)
+        url = '{base_url}{target_url}'.format(
+            base_url=self.base_url, target_url=target_url)
         try:
             if request_object:
                 response = self.session.request(
@@ -93,31 +94,29 @@ class RestRequests(object):
             try:
                 response = response.json()
             except ValueError:
-                LOG.debug("No response received from API. Status code "
-                          "received is %(status_code)s.",
+                LOG.debug('No response received from API. Status code '
+                          'received is %(status_code)s.',
                           {'status_code': status_code})
                 response = None
-            LOG.debug("%(method)s request to %(url)s has returned "
-                      "with a status code of: %(status_code)s.",
+            LOG.debug('%(method)s request to %(url)s has returned '
+                      'with a status code of: %(status_code)s.',
                       {'method': method,
                        'url': url,
                        'status_code': status_code})
             return response, status_code
 
         except (requests.Timeout, requests.ConnectionError) as e:
-            LOG.error("The %(method)s request to URL %(url)s "
-                      "timed-out, but may have been successful. Please check "
-                      "the array. Exception received: %(e)s.",
+            LOG.error('The %(method)s request to URL %(url)s '
+                      'timed-out, but may have been successful. Please check '
+                      'the array. Exception received: %(e)s.',
                       {'method': method,
                        'url': url,
                        'e': e})
             return None, None
         except Exception as e:
-            exp_message = ("The %(method)s request to URL %(url)s failed "
-                           "with exception %(e)s.",
-                           {'method': method,
-                            'url': url,
-                            'e': e})
+            exp_message = (
+                'The {method} request to URL{url} failed '
+                'with exception {e}.'.format(method=method, url=url, e=e))
             raise exception.VolumeBackendAPIException(data=exp_message)
 
     def close_session(self):

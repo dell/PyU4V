@@ -51,11 +51,11 @@ ARGS = PARSER.parse_args()
 sgname = ARGS.sg
 hba_file = ARGS.ig
 port_file = ARGS.pg
-appname = "REST_" + sgname
-sg_id = appname + "_SG"
-ig_id = appname + "_IG"
-pg_id = appname + "_PG"
-mv_id = appname + "_MV"
+appname = 'REST_' + sgname
+sg_id = appname + '_SG'
+ig_id = appname + '_IG'
+pg_id = appname + '_PG'
+mv_id = appname + '_MV'
 requested_capacity = ARGS.cap
 initiator_list = ru.common.create_list_from_file(hba_file)
 
@@ -64,26 +64,26 @@ def provision_storage():
     """Provisioning storage."""
     if headroom_check():
         sg_job = ru.provisioning.create_non_empty_storagegroup(
-            "SRP_1", sg_id, "Diamond", "OLTP", 1, requested_capacity,
-            "GB", True)
+            'SRP_1', sg_id, 'Diamond', 'OLTP', 1, requested_capacity,
+            'GB', True)
         # showing how async functions can be worked in.
-        ru.common.wait_for_job("", sg_job)
-        print("Storage Group Created.")
+        ru.common.wait_for_job('', sg_job)
+        print('Storage Group Created.')
         ru.provisioning.create_host(ig_id, initiator_list)
-        print("Host Created.")
+        print('Host Created.')
         ru.provisioning.create_portgroup_from_file(port_file, pg_id)
-        print("Port Group Created.")
+        print('Port Group Created.')
         ru.provisioning.create_masking_view_existing_components(
             pg_id, mv_id, sg_id, ig_id)
-        print("Masking View Created.")
+        print('Masking View Created.')
     else:
-        print("Headroom Check Failed, Check array Capacity Usage")
+        print('Headroom Check Failed, Check array Capacity Usage')
 
 
 def headroom_check():
     """Headroom check."""
     headroom_cp = ru.common.get_headroom(
-        "OLTP")[0]["headroom"][0]["headroomCapacity"]
+        'OLTP')[0]['headroom'][0]['headroomCapacity']
     if int(requested_capacity) <= int(headroom_cp):
         return True
     else:

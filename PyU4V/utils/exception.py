@@ -35,7 +35,7 @@ CFG = config_handler.set_logger_and_config()
 class PyU4VException(Exception):
     """PyU4VException."""
 
-    message = "An unknown exception occurred."
+    message = 'An unknown exception occurred.'
     code = 500
     headers = {}
     safe = False
@@ -64,7 +64,7 @@ class PyU4VException(Exception):
                 # log the issue and the kwargs
                 LOG.exception('Exception in string format operation')
                 for name, value in kwargs.items():
-                    LOG.error("%(name)s: %(value)s",
+                    LOG.error('%(name)s: %(value)s',
                               {'name': name, 'value': value})
                 # at least get the core message out if something happened
                 message = self.message
@@ -85,23 +85,23 @@ class PyU4VException(Exception):
 class VolumeBackendAPIException(PyU4VException):
     """VolumeBackendAPIException."""
 
-    message = ("Bad or unexpected response from the storage volume "
-               "backend API: %(data)s")
+    message = ('Bad or unexpected response from the storage volume '
+               'backend API: %(data)s')
 
 
 class ResourceNotFoundException(PyU4VException):
     """ResourceNotFoundException."""
 
-    message = "The requested resource was not found: %(data)s"
+    message = 'The requested resource was not found: %(data)s'
 
 
 class InvalidInputException(PyU4VException):
     """InvalidInputException."""
 
-    message = "Invalid input received: %(data)s"
+    message = 'Invalid input received: %(data)s'
 
 
 class UnauthorizedRequestException(PyU4VException):
     """UnauthorizedRequestException."""
 
-    meesage = "Unauthorized request - please check credentials"
+    meesage = 'Unauthorized request - please check credentials'

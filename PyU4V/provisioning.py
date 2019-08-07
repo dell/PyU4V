@@ -52,10 +52,10 @@ class ProvisioningFunctions(object):
         """Query for details of a director for a symmetrix.
 
         :param director: the director ID e.g. FA-1D
-        :return: dict
+        :returns: dict
         """
         if int(self.U4V_VERSION) >= 90:
-            return self.get_resource(self.array_id, "system", 'director',
+            return self.get_resource(self.array_id, 'system', 'director',
                                      resource_name=director)
         else:
             return self.get_resource(self.array_id, SLOPROVISIONING,
@@ -64,14 +64,14 @@ class ProvisioningFunctions(object):
     def get_director_list(self):
         """Query for details of Symmetrix directors for a symmetrix.
 
-        :return: director list
+        :returns: director list
         """
         if int(self.U4V_VERSION) < 90:
             response = self.get_resource(
                 self.array_id, SLOPROVISIONING, 'director')
         else:
             response = self.get_resource(
-                self.array_id, "system", 'director')
+                self.array_id, 'system', 'director')
         director_list = response.get('directorId', []) if response else []
         return director_list
 
@@ -80,15 +80,16 @@ class ProvisioningFunctions(object):
 
         :param director: the director ID e.g. FA-1D
         :param port_no: the port number e.g. 1
-        :return: dict
+        :returns: dict
         """
-        res_name = "%s/port/%s" % (director, port_no)
+        res_name = '{director}/port/{port_no}'.format(
+            director=director, port_no=port_no)
         if int(self.U4V_VERSION) < 90:
             return self.get_resource(self.array_id, SLOPROVISIONING,
                                      'director',
                                      resource_name=res_name)
         else:
-            return self.get_resource(self.array_id, "system", 'director',
+            return self.get_resource(self.array_id, 'system', 'director',
                                      resource_name=res_name)
 
     def get_director_port_list(self, director, filters=None):
@@ -98,16 +99,16 @@ class ProvisioningFunctions(object):
 
         :param director: the director ID e.g. FA-1D
         :param filters: optional filters - dict
-        :return: list of port key dicts
+        :returns: list of port key dicts
         """
-        resource_name = "%s/port" % director
+        resource_name = '{director}/port'.format(director=director)
         if int(self.U4V_VERSION) < 90:
             response = self.get_resource(
                 self.array_id, SLOPROVISIONING, 'director',
                 resource_name=resource_name, params=filters)
         else:
             response = self.get_resource(
-                self.array_id, "system", 'director',
+                self.array_id, 'system', 'director',
                 resource_name=resource_name, params=filters)
 
         port_key_list = response.get('symmetrixPortKey') if response else []
@@ -118,7 +119,7 @@ class ProvisioningFunctions(object):
 
         :param director: the ID of the director
         :param port_no: the number of the port
-        :return: wwn (FC) or iqn (iscsi), or None
+        :returns: wwn (FC) or iqn (iscsi), or None
         """
         wwn = None
         port_info = self.get_director_port(director, port_no)
@@ -126,14 +127,14 @@ class ProvisioningFunctions(object):
             try:
                 wwn = port_info['symmetrixPort']['identifier']
             except KeyError:
-                LOG.error("Cannot retrieve port information")
+                LOG.error('Cannot retrieve port information')
         return wwn
 
     def get_host(self, host_id):
         """Get details on a host on the array.
 
         :param host_id: the name of the host, optional
-        :return: dict
+        :returns: dict
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'host',
                                  resource_name=host_id)
@@ -144,7 +145,7 @@ class ProvisioningFunctions(object):
         See documentation for applicable filters.
 
         :param filters: optional list of filters - dict
-        :return: list of hosts
+        :returns: list of hosts
         """
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'host', params=filters)
@@ -165,15 +166,15 @@ class ProvisioningFunctions(object):
         :param host_flags: dictionary of optional host flags to apply
         :param init_file: full path to file that contains initiator names
         :param _async: Flag to indicate if call should be _async
-        :return: dict
+        :returns: dict
         """
         if init_file:
             initiator_list = self.common.create_list_from_file(init_file)
-        new_ig_data = ({"hostId": host_name})
+        new_ig_data = ({'hostId': host_name})
         if initiator_list and len(initiator_list) > 0:
-            new_ig_data.update({"initiatorId": initiator_list})
+            new_ig_data.update({'initiatorId': initiator_list})
         if host_flags:
-            new_ig_data.update({"hostFlags": host_flags})
+            new_ig_data.update({'hostFlags': host_flags})
         if _async:
             new_ig_data.update(ASYNC_UPDATE)
         return self.create_resource(self.array_id, SLOPROVISIONING,
@@ -190,24 +191,24 @@ class ProvisioningFunctions(object):
         :param remove_init_list: list of initiators to be removed
         :param add_init_list: list of initiators to be added
         :param new_name: new host name
-        :return: dict
+        :returns: dict
         """
         if host_flag_dict:
-            edit_host_data = ({"editHostActionParam": {
-                "setHostFlagsParam": {"hostFlags": host_flag_dict}}})
+            edit_host_data = ({'editHostActionParam': {
+                'setHostFlagsParam': {'hostFlags': host_flag_dict}}})
         elif remove_init_list:
-            edit_host_data = ({"editHostActionParam": {
-                "removeInitiatorParam": {"initiator": remove_init_list}}})
+            edit_host_data = ({'editHostActionParam': {
+                'removeInitiatorParam': {'initiator': remove_init_list}}})
         elif add_init_list:
-            edit_host_data = ({"editHostActionParam": {
-                "addInitiatorParam": {"initiator": add_init_list}}})
+            edit_host_data = ({'editHostActionParam': {
+                'addInitiatorParam': {'initiator': add_init_list}}})
         elif new_name:
-            edit_host_data = {"editHostActionParam": {
-                "renameHostParam": {"new_host_name": new_name}}}
+            edit_host_data = {'editHostActionParam': {
+                'renameHostParam': {'new_host_name': new_name}}}
         else:
-            msg = ("No modify host parameters chosen - please supply one "
-                   "of the following: host_flag_dict, remove_init_list, "
-                   "add_init_list, or new_name.")
+            msg = ('No modify host parameters chosen - please supply one '
+                   'of the following: host_flag_dict, remove_init_list, '
+                   'add_init_list, or new_name.')
             raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'host', payload=edit_host_data,
@@ -227,31 +228,31 @@ class ProvisioningFunctions(object):
         """Retrieve masking view information for a specified host.
 
         :param host_id: the name of the host
-        :return: list of masking views
+        :returns: list of masking views
         """
         mv_list = []
         host_details = self.get_host(host_id)
         if host_details and host_details.get('maskingview'):
-            mv_list = host_details["maskingview"]
+            mv_list = host_details['maskingview']
         return mv_list
 
     def get_initiator_ids_from_host(self, host_id):
         """Get initiator details from a host.
 
         :param host_id: the name of the host
-        :return: list of initiator IDs
+        :returns: list of initiator IDs
         """
         initiator_list = []
         host_details = self.get_host(host_id)
         if host_details and host_details.get('initiator'):
-            initiator_list = host_details["initiator"]
+            initiator_list = host_details['initiator']
         return initiator_list
 
     def get_hostgroup(self, hostgroup_id):
         """Get details on a hostgroup on the array.
 
         :param hostgroup_id: the name of the hostgroup
-        :return: dict
+        :returns: dict
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'hostgroup',
                                  resource_name=hostgroup_id)
@@ -262,7 +263,7 @@ class ProvisioningFunctions(object):
         See unisphere documentation for applicable filters.
 
         :param filters: optional list of filters - dict
-        :return: dict
+        :returns: dict
         """
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'hostgroup', params=filters)
@@ -277,11 +278,11 @@ class ProvisioningFunctions(object):
         :param host_list: list of hosts
         :param host_flags: dictionary of optional host flags to apply
         :param _async: Flag to indicate if call should be async
-        :return: dict
+        :returns: dict
         """
-        new_ig_data = ({"hostId": host_list, "hostGroupId": hostgroup_id})
+        new_ig_data = ({'hostId': host_list, 'hostGroupId': hostgroup_id})
         if host_flags:
-            new_ig_data.update({"hostFlags": host_flags})
+            new_ig_data.update({'hostFlags': host_flags})
         if _async:
             new_ig_data.update(ASYNC_UPDATE)
         return self.create_resource(self.array_id, SLOPROVISIONING,
@@ -299,24 +300,24 @@ class ProvisioningFunctions(object):
         :param remove_host_list: list of hosts to be removed
         :param add_host_list: list of hosts to be added
         :param new_name: new name of the hostgroup
-        :return: dict
+        :returns: dict
         """
         if host_flag_dict:
-            edit_host_data = ({"editHostGroupActionParam": {
-                "setHostGroupFlagsParam": {"hostFlags": host_flag_dict}}})
+            edit_host_data = ({'editHostGroupActionParam': {
+                'setHostGroupFlagsParam': {'hostFlags': host_flag_dict}}})
         elif remove_host_list:
-            edit_host_data = ({"editHostGroupActionParam": {
-                "removeHostParam": {"host": remove_host_list}}})
+            edit_host_data = ({'editHostGroupActionParam': {
+                'removeHostParam': {'host': remove_host_list}}})
         elif add_host_list:
-            edit_host_data = ({"editHostGroupActionParam": {
-                "addHostParam": {"host": add_host_list}}})
+            edit_host_data = ({'editHostGroupActionParam': {
+                'addHostParam': {'host': add_host_list}}})
         elif new_name:
-            edit_host_data = {"editHostGroupActionParam": {
-                "renameHostGroupParam": {"new_host_group_name": new_name}}}
+            edit_host_data = {'editHostGroupActionParam': {
+                'renameHostGroupParam': {'new_host_group_name': new_name}}}
         else:
-            msg = ("No modify hostgroup parameters chosen - please supply "
-                   "one of the following: host_flag_dict, "
-                   "remove_host_list, add_host_list, or new_name.")
+            msg = ('No modify hostgroup parameters chosen - please supply '
+                   'one of the following: host_flag_dict, '
+                   'remove_host_list, add_host_list, or new_name.')
             raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'hostgroup',
@@ -336,7 +337,7 @@ class ProvisioningFunctions(object):
         """Get details of an initiator.
 
         :param initiator_id: initiator id, optional
-        :return: initiator details
+        :returns: initiator details
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'initiator',
                                  resource_name=initiator_id)
@@ -365,30 +366,30 @@ class ProvisioningFunctions(object):
         :param rename_alias: tuple ('new node name', 'new port name')
         :param set_fcid: set fcid value - string
         :param initiator_flags: dictionary of initiator flags to set
-        :return: dict
+        :returns: dict
         """
         if remove_masking_entry:
-            edit_init_data = ({"editInitiatorActionParam": {
-                "removeMaskingEntry": remove_masking_entry}})
+            edit_init_data = ({'editInitiatorActionParam': {
+                'removeMaskingEntry': remove_masking_entry}})
         elif replace_init:
-            edit_init_data = ({"editInitiatorActionParam": {
-                "replaceInitiatorParam": {"new_initiator": replace_init}}})
+            edit_init_data = ({'editInitiatorActionParam': {
+                'replaceInitiatorParam': {'new_initiator': replace_init}}})
         elif rename_alias:
-            edit_init_data = ({"editInitiatorActionParam": {
-                "renameAliasParam": {"port_name": rename_alias[0],
-                                     "node_name": rename_alias[1]}}})
+            edit_init_data = ({'editInitiatorActionParam': {
+                'renameAliasParam': {'port_name': rename_alias[0],
+                                     'node_name': rename_alias[1]}}})
         elif set_fcid:
-            edit_init_data = ({"editInitiatorActionParam": {
-                "initiatorSetAttributesParam": {"fcidValue": set_fcid}}})
+            edit_init_data = ({'editInitiatorActionParam': {
+                'initiatorSetAttributesParam': {'fcidValue': set_fcid}}})
         elif initiator_flags:
-            edit_init_data = ({"editInitiatorActionParam": {
-                "initiatorSetFlagsParam": {
-                    "initiatorFlags": initiator_flags}}})
+            edit_init_data = ({'editInitiatorActionParam': {
+                'initiatorSetFlagsParam': {
+                    'initiatorFlags': initiator_flags}}})
         else:
-            msg = ("No modify initiator parameters chosen - please supply "
-                   "one of the following: removeMaskingEntry, "
-                   "replace_init, rename_alias, set_fcid, "
-                   "initiator_flags.")
+            msg = ('No modify initiator parameters chosen - please supply '
+                   'one of the following: removeMaskingEntry, '
+                   'replace_init, rename_alias, set_fcid, '
+                   'initiator_flags.')
             raise exception.InvalidInputException(data=msg)
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'initiator',
@@ -433,7 +434,7 @@ class ProvisioningFunctions(object):
         See unisphere documentation for possible filters.
 
         :param filters: dictionary of filters
-        :return: list of masking views
+        :returns: list of masking views
         """
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'maskingview', params=filters)
@@ -466,26 +467,26 @@ class ProvisioningFunctions(object):
         :param host_name: name of the host (initiator group)
         :param host_group_name: name of host group
         :param _async: flag to indicate if command should be run asynchronously
-        :return: dict
+        :returns: dict
         :raises: InvalidInputException
         """
         if host_name:
-            host_details = {"useExistingHostParam": {"hostId": host_name}}
+            host_details = {'useExistingHostParam': {'hostId': host_name}}
         elif host_group_name:
-            host_details = {"useExistingHostGroupParam": {
-                "hostGroupId": host_group_name}}
+            host_details = {'useExistingHostGroupParam': {
+                'hostGroupId': host_group_name}}
         else:
-            msg = "Must enter either a host name or a host group name"
+            msg = 'Must enter either a host name or a host group name'
             raise exception.InvalidInputException(data=msg)
         payload = ({
-            "portGroupSelection": {
-                "useExistingPortGroupParam": {
-                    "portGroupId": port_group_name}},
-            "maskingViewId": masking_view_name,
-            "hostOrHostGroupSelection": host_details,
-            "storageGroupSelection": {
-                "useExistingStorageGroupParam": {
-                    "storageGroupId": storage_group_name}}})
+            'portGroupSelection': {
+                'useExistingPortGroupParam': {
+                    'portGroupId': port_group_name}},
+            'maskingViewId': masking_view_name,
+            'hostOrHostGroupSelection': host_details,
+            'storageGroupSelection': {
+                'useExistingStorageGroupParam': {
+                    'storageGroupId': storage_group_name}}})
         if _async:
             payload.update(ASYNC_UPDATE)
 
@@ -540,7 +541,7 @@ class ProvisioningFunctions(object):
             elif storagegroup:
                 element = masking_view_details['storageGroupId']
         else:
-            exception_message = "Error retrieving masking group."
+            exception_message = 'Error retrieving masking group.'
             raise exception.ResourceNotFoundException(
                 data=exception_message)
         return element
@@ -572,10 +573,10 @@ class ProvisioningFunctions(object):
 
         :param masking_view_id: the current name of the masking view
         :param new_name: the new name of the masking view
-        :return: dict
+        :returns: dict
         """
-        mv_payload = {"editMaskingViewActionParam": {
-            "renameMaskingViewParam": {"new_masking_view_name": new_name}}}
+        mv_payload = {'editMaskingViewActionParam': {
+            'renameMaskingViewParam': {'new_masking_view_name': new_name}}}
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'maskingview', payload=mv_payload,
             version='', resource_name=masking_view_id)
@@ -584,7 +585,7 @@ class ProvisioningFunctions(object):
         """Given a masking view, get the associated host or host group.
 
         :param masking_view_id: the name of the masking view
-        :return: host ID
+        :returns: host ID
         """
         return self.get_element_from_masking_view(masking_view_id, host=True)
 
@@ -592,7 +593,7 @@ class ProvisioningFunctions(object):
         """Given a masking view, get the associated storage group.
 
         :param masking_view_id: the masking view name
-        :return: the name of the storage group
+        :returns: the name of the storage group
         """
         return self.get_element_from_masking_view(
             masking_view_id, storagegroup=True)
@@ -601,7 +602,7 @@ class ProvisioningFunctions(object):
         """Given a masking view, get the associated port group.
 
         :param masking_view_id: the masking view name
-        :return: the name of the port group
+        :returns: the name of the port group
         """
         return self.get_element_from_masking_view(
             masking_view_id, portgroup=True)
@@ -611,9 +612,9 @@ class ProvisioningFunctions(object):
 
         :param mv_name: the name of the masking view
         :param filters: dict of optional filter parameters
-        :return: list of masking view connection dicts
+        :returns: list of masking view connection dicts
         """
-        res_name = "%s/connections" % mv_name
+        res_name = '{mv_name}/connections'.format(mv_name=mv_name)
         response = self.get_resource(
             self.array_id, SLOPROVISIONING,
             'maskingview', resource_name=res_name, params=filters)
@@ -633,8 +634,8 @@ class ProvisioningFunctions(object):
         connection_info = self.get_maskingview_connections(
             maskingview, filters)
         if len(connection_info) == 0:
-            LOG.error("Cannot retrieve masking view connection information "
-                      "for %(device_id)s in %(maskingview)s.",
+            LOG.error('Cannot retrieve masking view connection information '
+                      'for %(device_id)s in %(maskingview)s.',
                       {'device_id': device_id,
                        'maskingview': maskingview})
         else:
@@ -642,9 +643,9 @@ class ProvisioningFunctions(object):
                 host_lun_id = (connection_info[0]['host_lun_address'])
                 host_lun_id = int(host_lun_id, 16)
             except Exception as e:
-                LOG.error("Unable to retrieve connection information "
-                          "for volume %(vol)s in masking view %(mv)s. "
-                          "Exception received: %(e)s.",
+                LOG.error('Unable to retrieve connection information '
+                          'for volume %(vol)s in masking view %(mv)s. '
+                          'Exception received: %(e)s.',
                           {'vol': device_id, 'mv': maskingview,
                            'e': e})
         return host_lun_id
@@ -668,7 +669,7 @@ class ProvisioningFunctions(object):
         """Get portgroup details.
 
         :param portgroup_id: the name of the portgroup
-        :return: dict
+        :returns: dict
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'portgroup',
                                  resource_name=portgroup_id)
@@ -677,7 +678,7 @@ class ProvisioningFunctions(object):
         """Get portgroup details.
 
         :param filters: dict of optional filters
-        :return: list of portgroups
+        :returns: list of portgroups
         """
         response = self.get_resource(self.array_id, SLOPROVISIONING,
                                      'portgroup', params=filters)
@@ -692,8 +693,8 @@ class ProvisioningFunctions(object):
         """
         portlist = []
         portgroup_info = self.get_portgroup(portgroup)
-        if portgroup_info and portgroup_info.get("symmetrixPortKey"):
-            port_key = portgroup_info["symmetrixPortKey"]
+        if portgroup_info and portgroup_info.get('symmetrixPortKey'):
+            port_key = portgroup_info['symmetrixPortKey']
             for key in port_key:
                 port = key['portId']
                 portlist.append(port)
@@ -738,11 +739,11 @@ class ProvisioningFunctions(object):
         :param portgroup_id: the name of the new port group
         :param director_id: the directoy id
         :param port_id: the port id
-        :return: dict
+        :returns: dict
         """
-        payload = ({"portGroupId": portgroup_id,
-                    "symmetrixPortKey": [{"directorId": director_id,
-                                          "portId": port_id}]})
+        payload = ({'portGroupId': portgroup_id,
+                    'symmetrixPortKey': [{'directorId': director_id,
+                                          'portId': port_id}]})
         return self.create_resource(
             self.array_id, SLOPROVISIONING, 'portgroup', payload=payload)
 
@@ -750,12 +751,12 @@ class ProvisioningFunctions(object):
         """Create a new portgroup.
 
         :param portgroup_id: the name of the new port group
-        :param ports: list of port dicts - {"directorId": director_id,
-                                            "portId": port_id}
-        :return: dict
+        :param ports: list of port dicts - {'directorId': director_id,
+                                            'portId': port_id}
+        :returns: dict
         """
-        payload = ({"portGroupId": portgroup_id,
-                    "symmetrixPortKey": ports})
+        payload = ({'portGroupId': portgroup_id,
+                    'symmetrixPortKey': ports})
         return self.create_resource(
             self.array_id, SLOPROVISIONING, 'portgroup', payload=payload)
 
@@ -767,12 +768,12 @@ class ProvisioningFunctions(object):
 
         :param file_name: the path to the file
         :param portgroup_id: the name for the portgroup
-        :return: dict, status_code
+        :returns: dict, status_code
         """
         port_list = self.common.create_list_from_file(file_name)
         combined_payload = []
         for i in port_list:
-            current_director_id, current_port_id = i.split(":")
+            current_director_id, current_port_id = i.split(':')
             temp_list = {'directorId': current_director_id,
                          'portId': current_port_id}
             combined_payload.append(temp_list)
@@ -789,24 +790,24 @@ class ProvisioningFunctions(object):
         :param remove_port: tuple of port details ($director_id, $portId)
         :param add_port: tuple of port details ($director_id, $portId)
         :param rename_portgroup: new portgroup name
-        :return: dict
+        :returns: dict
         """
         if remove_port:
-            edit_pg_data = ({"editPortGroupActionParam": {"removePortParam": {
-                "port": [{"directorId": remove_port[0],
-                          "portId": remove_port[1]}]}}})
+            edit_pg_data = ({'editPortGroupActionParam': {'removePortParam': {
+                'port': [{'directorId': remove_port[0],
+                          'portId': remove_port[1]}]}}})
         elif add_port:
-            edit_pg_data = ({"editPortGroupActionParam": {"addPortParam": {
-                "port": [{"directorId": add_port[0],
-                          "portId": add_port[1]}]}}})
+            edit_pg_data = ({'editPortGroupActionParam': {'addPortParam': {
+                'port': [{'directorId': add_port[0],
+                          'portId': add_port[1]}]}}})
         elif rename_portgroup:
-            edit_pg_data = ({"editPortGroupActionParam": {
-                "renamePortGroupParam": {
-                    "new_port_group_name": rename_portgroup}}})
+            edit_pg_data = ({'editPortGroupActionParam': {
+                'renamePortGroupParam': {
+                    'new_port_group_name': rename_portgroup}}})
         else:
-            message = ("No modify portgroup parameters set - please set one "
-                       "of the following: remove_port, add_port, or "
-                       "rename_portgroup.")
+            message = ('No modify portgroup parameters set - please set one '
+                       'of the following: remove_port, add_port, or '
+                       'rename_portgroup.')
             raise exception.InvalidInputException(data=message)
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'portgroup', payload=edit_pg_data,
@@ -834,7 +835,7 @@ class ProvisioningFunctions(object):
         """Get details on a specific service level.
 
         :param slo_id: the service level agreement
-        :return: dict
+        :returns: dict
         """
         return self.get_resource(self.array_id, SLOPROVISIONING, 'slo',
                                  resource_name=slo_id)
@@ -846,10 +847,10 @@ class ProvisioningFunctions(object):
 
         :param slo_id: the current name of the slo
         :param new_name: the new name for the slo
-        :return: dict
+        :returns: dict
         """
-        edit_slo_data = ({"editSloActionParam": {
-            "renameSloParam": {"sloId": new_name}}})
+        edit_slo_data = ({'editSloActionParam': {
+            'renameSloParam': {'sloId': new_name}}})
         return self.modify_resource(
             self.array_id, SLOPROVISIONING, 'host', payload=edit_slo_data,
             resource_name=slo_id)
@@ -880,7 +881,7 @@ class ProvisioningFunctions(object):
         :param srp_id: the srp id
         :returns: list of compressibility reports
         """
-        res_name = "%s/compressibility_report" % srp_id
+        res_name = '{srp_id}/compressibility_report'.format(srp_id=srp_id)
         response = self.get_resource(
             self.array_id, SLOPROVISIONING, 'srp', resource_name=res_name)
         report_list = response.get(
@@ -933,7 +934,7 @@ class ProvisioningFunctions(object):
         """Get the associated masking views from a given storage group.
 
         :param storage_group: the name of the storage group
-        :return: Masking view list
+        :returns: Masking view list
         """
         response = self.get_storage_group(storage_group)
         maskingview_list = response.get('maskingview', []) if response else []
@@ -978,7 +979,7 @@ class ProvisioningFunctions(object):
 
     def create_storage_group(self, srp_id, sg_id, slo, workload=None,
                              do_disable_compression=False,
-                             num_vols=0, vol_size="0", cap_unit="GB",
+                             num_vols=0, vol_size='0', cap_unit='GB',
                              allocate_full=False, _async=False, vol_name=None):
         """Create the volume in the specified storage group.
 
@@ -995,38 +996,38 @@ class ProvisioningFunctions(object):
         :param vol_name: name to give to the volume, optional
         :returns: dict
         """
-        srp_id = srp_id if slo else "None"
-        payload = ({"srpId": srp_id,
-                    "storageGroupId": sg_id,
-                    "emulation": "FBA"})
+        srp_id = srp_id if slo else 'None'
+        payload = ({'srpId': srp_id,
+                    'storageGroupId': sg_id,
+                    'emulation': 'FBA'})
 
         if slo:
-            slo_param = {"num_of_vols": num_vols,
-                         "sloId": slo,
-                         "workloadSelection": workload,
-                         "volumeAttribute": {
-                             "volume_size": vol_size,
-                             "capacityUnit": cap_unit}}
+            slo_param = {'num_of_vols': num_vols,
+                         'sloId': slo,
+                         'workloadSelection': workload,
+                         'volumeAttribute': {
+                             'volume_size': vol_size,
+                             'capacityUnit': cap_unit}}
             if do_disable_compression:
-                slo_param.update({"noCompression": "true"})
+                slo_param.update({'noCompression': 'true'})
             elif self.is_compression_capable():
-                slo_param.update({"noCompression": "false"})
+                slo_param.update({'noCompression': 'false'})
             if vol_name:
                 slo_param.update({
-                    "volumeIdentifier": {
-                        "identifier_name": vol_name,
-                        "volumeIdentifierChoice": "identifier_name"}})
+                    'volumeIdentifier': {
+                        'identifier_name': vol_name,
+                        'volumeIdentifierChoice': 'identifier_name'}})
 
             if allocate_full:
                 # If case of full volume allocation, we must set the
                 # noCompression parameter at true because fully
                 # allocations and compression are exclusive parameters
-                slo_param.update({"noCompression": "true"})
-                slo_param.update({"allocate_capacity_for_each_vol": "true"})
-                slo_param.update({"persist_preallocated_capacity_through_"
-                                  "reclaim_or_copy": "true"})
+                slo_param.update({'noCompression': 'true'})
+                slo_param.update({'allocate_capacity_for_each_vol': 'true'})
+                slo_param.update({'persist_preallocated_capacity_through_'
+                                  'reclaim_or_copy': 'true'})
 
-            payload.update({"sloBasedStorageGroupParam": [slo_param]})
+            payload.update({'sloBasedStorageGroupParam': [slo_param]})
 
         if _async:
             payload.update(ASYNC_UPDATE)
@@ -1054,7 +1055,7 @@ class ProvisioningFunctions(object):
         :param cap_unit: the capacity unit (MB, GB)
         :param disable_compression: Flag for disabling compression (AF only)
         :param _async: Flag to indicate if this call should be async
-        :return: dict
+        :returns: dict
         """
         return self.create_storage_group(
             srp_id, sg_id, slo, workload,
@@ -1076,7 +1077,7 @@ class ProvisioningFunctions(object):
         :param disable_compression: flag for disabling compression (AF only)
         :param _async: Flag to indicate if this call should be asyncronously
         executed
-        :return: dict
+        :returns: dict
         """
         return self.create_storage_group(
             srp_id, sg_id, slo, workload,
@@ -1099,14 +1100,14 @@ class ProvisioningFunctions(object):
         :param sg_id: the name of the storage group
         :param vol_ids: the device id of the volume - can be list
         :param _async: Flag to indicate if the call should be async
-        :return: dict
+        :returns: dict
         """
         if not isinstance(vol_ids, list):
             vol_ids = [vol_ids]
-        add_vol_data = {"editStorageGroupActionParam": {
-            "expandStorageGroupParam": {
-                "addSpecificVolumeParam": {
-                    "volumeId": vol_ids}}}}
+        add_vol_data = {'editStorageGroupActionParam': {
+            'expandStorageGroupParam': {
+                'addSpecificVolumeParam': {
+                    'volumeId': vol_ids}}}}
         if _async:
             add_vol_data.update(ASYNC_UPDATE)
         return self.modify_storage_group(sg_id, add_vol_data)
@@ -1124,25 +1125,25 @@ class ProvisioningFunctions(object):
         :param vol_name: name to give to the volume, optional
         :param create_new_volumes: when true will force create new
         volumes, optional
-        :return: dict
+        :returns: dict
         """
         add_vol_info = {
-            "num_of_vols": num_vols,
-            "emulation": "FBA",
-            "volumeAttribute": {
-                "volume_size": vol_size,
-                "capacityUnit": cap_unit}}
+            'num_of_vols': num_vols,
+            'emulation': 'FBA',
+            'volumeAttribute': {
+                'volume_size': vol_size,
+                'capacityUnit': cap_unit}}
         if vol_name:
             add_vol_info.update({
-                "volumeIdentifier": {
-                    "identifier_name": vol_name,
-                    "volumeIdentifierChoice": "identifier_name"}})
-        expand_sg_data = {"editStorageGroupActionParam": {
-            "expandStorageGroupParam": {
-                "addVolumeParam": add_vol_info}}}
+                'volumeIdentifier': {
+                    'identifier_name': vol_name,
+                    'volumeIdentifierChoice': 'identifier_name'}})
+        expand_sg_data = {'editStorageGroupActionParam': {
+            'expandStorageGroupParam': {
+                'addVolumeParam': add_vol_info}}}
         if not create_new_volumes:
             add_vol_info.update({
-                "create_new_volumes": False})
+                'create_new_volumes': False})
         if _async:
             expand_sg_data.update(ASYNC_UPDATE)
         return self.modify_storage_group(sg_id, expand_sg_data)
@@ -1153,12 +1154,12 @@ class ProvisioningFunctions(object):
         :param sg_id: the name of the storage group
         :param vol_id: the device id of the volume
         :param _async: Flag to indicate if call should be async
-        :return: dict
+        :returns: dict
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
-        payload = {"editStorageGroupActionParam": {
-            "removeVolumeParam": {"volumeId": vol_id}}}
+        payload = {'editStorageGroupActionParam': {
+            'removeVolumeParam': {'volumeId': vol_id}}}
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_storage_group(sg_id, payload)
@@ -1176,15 +1177,15 @@ class ProvisioningFunctions(object):
         :param force: force flag (necessary if volume is in masking view)
         :param _async: _async flag
         """
-        force_flag = "true" if force else "false"
+        force_flag = 'true' if force else 'false'
         if not isinstance(device_ids, list):
             device_ids = [device_ids]
         payload = ({
-            "editStorageGroupActionParam": {
-                "moveVolumeToStorageGroupParam": {
-                    "volumeId": device_ids,
-                    "storageGroupId": target_storagegroup_name,
-                    "force": force_flag}}})
+            'editStorageGroupActionParam': {
+                'moveVolumeToStorageGroupParam': {
+                    'volumeId': device_ids,
+                    'storageGroupId': target_storagegroup_name,
+                    'force': force_flag}}})
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_storage_group(source_storagegroup_name, payload)
@@ -1204,14 +1205,14 @@ class ProvisioningFunctions(object):
             storagegroup_name, 1, vol_size, cap_unit,
             _async=True, vol_name=volume_name)
 
-        task = self.common.wait_for_job("Create volume from sg", 202, job)
+        task = self.common.wait_for_job('Create volume from sg', 202, job)
 
         # Find the newly created volume.
         device_id = None
         if task:
             for t in task:
                 try:
-                    desc = t["description"]
+                    desc = t['description']
                     if CREATE_VOL_STRING in desc:
                         t_list = desc.split()
                         device_id = t_list[(len(t_list) - 1)]
@@ -1220,9 +1221,9 @@ class ProvisioningFunctions(object):
                     if device_id:
                         self.get_volume(device_id)
                 except Exception as e:
-                    LOG.info("Could not retrieve device id from job. "
-                             "Exception received was %(e)s. Attempting "
-                             "retrieval by volume_identifier.",
+                    LOG.info('Could not retrieve device id from job. '
+                             'Exception received was %(e)s. Attempting '
+                             'retrieval by volume_identifier.',
                              {'e': e})
 
         if not device_id:
@@ -1239,10 +1240,10 @@ class ProvisioningFunctions(object):
         :param child_sg: the name of the child sg
         :param parent_sg: the name of the parent sg
         """
-        payload = {"editStorageGroupActionParam": {
-            "expandStorageGroupParam": {
-                "addExistingStorageGroupParam": {
-                    "storageGroupId": [child_sg]}}}}
+        payload = {'editStorageGroupActionParam': {
+            'expandStorageGroupParam': {
+                'addExistingStorageGroupParam': {
+                    'storageGroupId': [child_sg]}}}}
         return self.modify_storage_group(parent_sg, payload)
 
     def remove_child_sg_from_parent_sg(self, child_sg, parent_sg):
@@ -1253,9 +1254,9 @@ class ProvisioningFunctions(object):
         :param child_sg: the name of the child sg
         :param parent_sg: the name of the parent sg
         """
-        payload = {"editStorageGroupActionParam": {
-            "removeStorageGroupParam": {
-                "storageGroupId": [child_sg], "force": 'true'}}}
+        payload = {'editStorageGroupActionParam': {
+            'removeStorageGroupParam': {
+                'storageGroupId': [child_sg], 'force': 'true'}}}
         return self.modify_storage_group(parent_sg, payload)
 
     def update_storagegroup_qos(self, storage_group_name, qos_specs):
@@ -1278,9 +1279,9 @@ class ProvisioningFunctions(object):
         sg_maxiops = None
         sg_maxmbps = None
         sg_distribution_type = None
-        maxiops = "nolimit"
-        maxmbps = "nolimit"
-        distribution_type = "Never"
+        maxiops = 'nolimit'
+        maxmbps = 'nolimit'
+        distribution_type = 'Never'
         propertylist = []
         try:
             sg_qos_details = sg_details['hostIOLimit']
@@ -1288,7 +1289,7 @@ class ProvisioningFunctions(object):
             sg_maxmbps = sg_qos_details['host_io_limit_mb_sec']
             sg_distribution_type = sg_qos_details['dynamicDistribution']
         except KeyError:
-            LOG.debug("Unable to get storage group QoS details.")
+            LOG.debug('Unable to get storage group QoS details.')
         if 'maxIOPS' in qos_specs:
             maxiops = qos_specs['maxIOPS']
             if maxiops != sg_maxiops:
@@ -1303,10 +1304,10 @@ class ProvisioningFunctions(object):
             if (qos_specs.get('DistributionType').lower() not
                     in dynamic_list):
                 exception_message = (
-                    "Wrong Distribution type value %(dt)s entered. "
-                    "Please enter one of: %(dl)s" %
-                    {'dt': qos_specs.get('DistributionType'),
-                     'dl': dynamic_list})
+                    'Wrong Distribution type value {dt} entered. '
+                    'Please enter one of: {dl}'.format(
+                        dt=qos_specs.get('DistributionType'),
+                        dl=dynamic_list))
                 LOG.error(exception_message)
                 raise exception.InvalidInputException(
                     data=exception_message)
@@ -1315,11 +1316,11 @@ class ProvisioningFunctions(object):
                 if distribution_type != sg_distribution_type:
                     propertylist.append(distribution_type)
         if propertylist:
-            payload = {"editStorageGroupActionParam": {
-                "setHostIOLimitsParam": {
-                    "host_io_limit_io_sec": maxiops,
-                    "host_io_limit_mb_sec": maxmbps,
-                    "dynamicDistribution": distribution_type}}}
+            payload = {'editStorageGroupActionParam': {
+                'setHostIOLimitsParam': {
+                    'host_io_limit_io_sec': maxiops,
+                    'host_io_limit_mb_sec': maxmbps,
+                    'dynamicDistribution': distribution_type}}}
             message = (
                 self.modify_storage_group(storage_group_name, payload))
         return message
@@ -1333,7 +1334,7 @@ class ProvisioningFunctions(object):
         :param iops: integer value. Min Value 100, must be specified to
                      nearest 100, e.g.202 is not a valid value
         :param mbps: MB per second, integer value. Min Value 100
-        :return: dict
+        :returns: dict
         """
         qos_specs = {'maxIOPS': iops,
                      'DistributionType': dynamic_distribution}
@@ -1366,7 +1367,7 @@ class ProvisioningFunctions(object):
         """Get list of volumes from array.
 
         :param filters: optional dictionary of filters
-        :return: list of device ids
+        :returns: list of device ids
         """
         vol_id_list = []
         response = self.get_resource(
@@ -1399,7 +1400,7 @@ class ProvisioningFunctions(object):
         and write results to a csv file.
 
         :param vol_list: list of device ids
-        :return: Dictionary
+        :returns: Dictionary
         """
         # Create CSV and set headings
         with open(bytes('wwn_data.csv', 'UTF-8'), 'wt') as csvfile:
@@ -1428,13 +1429,13 @@ class ProvisioningFunctions(object):
         """Retrieve volume information associated with a particular sg.
 
         :param storagegroup_id: the name of the storage group
-        :return: list of device IDs of associated volumes
+        :returns: list of device IDs of associated volumes
         """
-        params = {"storageGroupId": storagegroup_id}
+        params = {'storageGroupId': storagegroup_id}
 
         volume_list = self.get_volume_list(params)
         if len(volume_list) == 0:
-            LOG.debug("Cannot find record for storage group %(sg_id)s",
+            LOG.debug('Cannot find record for storage group %(sg_id)s.',
                       {'sg_id': storagegroup_id})
         return volume_list
 
@@ -1442,7 +1443,7 @@ class ProvisioningFunctions(object):
         """Retrieve sg information for a specified volume.
 
         :param vol_id: the device ID of the volume
-        :return: list of storage groups
+        :returns: list of storage groups
         """
         vol = self.get_volume(vol_id)
         sg_list = vol.get('storageGroupId', []) if vol else []
@@ -1468,11 +1469,11 @@ class ProvisioningFunctions(object):
         :returns: device_id
         """
         device_id = None
-        params = {"volume_identifier": volume_name}
+        params = {'volume_identifier': volume_name}
 
         volume_list = self.get_volume_list(params)
         if not volume_list:
-            LOG.debug("Cannot find record for volume %(volumeId)s.",
+            LOG.debug('Cannot find record for volume %(volumeId)s.',
                       {'volumeId': volume_name})
         else:
             device_id = volume_list[0]
@@ -1497,8 +1498,10 @@ class ProvisioningFunctions(object):
         if vol and vol.get('cap_gb'):
             cap = vol['cap_gb']
         else:
-            exception_message = ("Unable to retrieve size of device "
-                                 "%s on the array" % device_id)
+            exception_message = (
+                'Unable to retrieve size of device '
+                '{device_id} on the array'.format(
+                    device_id=device_id))
             raise exception.ResourceNotFoundException(data=exception_message)
         return cap
 
@@ -1518,11 +1521,11 @@ class ProvisioningFunctions(object):
         :param new_size: the new required size for the device
         :param _async: flag to indicate if call should be async
         """
-        extend_vol_payload = {"editVolumeActionParam": {
-            "expandVolumeParam": {
-                "volumeAttribute": {
-                    "volume_size": new_size,
-                    "capacityUnit": "GB"}}}}
+        extend_vol_payload = {'editVolumeActionParam': {
+            'expandVolumeParam': {
+                'volumeAttribute': {
+                    'volume_size': new_size,
+                    'capacityUnit': 'GB'}}}}
         if _async:
             extend_vol_payload.update(ASYNC_UPDATE)
         return self._modify_volume(device_id, extend_vol_payload)
@@ -1535,13 +1538,13 @@ class ProvisioningFunctions(object):
         """
         if new_name is not None:
             vol_identifier_dict = {
-                "identifier_name": new_name,
-                "volumeIdentifierChoice": "identifier_name"}
+                'identifier_name': new_name,
+                'volumeIdentifierChoice': 'identifier_name'}
         else:
-            vol_identifier_dict = {"volumeIdentifierChoice": "none"}
-        rename_vol_payload = {"editVolumeActionParam": {
-            "modifyVolumeIdentifierParam": {
-                "volumeIdentifier": vol_identifier_dict}}}
+            vol_identifier_dict = {'volumeIdentifierChoice': 'none'}
+        rename_vol_payload = {'editVolumeActionParam': {
+            'modifyVolumeIdentifierParam': {
+                'volumeIdentifier': vol_identifier_dict}}}
         return self._modify_volume(device_id, rename_vol_payload)
 
     def deallocate_volume(self, device_id):
@@ -1553,10 +1556,10 @@ class ProvisioningFunctions(object):
         the deallocation itself happens as a background task on the array.
 
         :param device_id: the device id
-        :return: dict
+        :returns: dict
         """
-        payload = {"editVolumeActionParam": {
-            "freeVolumeParam": {"free_volume": 'true'}}}
+        payload = {'editVolumeActionParam': {
+            'freeVolumeParam': {'free_volume': 'true'}}}
         return self._modify_volume(device_id, payload)
 
     def delete_volume(self, device_id):
@@ -1565,7 +1568,7 @@ class ProvisioningFunctions(object):
         :param device_id: volume device id
         """
         self.delete_resource(
-            self.array_id, SLOPROVISIONING, "volume", resource_name=device_id)
+            self.array_id, SLOPROVISIONING, 'volume', resource_name=device_id)
 
     def find_low_volume_utilization(self, low_utilization_percentage, csvname):
         """Find volumes under a certain utilization threshold.
@@ -1578,7 +1581,7 @@ class ProvisioningFunctions(object):
 
         :param low_utilization_percentage: low utilization watermark percent
         :param csvname: filename for CFV output file
-        :return: will create csvfile with name passed
+        :returns: will create csvfile with name passed
         """
         sg_list = self.get_storage_group_list()
 
@@ -1588,21 +1591,21 @@ class ProvisioningFunctions(object):
                                      quotechar='|',
                                      quoting=csv.QUOTE_MINIMAL)
 
-            eventwriter.writerow(["sgname", "volumeid", "identifier",
-                                  "capacity", "allocated_Percent"])
+            eventwriter.writerow(['sgname', 'volumeid', 'identifier',
+                                  'capacity', 'allocated_Percent'])
 
             for sg in sg_list:
                 vollist = self.get_vols_from_storagegroup(sg)
 
                 for vol in vollist:
                     volume = self.get_volume(vol)
-                    vol_identifier = "No Identifier"
-                    if (volume["allocated_percent"] < (
+                    vol_identifier = 'No Identifier'
+                    if (volume['allocated_percent'] < (
                             low_utilization_percentage)):
-                        allocated = volume["allocated_percent"]
-                        if volume.get("volume_identifier"):
-                            vol_identifier = (volume["volume_identifier"])
-                        vol_cap = (volume["cap_gb"])
+                        allocated = volume['allocated_percent']
+                        if volume.get('volume_identifier'):
+                            vol_identifier = (volume['volume_identifier'])
+                        vol_cap = (volume['cap_gb'])
                         eventwriter.writerow(
                             [sg, vol, vol_identifier, vol_cap, allocated])
 

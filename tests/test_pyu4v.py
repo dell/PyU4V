@@ -67,20 +67,20 @@ class CommonData(object):
     storagegroup_name_2 = 'PU-mystoragegroup2-SG'
     group_snapshot_name = 'Grp_snapshot'
     target_group_name = 'Grp_target'
-    qos_storagegroup = "PU-QOS-SG"
-    snapshot_name = "snap_01234"
+    qos_storagegroup = 'PU-QOS-SG'
+    snapshot_name = 'snap_01234'
     # director port info
-    director_id1 = "FA-1D"
-    port_id1 = "4"
-    director_id2 = "SE-4E"
-    port_id2 = "0"
-    port_key1 = {"directorId": director_id1, "portId": port_id1}
-    port_key2 = {"directorId": director_id2, "portId": port_id2}
+    director_id1 = 'FA-1D'
+    port_id1 = '4'
+    director_id2 = 'SE-4E'
+    port_id2 = '0'
+    port_key1 = {'directorId': director_id1, 'portId': port_id1}
+    port_key2 = {'directorId': director_id2, 'portId': port_id2}
 
     # Connector info
-    wwpn1 = "123456789012345"
-    wwpn2 = "123456789054321"
-    wwnn1 = "223456789012345"
+    wwpn1 = '123456789012345'
+    wwpn2 = '123456789054321'
+    wwnn1 = '223456789012345'
     initiator = 'iqn.1993-08.org.debian: 01: 222'
     ip, ip2 = u'123.456.7.8', u'123.456.7.9'
     iqn = u'iqn.1992-04.com.emc:600009700bca30c01e3e012e00000001,t,0x0001'
@@ -88,309 +88,309 @@ class CommonData(object):
 
     # VMAX data
     # SLOprovisioning
-    compression_info = {"symmetrixId": ["000197800128"]}
-    director_info = {"directorId": director_id1,
-                     "director_slot_number": 1,
-                     "availability": "Online",
-                     "num_of_ports": 5}
-    director_list = {"directorId": [director_id1, director_id2]}
-    host_list = {"hostId": [initiatorgroup_name_f, initiatorgroup_name_i]}
-    initiatorgroup = [{"initiator": [wwpn1],
-                       "hostId": initiatorgroup_name_f,
-                       "maskingview": [masking_view_name_f]},
-                      {"initiator": [initiator],
-                       "hostId": initiatorgroup_name_i,
-                       "maskingview": [masking_view_name_i]}]
+    compression_info = {'symmetrixId': ['000197800128']}
+    director_info = {'directorId': director_id1,
+                     'director_slot_number': 1,
+                     'availability': 'Online',
+                     'num_of_ports': 5}
+    director_list = {'directorId': [director_id1, director_id2]}
+    host_list = {'hostId': [initiatorgroup_name_f, initiatorgroup_name_i]}
+    initiatorgroup = [{'initiator': [wwpn1],
+                       'hostId': initiatorgroup_name_f,
+                       'maskingview': [masking_view_name_f]},
+                      {'initiator': [initiator],
+                       'hostId': initiatorgroup_name_i,
+                       'maskingview': [masking_view_name_i]}]
 
-    hostgroup = {"num_of_hosts": 1,
-                 "num_of_initiators": 4,
-                 "num_of_masking_views": 1,
-                 "host": [initiatorgroup[0]],
-                 "type": "Fibre",
-                 "hostGroupId": hostgroup_id,
-                 "maskingview": [masking_view_name_f]}
+    hostgroup = {'num_of_hosts': 1,
+                 'num_of_initiators': 4,
+                 'num_of_masking_views': 1,
+                 'host': [initiatorgroup[0]],
+                 'type': 'Fibre',
+                 'hostGroupId': hostgroup_id,
+                 'maskingview': [masking_view_name_f]}
 
-    hostgroup_list = {"hostGroupId": [hostgroup_id]}
+    hostgroup_list = {'hostGroupId': [hostgroup_id]}
 
-    initiator_list = [{"host": initiatorgroup_name_f,
-                       "initiatorId": wwpn1,
-                       "maskingview": [masking_view_name_f]},
-                      {"host": initiatorgroup_name_i,
-                       "initiatorId": initiator,
-                       "maskingview": [masking_view_name_i]},
-                      {"initiatorId": [
-                          "FA-1D:4:" + wwpn1,
-                          "SE-4E:0:" + initiator]}]
+    initiator_list = [{'host': initiatorgroup_name_f,
+                       'initiatorId': wwpn1,
+                       'maskingview': [masking_view_name_f]},
+                      {'host': initiatorgroup_name_i,
+                       'initiatorId': initiator,
+                       'maskingview': [masking_view_name_i]},
+                      {'initiatorId': [
+                          'FA-1D:4:' + wwpn1,
+                          'SE-4E:0:' + initiator]}]
 
-    maskingview = [{"maskingViewId": masking_view_name_f,
-                    "portGroupId": port_group_name_f,
-                    "storageGroupId": storagegroup_name,
-                    "hostId": initiatorgroup_name_f,
-                    "maskingViewConnection": [
-                        {"host_lun_address": "0003"}]},
-                   {"maskingViewId": masking_view_name_i,
-                    "portGroupId": port_group_name_i,
-                    "storageGroupId": storagegroup_name_1,
-                    "hostId": initiatorgroup_name_i,
-                    "maskingViewConnection": [
-                        {"host_lun_address": "0003"}]},
-                   {"maskingViewId": [masking_view_name_f,
+    maskingview = [{'maskingViewId': masking_view_name_f,
+                    'portGroupId': port_group_name_f,
+                    'storageGroupId': storagegroup_name,
+                    'hostId': initiatorgroup_name_f,
+                    'maskingViewConnection': [
+                        {'host_lun_address': '0003'}]},
+                   {'maskingViewId': masking_view_name_i,
+                    'portGroupId': port_group_name_i,
+                    'storageGroupId': storagegroup_name_1,
+                    'hostId': initiatorgroup_name_i,
+                    'maskingViewConnection': [
+                        {'host_lun_address': '0003'}]},
+                   {'maskingViewId': [masking_view_name_f,
                                       masking_view_name_i]}]
 
-    portgroup = [{"portGroupId": port_group_name_f,
-                  "symmetrixPortKey": [
-                      {"directorId": director_id1,
-                       "portId": "FA-1D:4"}],
-                  "maskingview": [masking_view_name_f]},
-                 {"portGroupId": port_group_name_i,
-                  "symmetrixPortKey": [
-                      {"directorId": director_id2,
-                       "portId": "SE-4E:0"}],
-                  "maskingview": [masking_view_name_i]}]
+    portgroup = [{'portGroupId': port_group_name_f,
+                  'symmetrixPortKey': [
+                      {'directorId': director_id1,
+                       'portId': 'FA-1D:4'}],
+                  'maskingview': [masking_view_name_f]},
+                 {'portGroupId': port_group_name_i,
+                  'symmetrixPortKey': [
+                      {'directorId': director_id2,
+                       'portId': 'SE-4E:0'}],
+                  'maskingview': [masking_view_name_i]}]
 
-    pg_list = {"portGroupId": [port_group_name_i, port_group_name_f]}
+    pg_list = {'portGroupId': [port_group_name_i, port_group_name_f]}
 
-    port_key_list = {"symmetrixPortKey": [port_key1, port_key2]}
+    port_key_list = {'symmetrixPortKey': [port_key1, port_key2]}
 
     port_list = [
-        {"symmetrixPort": {"num_of_masking_views": 1,
-                           "maskingview": [masking_view_name_f],
-                           "identifier": wwnn1,
-                           "symmetrixPortKey": port_key1,
-                           "portgroup": [port_group_name_f]}},
-        {"symmetrixPort": {"identifier": initiator,
-                           "symmetrixPortKey": port_key2,
-                           "ip_addresses": [ip],
-                           "num_of_masking_views": 1,
-                           "maskingview": [masking_view_name_i],
-                           "portgroup": [port_group_name_i]}}]
+        {'symmetrixPort': {'num_of_masking_views': 1,
+                           'maskingview': [masking_view_name_f],
+                           'identifier': wwnn1,
+                           'symmetrixPortKey': port_key1,
+                           'portgroup': [port_group_name_f]}},
+        {'symmetrixPort': {'identifier': initiator,
+                           'symmetrixPortKey': port_key2,
+                           'ip_addresses': [ip],
+                           'num_of_masking_views': 1,
+                           'maskingview': [masking_view_name_i],
+                           'portgroup': [port_group_name_i]}}]
 
-    sg_details = [{"srp": srp,
-                   "num_of_vols": 2,
-                   "cap_gb": 2,
-                   "storageGroupId": storagegroup_name,
-                   "slo": slo,
-                   "workload": workload},
-                  {"srp": srp,
-                   "num_of_vols": 2,
-                   "cap_gb": 2,
-                   "storageGroupId": storagegroup_name_1,
-                   "slo": slo,
-                   "workload": workload,
-                   "maskingview": [masking_view_name_f],
-                   "parent_storage_group": [parent_sg]},
-                  {"srp": srp,
-                   "num_of_vols": 2,
-                   "cap_gb": 2,
-                   "storageGroupId": storagegroup_name_2,
-                   "slo": slo,
-                   "workload": workload,
-                   "maskingview": [masking_view_name_i]},
-                  {"srp": "None",
-                   "num_of_vols": 2,
-                   "cap_gb": 2,
-                   "storageGroupId": parent_sg,
-                   "child_storage_group": [storagegroup_name_1],
-                   "maskingview": [masking_view_name_f]},
-                  {"srp": srp, "num_of_vols": 2, "cap_gb": 2,
-                   "storageGroupId": qos_storagegroup,
-                   "slo": slo, "workload": workload,
-                   "hostIOLimit": {"host_io_limit_io_sec": "4000",
-                                   "dynamicDistribution": "Always",
-                                   "host_io_limit_mb_sec": "4000"}}
+    sg_details = [{'srp': srp,
+                   'num_of_vols': 2,
+                   'cap_gb': 2,
+                   'storageGroupId': storagegroup_name,
+                   'slo': slo,
+                   'workload': workload},
+                  {'srp': srp,
+                   'num_of_vols': 2,
+                   'cap_gb': 2,
+                   'storageGroupId': storagegroup_name_1,
+                   'slo': slo,
+                   'workload': workload,
+                   'maskingview': [masking_view_name_f],
+                   'parent_storage_group': [parent_sg]},
+                  {'srp': srp,
+                   'num_of_vols': 2,
+                   'cap_gb': 2,
+                   'storageGroupId': storagegroup_name_2,
+                   'slo': slo,
+                   'workload': workload,
+                   'maskingview': [masking_view_name_i]},
+                  {'srp': 'None',
+                   'num_of_vols': 2,
+                   'cap_gb': 2,
+                   'storageGroupId': parent_sg,
+                   'child_storage_group': [storagegroup_name_1],
+                   'maskingview': [masking_view_name_f]},
+                  {'srp': srp, 'num_of_vols': 2, 'cap_gb': 2,
+                   'storageGroupId': qos_storagegroup,
+                   'slo': slo, 'workload': workload,
+                   'hostIOLimit': {'host_io_limit_io_sec': '4000',
+                                   'dynamicDistribution': 'Always',
+                                   'host_io_limit_mb_sec': '4000'}}
                   ]
 
-    sg_details_rep = [{"childNames": [],
-                       "numDevicesNonGk": 2,
-                       "isLinkTarget": False,
-                       "rdf": True,
-                       "capacityGB": 2.0,
-                       "name": storagegroup_name,
-                       "snapVXSnapshots": [group_snapshot_name],
-                       "symmetrixId": array,
-                       "numSnapVXSnapshots": 1}]
+    sg_details_rep = [{'childNames': [],
+                       'numDevicesNonGk': 2,
+                       'isLinkTarget': False,
+                       'rdf': True,
+                       'capacityGB': 2.0,
+                       'name': storagegroup_name,
+                       'snapVXSnapshots': [group_snapshot_name],
+                       'symmetrixId': array,
+                       'numSnapVXSnapshots': 1}]
 
-    sg_details_migration = [{"targetArray": remote_array,
-                             "sourceArray": array,
-                             "totalCapacity": 8.0,
-                             "targetMaskingView": [masking_view_name_f],
-                             "state": "Synchronized",
-                             "sourceMaskingView": [masking_view_name_i],
-                             "remainingCapacity": 0.0,
-                             "devicePairs": [{
-                                 "invalidSrc": False,
-                                 "srcVolumeName": 'my-vol',
-                                 "invalidTgt": False,
-                                 "tgtVolumeName": 'my-vol2',
-                                 "missingSrc": False,
-                                 "missingTgt": False
+    sg_details_migration = [{'targetArray': remote_array,
+                             'sourceArray': array,
+                             'totalCapacity': 8.0,
+                             'targetMaskingView': [masking_view_name_f],
+                             'state': 'Synchronized',
+                             'sourceMaskingView': [masking_view_name_i],
+                             'remainingCapacity': 0.0,
+                             'devicePairs': [{
+                                 'invalidSrc': False,
+                                 'srcVolumeName': 'my-vol',
+                                 'invalidTgt': False,
+                                 'tgtVolumeName': 'my-vol2',
+                                 'missingSrc': False,
+                                 'missingTgt': False
                              }],
-                             "storageGroup": storagegroup_name}]
+                             'storageGroup': storagegroup_name}]
 
-    sg_rdf_details = [{"storageGroupName": storagegroup_name,
-                       "symmetrixId": array,
-                       "modes": ["Synchronous"],
-                       "rdfGroupNumber": rdf_group_no,
-                       "states": ["Synchronized"]}]
+    sg_rdf_details = [{'storageGroupName': storagegroup_name,
+                       'symmetrixId': array,
+                       'modes': ['Synchronous'],
+                       'rdfGroupNumber': rdf_group_no,
+                       'states': ['Synchronized']}]
 
-    sg_list = {"storageGroupId": [storagegroup_name,
+    sg_list = {'storageGroupId': [storagegroup_name,
                                   storagegroup_name_1,
                                   storagegroup_name_2]}
 
-    sg_list_rep = {"name": [storagegroup_name]}
-    sg_rdf_list = {"rdfgs": [rdf_group_no]}
+    sg_list_rep = {'name': [storagegroup_name]}
+    sg_rdf_list = {'rdfgs': [rdf_group_no]}
 
-    sg_list_migration = {"name": [storagegroup_name]}
+    sg_list_migration = {'name': [storagegroup_name]}
 
-    srp_details = {"srpSloDemandId": ["Bronze", "Diamond", "Gold",
-                                      "None", "Optimized", "Silver"],
-                   "srpId": srp,
-                   "total_used_cap_gb": 5244.7,
-                   "total_usable_cap_gb": 20514.4,
-                   "total_subscribed_cap_gb": 84970.1,
-                   "fba_used_capacity": 5244.7,
-                   "reserved_cap_percent": 10}
+    srp_details = {'srpSloDemandId': ['Bronze', 'Diamond', 'Gold',
+                                      'None', 'Optimized', 'Silver'],
+                   'srpId': srp,
+                   'total_used_cap_gb': 5244.7,
+                   'total_usable_cap_gb': 20514.4,
+                   'total_subscribed_cap_gb': 84970.1,
+                   'fba_used_capacity': 5244.7,
+                   'reserved_cap_percent': 10}
 
     srp_list = {'srpId': [srp, 'SRP_2']}
-    compr_report = {"storageGroupCompressibility": [
-        {"num_of_volumes": 6, "storageGroupId": storagegroup_name,
-         "allocated_cap_gb": 0.0, "used_cap_gb": 0.0,
-         "compression_enabled": 'false'}, ]}
+    compr_report = {'storageGroupCompressibility': [
+        {'num_of_volumes': 6, 'storageGroupId': storagegroup_name,
+         'allocated_cap_gb': 0.0, 'used_cap_gb': 0.0,
+         'compression_enabled': 'false'}, ]}
 
-    volume_details = [{"cap_gb": 2,
-                       "num_of_storage_groups": 1,
-                       "volumeId": device_id,
-                       "volume_identifier": 'my-vol',
-                       "wwn": volume_wwn,
-                       "snapvx_target": 'false',
-                       "snapvx_source": 'false',
-                       "storageGroupId": [storagegroup_name]},
-                      {"cap_gb": 1,
-                       "num_of_storage_groups": 1,
-                       "volumeId": device_id2,
-                       "volume_identifier": "my-vol2",
-                       "wwn": '600012345',
-                       "storageGroupId": [storagegroup_name_1]},
-                      {"cap_gb": 1,
-                       "num_of_storage_groups": 0,
-                       "volumeId": device_id3,
-                       "volume_identifier": 'my-vol3',
-                       "wwn": '600012345'}]
+    volume_details = [{'cap_gb': 2,
+                       'num_of_storage_groups': 1,
+                       'volumeId': device_id,
+                       'volume_identifier': 'my-vol',
+                       'wwn': volume_wwn,
+                       'snapvx_target': 'false',
+                       'snapvx_source': 'false',
+                       'storageGroupId': [storagegroup_name]},
+                      {'cap_gb': 1,
+                       'num_of_storage_groups': 1,
+                       'volumeId': device_id2,
+                       'volume_identifier': 'my-vol2',
+                       'wwn': '600012345',
+                       'storageGroupId': [storagegroup_name_1]},
+                      {'cap_gb': 1,
+                       'num_of_storage_groups': 0,
+                       'volumeId': device_id3,
+                       'volume_identifier': 'my-vol3',
+                       'wwn': '600012345'}]
 
     volume_list = [
-        {"resultList": {"result": [{"volumeId": device_id}]}},
-        {"resultList": {"result": [{"volumeId": device_id2}]}},
-        {"expirationTime": 1517830955979, "count": 2, "maxPageSize": 1000,
-         "id": "123", "resultList": {"result": [{"volumeId": device_id},
-                                                {"volumeId": device_id2}]}}]
+        {'resultList': {'result': [{'volumeId': device_id}]}},
+        {'resultList': {'result': [{'volumeId': device_id2}]}},
+        {'expirationTime': 1517830955979, 'count': 2, 'maxPageSize': 1000,
+         'id': '123', 'resultList': {'result': [{'volumeId': device_id},
+                                                {'volumeId': device_id2}]}}]
 
-    workloadtype = {"workloadId": ["OLTP", "OLTP_REP", "DSS", "DSS_REP"]}
-    slo_list = {"sloId": ["Bronze", "Diamond", "Gold",
-                          "Optimized", "Platinum", "Silver"]}
-    slo_details = {"sloBaseId": slo, "num_of_workloads": 5, "sloId": slo,
-                   "num_of_storage_groups": 1230,
-                   "workloadId": workloadtype['workloadId'],
-                   "storageGroupId": [storagegroup_name,
+    workloadtype = {'workloadId': ['OLTP', 'OLTP_REP', 'DSS', 'DSS_REP']}
+    slo_list = {'sloId': ['Bronze', 'Diamond', 'Gold',
+                          'Optimized', 'Platinum', 'Silver']}
+    slo_details = {'sloBaseId': slo, 'num_of_workloads': 5, 'sloId': slo,
+                   'num_of_storage_groups': 1230,
+                   'workloadId': workloadtype['workloadId'],
+                   'storageGroupId': [storagegroup_name,
                                       storagegroup_name_1,
                                       storagegroup_name_2]}
 
     # replication
-    capabilities = {"symmetrixCapability": [{"rdfCapable": True,
-                                             "snapVxCapable": True,
-                                             "symmetrixId": "0001111111"},
-                                            {"symmetrixId": array,
-                                             "snapVxCapable": True,
-                                             "rdfCapable": True}]}
-    group_snap_vx = {"generation": 0,
-                     "isLinked": False,
-                     "numUniqueTracks": 0,
-                     "isRestored": False,
-                     "name": group_snapshot_name,
-                     "numStorageGroupVolumes": 1,
-                     "state": ["Established"],
-                     "timeToLiveExpiryDate": "N/A",
-                     "isExpired": False,
-                     "numSharedTracks": 0,
-                     "timestamp": "00:30:50 Fri, 02 Jun 2017 IST +0100",
-                     "numSourceVolumes": 1}
-    expired_snap = {"generation": 0,
-                    "isLinked": True,
-                    "name": group_snapshot_name,
-                    "numStorageGroupVolumes": 1,
-                    "state": ["Established"],
-                    "timeToLiveExpiryDate": "01:30:50 Fri, 02 Jun 2017 IST ",
-                    "isExpired": True,
-                    "linkedStorageGroup": [{"name": target_group_name}],
-                    "timestamp": "00:30:50 Fri, 02 Jun 2017 IST +0100",
-                    "numSourceVolumes": 1}
-    sg_snap_list = {"name": [group_snapshot_name]}
-    sg_snap_gen_list = {"generations": [0]}
+    capabilities = {'symmetrixCapability': [{'rdfCapable': True,
+                                             'snapVxCapable': True,
+                                             'symmetrixId': '0001111111'},
+                                            {'symmetrixId': array,
+                                             'snapVxCapable': True,
+                                             'rdfCapable': True}]}
+    group_snap_vx = {'generation': 0,
+                     'isLinked': False,
+                     'numUniqueTracks': 0,
+                     'isRestored': False,
+                     'name': group_snapshot_name,
+                     'numStorageGroupVolumes': 1,
+                     'state': ['Established'],
+                     'timeToLiveExpiryDate': 'N/A',
+                     'isExpired': False,
+                     'numSharedTracks': 0,
+                     'timestamp': '00:30:50 Fri, 02 Jun 2017 IST +0100',
+                     'numSourceVolumes': 1}
+    expired_snap = {'generation': 0,
+                    'isLinked': True,
+                    'name': group_snapshot_name,
+                    'numStorageGroupVolumes': 1,
+                    'state': ['Established'],
+                    'timeToLiveExpiryDate': '01:30:50 Fri, 02 Jun 2017 IST ',
+                    'isExpired': True,
+                    'linkedStorageGroup': [{'name': target_group_name}],
+                    'timestamp': '00:30:50 Fri, 02 Jun 2017 IST +0100',
+                    'numSourceVolumes': 1}
+    sg_snap_list = {'name': [group_snapshot_name]}
+    sg_snap_gen_list = {'generations': [0]}
 
-    rdf_group_list = {"rdfGroupID": [{"rdfgNumber": rdf_group_no,
-                                      "label": rdf_group_name}]}
-    rdf_group_details = {"modes": ["Synchronous"],
-                         "remoteSymmetrix": remote_array,
-                         "label": rdf_group_name,
-                         "type": "Dynamic",
-                         "numDevices": 1,
-                         "remoteRdfgNumber": rdf_group_no,
-                         "rdfgNumber": rdf_group_no}
-    rdf_group_vol_details = {"remoteRdfGroupNumber": rdf_group_no,
-                             "localSymmetrixId": array,
-                             "volumeConfig": "RDF1+TDEV",
-                             "localRdfGroupNumber": rdf_group_no,
-                             "localVolumeName": device_id,
-                             "rdfpairState": "Synchronized",
-                             "remoteVolumeName": device_id2,
-                             "localVolumeState": "Ready",
-                             "rdfMode": "Synchronous",
-                             "remoteVolumeState": "Write Disabled",
-                             "remoteSymmetrixId": remote_array}
-    rdf_group_vol_list = {"name": [device_id, device_id2]}
+    rdf_group_list = {'rdfGroupID': [{'rdfgNumber': rdf_group_no,
+                                      'label': rdf_group_name}]}
+    rdf_group_details = {'modes': ['Synchronous'],
+                         'remoteSymmetrix': remote_array,
+                         'label': rdf_group_name,
+                         'type': 'Dynamic',
+                         'numDevices': 1,
+                         'remoteRdfgNumber': rdf_group_no,
+                         'rdfgNumber': rdf_group_no}
+    rdf_group_vol_details = {'remoteRdfGroupNumber': rdf_group_no,
+                             'localSymmetrixId': array,
+                             'volumeConfig': 'RDF1+TDEV',
+                             'localRdfGroupNumber': rdf_group_no,
+                             'localVolumeName': device_id,
+                             'rdfpairState': 'Synchronized',
+                             'remoteVolumeName': device_id2,
+                             'localVolumeState': 'Ready',
+                             'rdfMode': 'Synchronous',
+                             'remoteVolumeState': 'Write Disabled',
+                             'remoteSymmetrixId': remote_array}
+    rdf_group_vol_list = {'name': [device_id, device_id2]}
 
-    rep_info = {"symmetrixId": array, "storageGroupCount": 1486,
-                "replicationCacheUsage": 0, "rdfGroupCount": 7}
+    rep_info = {'symmetrixId': array, 'storageGroupCount': 1486,
+                'replicationCacheUsage': 0, 'rdfGroupCount': 7}
 
     # migration
-    migration_info = {"symmetrixId": array, "storageGroupCount": 1486,
-                      "local": True, "migrationSessionCount": 10}
-    migration_capabilities = {"storageArrayCapability": [
+    migration_info = {'symmetrixId': array, 'storageGroupCount': 1486,
+                      'local': True, 'migrationSessionCount': 10}
+    migration_capabilities = {'storageArrayCapability': [
         {
-            "srdfsTarget": True,
-            "dmSource": True,
-            "srdfsSource": True,
-            "dmTarget": True,
-            "compression": True,
-            "arrayId": array
+            'srdfsTarget': True,
+            'dmSource': True,
+            'srdfsSource': True,
+            'dmTarget': True,
+            'compression': True,
+            'arrayId': array
         }
     ]}
-    migration_environment_list = {"arrayId": [array]}
-    migration_environment_details = {"symmetrixId": array,
-                                     "otherSymmetrixId": remote_array,
-                                     "invalid": False,
-                                     "state": "OK"}
+    migration_environment_list = {'arrayId': [array]}
+    migration_environment_details = {'symmetrixId': array,
+                                     'otherSymmetrixId': remote_array,
+                                     'invalid': False,
+                                     'state': 'OK'}
 
     # system
-    job_list = [{"status": "SUCCEEDED",
-                 "jobId": "12345",
-                 "result": "created",
-                 "resourceLink": "storagegroup/%s" % storagegroup_name},
-                {"status": "RUNNING", "jobId": "55555"},
-                {"status": "FAILED", "jobId": "09999"}]
-    symmetrix = [{"symmetrixId": array,
-                  "model": "VMAX250F",
-                  "ucode": "5977.1091.1092"}]
-    symm_list = {"symmetrixId": [array, remote_array]}
-    server_version = {"version": "V8.4.0.6"}
+    job_list = [{'status': 'SUCCEEDED',
+                 'jobId': '12345',
+                 'result': 'created',
+                 'resourceLink': 'storagegroup/%s' % storagegroup_name},
+                {'status': 'RUNNING', 'jobId': '55555'},
+                {'status': 'FAILED', 'jobId': '09999'}]
+    symmetrix = [{'symmetrixId': array,
+                  'model': 'VMAX250F',
+                  'ucode': '5977.1091.1092'}]
+    symm_list = {'symmetrixId': [array, remote_array]}
+    server_version = {'version': 'V8.4.0.6'}
 
     # wlp
-    headroom = {"headroom": [{"headroomCapacity": 20348.29}]}
-    wlp = {"symmetrixDetails": {"processingDetails": {
-        "lastProcessedSpaTimestamp": 1517408700000,
-        "nextUpdate": 1038},
-        "spaRegistered": 'true'}}
+    headroom = {'headroom': [{'headroomCapacity': 20348.29}]}
+    wlp = {'symmetrixDetails': {'processingDetails': {
+        'lastProcessedSpaTimestamp': 1517408700000,
+        'nextUpdate': 1038},
+        'spaRegistered': 'true'}}
 
-    iterator_page = {"result": [{}, {}]}
+    iterator_page = {'result': [{}, {}]}
 
 
 class FakeResponse(object):
@@ -629,8 +629,8 @@ class FakeRequestsSession(object):
         if 'storagegroup' in url:
             return_object = self._migration_sg(url)
         elif 'environment' in url:
-            env_name = self.data.migration_environment_list["arrayId"][0]
-            if "/environment/" + env_name in url:
+            env_name = self.data.migration_environment_list['arrayId'][0]
+            if '/environment/' + env_name in url:
                 return_object = self.data.migration_environment_details
             else:
                 return_object = self.data.migration_environment_list
@@ -708,9 +708,11 @@ class FakeConfigFile(object):
             user='smc', password='smc', ip='10.0.0.75',
             port='8443', array=CommonData.array, verify=False):
         """create_fake_config_file."""
-        data = ("[setup] \nusername={} \npassword={} \nserver_ip={}"
-                "\nport={} \narray={} \nverify={}"
-                .format(user, password, ip, port, array, verify))
+        data = ('[setup] \nusername={user} \npassword={password} '
+                '\nserver_ip={ip}'
+                '\nport={port} \narray={array} \nverify={verify}'
+                .format(user=user, password=password,
+                        ip=ip, port=port, array=array, verify=verify))
         filename = 'PyU4V.conf'
         config_file_path = os.path.normpath(
             tempfile.mkdtemp() + '/' + filename)
@@ -1099,24 +1101,24 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_create_host(self):
         """Test create_host."""
-        host_flags = {"consistent_lun": 'true'}
+        host_flags = {'consistent_lun': 'true'}
         data = [self.data.wwnn1, self.data.wwpn2]
         with mock.patch.object(self.provisioning, 'create_resource') as \
                 mock_create:
             self.provisioning.create_host(
                 self.data.initiatorgroup_name_i, host_flags=host_flags,
                 initiator_list=data, _async=True)
-            new_ig_data = {"hostId": self.data.initiatorgroup_name_i,
-                           "initiatorId": data,
-                           "hostFlags": host_flags,
-                           "executionOption": "ASYNCHRONOUS"}
+            new_ig_data = {'hostId': self.data.initiatorgroup_name_i,
+                           'initiatorId': data,
+                           'hostFlags': host_flags,
+                           'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'host',
                 payload=new_ig_data)
             mock_create.reset_mock()
             self.provisioning.create_host(
                 self.data.initiatorgroup_name_i)
-            new_ig_data2 = {"hostId": self.data.initiatorgroup_name_i}
+            new_ig_data2 = {'hostId': self.data.initiatorgroup_name_i}
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'host',
                 payload=new_ig_data2)
@@ -1127,7 +1129,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
             self.provisioning.modify_host(
-                host_name, host_flag_dict={"consistent_lun": 'true'})
+                host_name, host_flag_dict={'consistent_lun': 'true'})
             self.provisioning.modify_host(
                 host_name, remove_init_list=[self.data.wwnn1])
             self.provisioning.modify_host(
@@ -1188,7 +1190,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
             self.provisioning.modify_hostgroup(
-                hostgroup_name, host_flag_dict={"consistent_lun": 'true'})
+                hostgroup_name, host_flag_dict={'consistent_lun': 'true'})
             self.provisioning.modify_hostgroup(
                 hostgroup_name, remove_host_list=['host1'])
             self.provisioning.modify_hostgroup(
@@ -1410,10 +1412,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_create_multiport_portgroup(self):
         """Test create_multiport_portgroup."""
-        port_dict_list = [{"directorId": self.data.director_id1,
-                           "portId": self.data.port_id1},
-                          {"directorId": self.data.director_id2,
-                           "portId": self.data.port_id2}, ]
+        port_dict_list = [{'directorId': self.data.director_id1,
+                           'portId': self.data.port_id1},
+                          {'directorId': self.data.director_id2,
+                           'portId': self.data.port_id2}, ]
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_multiport_portgroup(
@@ -1426,10 +1428,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
                        return_value=['FA-1D:4', 'SE-4E:0'])
     def test_create_portgroup_from_file(self, mock_list, mock_create):
         """Test create_portgroup_from_file."""
-        payload = [{"directorId": self.data.director_id1,
-                    "portId": self.data.port_id1},
-                   {"directorId": self.data.director_id2,
-                    "portId": self.data.port_id2}]
+        payload = [{'directorId': self.data.director_id1,
+                    'portId': self.data.port_id1},
+                   {'directorId': self.data.director_id2,
+                    'portId': self.data.port_id2}]
         self.provisioning.create_portgroup_from_file('my-file', 'pg_id')
         mock_create.assert_called_once_with('pg_id', payload)
 
@@ -1533,9 +1535,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', None, None)
             payload1 = {
-                "srpId": "None",
-                "storageGroupId": 'new-sg',
-                "emulation": "FBA"}
+                'srpId': 'None',
+                'storageGroupId': 'new-sg',
+                'emulation': 'FBA'}
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'storagegroup',
                 payload=payload1)
@@ -1544,32 +1546,32 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', self.data.slo, 'None', _async=True)
             payload2 = {
-                "srpId": self.data.srp,
-                "storageGroupId": 'new-sg',
-                "emulation": "FBA",
-                "sloBasedStorageGroupParam": [
-                    {"num_of_vols": 0, "sloId": self.data.slo,
-                     "workloadSelection": 'None',
-                     "noCompression": "false",
-                     "volumeAttribute": {"volume_size": "0",
-                                         "capacityUnit": "GB"}}],
-                "executionOption": "ASYNCHRONOUS"}
+                'srpId': self.data.srp,
+                'storageGroupId': 'new-sg',
+                'emulation': 'FBA',
+                'sloBasedStorageGroupParam': [
+                    {'num_of_vols': 0, 'sloId': self.data.slo,
+                     'workloadSelection': 'None',
+                     'noCompression': 'false',
+                     'volumeAttribute': {'volume_size': '0',
+                                         'capacityUnit': 'GB'}}],
+                'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'storagegroup',
                 payload=payload2)
 
     def test_create_storage_group_full_allocated(self):
         """Test create_storage_group."""
-        ppctroc = "persist_preallocated_capacity_through_reclaim_or_copy"
+        ppctroc = 'persist_preallocated_capacity_through_reclaim_or_copy'
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', None, None)
             payload1 = {
-                "srpId": "None",
-                "storageGroupId": 'new-sg',
-                "emulation": "FBA"}
+                'srpId': 'None',
+                'storageGroupId': 'new-sg',
+                'emulation': 'FBA'}
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'storagegroup',
                 payload=payload1)
@@ -1579,18 +1581,18 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.data.srp, 'new-sg', self.data.slo, 'None',
                 allocate_full=True, _async=True)
             payload2 = {
-                "srpId": self.data.srp,
-                "storageGroupId": 'new-sg',
-                "emulation": "FBA",
-                "sloBasedStorageGroupParam": [
-                    {"num_of_vols": 0, "sloId": self.data.slo,
-                     "workloadSelection": 'None',
-                     "noCompression": "true",
-                     "allocate_capacity_for_each_vol": "true",
-                     ppctroc: "true",
-                     "volumeAttribute": {"volume_size": "0",
-                                         "capacityUnit": "GB"}}],
-                "executionOption": "ASYNCHRONOUS"}
+                'srpId': self.data.srp,
+                'storageGroupId': 'new-sg',
+                'emulation': 'FBA',
+                'sloBasedStorageGroupParam': [
+                    {'num_of_vols': 0, 'sloId': self.data.slo,
+                     'workloadSelection': 'None',
+                     'noCompression': 'true',
+                     'allocate_capacity_for_each_vol': 'true',
+                     ppctroc: 'true',
+                     'volumeAttribute': {'volume_size': '0',
+                                         'capacityUnit': 'GB'}}],
+                'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'storagegroup',
                 payload=payload2)
@@ -1601,22 +1603,22 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.provisioning, 'create_resource') as mock_create:
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
-                self.data.srp, 'new-sg', slo="Diamond", workload=None,
-                num_vols=1, vol_size="1", vol_name="ID4TEST")
+                self.data.srp, 'new-sg', slo='Diamond', workload=None,
+                num_vols=1, vol_size='1', vol_name='ID4TEST')
             payload1 = {
-                "srpId": "SRP_1",
-                "storageGroupId": 'new-sg',
-                "emulation": "FBA",
-                "sloBasedStorageGroupParam": [
-                    {"num_of_vols": 1,
-                     "sloId": "Diamond",
-                     "workloadSelection": None,
-                     "noCompression": "false",
-                     "volumeIdentifier": {
-                         "identifier_name": "ID4TEST",
-                         "volumeIdentifierChoice": "identifier_name"},
-                     "volumeAttribute": {"volume_size": "1",
-                                         "capacityUnit": "GB"}}]}
+                'srpId': 'SRP_1',
+                'storageGroupId': 'new-sg',
+                'emulation': 'FBA',
+                'sloBasedStorageGroupParam': [
+                    {'num_of_vols': 1,
+                     'sloId': 'Diamond',
+                     'workloadSelection': None,
+                     'noCompression': 'false',
+                     'volumeIdentifier': {
+                         'identifier_name': 'ID4TEST',
+                         'volumeIdentifierChoice': 'identifier_name'},
+                     'volumeAttribute': {'volume_size': '1',
+                                         'capacityUnit': 'GB'}}]}
 
             mock_create.assert_called_once_with(
                 self.data.array, 'sloprovisioning', 'storagegroup',
@@ -1628,7 +1630,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.provisioning, 'create_storage_group') as mock_create:
             self.provisioning.create_non_empty_storagegroup(
                 self.data.srp, 'new-sg', self.data.slo, self.data.workload,
-                1, "2", "GB")
+                1, '2', 'GB')
             mock_create.assert_called_once()
 
     def test_create_empty_sg(self):
@@ -1649,10 +1651,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_add_existing_vol_to_sg(self):
         """Test add_existing_vol_to_sg."""
-        payload1 = {"editStorageGroupActionParam": {
-            "expandStorageGroupParam": {
-                "addSpecificVolumeParam": {
-                    "volumeId": [self.data.device_id]}}}}
+        payload1 = {'editStorageGroupActionParam': {
+            'expandStorageGroupParam': {
+                'addSpecificVolumeParam': {
+                    'volumeId': [self.data.device_id]}}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # vol id, not list; not _async
@@ -1664,42 +1666,42 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.reset_mock()
             self.provisioning.add_existing_vol_to_sg(
                 self.data.storagegroup_name, [self.data.device_id], True)
-            payload1.update({"executionOption": "ASYNCHRONOUS"})
+            payload1.update({'executionOption': 'ASYNCHRONOUS'})
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
 
     def test_add_new_vol_to_storagegroup(self):
         """Test add_new_vol_to_storagegroup."""
         add_vol_info = {
-            "num_of_vols": 1, "emulation": "FBA", "create_new_volumes": False,
-            "volumeAttribute": {"volume_size": "10", "capacityUnit": "GB"}}
+            'num_of_vols': 1, 'emulation': 'FBA', 'create_new_volumes': False,
+            'volumeAttribute': {'volume_size': '10', 'capacityUnit': 'GB'}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # no vol name; not _async
             self.provisioning.add_new_vol_to_storagegroup(
-                self.data.storagegroup_name, 1, "10", "GB")
-            payload1 = {"editStorageGroupActionParam": {
-                "expandStorageGroupParam": {
-                    "addVolumeParam": add_vol_info}}}
+                self.data.storagegroup_name, 1, '10', 'GB')
+            payload1 = {'editStorageGroupActionParam': {
+                'expandStorageGroupParam': {
+                    'addVolumeParam': add_vol_info}}}
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
             # vol name required; _async is true
             mock_mod.reset_mock()
-            add_vol_info.update({"volumeIdentifier": {
-                "identifier_name": 'my-vol',
-                "volumeIdentifierChoice": "identifier_name"}})
+            add_vol_info.update({'volumeIdentifier': {
+                'identifier_name': 'my-vol',
+                'volumeIdentifierChoice': 'identifier_name'}})
             self.provisioning.add_new_vol_to_storagegroup(
-                self.data.storagegroup_name, 1, "10", "GB", True, 'my-vol')
-            payload2 = {"editStorageGroupActionParam": {
-                "expandStorageGroupParam": {"addVolumeParam": add_vol_info}},
-                "executionOption": "ASYNCHRONOUS"}
+                self.data.storagegroup_name, 1, '10', 'GB', True, 'my-vol')
+            payload2 = {'editStorageGroupActionParam': {
+                'expandStorageGroupParam': {'addVolumeParam': add_vol_info}},
+                'executionOption': 'ASYNCHRONOUS'}
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload2)
 
     def test_remove_vol_from_storagegroup(self):
         """Test remove_vol_from_storagegroup."""
-        payload1 = {"editStorageGroupActionParam": {
-            "removeVolumeParam": {"volumeId": [self.data.device_id]}}}
+        payload1 = {'editStorageGroupActionParam': {
+            'removeVolumeParam': {'volumeId': [self.data.device_id]}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # vol id, not list; not _async
@@ -1711,17 +1713,17 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.reset_mock()
             self.provisioning.remove_vol_from_storagegroup(
                 self.data.storagegroup_name, [self.data.device_id], True)
-            payload1.update({"executionOption": "ASYNCHRONOUS"})
+            payload1.update({'executionOption': 'ASYNCHRONOUS'})
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
 
     def test_move_volumes_between_storagegroups(self):
         """Test move_volumes_between_storage_groups."""
-        payload1 = ({"editStorageGroupActionParam": {
-            "moveVolumeToStorageGroupParam": {
-                "volumeId": [self.data.device_id],
-                "storageGroupId": self.data.storagegroup_name_1,
-                "force": "false"}}})
+        payload1 = ({'editStorageGroupActionParam': {
+            'moveVolumeToStorageGroupParam': {
+                'volumeId': [self.data.device_id],
+                'storageGroupId': self.data.storagegroup_name_1,
+                'force': 'false'}}})
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # vol id, not list; not _async
@@ -1735,21 +1737,21 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.provisioning.move_volumes_between_storage_groups(
                 [self.data.device_id], self.data.storagegroup_name,
                 self.data.storagegroup_name_1, _async=True)
-            payload1.update({"executionOption": "ASYNCHRONOUS"})
+            payload1.update({'executionOption': 'ASYNCHRONOUS'})
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload1)
 
     def test_create_volume_from_sg_return_dev_id(self):
         """Test create_volume_from_sg_return_dev_id."""
         sg_name = self.data.storagegroup_name_1
-        job = {"status": "SUCCEEDED", "jobId": "12345", "result": "created",
-               "resourceLink": "storagegroup/%s" % sg_name,
-               "description": "Creating new Volumes for MY-SG : [00001]"}
+        job = {'status': 'SUCCEEDED', 'jobId': '12345', 'result': 'created',
+               'resourceLink': 'storagegroup/%s' % sg_name,
+               'description': 'Creating new Volumes for MY-SG : [00001]'}
         with mock.patch.object(
                 self.provisioning, 'add_new_vol_to_storagegroup',
                 return_value=job):
             device_id = self.provisioning.create_volume_from_sg_return_dev_id(
-                'volume_name', sg_name, "2")
+                'volume_name', sg_name, '2')
             self.assertEqual(self.data.device_id, device_id)
 
     def test_add_child_sg_to_parent_sg(self):
@@ -1865,7 +1867,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test extend_volume."""
         with mock.patch.object(
                 self.provisioning, '_modify_volume') as mock_mod:
-            self.provisioning.extend_volume(self.data.device_id, "3")
+            self.provisioning.extend_volume(self.data.device_id, '3')
             mock_mod.assert_called_once()
 
     def test_rename_volume(self):
@@ -1875,7 +1877,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.provisioning.rename_volume(self.data.device_id, None)
             mock_mod.assert_called_once()
             mock_mod.reset_mock()
-            self.provisioning.rename_volume(self.data.device_id, "new-name")
+            self.provisioning.rename_volume(self.data.device_id, 'new-name')
             mock_mod.assert_called_once()
 
     def test_deallocate_volume(self):
@@ -2232,12 +2234,12 @@ class PyU4VMigrationTest(testtools.TestCase):
     def test_get_environment_list(self):
         """Test get_environment_list."""
         environment_list = self.migration.get_environment_list()
-        env_list_ref = self.data.migration_environment_list["arrayId"]
+        env_list_ref = self.data.migration_environment_list['arrayId']
         self.assertEqual(env_list_ref, environment_list)
 
     def test_get_environment(self):
         """Test get_environment."""
-        env_name = self.data.migration_environment_list["arrayId"][0]
+        env_name = self.data.migration_environment_list['arrayId'][0]
         environment_details = self.migration.get_environment(env_name)
         env_details_ref = self.data.migration_environment_details
         self.assertEqual(env_details_ref, environment_details)
@@ -2246,7 +2248,7 @@ class PyU4VMigrationTest(testtools.TestCase):
         """Test delete_environment."""
         with mock.patch.object(
                 self.migration, 'delete_resource') as mock_delete:
-            env_name = self.data.migration_environment_list["arrayId"][0]
+            env_name = self.data.migration_environment_list['arrayId'][0]
             self.migration.delete_environment(env_name)
             mock_delete.assert_called_once()
 

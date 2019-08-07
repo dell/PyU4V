@@ -49,8 +49,8 @@ class MigrationFunctions(object):
 
         :returns: dict
         """
-        target_uri = '/{}/migration/symmetrix/{}'.format(
-            self.U4V_VERSION, self.array_id)
+        target_uri = '/{version}/migration/symmetrix/{array_id}'.format(
+            version=self.U4V_VERSION, array_id=self.array_id)
         return self.common.get_request(target_uri, 'migration info')
 
     def get_array_migration_capabilities(self):
@@ -59,8 +59,8 @@ class MigrationFunctions(object):
         :returns: array_capabilities dict
         """
         array_capabilities = {}
-        target_uri = ("/{}/migration/capabilities/symmetrix".format(
-            self.U4V_VERSION))
+        target_uri = ('/{version}/migration/capabilities/symmetrix'.format(
+            version=self.U4V_VERSION))
         capabilities = self.common.get_request(
             target_uri, 'migration capabilities')
         symm_list = (

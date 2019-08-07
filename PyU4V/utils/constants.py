@@ -48,9 +48,9 @@ INCOMPLETE_LIST = ['created', 'scheduled', 'running',
                    'validating', 'validated']
 CREATED = 'created'
 SUCCEEDED = 'succeeded'
-ASYNCHRONOUS = "ASYNCHRONOUS"
+ASYNCHRONOUS = 'ASYNCHRONOUS'
 ASYNC_UPDATE = {'executionOption': ASYNCHRONOUS}
-CREATE_VOL_STRING = "Creating new Volumes"
+CREATE_VOL_STRING = 'Creating new Volumes'
 
 # Replication Modes
 ESTABLISH = 'Establish'

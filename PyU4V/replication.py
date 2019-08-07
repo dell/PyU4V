@@ -59,20 +59,20 @@ class ReplicationFunctions(object):
     def get_replication_info(self):
         """Return replication information for an array.
 
-        :return: dict
+        :returns: dict
         """
-        target_uri = "%s/replication/symmetrix/%s" % (
-            self.U4V_VERSION, self.array_id)
+        target_uri = '{version}/replication/symmetrix/{array_id}'.format(
+            version=self.U4V_VERSION, array_id=self.array_id)
         return self.common.get_request(target_uri, 'replication info')
 
     def get_array_replication_capabilities(self):
         """Check what replication facilities are available.
 
-        :return: array_capabilities dict
+        :returns: array_capabilities dict
         """
         array_capabilities = {}
-        target_uri = "/%s/replication/capabilities/symmetrix" % (
-            self.U4V_VERSION)
+        target_uri = ('/{version}/replication/capabilities/symmetrix'.format(
+            version=self.U4V_VERSION))
         capabilities = self.common.get_request(
             target_uri, 'replication capabilities')
         symm_list = capabilities.get(
@@ -93,8 +93,8 @@ class ReplicationFunctions(object):
         if capabilities:
             snap_capability = capabilities['snapVxCapable']
         else:
-            LOG.error("Cannot access replication capabilities "
-                      "for array %(array)s", {'array': self.array_id})
+            LOG.error('Cannot access replication capabilities '
+                      'for array %(array)s', {'array': self.array_id})
         return snap_capability
 
     def get_storage_group_rep(self, storage_group_name):
@@ -128,9 +128,10 @@ class ReplicationFunctions(object):
         """Get a list of snapshots associated with a storagegroup.
 
         :param storagegroup_id: the storagegroup name
-        :return: list of snapshot names
+        :returns: list of snapshot names
         """
-        res_name = "storagegroup/%s/snapshot" % storagegroup_id
+        res_name = 'storagegroup/{storagegroup_id}/snapshot'.format(
+            storagegroup_id=storagegroup_id)
         response = self.get_resource(
             self.array_id, REPLICATION, res_name)
         snapshot_list = response.get('name', []) if response else []
@@ -149,13 +150,13 @@ class ReplicationFunctions(object):
         :param ttl: ttl in days, if any - int
         :param hours: Boolean, if set will specify TTL value is hours not days
         """
-        payload = {"snapshotName": snap_name}
+        payload = {'snapshotName': snap_name}
         if ttl:
-            payload.update({"timeToLive": ttl})
+            payload.update({'timeToLive': ttl})
             if hours:
-                payload.update({"timeInHours": "True"})
-        resource_type = "storagegroup/%(sg_name)s/snapshot" % (
-            {'sg_name': sg_name})
+                payload.update({'timeInHours': 'True'})
+        resource_type = ('storagegroup/{sg_name}/snapshot'.format(
+            sg_name=sg_name))
         return self.create_resource(
             self.array_id, REPLICATION, resource_type, payload=payload)
 
@@ -170,11 +171,11 @@ class ReplicationFunctions(object):
 
         :param storagegroup_id: the name of the storage group
         :param snap_name: the name of the snapshot
-        :return: list of generation numbers
+        :returns: list of generation numbers
         """
         gen_list = []
-        res_name = "%s/snapshot/%s/generation" % (
-            storagegroup_id, snap_name)
+        res_name = '{storagegroup_id}/snapshot/{snap_name}/generation'.format(
+            storagegroup_id=storagegroup_id, snap_name=snap_name)
         response = self.get_resource(self.array_id, REPLICATION,
                                      'storagegroup', resource_name=res_name)
         if response and response.get('generations'):
@@ -187,10 +188,12 @@ class ReplicationFunctions(object):
         :param sg_id: the storage group id
         :param snap_name: the snapshot name
         :param gen_num: Generation number
-        :return: dict
+        :returns: dict
         """
-        resource_name = "%s/snapshot/%s/generation/%s" % (
-            sg_id, snap_name, gen_num)
+        resource_name = ('{sg_id}/snapshot/{snap_name}/generation/{gen_num}'
+                         .format(sg_id=sg_id,
+                                 snap_name=snap_name,
+                                 gen_num=gen_num))
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup',
             resource_name=resource_name)
@@ -208,30 +211,30 @@ class ReplicationFunctions(object):
         'linked_sg_name': 'my-linked-sg',
         'snap_creation_time': '14:46:24 Wed, 23 Jan 2018'}]
 
-        :return: list of dicts with expired snap details,
+        :returns: list of dicts with expired snap details,
         """
         expired_snap_list = []
         sglist = self.get_storage_group_rep_list(has_snapshots=True)
         for sg in sglist:
             snaplist = self.get_storage_group_rep(sg)
-            for snapshot_name in snaplist["snapVXSnapshots"]:
+            for snapshot_name in snaplist['snapVXSnapshots']:
                 snapcount = self.get_storagegroup_snapshot_generation_list(
                     sg, snapshot_name)
                 for x in range(0, len(snapcount)):
                     snapdetails = self.get_snapshot_generation_details(
                         sg, snapshot_name, x)
-                    if snapdetails["isExpired"]:
-                        snapcreation_time = snapdetails["timestamp"]
+                    if snapdetails['isExpired']:
+                        snapcreation_time = snapdetails['timestamp']
                         snapexpiration = snapdetails[
-                            "timeToLiveExpiryDate"]
+                            'timeToLiveExpiryDate']
                         for linked_sg in snapdetails.get(
-                                "linkedStorageGroup", []):
-                            linked_sg_name = linked_sg["name"]
+                                'linkedStorageGroup', []):
+                            linked_sg_name = linked_sg['name']
                             LOG.debug(
-                                "Storage group %(sg)s has expired snapshot. "
-                                "Snapshot name %(ss)s, Generation Number "
-                                "%(gen_no)s, snapshot expired on %(snap_ex)s, "
-                                "linked storage group name is %(sg_name)s",
+                                'Storage group %(sg)s has expired snapshot. '
+                                'Snapshot name %(ss)s, Generation Number '
+                                '%(gen_no)s, snapshot expired on %(snap_ex)s, '
+                                'linked storage group name is %(sg_name)s',
                                 {'sg': sg,
                                  'ss': snapshot_name,
                                  'gen_no': x,
@@ -268,25 +271,28 @@ class ReplicationFunctions(object):
         """
         payload = {}
         if link:
-            payload = {"link": {"linkStorageGroupName": target_sg_id,
-                                "copy": False},
-                       "action": "Link"}
+            payload = {'link': {'linkStorageGroupName': target_sg_id,
+                                'copy': False},
+                       'action': 'Link'}
         elif unlink:
-            payload = {"unlink": {"unlinkStorageGroupName": target_sg_id},
-                       "action": "Unlink"}
+            payload = {'unlink': {'unlinkStorageGroupName': target_sg_id},
+                       'action': 'Unlink'}
 
         elif restore:
-            payload = {"action": "Restore"}
+            payload = {'action': 'Restore'}
 
         elif new_name:
-            payload = ({"rename": {"newSnapshotName": new_name},
-                        "action": "Rename"})
+            payload = ({'rename': {'newSnapshotName': new_name},
+                        'action': 'Rename'})
 
         if _async:
             payload.update(ASYNC_UPDATE)
 
-        resource_name = ("%s/snapshot/%s/generation/%s" % (
-            source_sg_id, snap_name, gen_num))
+        resource_name = (
+            '{source_sg_id}/snapshot/{snap_name}/generation/{gen_num}'.format(
+                source_sg_id=source_sg_id,
+                snap_name=snap_name,
+                gen_num=gen_num))
 
         return self.modify_resource(
             self.array_id, REPLICATION, 'storagegroup', payload=payload,
@@ -298,7 +304,7 @@ class ReplicationFunctions(object):
         :param sg_id: the name of the storage group
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number of the snapshot (int)
-        :return: dict
+        :returns: dict
         """
         return self.modify_storagegroup_snap(
             self.array_id, sg_id, None, snap_name,
@@ -311,7 +317,7 @@ class ReplicationFunctions(object):
         :param snap_name: the name of the snapshot
         :param new_name: the new name of the snapshot
         :param gen_num: generation number of a snapshot (int)
-        :return: dict
+        :returns: dict
         """
         return self.modify_storagegroup_snap(
             sg_id, None, snap_name,
@@ -328,7 +334,7 @@ class ReplicationFunctions(object):
         :param link_sg_name:  the target storage group name
         :param _async: flag to indicate if call is async
         :param gen_num: generation number of a snapshot (int)
-        :return: dict
+        :returns: dict
         """
         return self.modify_storagegroup_snap(
             sg_id, link_sg_name, snap_name,
@@ -343,7 +349,7 @@ class ReplicationFunctions(object):
         :param unlink_sg_name:  the target storage group name
         :param _async: flag to indicate if call is async
         :param gen_num: generation number of a snapshot (int)
-        :return: dict
+        :returns: dict
         """
         return self.modify_storagegroup_snap(
             sg_id, unlink_sg_name, snap_name,
@@ -356,8 +362,11 @@ class ReplicationFunctions(object):
         :param snap_name: the name of the snapshot
         :param gen_num: the generation number
         """
-        resource_name = "storagegroup/%s/snapshot/%s/generation/%s" % (
-            storagegroup, snap_name, gen_num)
+        resource_name = (
+            '{storagegroup}/snapshot/{snap_name}/generation/{gen_num}'.format(
+                storagegroup=storagegroup,
+                snap_name=snap_name,
+                gen_num=gen_num))
         return self.delete_resource(
             self.array_id, REPLICATION, resource_name)
 
@@ -367,10 +376,10 @@ class ReplicationFunctions(object):
         :param storagegroup_id: the storagegoup id
         """
         snaplist = self.get_storagegroup_snapshot_list(storagegroup_id)
-        print("Choose the snapshot you want from the below list: \n")
+        print('Choose the snapshot you want from the below list: \n')
         for counter, value in enumerate(snaplist):
-            print("%s: %s" % (counter, value))
-        snapselection = input("Choice: ")
+            print('{counter}: {value}'.format(counter=counter, value=value))
+        snapselection = input('Choice: ')
         snapshot_id = (snaplist[int(snapselection)])
         return snapshot_id
 
@@ -386,7 +395,7 @@ class ReplicationFunctions(object):
         rdf_grp = None
         volume_details = self.provisioning.get_volume(device_id)
         if volume_details:
-            LOG.debug("Vol details: %(vol)s", {'vol': volume_details})
+            LOG.debug('Vol details: %(vol)s', {'vol': volume_details})
             if volume_details.get('snapvx_target'):
                 snapvx_tgt = volume_details['snapvx_target']
             if volume_details.get('snapvx_source'):
@@ -418,8 +427,8 @@ class ReplicationFunctions(object):
         :param rdf_number: the rdf group number
         :param device_id: the device id
         """
-        resource_name = "%(rdf)s/volume/%(dev)s" % (
-            {'rdf': rdf_number, 'dev': device_id})
+        resource_name = '{rdf}/volume/{dev}'.format(
+            rdf=rdf_number, dev=device_id)
         return self.get_resource(
             self.array_id, REPLICATION, 'rdf_group',
             resource_name=resource_name)
@@ -430,7 +439,7 @@ class ReplicationFunctions(object):
         :param rdf_number: the rdf group number
         :returns: list of device ids
         """
-        resource_name = "%s/volume" % rdf_number
+        resource_name = '{rdf_number}/volume'.format(rdf_number=rdf_number)
         response = self.get_resource(
             self.array_id, REPLICATION, 'rdf_group',
             resource_name=resource_name)
@@ -458,7 +467,7 @@ class ReplicationFunctions(object):
                 local_vol_state = volume['localVolumeState']
                 rdf_pair_state = volume['rdfpairState']
         else:
-            LOG.warning("Cannot find source RDF volume %(device_id)s.",
+            LOG.warning('Cannot find source RDF volume %(device_id)s.',
                         {'device_id': device_id})
         return paired, local_vol_state, rdf_pair_state
 
@@ -483,9 +492,10 @@ class ReplicationFunctions(object):
         """Get the SRDF numbers for a storage group.
 
         :param storagegroup_id: Storage Group Name of replicated group
-        :return: list of RDFG numbers
+        :returns: list of RDFG numbers
         """
-        res_name = "%s/rdf_group" % storagegroup_id
+        res_name = '{storagegroup_id}/rdf_group'.format(
+            storagegroup_id=storagegroup_id)
         response = self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', resource_name=res_name)
         rdfg_list = response.get('rdfgs', []) if response else []
@@ -496,9 +506,10 @@ class ReplicationFunctions(object):
 
         :param storagegroup_id: name of storage group
         :param rdfg_num: rdf number
-        :return: dict
+        :returns: dict
         """
-        res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg_num)
+        res_name = '{storagegroup_id}/rdf_group/{rdfg_num}'.format(
+            storagegroup_id=storagegroup_id, rdfg_num=rdfg_num)
         return self.get_resource(
             self.array_id, REPLICATION, 'storagegroup', resource_name=res_name)
 
@@ -515,14 +526,15 @@ class ReplicationFunctions(object):
         :param _async: Flag to indicate if call should be async
                       (NOT to be confused with the SRDF mode)
         :param rdfg_number: the required RDFG number (optional)
-        :return: message and status Type JSON
+        :returns: message and status Type JSON
         """
-        res_type = "storagegroup/%s/rdf_group" % storagegroup_id
-        establish_sg = "True" if establish else "False"
-        rdf_payload = {"replicationMode": srdfmode,
-                       "remoteSymmId": remote_sid,
-                       "remoteStorageGroupName": storagegroup_id,
-                       "establish": establish_sg}
+        res_type = 'storagegroup/{storagegroup_id}/rdf_group'.format(
+            storagegroup_id=storagegroup_id)
+        establish_sg = 'True' if establish else 'False'
+        rdf_payload = {'replicationMode': srdfmode,
+                       'remoteSymmId': remote_sid,
+                       'remoteStorageGroupName': storagegroup_id,
+                       'establish': establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
         if forceNewRdfGroup:
@@ -547,7 +559,8 @@ class ReplicationFunctions(object):
         example options={setMode': {'mode': 'Asynchronous'}}
         :param _async: flag to indicate if call should be async
         """
-        res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
+        res_name = '{storagegroup_id}/rdf_group/{rdfg}'.format(
+            storagegroup_id=storagegroup_id, rdfg=rdfg)
         srdf_actions = {
             'ESTABLISH': ESTABLISH, 'SPLIT': SPLIT, 'SUSPEND': SUSPEND,
             'RESTORE': RESTORE, 'RESUME': RESUME, 'FAILOVER': FAILOVER,
@@ -556,11 +569,11 @@ class ReplicationFunctions(object):
         srdf_action = srdf_actions.get(action.upper())
 
         if srdf_action:
-            payload = {"action": srdf_action}
+            payload = {'action': srdf_action}
         else:
-            msg = ("SRDF Action must be one of [Establish, Split, Suspend, "
-                   "Restore, Resume, Failover, Failback, Swap, SetBias, "
-                   "SetMode]")
+            msg = ('SRDF Action must be one of [Establish, Split, Suspend, '
+                   'Restore, Resume, Failover, Failback, Swap, SetBias, '
+                   'SetMode]')
             LOG.exception(msg)
             raise exception.VolumeBackendAPIException(data=msg)
         if _async:
@@ -655,7 +668,8 @@ class ReplicationFunctions(object):
         if not isinstance(rdfg_num, list):
             rdfg_num = [rdfg_num]
         for rdfg in rdfg_num:
-            res_name = "%s/rdf_group/%s" % (storagegroup_id, rdfg)
+            res_name = '{storagegroup_id}/rdf_group/{rdfg}'.format(
+                storagegroup_id=storagegroup_id, rdfg=rdfg)
             self.delete_resource(
                 self.array_id, REPLICATION,
                 'storagegroup', resource_name=res_name)
