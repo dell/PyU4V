@@ -39,14 +39,15 @@ LOG = logging.getLogger(__name__)
 class RestRequests(object):
     """RestRequests."""
 
-    def __init__(self, username, password, verify, base_url):
+    def __init__(self, username, password, verify, base_url, application_type):
         """__init__."""
         self.username = username
         self.password = password
         self.verifySSL = verify
         self.base_url = base_url
         self.headers = {'content-type': 'application/json',
-                        'accept': 'application/json'}
+                        'accept': 'application/json',
+                        'application_type': application_type}
         self.timeout = 120
         self.session = self.establish_rest_session()
 
