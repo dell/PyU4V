@@ -43,8 +43,7 @@ class U4VConn(object):
     def __init__(self, username=None, password=None, server_ip=None,
                  port=None, verify=None,
                  u4v_version=constants.UNIVMAX_VERSION,
-                 interval=5, retries=200, array_id=None,
-                 application_type=None):
+                 interval=5, retries=200, array_id=None):
         """__init__."""
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
@@ -75,8 +74,7 @@ class U4VConn(object):
             except Exception:
                 verify = True
         base_url = "https://%s:%s/univmax/restapi" % (server_ip, port)
-        self.rest_client = RestRequests(username, password, verify, base_url,
-                                        application_type)
+        self.rest_client = RestRequests(username, password, verify, base_url)
         self.request = self.rest_client.rest_request
         self.U4V_VERSION = u4v_version
         self.common = CommonFunctions(
