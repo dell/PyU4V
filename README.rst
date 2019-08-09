@@ -12,7 +12,7 @@ eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
 VERSION 3
 
-Please note that version '3.0.0.17' of the library is NOT BACKWARDS
+Please note that version '3.0.0.18' of the library is NOT BACKWARDS
 COMPATIBLE with existing scripts, and does not support any
 Unisphere for VMAX version earlier than 8.4 - PyU4V version 2.0.2.6 is still
 available on Pip, and there is a 'stable/2.0' branch available on Github.
@@ -112,7 +112,80 @@ Please run the following:
    If you do not have all the versions of python installed, just run tox on
    the versions you have. pep8 and pylint must run clean also.
 
-If it all looks good, I'll merge it.
+If it all looks good, I'll merge it.  Please refer to CONVENTIONS section for more details
+
+CONVENTIONS
+
+For neatness and readability we will enforce the following conventions going forward.
+
+1. Single quotes ' unless double quotes " necessary.
+
+2. use .format() when manipulating strings
+
+.. code-block::
+
+   my_string= '/{variable1}, thanks for contributing to {variable2}'.format(
+       variable1=’Hello’, variable2=’PyU4V’)
+
+3. We cannot use .format() in logging due to pylint error (W1202) so we follow the following format:
+
+.. code-block::
+
+   my_message = 'Hello, this is my log message.'
+   logger.debug('message: %(my_message)s', {my_message: my_message})
+
+4. Use :returns: in docstring.  Pep8 will guide you with all the other docstring conventions
+
+.. code-block::
+
+   """The is my summary of the method with full stop.
+
+   This is a brief description of what the method does.  Keep
+   it as simple as possible.
+
+   :param parameter1: brief description of parameter 1
+   :param parameter2: brief description of parameter 2
+   :returns: what gets returned from method, omit if none
+   :raises: Exceptions raised, omit if none
+    """
+
+5. Class name is mixed case with no underscores _
+
+.. code-block::
+
+   class ClassFunctions(object):
+       """Collection of functions ClassFunctions."""
+
+6. Public Methods are separated by underscores _.  Make the name as meaningful as possible
+
+.. code-block::
+
+    def public_function_does_exactly_what_it_says_it_does(self):
+        """Function does exactly what it says on the tin."""
+
+7. Private Methods are prefixed and separated by underscores _.  Make the name as meaningful as possible
+
+.. code-block::
+
+    def _private_function_does_exactly_what_it_says_it_does(self):
+        """Function does exactly what it says on the tin."""
+
+8. If functions seems to big or too complicated then consider breaking them into smaller functions.
+
+9. Each new function must be unit tested.
+
+10. Each bug fix must be unit tested.
+
+11. Unix and OS X format only.  If in doubt run
+
+.. code-block::
+
+   dos2unix myfile.txt
+
+or in PyCharm:
+
+   File -> Line Separators -> LF- Unix and OS X (\n)
+
 
 SUPPORT
 

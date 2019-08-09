@@ -34,7 +34,7 @@ ru = U4VConn(u4v_version='84', server_ip='')
 
 end_date = int(round(time.time()) * 1000)
 start_date = (end_date - 3600000)
-sg_id = "YOURSG"
+sg_id = 'YOURSG'
 
 
 def get_my_kpi():

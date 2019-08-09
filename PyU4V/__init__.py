@@ -6,8 +6,9 @@
 #       /             |
 """__init__.py."""
 
+from .univmax_conn import U4VConn  # noqa: F401
 __title__ = 'pyu4v'
-__version__ = '3.0.0.17'
-__author__ = 'Dell EMC or its subsidieries'
+__version__ = '3.0.0.18'
+__author__ = 'Dell EMC or its subsidiaries'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2019 Dell EMC Inc'

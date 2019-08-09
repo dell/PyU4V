@@ -90,7 +90,7 @@ class CommonFunctions(object):
                         kwargs['rc'], kwargs['status'] = rc, status
                         kwargs['result'], kwargs['task'] = result, task
             except Exception:
-                exception_message = "Issue encountered waiting for job."
+                exception_message = 'Issue encountered waiting for job.'
                 LOG.exception(exception_message)
                 raise exception.VolumeBackendAPIException(
                     data=exception_message)
@@ -105,12 +105,12 @@ class CommonFunctions(object):
             time.sleep(self.interval)
             kwargs = _wait_for_job_complete()
             if kwargs['retries'] > self.retries:
-                LOG.error("_wait_for_job_complete failed after "
-                          "%(retries)d tries.", {'retries': kwargs['retries']})
+                LOG.error('_wait_for_job_complete failed after '
+                          '%(retries)d tries.', {'retries': kwargs['retries']})
                 kwargs['rc'], kwargs['result'] = -1, kwargs['result']
                 break
 
-        LOG.debug("Return code is: %(rc)lu. Result is %(res)s.",
+        LOG.debug('Return code is: %(rc)lu. Result is %(res)s.',
                   {'rc': kwargs['rc'], 'res': kwargs['result']})
         return (kwargs['rc'], kwargs['result'],
                 kwargs['status'], kwargs['task'])
@@ -120,7 +120,8 @@ class CommonFunctions(object):
 
         :param job_id: the job id
         """
-        job_url = "/%s/system/job/%s" % (self.U4V_VERSION, job_id)
+        job_url = '/{version}/system/job/{job_id}'.format(
+            version=self.U4V_VERSION, job_id=job_id)
         return self.get_request(job_url, 'job')
 
     def _is_job_finished(self, job_id):
@@ -158,12 +159,9 @@ class CommonFunctions(object):
         if status_code not in [STATUS_200, STATUS_201,
                                STATUS_202, STATUS_204]:
             exception_message = (
-                "Error %(operation)s. The status code "
-                "received is %(sc)s and the message is "
-                "%(message)s." %
-                ({'operation': operation,
-                  'sc': status_code,
-                  'message': message}))
+                'Error {operation}. The status code received '
+                'is {sc} and the message is {message}.'.format(
+                    operation=operation, sc=status_code, message=message))
             if status_code == STATUS_404:
                 raise exception.ResourceNotFoundException(
                     data=exception_message)
@@ -187,12 +185,12 @@ class CommonFunctions(object):
             rc, result, status, task = self.wait_for_job_complete(job)
             if rc != 0:
                 exception_message = (
-                    "Error %(operation)s. Status code: %(sc)s. "
-                    "Error: %(error)s. Status: %(status)s." %
-                    ({'operation': operation,
-                      'sc': rc,
-                      'error': six.text_type(result),
-                      'status': status}))
+                    'Error {operation}. Status code: {sc}. '
+                    'Error: {error}. Status: {status}.'.format(
+                        operation=operation, sc=rc,
+                        error=six.text_type(result),
+                        status=status))
+                LOG.error(exception_message)
                 raise exception.VolumeBackendAPIException(
                     data=exception_message)
         return task
@@ -213,9 +211,9 @@ class CommonFunctions(object):
         elif kwargs.get('version') and kwargs.get('no_version'):
             version = kwargs['version']
         elif not kwargs.get('version') and not kwargs.get('no_version'):
-            LOG.debug("Version has been specified along with no_version "
-                      "flag, ignoring no_version flag and using version "
-                      "%(version)s.",
+            LOG.debug('Version has been specified along with no_version '
+                      'flag, ignoring no_version flag and using version '
+                      '%(version)s.',
                       {'version': version})
             version = self.U4V_VERSION
         elif kwargs['no_version'] and not kwargs.get('version'):
@@ -224,50 +222,56 @@ class CommonFunctions(object):
         # Old method - has arguments passed which define URI
         if args:
             if version:
-                target_uri += "/%(version)s" % {'version': version}
+                target_uri += ('/{version}'.format(version=version))
 
             array_id = args[0]
             category = args[1]
             resource_type = args[2]
             resource_name = kwargs.get('resource_name')
 
-            target_uri += "/%(cat)s/symmetrix/%(array_id)s/%(res_type)s" % (
-                {'cat': category,
-                 'array_id': array_id,
-                 'res_type': resource_type})
+            target_uri += ('/{cat}/symmetrix/{array_id}/{res_type}'.format(
+                cat=category,
+                array_id=array_id,
+                res_type=resource_type))
 
             if resource_name:
-                target_uri += "/%(resource_name)s" % (
-                    {'resource_name': kwargs.get('resource_name')})
+                target_uri += '/{resource_name}'.format(
+                    resource_name=kwargs.get('resource_name'))
 
         # New method - new method is to have only keyword arguments passed
         if not args and kwargs:
             if kwargs.get('category') in ['performance', 'common']:
                 version = None
             if version:
-                target_uri += "/%s" % version
+                target_uri += '/{version}'.format(version=version)
 
-            target_uri += "/%(category)s/%(resource_level)s" % (
-                {'category': kwargs.get('category'),
-                 'resource_level': kwargs.get('resource_level')})
+            target_uri += '/{category}/{resource_level}'.format(
+                category=kwargs.get('category'),
+                resource_level=kwargs.get('resource_level'))
 
             if kwargs.get('resource_level_id'):
-                target_uri += "/%s" % kwargs.get('resource_level_id')
+                target_uri += '/{resource_level_id}'.format(
+                    resource_level_id=kwargs.get('resource_level_id'))
 
             if kwargs.get('resource_type'):
-                target_uri += "/%s" % kwargs.get('resource_type')
+                target_uri += '/{resource_type}'.format(
+                    resource_type=kwargs.get('resource_type'))
                 if kwargs.get('resource_type_id'):
-                    target_uri += "/%s" % kwargs.get('resource_type_id')
+                    target_uri += '/{resource_type_id}'.format(
+                        resource_type_id=kwargs.get('resource_type_id'))
 
             if kwargs.get('resource'):
-                target_uri += "/%s" % kwargs.get('resource')
+                target_uri += '/{resource}'.format(
+                    resource=kwargs.get('resource'))
                 if kwargs.get('resource_id'):
-                    target_uri += "/%s" % kwargs.get('resource_id')
+                    target_uri += '/{resource_id}'.format(
+                        resource_id=kwargs.get('resource_id'))
 
             if kwargs.get('object_type'):
-                target_uri += "/%s" % kwargs.get('object_type')
+                target_uri += '/{}'.format(kwargs.get('object_type'))
                 if kwargs.get('object_type_id'):
-                    target_uri += "/%s" % kwargs.get('object_type_id')
+                    target_uri += '/{object_type_id}'.format(
+                        object_type_id=kwargs.get('object_type_id'))
 
         return target_uri
 
@@ -281,7 +285,7 @@ class CommonFunctions(object):
         :raises: ResourceNotFoundException
         """
         message, sc = self.request(target_uri, GET, params=params)
-        operation = "get %s" % resource_type
+        operation = 'get {resource_type}'.format(resource_type=resource_type)
         self.check_status_code_success(operation, sc, message)
         return message
 
@@ -376,7 +380,8 @@ class CommonFunctions(object):
         else:
             resource_type = None
 
-        operation = "Create %s resource" % resource_type
+        operation = 'Create {resource_type} resource'.format(
+            resource_type=resource_type)
 
         self.check_status_code_success(
             operation, status_code, message)
@@ -427,7 +432,8 @@ class CommonFunctions(object):
         else:
             resource_type = None
 
-        operation = "Modify %s resource" % resource_type
+        operation = 'Modify {resource_type} resource'.format(
+            resource_type=resource_type)
 
         self.check_status_code_success(operation, status_code, message)
         return message
@@ -476,7 +482,8 @@ class CommonFunctions(object):
         else:
             resource_type = None
 
-        operation = "Delete %s resource" % resource_type
+        operation = 'Delete {resource_type} resource'.format(
+            resource_type=resource_type)
 
         self.check_status_code_success(operation, status_code, message)
 
@@ -485,7 +492,7 @@ class CommonFunctions(object):
         """Given a file, create a list from its contents.
 
         :param file_name: the path to the file
-        :return: list of contents
+        :returns: list of contents
         """
         with open(file_name) as f:
             list_item = f.readlines()
@@ -504,7 +511,7 @@ class CommonFunctions(object):
         policylist = data['policy']
 
         :param file_name: path to CSV file
-        :return: Dictionary of data parsed from CSV
+        :returns: Dictionary of data parsed from CSV
         """
         # open the file in universal line ending mode
         with open(file_name, 'rU') as infile:
@@ -522,10 +529,11 @@ class CommonFunctions(object):
     def get_uni_version(self):
         """Get the unisphere version from the server.
 
-        :return: version and major_version(e.g. ("V8.4.0.16", "84"))
+        :returns: version and major_version(e.g. ("V8.4.0.16", "84"))
         """
         version, major_version = None, None
-        target_uri = "/%s/system/version" % self.U4V_VERSION
+        target_uri = '/{version}/system/version'.format(
+            version=self.U4V_VERSION)
         response = self.get_request(target_uri, 'version')
         if response and response.get('version'):
             version = response['version']
@@ -537,10 +545,10 @@ class CommonFunctions(object):
         """Return a list of arrays.
 
         :param filters: optional dict of filters
-        :return: dict
+        :returns: list
         """
-        print(self.U4V_VERSION)
-        target_uri = "/%s/system/symmetrix" % self.U4V_VERSION
+        target_uri = '/{version}/system/symmetrix'.format(
+            version=self.U4V_VERSION)
         response = self.get_request(target_uri, 'symmetrix', params=filters)
         if response and response.get('symmetrixId'):
             return response['symmetrixId']
@@ -550,9 +558,10 @@ class CommonFunctions(object):
         """Return a list of V3 or newer arrays in the environment.
 
         :param filters: optional dict of filters
-        :return: list of array ids
+        :returns: list of array ids
         """
-        target_uri = "/%s/sloprovisioning/symmetrix" % self.U4V_VERSION
+        target_uri = '/{version}/sloprovisioning/symmetrix'.format(
+            version=self.U4V_VERSION)
         response = self.get_request(target_uri, 'symmetrix', params=filters)
         if response and response.get('symmetrixId'):
             return response['symmetrixId']
@@ -561,10 +570,10 @@ class CommonFunctions(object):
     def get_array(self, array_id):
         """Return details on specific array.
 
-        :return: server response
+        :returns: server response
         """
-        target_uri = "/%s/system/symmetrix/%s" % (
-            self.U4V_VERSION, array_id)
+        target_uri = '/{version}/system/symmetrix/{array_id}'.format(
+            version=self.U4V_VERSION, array_id=array_id)
         return self.get_request(target_uri, 'symmetrix')
 
     def get_iterator_page_list(self, iterator_id, start, end):
@@ -573,10 +582,11 @@ class CommonFunctions(object):
         :param iterator_id: the id of the iterator
         :param start: the start number
         :param end: the end number
-        :return: list of results
+        :returns: list of results
         """
         page_list = []
-        target_uri = "/common/Iterator/%s/page" % iterator_id
+        target_uri = '/common/Iterator/{iterator_id}/page'.format(
+            iterator_id=iterator_id)
         filters = {'from': start, 'to': end}
         response = self.get_request(target_uri, 'iterator', params=filters)
         if response and response.get('result'):
@@ -592,11 +602,11 @@ class CommonFunctions(object):
         "nextUpdate": 1038},
         "spaRegistered": True}
 
-        :return: dict
+        :returns: dict
         """
         wlp_details = None
-        target_uri = ("/%s/wlp/symmetrix/%s" % (
-            self.U4V_VERSION, array_id))
+        target_uri = ('/{version}/wlp/symmetrix/{array_id}'.format(
+            version=self.U4V_VERSION, array_id=array_id))
         response = self.get_request(target_uri, 'wlp')
         if response and response.get('symmetrixDetails'):
             wlp_details = response['symmetrixDetails']
@@ -617,7 +627,7 @@ class CommonFunctions(object):
         :param workload: the workload type (DSS, OLTP, DSS_REP, OLTP_REP)
         :param srp: the storage resource pool. Default SRP_1.
         :param slo: the service level. Default Diamond.
-        :return: dict
+        :returns: dict
         """
         headroom = []
         params = {'srp': srp, 'slo': slo, 'workloadtype': workload}

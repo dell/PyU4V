@@ -51,7 +51,7 @@ class PerformanceFunctions(object):
 
         :returns: director list
         """
-        target_uri = "/performance/FEDirector/keys"
+        target_uri = '/performance/FEDirector/keys'
         dir_payload = ({"symmetrixId": self.array_id})
 
         dir_response = self.request(
@@ -66,7 +66,7 @@ class PerformanceFunctions(object):
 
         :returns: List of Directors and Ports
         """
-        target_uri = "/performance/FEPort/keys"
+        target_uri = '/performance/FEPort/keys'
         port_list = []
         dir_list = self.get_fe_director_list()
         for director in dir_list:
@@ -129,7 +129,7 @@ class PerformanceFunctions(object):
         :param dataformat: Average or Maximum
         :returns: JSON Payload, and RETURN CODE 200 for success
         """
-        target_uri = "/performance/FEDirector/metrics"
+        target_uri = '/performance/FEDirector/metrics'
         fe_director_param = ({
             "symmetrixId": self.array_id,
             "directorId": director,
@@ -167,16 +167,16 @@ class PerformanceFunctions(object):
         :param port_id: port id
         :param dataformat: Average or Maximum
         :param metriclist: list of one or more metrics
-        :return: JSON Payload, and RETURN CODE 200 for success
+        :returns: JSON Payload, and RETURN CODE 200 for success
         """
-        target_uri = "/performance/FEPort/metrics"
-        fe_director_param = ({"symmetrixId": self.array_id,
-                              "directorId": director_id,
-                              "endDate": end_date,
-                              "dataFormat": dataformat,
-                              "metrics": [metriclist],
-                              "portId": port_id,
-                              "startDate": start_date})
+        target_uri = '/performance/FEPort/metrics'
+        fe_director_param = ({'symmetrixId': self.array_id,
+                              'directorId': director_id,
+                              'endDate': end_date,
+                              'dataFormat': dataformat,
+                              'metrics': [metriclist],
+                              'portId': port_id,
+                              'startDate': start_date})
 
         return self.request(
             target_uri, POST, request_object=fe_director_param)
@@ -189,9 +189,9 @@ class PerformanceFunctions(object):
 
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return: array_results_combined
+        :returns: array_results_combined
         """
-        target_uri = "/performance/Array/metrics"
+        target_uri = '/performance/Array/metrics'
         array_perf_payload = {
             'symmetrixId': self.array_id,
             'endDate': end_date,
@@ -224,7 +224,7 @@ class PerformanceFunctions(object):
             target_uri, POST, request_object=array_perf_payload)
         array_results_combined = dict()
         array_results_combined['symmetrixID'] = self.array_id
-        array_results_combined['reporting_level'] = "array"
+        array_results_combined['reporting_level'] = 'array'
         array_results_combined['perf_data'] = (
             array_perf_data[0]['resultList']['result'])
         return array_results_combined
@@ -235,7 +235,7 @@ class PerformanceFunctions(object):
         :param sg_id: the storage group id
         :param start_date: the start date
         :param end_date: the end date
-        :return: sg_results_combined
+        :returns: sg_results_combined
         """
         target_uri = '/performance/StorageGroup/metrics'
         sg_perf_payload = {
@@ -294,7 +294,7 @@ class PerformanceFunctions(object):
             target_uri, POST, request_object=sg_perf_payload)
         sg_results_combined = dict()
         sg_results_combined['symmetrixID'] = self.array_id
-        sg_results_combined['reporting_level'] = "StorageGroup"
+        sg_results_combined['reporting_level'] = 'StorageGroup'
         sg_results_combined['sgname'] = sg_id
         sg_results_combined['perf_data'] = (
             sg_perf_data[0]['resultList']['result'])
@@ -308,22 +308,21 @@ class PerformanceFunctions(object):
 
         :param start_date: start date
         :param end_date: end date
-        :return: director_results_combined
+        :returns: director_results_combined
         """
         dir_list = self.get_fe_director_list()
         director_results_combined = dict()
         director_results_list = []
-        # print("this is the director list %s" % dir_list)
         for fe_director in dir_list:
             director_metrics = self.get_fe_director_metrics(
                 director=fe_director, start_date=start_date,
                 end_date=end_date, dataformat='Average')
             director_results = ({
-                "directorID": fe_director,
-                "perfdata": director_metrics[0]['resultList']['result']})
+                'directorID': fe_director,
+                'perfdata': director_metrics[0]['resultList']['result']})
             director_results_list.append(director_results)
         director_results_combined['symmetrixID'] = self.array_id
-        director_results_combined['reporting_level'] = "FEDirector"
+        director_results_combined['reporting_level'] = 'FEDirector'
         director_results_combined['perf_data'] = director_results_list
         return director_results_combined
 
@@ -336,7 +335,7 @@ class PerformanceFunctions(object):
         :param director_id: Director ID
         :param start_date: start date
         :param end_date: end date
-        :return: Combined payload
+        :returns: Combined payload
         """
         # Create Director level target URIs
         director_info = self.provisioning.get_director(director_id)
@@ -458,7 +457,7 @@ class PerformanceFunctions(object):
 
         # Set combined payload values not present in returned REST metrics
         combined_payload = dict()
-        combined_payload['reporting_level'] = "Director"
+        combined_payload['reporting_level'] = 'Director'
         combined_payload['symmetrixId'] = self.array_id
         combined_payload['director_id'] = director_id
         combined_payload['directorType'] = director_type
@@ -476,8 +475,8 @@ class PerformanceFunctions(object):
         # If no Director level performance information is retrieved...
         if not perf_metrics_payload:
             combined_payload['perf_data'] = False
-            combined_payload['perf_msg'] = ("No active Director "
-                                            "performance data available")
+            combined_payload['perf_msg'] = ('No active Director '
+                                            'performance data available')
         else:
             # Performance metrics returned...
             combined_payload['perf_data'] = (
@@ -491,7 +490,7 @@ class PerformanceFunctions(object):
         :param pg_id: port group id
         :param start_date: the start date
         :param end_date: the end date
-        :return: pg_results_combined
+        :returns: pg_results_combined
         """
         target_uri = '/performance/PortGroup/metrics'
         pg_perf_payload = {
@@ -508,7 +507,7 @@ class PerformanceFunctions(object):
             target_uri, POST, request_object=pg_perf_payload)
         pg_results_combined = dict()
         pg_results_combined['symmetrixID'] = self.array_id
-        pg_results_combined['reporting_level'] = "PortGroup"
+        pg_results_combined['reporting_level'] = 'PortGroup'
         pg_results_combined['pgname'] = pg_id
         pg_results_combined['perf_data'] = (
             pg_perf_data[0]['resultList']['result'])
@@ -523,9 +522,9 @@ class PerformanceFunctions(object):
         :param host: the host name
         :param start_date: EPOCH Time
         :param end_date: Epoch Time
-        :return: Formatted results
+        :returns: Formatted results
         """
-        target_uri = "/performance/Host/metrics"
+        target_uri = '/performance/Host/metrics'
         host_perf_payload = {
             'symmetrixId': self.array_id,
             'endDate': end_date,
@@ -539,7 +538,7 @@ class PerformanceFunctions(object):
             target_uri, POST, request_object=host_perf_payload)
         host_results = dict()
         host_results['symmetrixID'] = self.array_id
-        host_results['reporting_level'] = "Host"
+        host_results['reporting_level'] = 'Host'
         host_results['HostID'] = host
         host_results['perf_data'] = host_perf_data[0]['resultList']['result']
         if 'resultList' in host_perf_data[0]:
@@ -553,11 +552,11 @@ class PerformanceFunctions(object):
     def get_perf_threshold_categories(self):
         """Get performance threshold categories.
 
-        :return: category_list
+        :returns: category_list
         """
-        target_uri = "/performance/threshold/categories"
+        target_uri = '/performance/threshold/categories'
         categories = self.request(target_uri, GET)
-        category_list = categories[0]["endpoint"]
+        category_list = categories[0]['endpoint']
         return category_list
 
     def get_perf_category_threshold_settings(self, category):
@@ -567,9 +566,10 @@ class PerformanceFunctions(object):
         get_threshold_categories).
 
         :param category:
-        :return: dict, sc
+        :returns: dict, sc
         """
-        target_uri = "/performance/threshold/list/%s" % category
+        target_uri = '/performance/threshold/list/{category}'.format(
+            category=category)
         return self.request(target_uri, GET)
 
     def set_perf_threshold_and_alert(self, category, metric, firstthreshold,
@@ -589,16 +589,17 @@ class PerformanceFunctions(object):
         :param secondthreshold: the second threshold
         :param notify: Notify user with Alert Boolean
         """
-        payload = ({"secondThresholdSamples": 5,
-                    "firstThreshold": firstthreshold,
-                    "firstThresholdSamples": 5,
-                    "metric": metric, "alert": notify,
-                    "firstThresholdOccurrrences": 3,
-                    "firstThresholdSeverity": "WARNING",
-                    "secondThresholdSeverity": "CRITICAL",
-                    "secondThreshold": secondthreshold,
-                    "secondThresholdOccurrrences": 3})
-        target_uri = "/performance/threshold/update/%s" % category
+        payload = ({'secondThresholdSamples': 5,
+                    'firstThreshold': firstthreshold,
+                    'firstThresholdSamples': 5,
+                    'metric': metric, 'alert': notify,
+                    'firstThresholdOccurrrences': 3,
+                    'firstThresholdSeverity': 'WARNING',
+                    'secondThresholdSeverity': 'CRITICAL',
+                    'secondThreshold': secondthreshold,
+                    'secondThresholdOccurrrences': 3})
+        target_uri = '/performance/threshold/update/{category}'.format(
+            category=category)
 
         return self.request(target_uri, PUT, request_object=payload)
 
@@ -620,8 +621,8 @@ class PerformanceFunctions(object):
                                      quotechar='|',
                                      quoting=csv.QUOTE_MINIMAL)
 
-            eventwriter.writerow(["category", "metric", "firstthreshold",
-                                  "secondthreshold", "notify", "kpi"])
+            eventwriter.writerow(['category', 'metric', 'firstthreshold',
+                                  'secondthreshold', 'notify', 'kpi'])
             for category in category_list:
                 metric_setting = (
                     self.get_perf_category_threshold_settings(category)[0][
@@ -654,12 +655,12 @@ class PerformanceFunctions(object):
         :param csvfilename: the path to the csv file
         """
         data = self.common.read_csv_values(csvfilename)
-        firstthreshold_list = data.get("firstthreshold")
-        secondthreshold_list = data.get("secondthreshold")
-        notify_list = data.get("notify")
-        categrory_list = data.get("category")
-        metric_list = data.get("metric")
-        kpimetric_list = data.get("kpi")
+        firstthreshold_list = data.get('firstthreshold')
+        secondthreshold_list = data.get('secondthreshold')
+        notify_list = data.get('notify')
+        categrory_list = data.get('category')
+        metric_list = data.get('metric')
+        kpimetric_list = data.get('kpi')
 
         for c, m, f, s, n, k in zip(categrory_list, metric_list,
                                     firstthreshold_list,

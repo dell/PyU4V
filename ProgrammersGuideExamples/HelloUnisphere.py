@@ -33,17 +33,17 @@ version = conn.common.get_uni_version()
 array_list = conn.common.get_array_list()
 
 
-print("Congratulations you have just connected to Unisphere for "
-      "VMAX your Version is ", version[1])
-print("This Unisphere instance manages the following arrays", array_list)
+print('Congratulations you have just connected to Unisphere for '
+      'VMAX your Version is ', version[1])
+print('This Unisphere instance manages the following arrays', array_list)
 
 local_array_list = []
 
 for i in array_list:
     check_local = conn.common.get_array(i)
-    if check_local["local"]:
+    if check_local['local']:
         local_array_list.append(i)
 
 
-print("The following arrays are local to this Unisphere instance",
+print('The following arrays are local to this Unisphere instance',
       local_array_list)
