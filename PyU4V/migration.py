@@ -53,6 +53,29 @@ class MigrationFunctions(object):
             version=self.U4V_VERSION, array_id=self.array_id)
         return self.common.get_request(target_uri, 'migration info')
 
+    def create_migration_environment(self, target_array_id):
+        """Creates a new migration environment between two arrays for use
+        with non disruptive migrations
+
+        :param target_array:
+        :return: dict
+        """
+        payload = {"otherArrayId": target_array_id}
+        return self.create_resource(category='migration',
+                                    resource_level='symmetrix',
+                                    payload=payload,
+                                    resource_level_id=self.array_id)
+
+    def delete_migration_environment(self, target_array_id):
+        """Given a target array will delete migration environment, used once
+        all migrations are complete
+
+        :param target_array_id: 12 Digit serial number of target array
+        """
+        self.delete_resource(
+            self.array_id, MIGRATION, 'environment',
+            resource_name=target_array_id)
+
     def get_array_migration_capabilities(self):
         """Check what migration facilities are available.
 
