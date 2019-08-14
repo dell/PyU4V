@@ -12,10 +12,10 @@ eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
 VERSION 3
 
-Please note that version '3.0.0.18' of the library is NOT BACKWARDS
-COMPATIBLE with existing scripts, and does not support any
-Unisphere for VMAX version earlier than 8.4 - PyU4V version 2.0.2.6 is still
-available on Pip, and there is a 'stable/2.0' branch available on Github.
+Please note that version '3.0.0.19' of the library is NOT BACKWARDS
+COMPATIBLE with scripts written with version 2.x of PyU4V, and does not
+support any Unisphere for VMAX version earlier than 8.4 - PyU4V version 2.0.2.6 is
+still available on Pip, and there is a 'stable/2.0' branch available on Github.
 Version 3 will be the version maintained going forward, and we do suggest
 you move to this version when it is released.
 
