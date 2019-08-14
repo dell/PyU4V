@@ -57,8 +57,8 @@ class MigrationFunctions(object):
         """Creates a new migration environment between two arrays for use
         with non disruptive migrations
 
-        :param target_array:
-        :return: dict
+        :param target_array: 12 Digit serial number of target array
+        :returns: dict
         """
         payload = {"otherArrayId": target_array_id}
         return self.create_resource(category='migration',
