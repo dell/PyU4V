@@ -2225,7 +2225,7 @@ class PyU4VMigrationTest(testtools.TestCase):
         self.assertEqual(self.data.migration_info, migration_info)
 
     def test_create_migration_environment(self):
-        """Test create_migration_enviroment"""
+        """Test create_migration_enviroment."""
         with mock.patch.object(
                 self.migration, 'create_resource') as mock_create:
             self.migration.create_migration_environment(
@@ -2233,7 +2233,7 @@ class PyU4VMigrationTest(testtools.TestCase):
             self.assertEqual(1, mock_create.call_count)
 
     def test_delete_migration_environment(self):
-        """Test delete_migration_environment"""
+        """Test delete_migration_environment."""
         with mock.patch.object(
                 self.migration, 'delete_resource') as mock_delete:
             self.migration.delete_migration_environment(

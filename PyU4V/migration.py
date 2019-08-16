@@ -54,7 +54,9 @@ class MigrationFunctions(object):
         return self.common.get_request(target_uri, 'migration info')
 
     def create_migration_environment(self, target_array_id):
-        """Creates a new migration environment between two arrays for use
+        """Create a new migration environment between two arrays.
+
+        Creates a new migration environment between two arrays for use
         with non disruptive migrations
 
         :param target_array_id: 12 Digit serial number of target array
@@ -67,7 +69,9 @@ class MigrationFunctions(object):
                                     resource_level_id=self.array_id)
 
     def delete_migration_environment(self, target_array_id):
-        """Given a target array will delete migration environment, used once
+        """Delete migration environment.
+
+        Given a target array will delete migration environment, used once
         all migrations are complete
 
         :param target_array_id: 12 Digit serial number of target array

@@ -39,7 +39,8 @@ LOG = logging.getLogger(__name__)
 class RestRequests(object):
     """RestRequests."""
 
-    def __init__(self, username, password, verify, base_url, application_type):
+    def __init__(self, username, password, verify, base_url,
+                 application_type=None):
         """__init__."""
         self.username = username
         self.password = password
