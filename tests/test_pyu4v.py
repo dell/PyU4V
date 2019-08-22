@@ -25,6 +25,7 @@ import os
 import tempfile
 
 from PyU4V import common
+from PyU4V import performance
 from PyU4V import provisioning
 from PyU4V import replication
 from PyU4V import rest_requests
@@ -392,6 +393,11 @@ class CommonData(object):
 
     iterator_page = {'result': [{}, {}]}
 
+    # performance
+    perf_response = {"resultList": {"result": [{"Reads": 32.146667,
+                                                "timestamp": 1566466200000}]}}
+    perf_response_legacy = [perf_response]
+
 
 class FakeResponse(object):
     """Fake response."""
@@ -420,10 +426,7 @@ class FakeRequestsSession(object):
         """request."""
         return_object = ''
         status_code = 200
-        if 'performance' in url:
-            return_object = self._performance(method, url)
-
-        elif method == 'GET':
+        if method == 'GET':
             status_code, return_object = self._get_request(url, params)
 
         elif method == 'POST' or method == 'PUT':
@@ -658,14 +661,6 @@ class FakeRequestsSession(object):
                 if symm['symmetrixId'] in url:
                     return_object = symm
                     break
-        return return_object
-
-    def _performance(self, method, url):
-        if method == 'GET':
-            pass
-        elif method == 'POST':
-            pass
-        return_object = None
         return return_object
 
     def _post_or_put(self, url, payload):
@@ -1041,7 +1036,240 @@ class PyU4VCommonTest(testtools.TestCase):
 class PyU4VPerformanceTest(testtools.TestCase):
     """Test Unisphere performance."""
 
-    pass
+    def setUp(self):
+        """setUp."""
+        super(PyU4VPerformanceTest, self).setUp()
+        self.data = CommonData()
+        rest_requests.RestRequests.establish_rest_session = mock.Mock(
+            return_value=FakeRequestsSession())
+        config_file = FakeConfigFile.create_fake_config_file()
+        univmax_conn.file_path = config_file
+        self.conn = univmax_conn.U4VConn(array_id=self.data.array)
+        self.common = self.conn.common
+        self.data = CommonData()
+        self.performance = self.conn.performance
+
+    def test_get_array_metrics(self):
+        """Test get_array_metrics."""
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response):
+            expected_response = {
+                'symmetrixID': CommonData.array, 'reporting_level': 'array',
+                'perf_data': [{"Reads": 32.146667, "timestamp": 1566466200000}]
+            }
+            actual_response = self.performance.get_array_metrics(
+                start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response_legacy):
+            expected_response = {
+                'symmetrixID': CommonData.array, 'reporting_level': 'array',
+                'perf_data': [{"Reads": 32.146667, "timestamp": 1566466200000}]
+            }
+            actual_response = self.performance.get_array_metrics(
+                start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=list()):
+            expected_response = {
+                'symmetrixID': CommonData.array, 'reporting_level': 'array',
+                'perf_data': []}
+            actual_response = self.performance.get_array_metrics(
+                start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+    def test_get_sg_metrics(self):
+        """Test get_sg_metrics."""
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response):
+            expected_response = {
+                'symmetrixID': CommonData.array, 'sgname': 'test',
+                'reporting_level': 'StorageGroup', 'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_storage_group_metrics(
+                sg_id='test', start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response_legacy):
+            expected_response = {
+                'symmetrixID': CommonData.array, 'sgname': 'test',
+                'reporting_level': 'StorageGroup', 'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_storage_group_metrics(
+                sg_id='test', start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=list()):
+            expected_response = {
+                'symmetrixID': CommonData.array, 'sgname': 'test',
+                'reporting_level': 'StorageGroup', 'perf_data': []}
+            actual_response = self.performance.get_storage_group_metrics(
+                sg_id='test', start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+    @mock.patch.object(performance.PerformanceFunctions,
+                       'get_fe_director_list', return_value=['dir1', 'dir2'])
+    def test_get_all_fe_dir_metrics(self, mck_dir_list):
+        """Test get_all_fe_dir_metrics."""
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'FEDirector', 'perf_data': [
+                    {'directorID': 'dir1', 'perf_data': [
+                        {"Reads": 32.146667, "timestamp": 1566466200000}]},
+                    {'directorID': 'dir2', 'perf_data': [
+                        {"Reads": 32.146667, "timestamp": 1566466200000}]}]}
+            actual_response = self.performance.get_all_fe_director_metrics(
+                start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response_legacy):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'FEDirector', 'perf_data': [
+                    {'directorID': 'dir1', 'perf_data': [
+                        {"Reads": 32.146667, "timestamp": 1566466200000}]},
+                    {'directorID': 'dir2', 'perf_data': [
+                        {"Reads": 32.146667, "timestamp": 1566466200000}]}]}
+            actual_response = self.performance.get_all_fe_director_metrics(
+                start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=list()):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'FEDirector', 'perf_data': [
+                    {'directorID': 'dir1', 'perf_data': []},
+                    {'directorID': 'dir2', 'perf_data': []}]}
+            actual_response = self.performance.get_all_fe_director_metrics(
+                start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+    @mock.patch.object(provisioning.ProvisioningFunctions, 'get_director',
+                       return_value={'availability': 'Online',
+                                     'director_id': 'FA-1D'})
+    def test_get_director_info(self, mck_get_dir):
+        """Test get_director_info."""
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response):
+            expected_response = {
+                'symmetrixId': CommonData.array, 'director_id': 'FA-1D',
+                'directorType': 'FE', 'reporting_level': 'Director',
+                'availability': 'Online', 'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_director_info(
+                director_id='FA-1D', start_date=1566466200000,
+                end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response_legacy):
+            expected_response = {
+                'symmetrixId': CommonData.array, 'director_id': 'FA-1D',
+                'directorType': 'FE', 'reporting_level': 'Director',
+                'availability': 'Online', 'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_director_info(
+                director_id='FA-1D', start_date=1566466200000,
+                end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=list()):
+            expected_response = {
+                'symmetrixId': CommonData.array, 'director_id': 'FA-1D',
+                'directorType': 'FE', 'reporting_level': 'Director',
+                'availability': 'Online', 'perf_data': False,
+                'perf_msg': 'No active Director performance data available'}
+            actual_response = self.performance.get_director_info(
+                director_id='FA-1D', start_date=1566466200000,
+                end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+    def test_get_port_group_metrics(self):
+        """Test get_port_group_metrics."""
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'PortGroup', 'pgname': 'test',
+                'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_port_group_metrics(
+                pg_id='test', start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response_legacy):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'PortGroup', 'pgname': 'test',
+                'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_port_group_metrics(
+                pg_id='test', start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=[]):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'PortGroup', 'pgname': 'test',
+                'perf_data': []}
+            actual_response = self.performance.get_port_group_metrics(
+                pg_id='test', start_date=1566466200000, end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+    def test_get_host_metrics(self):
+        """Test get_host_metrics."""
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'Host', 'HostID': 'test',
+                'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_host_metrics(
+                host='test', start_date=1566466200000,
+                end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=self.data.perf_response_legacy):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'Host', 'HostID': 'test',
+                'perf_data': [
+                    {"Reads": 32.146667, "timestamp": 1566466200000}]}
+            actual_response = self.performance.get_host_metrics(
+                host='test', start_date=1566466200000,
+                end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+        with mock.patch.object(self.performance, 'request',
+                               return_value=list()):
+            expected_response = {
+                'symmetrixID': CommonData.array,
+                'reporting_level': 'Host', 'HostID': 'test',
+                'perf_data': []}
+            actual_response = self.performance.get_host_metrics(
+                host='test', start_date=1566466200000,
+                end_date=1566466200000)
+            self.assertEqual(expected_response, actual_response)
+
+    def test_extract_perf_details(self):
+        """Test extract_perf_details."""
+        expected_response = [{"Reads": 32.146667, "timestamp": 1566466200000}]
+        actual_response = self.performance._extract_perf_details(
+            self.data.perf_response)
+        self.assertEqual(expected_response, actual_response)
 
 
 class PyU4VProvisioningTest(testtools.TestCase):

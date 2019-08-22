@@ -225,8 +225,8 @@ class PerformanceFunctions(object):
         array_results_combined = dict()
         array_results_combined['symmetrixID'] = self.array_id
         array_results_combined['reporting_level'] = 'array'
-        array_results_combined['perf_data'] = (
-            array_perf_data[0]['resultList']['result'])
+        array_results_combined['perf_data'] = self._extract_perf_details(
+            array_perf_data)
         return array_results_combined
 
     def get_storage_group_metrics(self, sg_id, start_date, end_date):
@@ -296,8 +296,8 @@ class PerformanceFunctions(object):
         sg_results_combined['symmetrixID'] = self.array_id
         sg_results_combined['reporting_level'] = 'StorageGroup'
         sg_results_combined['sgname'] = sg_id
-        sg_results_combined['perf_data'] = (
-            sg_perf_data[0]['resultList']['result'])
+        sg_results_combined['perf_data'] = self._extract_perf_details(
+            sg_perf_data)
         return sg_results_combined
 
     def get_all_fe_director_metrics(self, start_date, end_date):
@@ -317,9 +317,10 @@ class PerformanceFunctions(object):
             director_metrics = self.get_fe_director_metrics(
                 director=fe_director, start_date=start_date,
                 end_date=end_date, dataformat='Average')
-            director_results = ({
-                'directorID': fe_director,
-                'perfdata': director_metrics[0]['resultList']['result']})
+            director_results = dict()
+            director_results['directorID'] = fe_director
+            director_results['perf_data'] = self._extract_perf_details(
+                director_metrics)
             director_results_list.append(director_results)
         director_results_combined['symmetrixID'] = self.array_id
         director_results_combined['reporting_level'] = 'FEDirector'
@@ -479,8 +480,8 @@ class PerformanceFunctions(object):
                                             'performance data available')
         else:
             # Performance metrics returned...
-            combined_payload['perf_data'] = (
-                perf_metrics_payload[0]['resultList']['result'])
+            combined_payload['perf_data'] = self._extract_perf_details(
+                perf_metrics_payload)
 
         return combined_payload
 
@@ -509,8 +510,8 @@ class PerformanceFunctions(object):
         pg_results_combined['symmetrixID'] = self.array_id
         pg_results_combined['reporting_level'] = 'PortGroup'
         pg_results_combined['pgname'] = pg_id
-        pg_results_combined['perf_data'] = (
-            pg_perf_data[0]['resultList']['result'])
+        pg_results_combined['perf_data'] = self._extract_perf_details(
+            pg_perf_data)
         return pg_results_combined
 
     def get_host_metrics(self, host, start_date, end_date):
@@ -540,12 +541,8 @@ class PerformanceFunctions(object):
         host_results['symmetrixID'] = self.array_id
         host_results['reporting_level'] = 'Host'
         host_results['HostID'] = host
-        host_results['perf_data'] = host_perf_data[0]['resultList']['result']
-        if 'resultList' in host_perf_data[0]:
-            host_results['perf_data'] = host_perf_data[0]['resultList'][
-                'result']
-        else:
-            host_results['perf_data'] = []
+        host_results['perf_data'] = self._extract_perf_details(
+            host_perf_data)
 
         return host_results
 
@@ -668,3 +665,20 @@ class PerformanceFunctions(object):
                                     kpimetric_list):
             if k:
                 self.set_perf_threshold_and_alert(c, m, f, s, n)
+
+    @staticmethod
+    def _extract_perf_details(perf_data):
+        """Extract performance data from a REST response.
+
+        :param perf_data: the JSON response from U4V REST API
+        :returns: performance data --list
+        """
+        perf_response = list()
+        try:
+            perf_response = (perf_data[0]['resultList']['result'])
+        except (KeyError, TypeError, IndexError):
+            try:
+                perf_response = (perf_data['resultList']['result'])
+            except (KeyError, TypeError, IndexError):
+                pass
+        return perf_response
