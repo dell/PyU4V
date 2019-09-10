@@ -2270,7 +2270,12 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.replication, 'delete_resource') as mock_delete:
             self.replication.delete_storagegroup_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name)
-            mock_delete.assert_called_once()
+            mock_delete.assert_called_once_with('000197800123',
+                                                'replication',
+                                                'storagegroup/'
+                                                'PU-mystoragegroup-SG/'
+                                                'snapshot/Grp_snapshot'
+                                                '/generation/0')
 
     def test_is_vol_in_rep_session(self):
         """Test is_vol_in_rep_session."""
