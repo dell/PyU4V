@@ -23,7 +23,7 @@
 from setuptools import setup
 
 setup(name='PyU4V',
-      version='3.1.2',
+      version='3.1.3',
       url='https://github.com/MichaelMcAleer/PyU4V/',
       author='Dell Inc. or its subsidiaries',
       author_email='Michael.Mcaleer@dell.com',

@@ -363,7 +363,8 @@ class ReplicationFunctions(object):
         :param gen_num: the generation number
         """
         resource_name = (
-            '{storagegroup}/snapshot/{snap_name}/generation/{gen_num}'.format(
+            'storagegroup/{storagegroup}/snapshot/{snap_name}/generation/{'
+            'gen_num}'.format(
                 storagegroup=storagegroup,
                 snap_name=snap_name,
                 gen_num=gen_num))
