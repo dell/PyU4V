@@ -36,10 +36,10 @@ formatter=simpleFormatter
 args=(sys.stdout,)
 
 [handler_fileHandler]
-class=FileHandler
+class=handlers.RotatingFileHandler
 level=INFO
 formatter=simpleFormatter
-args=(~/.PyU4V/PyU4V.log)
+args=(PyU4V.log, 'a')
 
 [formatter_simpleFormatter]
 format=%(asctime)s - %(name)s - %(levelname)s - %(message)s

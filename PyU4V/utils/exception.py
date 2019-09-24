@@ -105,3 +105,10 @@ class UnauthorizedRequestException(PyU4VException):
     """UnauthorizedRequestException."""
 
     meesage = 'Unauthorized request - please check credentials'
+
+
+class MissingConfigurationException(PyU4VException):
+    """MissingConfigurationFileException"""
+
+    message = ('PyU4V settings not be loaded, please check file location or '
+               'univmax_conn input parameters.')

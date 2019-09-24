@@ -30,12 +30,11 @@ from PyU4V import provisioning
 from PyU4V import replication
 from PyU4V import rest_requests
 from PyU4V import univmax_conn
+from PyU4V.utils import config_handler
 from PyU4V.utils import exception
 
 import mock
-
 import requests
-
 import testtools
 
 
@@ -2569,7 +2568,7 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
             return_value=FakeRequestsSession())
         config_file = FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
-        self.conn = univmax_conn.U4VConn(array_id=self.data.array)
+        self.conn = univmax_conn.U4VConn()
 
     @mock.patch.object(rest_requests.RestRequests, 'close_session')
     def test_close_session(self, mock_close):
@@ -2586,3 +2585,25 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
         """Testing set_array_id."""
         self.conn.set_array_id('000123456789')
         self.assertEqual('000123456789', self.conn.replication.array_id)
+
+    def test_load_config_settings_from_file(self):
+        user, password = 'smc', 'smc'
+        ip, port = '10.0.0.75', '8443'
+        base_uri = ('https://{ip}:{port}/univmax/restapi'.format(ip=ip,
+                                                                 port=port))
+        array = CommonData.array
+
+        self.assertEqual(array, self.conn.array_id)
+        self.assertIsInstance(self.conn.rest_client,
+                              rest_requests.RestRequests)
+        self.assertEqual(user, self.conn.rest_client.username)
+        self.assertEqual(password, self.conn.rest_client.password)
+        self.assertFalse(self.conn.rest_client.verifySSL)
+        self.assertEqual(base_uri, self.conn.rest_client.base_url)
+
+    def test_load_no_settings_exception_thrown(self):
+        with mock.patch.object(config_handler, 'set_logger_and_config',
+                               return_value=None):
+            univmax_conn.file_path = None
+            self.assertRaises(exception.MissingConfigurationException,
+                              univmax_conn.U4VConn, CommonData.array)

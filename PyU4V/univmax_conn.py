@@ -31,9 +31,9 @@ from PyU4V.replication import ReplicationFunctions
 from PyU4V.rest_requests import RestRequests
 from PyU4V.utils import config_handler
 from PyU4V.utils import constants
+from PyU4V.utils import exception
 
 file_path = None
-CFG = config_handler.set_logger_and_config(file_path)
 LOG = logging.getLogger(__name__)
 
 
@@ -46,34 +46,37 @@ class U4VConn(object):
                  interval=5, retries=200, array_id=None,
                  application_type=None):
         """__init__."""
+        config = config_handler.set_logger_and_config(file_path)
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = array_id
         if not self.array_id:
             try:
-                self.array_id = CFG.get('setup', 'array')
+                self.array_id = config.get('setup', 'array')
             except Exception:
                 LOG.warning('No array id specified. Please set '
                             'array ID using the "set_array_id(array_id)" '
                             'function.')
-        if CFG is not None:
+        if config is not None:
             if not username:
-                username = CFG.get('setup', 'username')
+                username = config.get('setup', 'username')
             if not password:
-                password = CFG.get('setup', 'password')
+                password = config.get('setup', 'password')
             if not server_ip:
-                server_ip = CFG.get('setup', 'server_ip')
+                server_ip = config.get('setup', 'server_ip')
             if not port:
-                port = CFG.get('setup', 'port')
+                port = config.get('setup', 'port')
         if verify is None:
             try:
-                verify = CFG.get('setup', 'verify')
+                verify = config.get('setup', 'verify')
                 if verify.lower() == 'false':
                     verify = False
                 elif verify.lower() == 'true':
                     verify = True
             except Exception:
                 verify = True
+        if None in [username, password, server_ip, port]:
+            raise exception.MissingConfigurationException
         base_url = 'https://{server_ip}:{port}/univmax/restapi'.format(
             server_ip=server_ip, port=port)
         self.rest_client = RestRequests(username, password, verify,
