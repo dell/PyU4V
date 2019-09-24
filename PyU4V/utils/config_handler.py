@@ -41,7 +41,8 @@ def set_logger_and_config(file_path=None):
     elif os.path.isfile(conf_file_name):
         conf_file = conf_file_name
     else:
-        global_path = os.path.normpath('~/.PyU4V/PyU4V.conf')
+        global_path = os.path.normpath('{home_path}/.PyU4V/PyU4V.conf'.format(
+            home_path=os.path.expanduser('~')))
         if os.path.isfile(global_path):
             conf_file = global_path
     if conf_file is not None:
