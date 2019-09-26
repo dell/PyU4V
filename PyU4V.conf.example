@@ -14,7 +14,7 @@ verify=/path-to-file/server_hostname.pem
 keys=root,PyU4V
 
 [handlers]
-keys=consoleHandler
+keys=consoleHandler, fileHandler
 
 [formatters]
 keys=simpleFormatter
