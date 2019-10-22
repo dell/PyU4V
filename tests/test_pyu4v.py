@@ -501,6 +501,15 @@ class FakeRequestsSession(object):
 
         return status_code, return_object
 
+    def _establish_rest_session(self):
+        ref_headers = {'content-type': 'application/json',
+                       'accept': 'application/json',
+                       'application-type': 'pyu4v'}
+        self.assertEqual(ref_headers, self.rest.session.headers)
+        self.assertEqual('smc', self.rest.session.auth.username)
+        self.assertEqual('smc', self.rest.session.auth.password)
+        self.assertEqual(False, self.rest.session.verify)
+
     def _sloprovisioning_volume(self, url, params):
         return_object = self.data.volume_list[2]
         if params:
