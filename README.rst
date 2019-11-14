@@ -214,11 +214,14 @@ Pre-requisites
 
 Recommendations
 
-It is recommended to create a test instance in OpenStack to force a creation of a masking view
-on the array. When you run the script it should move the volumes to the child storage group
-associated with that volume type.  If it does not and it creates a masking view or storage
-group with a slightly different name then please file a bug on the Github issues page for this
-project.
+1. It is recommended to create a test instance in OpenStack to force a creation of a masking view
+   on the array. When you run the script it should move the volumes to the child storage group
+   associated with that volume type.  If it does not and it creates a masking view or storage
+   group with a slightly different name then please file a bug on the Github issues page for this
+   project.
+2. It is also recommended to move one volume first and verify it has been moved to the correct
+   storage group within the correct masking view.
+3. If in any doubt, please file an issue on the Github issues page for this project.
 
 The script can be run using python 2.7, python3.6 and python 3.7. It is recommended you run from
 the PyU4V base directory, however you can run from the 'openstack' directory so long as you have
@@ -245,7 +248,7 @@ PyU4V.conf in that directory.
    - You have the option to migrate all volume's or a subset of volumes,
      in a storage group.
    - The old masking view and storage group will remain even if all volumes
-     have been migrated.
+     have been migrated, so you can always move them back if in any doubt.
    - The new masking view will contain the same port group and initiator
      group as the original.
    - If you find any issues, please open them on the Github issues page for
