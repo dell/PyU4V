@@ -12,7 +12,7 @@ eg: https://10.0.0.1:8443/univmax/restapi/docs.
 
 VERSION 3
 
-Please note that version '3.1.5' of the library is NOT BACKWARDS
+Please note that version '3.1.4' of the library is NOT BACKWARDS
 COMPATIBLE with scripts written with version 2.x of PyU4V, and does not
 support any Unisphere for VMAX version earlier than 8.4 - PyU4V version 2.0.2.6 is
 still available on Pip, and there is a 'stable/2.0' branch available on Github.
@@ -109,7 +109,6 @@ Please run the following:
    # tox -e pylint
 
 .. note::
-
    If you do not have all the versions of python installed, just run tox on
    the versions you have. pep8 and pylint must run clean also.
 
@@ -191,7 +190,63 @@ or in PyCharm:
 SUPPORT
 
 Please file bugs and issues on the Github issues page for this project. This is to help keep track and document
-everything related to this repo. For general discussions and further support you can join the {code} Community
-slack channel. Lastly, for questions asked on Stackoverflow.com, please tag them with Dell or Dell EMC. The code and
-documentation are released with no warranties or SLAs and are intended to be supported through a community driven
-process.
+everything related to this repo. The code and documentation are released with no warranties or SLAs and are intended
+to be supported through a community driven process.
+
+OPENSTACK
+
+Description
+
+This script facilitates the seamless(live) migration of volumes from the SMIS
+masking view structure to the REST masking view structure introduced in Pike.
+This is only applicable if you have existing volumes created in Ocata or an earlier
+release.
+
+.. important::
+   - Running this script is not necessary unless you intend 'Live Migrating' from one compute node to another.
+
+Pre-requisites
+
+1. The OpenStack system must first be successfully upgraded to Pike or a post Pike release.
+2. All your existing compute nodes must be online.
+3. Avoid executing any cinder operations when running migrate.py python script.
+4. Avoid Unisphere for PowerMax upgrades or VMAX / PowerMAX OS upgrades when running migrate.py python script.
+
+Recommendations
+
+It is recommended to create a test instance in OpenStack to force a creation of a masking view
+on the array. When you run the script it should move the volumes to the child storage group
+associated with that volume type.  If it does not and it creates a masking view or storage
+group with a slightly different name then please file a bug on the Github issues page for this
+project.
+
+The script can be run using python 2.7, python3.6 and python 3.7. It is recommended you run from
+the PyU4V base directory, however you can run from the 'openstack' directory so long as you have
+PyU4V.conf in that directory.
+
+.. code-block:: bash
+
+   $ alias python3='/usr/bin/python3.7'
+   $ cd ~/PyU4V
+   $ python3 PyU4V/tools/openstack/migrate.py
+
+.. code-block:: bash
+
+   $ alias python3='/usr/bin/python3.7'
+   $ cd ~/PyU4V/tools/openstack
+   $ cp ~/PyU4V/PyU4V.conf .
+   $ python3 migrate.py
+
+.. warning::
+   Python 2.7 is nearing EOL and will not be maintained past 2020
+
+.. note::
+   - Only masking views that are eligible for migrating will be presented.
+   - You have the option to migrate all volume's or a subset of volumes,
+     in a storage group.
+   - The old masking view and storage group will remain even if all volumes
+     have been migrated.
+   - The new masking view will contain the same port group and initiator
+     group as the original.
+   - If you find any issues, please open them on the Github issues page for
+     this project.

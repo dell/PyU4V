@@ -31,7 +31,7 @@ setup(name='PyU4V',
                    "VMAX RestAPI."),
       license='MIT',
       packages=['PyU4V', 'PyU4V.utils'],
-      install_requires=['requests', 'six', 'urllib3'],
+      install_requires=['requests', 'six', 'urllib3', 'prettytable', 'future'],
       include_package_data=True,
       classifiers=[
           'Development Status :: 4 - Beta',

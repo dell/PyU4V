@@ -28,13 +28,11 @@ Test file for migrate.py and migrate_utils.py
 import platform
 
 from PyU4V import provisioning
+from PyU4V.tools.openstack import migrate_utils
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
 
 import mock
-
-from openstack import migrate_utils
-
 import testtools
 
 

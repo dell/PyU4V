@@ -26,16 +26,16 @@ OpenStack migrate script.
 The script migrates volumes from the old SMI-S Masking view to the
 new REST Masking view used from Pike onwards
 """
-
 from __future__ import print_function
 
 from builtins import input
 import sys
+sys.path.append('../../..')
+sys.path.append('.')
 
 from PyU4V import univmax_conn
 
-from openstack import migrate_utils
-
+from PyU4V.tools.openstack import migrate_utils
 
 conn = univmax_conn.U4VConn()
 utils = migrate_utils.MigrateUtils(conn)

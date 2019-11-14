@@ -73,6 +73,7 @@ class MigrateUtils(object):
         elif option == 'N':
             return True if txt_str.lower() in NO_CONSTANTS else False
         elif option == 'X':
+            LOG.debug('I am exiting')
             return True if txt_str.lower() in EXIT_CONSTANTS else False
         else:
             return False
@@ -548,7 +549,6 @@ class MigrateUtils(object):
         :param element_dict: element dictionary
         :returns: parent storage group
         """
-        # Get storage group
         storagegroup_parent = self.get_storage_group(
             element_dict['new_sg_parent_name'])
         if not storagegroup_parent:
@@ -579,7 +579,6 @@ class MigrateUtils(object):
         :param revert: is it a revert back
         """
         if revert:
-            # Get storage group
             storagegroup = self.get_storage_group(
                 element_dict['new_sg_name'])
             if not storagegroup:
