@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2018 Dell Inc. or its subsidiaries.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -442,20 +442,20 @@ class TestMigrate(testtools.TestCase):
 
     def test_get_object_components_invalid(self):
         """Test for get_object_components."""
-        regex_str = '^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-' \
-                    '(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-' \
-                    '(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-' \
-                    '(?P<postfix>MV)$'
+        regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
+                     r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
+                     r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
+                     r'(?P<postfix>MV)$')
         input_str = 'random-masking-view'
         self.assertIsNone(self.utils.get_object_components(
             regex_str, input_str))
 
     def test_get_object_components_and_correct_host(self):
         """Test for get_object_components_and_correct_host."""
-        regex_str = '^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-' \
-                    '(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-' \
-                    '(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-' \
-                    '(?P<postfix>MV)$'
+        regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
+                     r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
+                     r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
+                     r'(?P<postfix>MV)$')
         input_str = 'OS-myhost-SRP_1-Silver-NONE-I-MV'
         object_dict = self.utils.get_object_components_and_correct_host(
             regex_str, input_str)
@@ -463,10 +463,10 @@ class TestMigrate(testtools.TestCase):
 
     def test_get_object_components_and_correct_host_invalid(self):
         """Test for get_object_components_and_correct_host."""
-        regex_str = '^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-' \
-                    '(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-' \
-                    '(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-' \
-                    '(?P<postfix>MV)$'
+        regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
+                     r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
+                     r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
+                     r'(?P<postfix>MV)$')
         input_str = 'random-masking-view'
         self.assertIsNone(self.utils.get_object_components_and_correct_host(
             regex_str, input_str))

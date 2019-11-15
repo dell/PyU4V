@@ -224,20 +224,20 @@ Recommendations
 3. If in any doubt, please file an issue on the Github issues page for this project.
 
 The script can be run using python 2.7, python3.6 and python 3.7. It is recommended you run from
-the PyU4V base directory, however you can run from the 'openstack' directory so long as you have
-PyU4V.conf in that directory.
+the PyU4V base directory, however you can run from the 'openstack' directory so long as you
+copy/create PyU4V.conf in that directory.
 
 .. code-block:: bash
 
    $ alias python3='/usr/bin/python3.7'
-   $ cd ~/PyU4V
+   $ cd $PYU4V_WORKING_DIR
    $ python3 PyU4V/tools/openstack/migrate.py
 
 .. code-block:: bash
 
    $ alias python3='/usr/bin/python3.7'
-   $ cd ~/PyU4V/tools/openstack
-   $ cp ~/PyU4V/PyU4V.conf .
+   $ cp ./PyU4V.conf $PYU4V_WORKING_DIR/PyU4V/tools/openstack/.
+   $ cd $PYU4V_WORKING_DIR/PyU4V/tools/openstack
    $ python3 migrate.py
 
 .. warning::

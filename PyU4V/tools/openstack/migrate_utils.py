@@ -185,13 +185,13 @@ class MigrateUtils(object):
         :returns: dict
         """
         if revert:
-            regex_str = '^(?P<prefix>OS)-(?P<host>.+?)(?P<protocol>I|F)-' \
-                        '(?P<portgroup>(?!CD|RE|CD-RE).+)-(?P<postfix>MV)$'
+            regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)(?P<protocol>I|F)-'
+                         r'(?P<portgroup>(?!CD|RE|CD-RE).+)-(?P<postfix>MV)$')
         else:
-            regex_str = '^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-' \
-                        '(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-' \
-                        '(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-' \
-                        '(?P<postfix>MV)$'
+            regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
+                         r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
+                         r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
+                         r'(?P<postfix>MV)$')
         return self.get_object_components_and_correct_host(regex_str, mv_name)
 
     def truncate_string(self, str_to_truncate, max_num):
@@ -221,7 +221,7 @@ class MigrateUtils(object):
                 'Checking if masking view is in the following format: ',
                 DEBUG)
             self.smart_print(
-                '    OS-[shortHostName]-[protocol]-[portgroup_name]-MV',
+                '\tOS-[shortHostName]-[protocol]-[portgroup_name]-MV',
                 DEBUG)
             component_dict = self.get_mv_component_dict(mv_name, revert)
             print('\n')
@@ -231,10 +231,10 @@ class MigrateUtils(object):
                 'Checking if masking view is in the following 2 formats: ',
                 DEBUG)
             self.smart_print(
-                '    OS-[shortHostName]-[SRP]-[SLO]-[workload]-[protocol]-MV',
+                '\tOS-[shortHostName]-[SRP]-[SLO]-[workload]-[protocol]-MV',
                 DEBUG)
-            self.smart_print('        OR', DEBUG)
-            self.smart_print('    OS-[shortHostName]-No_SLO-[protocol]-MV',
+            self.smart_print('\t\tOR', DEBUG)
+            self.smart_print('\tOS-[shortHostName]-No_SLO-[protocol]-MV',
                              DEBUG)
             self.smart_print('\n', DEBUG)
             component_dict = self.get_mv_component_dict(mv_name)
@@ -284,10 +284,10 @@ class MigrateUtils(object):
         :param test: is it a test case
         :returns: dict
         """
-        regex_str = '^(?P<prefix>OS)-(?P<host>.+?)' \
-                    '((?P<no_slo>No_SLO)|((?P<srp>SRP.+?)-' \
-                    '(?P<sloworkload>.+?)))-(?P<portgroup>.+?)' \
-                    '(?P<after_pg>$|-CD|-RE)'
+        regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)'
+                     r'((?P<no_slo>No_SLO)|((?P<srp>SRP.+?)-'
+                     r'(?P<sloworkload>.+?)))-(?P<portgroup>.+?)'
+                     r'(?P<after_pg>$|-CD|-RE)')
         return self.get_object_components_and_correct_host(regex_str, sg_name)
 
     def get_element_dict_test(self, component_dict, sg_name, cd_str, re_str,
@@ -524,10 +524,7 @@ class MigrateUtils(object):
                 disable_compression)
         else:
             message = self.conn.provisioning.create_empty_sg(
-                None,
-                element_dict['new_sg_name'],
-                None,
-                None)
+                None, element_dict['new_sg_name'], None, None)
             # Add a volume to it
             self.conn.provisioning.create_volume_from_sg_return_dev_id(
                 'first_vol', element_dict['new_sg_name'], '1')
@@ -559,10 +556,8 @@ class MigrateUtils(object):
                 print_str, DEBUG, element_dict['new_sg_parent_name'])
             # Create a new empty parent storage group
             message = self.conn.provisioning.create_empty_sg(
-                element_dict['srp'],
-                element_dict['new_sg_parent_name'],
-                None,
-                None)
+                element_dict['srp'], element_dict['new_sg_parent_name'],
+                None, None)
             self.print_pretty_table(message)
             storagegroup_parent = self.get_storage_group(
                 element_dict['new_sg_parent_name'])
@@ -680,9 +675,7 @@ class MigrateUtils(object):
         # Move the volume from the old storage group to the
         # new storage group
         message = self.conn.provisioning.move_volumes_between_storage_groups(
-            device_ids, source_sg, target_sg,
-            force=False
-        )
+            device_ids, source_sg, target_sg, force=False)
         return message
 
     def validate_list(self, full_list, sub_list):
@@ -694,16 +687,16 @@ class MigrateUtils(object):
         """
         return True if all(elem in full_list for elem in sub_list) else False
 
-    def choose_subset_volumes(self, storagegroup, volume_list):
+    def choose_subset_volumes(self, storage_group_name, volume_list):
         """Validate the sub list is within the full list.
 
-        :param storagegroup: full list
+        :param storage_group_name: storage group name
         :param volume_list: sub list
         :returns: volume_list
         """
         create_vol = False
         self.smart_print('Here is the full list of volumes in SG %s: %s',
-                         DEBUG, storagegroup, volume_list)
+                         DEBUG, storage_group_name, volume_list)
         txt = ('Which do you want to migrate (comma separated list): ',
                volume_list)
         txt_out = self.input(txt)
@@ -725,22 +718,23 @@ class MigrateUtils(object):
             txt_out = self.input(txt)
             if self.check_input(txt_out, 'Y'):
                 volume_list, create_vol = self.choose_subset_volumes(
-                    storagegroup, volume_list)
+                    storage_group_name, volume_list)
             else:
                 sys.exit()
         return volume_list, create_vol
 
-    def get_volume_list(self, storagegroup):
-        """Get the list of volumes from the storagegroup.
+    def get_volume_list(self, storage_group_name):
+        """Get the list of volumes from the storage group.
 
-        :param storagegroup: the storage group name
+        :param storage_group_name: the storage group name
         :returns: List, Boolean
         """
         create_vol = False
         volume_list = self.conn.provisioning.get_vols_from_storagegroup(
-            storagegroup)
+            storage_group_name)
         print_str = 'There are %d volume in storage group %s.'
-        self.smart_print(print_str, DEBUG, len(volume_list), storagegroup)
+        self.smart_print(print_str, DEBUG, len(volume_list),
+                         storage_group_name)
         txt = ('Do you want to migrate all %s volumes: Y/N: '
                % len(volume_list))
         txt_out = self.input(txt)
@@ -752,7 +746,7 @@ class MigrateUtils(object):
             create_vol = True
         else:
             volume_list, create_vol = self.choose_subset_volumes(
-                storagegroup, volume_list)
+                storage_group_name, volume_list)
 
         return volume_list, create_vol
 
