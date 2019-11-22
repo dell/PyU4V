@@ -1476,7 +1476,12 @@ class ProvisioningFunctions(object):
             LOG.debug('Cannot find record for volume %(volumeId)s.',
                       {'volumeId': volume_name})
         else:
-            device_id = volume_list[0]
+            if len(volume_list) == 1:
+                device_id = volume_list[0]
+            else:
+                device_id = volume_list
+                LOG.warning('volume name %(vol)s is not unique, returning '
+                            'a list of device ids', {'vol': volume_name})
         return device_id
 
     def find_volume_identifier(self, device_id):

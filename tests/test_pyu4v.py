@@ -1986,9 +1986,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'add_new_vol_to_storagegroup',
                 return_value=job):
-            device_id = self.provisioning.create_volume_from_sg_return_dev_id(
-                'volume_name', sg_name, '2')
-            self.assertEqual(self.data.device_id, device_id)
+            with mock.patch.object(self.provisioning, 'get_volume_list',
+                                   return_value=['00001']):
+                device_id = (
+                    self.provisioning.create_volume_from_sg_return_dev_id(
+                        'volume_name', sg_name, '2'))
+                self.assertEqual(self.data.device_id, device_id)
 
     def test_add_child_sg_to_parent_sg(self):
         """Test add_child_sg_to_parent_sg."""
@@ -2067,12 +2070,17 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.data.device_id, self.data.storagegroup_name_1)
         self.assertFalse(is_vol2)
 
-    def test_find_volume_device_id(self):
+    def test_find_volume_device_id_success(self):
         """Test find_volume_device_id."""
-        device_id = self.provisioning.find_volume_device_id('my-vol')
-        self.assertEqual(self.data.device_id, device_id)
         with mock.patch.object(self.provisioning, 'get_volume_list',
-                               return_value=[]):
+                               return_value=['00001']):
+            device_id = self.provisioning.find_volume_device_id('my-vol')
+            self.assertEqual(self.data.device_id, device_id)
+
+    def test_find_volume_device_id_failure(self):
+        """Test find_volume_device_id volume not found."""
+        with mock.patch.object(self.provisioning, 'get_volume_list',
+                               return_value=list()):
             device_id2 = self.provisioning.find_volume_device_id('not-my-vol')
             self.assertIsNone(device_id2)
 
