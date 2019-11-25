@@ -290,7 +290,7 @@ class MigrateUtils(object):
                      r'(?P<after_pg>$|-CD|-RE)')
         return self.get_object_components_and_correct_host(regex_str, sg_name)
 
-    def get_element_dict_test(self, component_dict, sg_name, cd_str, re_str,
+    def get_element_dict_revert(self, component_dict, sg_name, cd_str, re_str,
                               pg_name, host_name):
         """Compile elements from mv, sg, host etc.
 
@@ -414,7 +414,7 @@ class MigrateUtils(object):
         component_dict = self.get_mv_component_dict(mv_name, revert)
         if component_dict:
             if revert:
-                element_dict = self.get_element_dict_test(
+                element_dict = self.get_element_dict_revert(
                     component_dict, sg_name, cd_str, re_str,
                     pg_name, host_name)
             else:
