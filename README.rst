@@ -1,6 +1,6 @@
-===================
-Welcome to PyU4V3.1
-===================
+======================
+Welcome to PyU4V 3.1.7
+======================
 
 | |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
 | |Language| |PyVersions| |Platform| |DTotal| |DMonth| |DWeek|
@@ -21,13 +21,13 @@ Note
    where ``{ip-address}`` is the IP address of your Unisphere server and
    ``{port}`` is the port it is listening on.
 
-PyU4V Version 9.1
------------------
+PyU4V Version 3.1.7
+-------------------
 
 +-----------------------+----------------------------+
 | **Author**            | Dell EMC                   |
 +-----------------------+----------------------------+
-| **PyU4V Version**     | 3.1.x                      |
+| **PyU4V Version**     | 3.1.7                      |
 +-----------------------+----------------------------+
 | **Unisphere Version** | 8.4 and 9.0 series         |
 +-----------------------+----------------------------+
@@ -377,17 +377,19 @@ the License.
    :target: https://github.com/MichaelMcAleer/PyU4V
 .. |AskUs| image:: https://img.shields.io/badge/Ask%20Us...-Anything-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/issues
-.. |License| image:: https://img.shields.io/badge/License-Apache%202.0-blue
+.. |License| image:: https://img.shields.io/badge/License-MIT-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/LICENSE
 .. |Test| image:: https://img.shields.io/badge/Tests-Passing-blue
 .. |Build| image:: https://img.shields.io/badge/Build-Passing-blue
 .. |Docs| image:: https://img.shields.io/badge/Docs-Passing-blue
 .. |Language| image:: https://img.shields.io/badge/Language-Python%20-blue
    :target: https://www.python.org/
-.. |PyVersions| image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7-blue
+.. |PyVersions| image:: https://img.shields.io/badge/Python-2.7%20%7C%203.6%20%7C%203.7-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/README.rst
 .. |Platform| image:: https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/README.rst
+.. |Unisphere| image:: https://img.shields.io/badge/Unisphere-8.4.x%20%7C%209.0.x-blue
+   :target: https://www.dell.com/support/home/us/en/19/product-support/product/u
 .. |DTotal| image:: https://pepy.tech/badge/pyu4v
    :target: https://pepy.tech/project/pyu4v
 .. |DMonth| image:: https://pepy.tech/badge/pyu4v/month
