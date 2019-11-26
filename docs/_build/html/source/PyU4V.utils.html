@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.utils package &mdash; PyU4V 3.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="PyU4V package" href="PyU4V.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Glossary</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PyU4V.html">PyU4V package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#pyu4v-univmax-conn-module">PyU4V.univmax_conn module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#module-PyU4V.common">PyU4V.common module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#module-PyU4V.performance">PyU4V.performance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#module-PyU4V.provisioning">PyU4V.provisioning module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#module-PyU4V.replication">PyU4V.replication module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#module-PyU4V.rest_requests">PyU4V.rest_requests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyU4V.html#module-PyU4V.tools.openstack.migrate_utils">PyU4Vtoolsopenstack.migrate_utils module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PyU4V.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">PyU4V.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Glossary</a> &raquo;</li>
+        
+          <li><a href="PyU4V.html">PyU4V package</a> &raquo;</li>
+        
+      <li>PyU4V.utils package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/PyU4V.utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyu4v-utils-package">
+<h1>PyU4V.utils package<a class="headerlink" href="#pyu4v-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-PyU4V.utils.config_handler">
+<span id="pyu4v-utils-config-handler-module"></span><h2>PyU4V.utils.config_handler module<a class="headerlink" href="#module-PyU4V.utils.config_handler" title="Permalink to this headline">¶</a></h2>
+<p>config_handler.py.</p>
+<dl class="function">
+<dt id="PyU4V.utils.config_handler.set_logger_and_config">
+<code class="descclassname">PyU4V.utils.config_handler.</code><code class="descname">set_logger_and_config</code><span class="sig-paren">(</span><em>file_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/config_handler.html#set_logger_and_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.config_handler.set_logger_and_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set logger and config file.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyU4V.utils.constants">
+<span id="pyu4v-utils-constants-module"></span><h2>PyU4V.utils.constants module<a class="headerlink" href="#module-PyU4V.utils.constants" title="Permalink to this headline">¶</a></h2>
+<p>Constants.py.</p>
+</div>
+<div class="section" id="module-PyU4V.utils.exception">
+<span id="pyu4v-utils-exception-module"></span><h2>PyU4V.utils.exception module<a class="headerlink" href="#module-PyU4V.utils.exception" title="Permalink to this headline">¶</a></h2>
+<p>Exception package.</p>
+<dl class="exception">
+<dt id="PyU4V.utils.exception.InvalidInputException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">InvalidInputException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/exception.html#InvalidInputException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.exception.InvalidInputException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<p>InvalidInputException.</p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.InvalidInputException.message">
+<code class="descname">message</code><em class="property"> = 'Invalid input received: %(data)s'</em><a class="headerlink" href="#PyU4V.utils.exception.InvalidInputException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.MissingConfigurationException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">MissingConfigurationException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/exception.html#MissingConfigurationException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.exception.MissingConfigurationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<p>MissingConfigurationFileException</p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.MissingConfigurationException.message">
+<code class="descname">message</code><em class="property"> = 'PyU4V settings not be loaded, please check file location or univmax_conn input parameters.'</em><a class="headerlink" href="#PyU4V.utils.exception.MissingConfigurationException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.PyU4VException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">PyU4VException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/exception.html#PyU4VException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></p>
+<p>PyU4VException.</p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.code">
+<code class="descname">code</code><em class="property"> = 500</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.headers">
+<code class="descname">headers</code><em class="property"> = {}</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.message">
+<code class="descname">message</code><em class="property"> = 'An unknown exception occurred.'</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.PyU4VException.safe">
+<code class="descname">safe</code><em class="property"> = False</em><a class="headerlink" href="#PyU4V.utils.exception.PyU4VException.safe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.ResourceNotFoundException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">ResourceNotFoundException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/exception.html#ResourceNotFoundException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.exception.ResourceNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<p>ResourceNotFoundException.</p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.ResourceNotFoundException.message">
+<code class="descname">message</code><em class="property"> = 'The requested resource was not found: %(data)s'</em><a class="headerlink" href="#PyU4V.utils.exception.ResourceNotFoundException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.UnauthorizedRequestException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">UnauthorizedRequestException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/exception.html#UnauthorizedRequestException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.exception.UnauthorizedRequestException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<p>UnauthorizedRequestException.</p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.UnauthorizedRequestException.meesage">
+<code class="descname">meesage</code><em class="property"> = 'Unauthorized request - please check credentials'</em><a class="headerlink" href="#PyU4V.utils.exception.UnauthorizedRequestException.meesage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyU4V.utils.exception.VolumeBackendAPIException">
+<em class="property">exception </em><code class="descclassname">PyU4V.utils.exception.</code><code class="descname">VolumeBackendAPIException</code><span class="sig-paren">(</span><em>message=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyU4V/utils/exception.html#VolumeBackendAPIException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.exception.VolumeBackendAPIException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyU4V.utils.exception.PyU4VException" title="PyU4V.utils.exception.PyU4VException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyU4V.utils.exception.PyU4VException</span></code></a></p>
+<p>VolumeBackendAPIException.</p>
+<dl class="attribute">
+<dt id="PyU4V.utils.exception.VolumeBackendAPIException.message">
+<code class="descname">message</code><em class="property"> = 'Bad or unexpected response from the storage volume backend API: %(data)s'</em><a class="headerlink" href="#PyU4V.utils.exception.VolumeBackendAPIException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-PyU4V.utils"></span><p>__init__.py.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="PyU4V.html" class="btn btn-neutral float-left" title="PyU4V package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Ciara Stacke
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

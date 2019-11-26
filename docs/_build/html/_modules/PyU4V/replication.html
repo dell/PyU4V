@@ -1,0 +1,872 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.replication &mdash; PyU4V 3.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PyU4V.replication</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for PyU4V.replication</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The MIT License (MIT)</span>
+<span class="c1"># Copyright (c) 2019 Dell Inc. or its subsidiaries.</span>
+
+<span class="c1"># Permission is hereby granted, free of charge, to any person</span>
+<span class="c1"># obtaining a copy of this software and associated documentation</span>
+<span class="c1"># files (the &quot;Software&quot;), to deal in the Software without restriction,</span>
+<span class="c1"># including without limitation the rights to use, copy, modify,</span>
+<span class="c1"># merge, publish, distribute, sublicense, and/or sell copies of</span>
+<span class="c1"># the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+
+<span class="c1"># The above copyright notice and this permission notice shall be</span>
+<span class="c1"># included in all copies or substantial portions of the Software.</span>
+
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,</span>
+<span class="c1"># EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES</span>
+<span class="c1"># OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</span>
+<span class="c1"># IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY</span>
+<span class="c1"># CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span>
+<span class="c1"># TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
+<span class="c1"># SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;replication.py.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">exception</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">REPLICATION</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">REPLICATION</span>
+<span class="n">ASYNC_UPDATE</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">ASYNC_UPDATE</span>
+<span class="n">ESTABLISH</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">ESTABLISH</span>
+<span class="n">FAILBACK</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">FAILBACK</span>
+<span class="n">FAILOVER</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">FAILOVER</span>
+<span class="n">RESTORE</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">RESTORE</span>
+<span class="n">RESUME</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">RESUME</span>
+<span class="n">SETBIAS</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SETBIAS</span>
+<span class="n">SETMODE</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SETMODE</span>
+<span class="n">SPLIT</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SPLIT</span>
+<span class="n">SUSPEND</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SUSPEND</span>
+<span class="n">SWAP</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SWAP</span>
+
+
+<div class="viewcode-block" id="ReplicationFunctions"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions">[docs]</a><span class="k">class</span> <span class="nc">ReplicationFunctions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ReplicationFunctions.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">common</span><span class="p">,</span> <span class="n">provisioning</span><span class="p">,</span> <span class="n">u4v_version</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;__init__.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">=</span> <span class="n">common</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provisioning</span> <span class="o">=</span> <span class="n">provisioning</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span> <span class="o">=</span> <span class="n">u4v_version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">create_resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modify_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">modify_resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">delete_resource</span>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_replication_info"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_replication_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_replication_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return replication information for an array.</span>
+
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{version}</span><span class="s1">/replication/symmetrix/</span><span class="si">{array_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">array_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;replication info&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_array_replication_capabilities"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_array_replication_capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">get_array_replication_capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check what replication facilities are available.</span>
+
+<span class="sd">        :returns: array_capabilities dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">array_capabilities</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/replication/capabilities/symmetrix&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">))</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;replication capabilities&#39;</span><span class="p">)</span>
+        <span class="n">symm_list</span> <span class="o">=</span> <span class="n">capabilities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;symmetrixCapability&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">capabilities</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">symm</span> <span class="ow">in</span> <span class="n">symm_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">symm</span><span class="p">[</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">:</span>
+                <span class="n">array_capabilities</span> <span class="o">=</span> <span class="n">symm</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">array_capabilities</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.is_snapvx_licensed"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.is_snapvx_licensed">[docs]</a>    <span class="k">def</span> <span class="nf">is_snapvx_licensed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the snapVx feature is licensed and enabled.</span>
+
+<span class="sd">        :returns: True if licensed and enabled; False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">snap_capability</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_array_replication_capabilities</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">capabilities</span><span class="p">:</span>
+            <span class="n">snap_capability</span> <span class="o">=</span> <span class="n">capabilities</span><span class="p">[</span><span class="s1">&#39;snapVxCapable&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Cannot access replication capabilities &#39;</span>
+                      <span class="s1">&#39;for array </span><span class="si">%(array)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">snap_capability</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_storage_group_rep"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storage_group_rep">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_group_rep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a name, return storage group details wrt replication.</span>
+
+<span class="sd">        :param storage_group_name: the name of the storage group</span>
+<span class="sd">        :returns: storage group dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span>
+            <span class="n">resource_name</span><span class="o">=</span><span class="n">storage_group_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_storage_group_rep_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storage_group_rep_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_group_rep_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">has_snapshots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">has_srdf</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return list of storage groups with replication.</span>
+
+<span class="sd">        :param has_snapshots: return only storagegroups with snapshots</span>
+<span class="sd">        :param has_srdf: return only storagegroups with SRDF</span>
+<span class="sd">        :returns: list of storage groups with associated replication</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">has_snapshots</span><span class="p">:</span>
+            <span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;hasSnapshots&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">has_srdf</span><span class="p">:</span>
+            <span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;hasSrdf&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">filters</span><span class="p">)</span>
+        <span class="n">storage_group_list</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">storage_group_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_storagegroup_snapshot_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_storagegroup_snapshot_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a list of snapshots associated with a storagegroup.</span>
+
+<span class="sd">        :param storagegroup_id: the storagegroup name</span>
+<span class="sd">        :returns: list of snapshot names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_name</span> <span class="o">=</span> <span class="s1">&#39;storagegroup/</span><span class="si">{storagegroup_id}</span><span class="s1">/snapshot&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="n">res_name</span><span class="p">)</span>
+        <span class="n">snapshot_list</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">snapshot_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.create_storagegroup_snap"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.create_storagegroup_snap">[docs]</a>    <span class="k">def</span> <span class="nf">create_storagegroup_snap</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a snapVx snapshot of a storage group.</span>
+
+<span class="sd">        To establish a new generation of an existing SnapVX snapshot</span>
+<span class="sd">        for a source SG, use the same name as the existing snapshot for</span>
+<span class="sd">        the new snapshot.</span>
+
+<span class="sd">        :param sg_name: the source group name</span>
+<span class="sd">        :param snap_name: the name of the snapshot</span>
+<span class="sd">        :param ttl: ttl in days, if any - int</span>
+<span class="sd">        :param hours: Boolean, if set will specify TTL value is hours not days</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;snapshotName&#39;</span><span class="p">:</span> <span class="n">snap_name</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">ttl</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;timeToLive&#39;</span><span class="p">:</span> <span class="n">ttl</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">hours</span><span class="p">:</span>
+                <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;timeInHours&#39;</span><span class="p">:</span> <span class="s1">&#39;True&#39;</span><span class="p">})</span>
+        <span class="n">resource_type</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;storagegroup/</span><span class="si">{sg_name}</span><span class="s1">/snapshot&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">sg_name</span><span class="o">=</span><span class="n">sg_name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_storagegroup_snapshot_generation_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_generation_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_storagegroup_snapshot_generation_list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a snapshot and its generation count information for an sg.</span>
+
+<span class="sd">        The most recent snapshot will have a gen number of 0.</span>
+<span class="sd">        The oldest snapshot will have a gen number = genCount - 1</span>
+<span class="sd">        (i.e. if there are 4 generations of particular snapshot,</span>
+<span class="sd">        the oldest will have a gen num of 3)</span>
+
+<span class="sd">        :param storagegroup_id: the name of the storage group</span>
+<span class="sd">        :param snap_name: the name of the snapshot</span>
+<span class="sd">        :returns: list of generation numbers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gen_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">res_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{storagegroup_id}</span><span class="s1">/snapshot/</span><span class="si">{snap_name}</span><span class="s1">/generation&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span>
+                                     <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;generations&#39;</span><span class="p">):</span>
+            <span class="n">gen_list</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;generations&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">gen_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_snapshot_generation_details"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_snapshot_generation_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_snapshot_generation_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">gen_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the details for a particular snapshot generation.</span>
+
+<span class="sd">        :param sg_id: the storage group id</span>
+<span class="sd">        :param snap_name: the snapshot name</span>
+<span class="sd">        :param gen_num: Generation number</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{sg_id}</span><span class="s1">/snapshot/</span><span class="si">{snap_name}</span><span class="s1">/generation/</span><span class="si">{gen_num}</span><span class="s1">&#39;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sg_id</span><span class="o">=</span><span class="n">sg_id</span><span class="p">,</span>
+                                 <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">,</span>
+                                 <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span>
+            <span class="n">resource_name</span><span class="o">=</span><span class="n">resource_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.find_expired_snapvx_snapshots"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.find_expired_snapvx_snapshots">[docs]</a>    <span class="k">def</span> <span class="nf">find_expired_snapvx_snapshots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find all expired snapvx snapshots.</span>
+
+<span class="sd">        Parses through all Snapshots for array and lists those that have</span>
+<span class="sd">        snapshots where the expiration date has passed however snapshots</span>
+<span class="sd">        have not been deleted as they have links. Example output:</span>
+<span class="sd">        [{&#39;storagegroup_name&#39;: &#39;my-storagegroup1&#39;,</span>
+<span class="sd">        &#39;snapshot_name&#39;: &#39;my-temporary-snap&#39;,</span>
+<span class="sd">        &#39;generation_number&#39;: &#39;0&#39;,</span>
+<span class="sd">        &#39;expiration_time&#39;: &#39;14:46:24 Wed, 24 Jan 2018&#39;,</span>
+<span class="sd">        &#39;linked_sg_name&#39;: &#39;my-linked-sg&#39;,</span>
+<span class="sd">        &#39;snap_creation_time&#39;: &#39;14:46:24 Wed, 23 Jan 2018&#39;}]</span>
+
+<span class="sd">        :returns: list of dicts with expired snap details,</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expired_snap_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sglist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group_rep_list</span><span class="p">(</span><span class="n">has_snapshots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sg</span> <span class="ow">in</span> <span class="n">sglist</span><span class="p">:</span>
+            <span class="n">snaplist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group_rep</span><span class="p">(</span><span class="n">sg</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">snapshot_name</span> <span class="ow">in</span> <span class="n">snaplist</span><span class="p">[</span><span class="s1">&#39;snapVXSnapshots&#39;</span><span class="p">]:</span>
+                <span class="n">snapcount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storagegroup_snapshot_generation_list</span><span class="p">(</span>
+                    <span class="n">sg</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">snapcount</span><span class="p">)):</span>
+                    <span class="n">snapdetails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_snapshot_generation_details</span><span class="p">(</span>
+                        <span class="n">sg</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">snapdetails</span><span class="p">[</span><span class="s1">&#39;isExpired&#39;</span><span class="p">]:</span>
+                        <span class="n">snapcreation_time</span> <span class="o">=</span> <span class="n">snapdetails</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span>
+                        <span class="n">snapexpiration</span> <span class="o">=</span> <span class="n">snapdetails</span><span class="p">[</span>
+                            <span class="s1">&#39;timeToLiveExpiryDate&#39;</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">linked_sg</span> <span class="ow">in</span> <span class="n">snapdetails</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="s1">&#39;linkedStorageGroup&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+                            <span class="n">linked_sg_name</span> <span class="o">=</span> <span class="n">linked_sg</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="s1">&#39;Storage group </span><span class="si">%(sg)s</span><span class="s1"> has expired snapshot. &#39;</span>
+                                <span class="s1">&#39;Snapshot name </span><span class="si">%(ss)s</span><span class="s1">, Generation Number &#39;</span>
+                                <span class="s1">&#39;</span><span class="si">%(gen_no)s</span><span class="s1">, snapshot expired on </span><span class="si">%(snap_ex)s</span><span class="s1">, &#39;</span>
+                                <span class="s1">&#39;linked storage group name is </span><span class="si">%(sg_name)s</span><span class="s1">&#39;</span><span class="p">,</span>
+                                <span class="p">{</span><span class="s1">&#39;sg&#39;</span><span class="p">:</span> <span class="n">sg</span><span class="p">,</span>
+                                 <span class="s1">&#39;ss&#39;</span><span class="p">:</span> <span class="n">snapshot_name</span><span class="p">,</span>
+                                 <span class="s1">&#39;gen_no&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                                 <span class="s1">&#39;snap_ex&#39;</span><span class="p">:</span> <span class="n">snapexpiration</span><span class="p">,</span>
+                                 <span class="s1">&#39;sg_name&#39;</span><span class="p">:</span> <span class="n">linked_sg_name</span><span class="p">})</span>
+                            <span class="n">expired_snap_details</span> <span class="o">=</span> <span class="p">{</span>
+                                <span class="s1">&#39;storagegroup_name&#39;</span><span class="p">:</span> <span class="n">sg</span><span class="p">,</span>
+                                <span class="s1">&#39;snapshot_name&#39;</span><span class="p">:</span> <span class="n">snapshot_name</span><span class="p">,</span>
+                                <span class="s1">&#39;generation_number&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                                <span class="s1">&#39;expiration_time&#39;</span><span class="p">:</span> <span class="n">snapexpiration</span><span class="p">,</span>
+                                <span class="s1">&#39;linked_sg_name&#39;</span><span class="p">:</span> <span class="n">linked_sg_name</span><span class="p">,</span>
+                                <span class="s1">&#39;snap_creation_time&#39;</span><span class="p">:</span> <span class="n">snapcreation_time</span><span class="p">}</span>
+                            <span class="n">expired_snap_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expired_snap_details</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">expired_snap_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.modify_storagegroup_snap"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.modify_storagegroup_snap">[docs]</a>    <span class="k">def</span> <span class="nf">modify_storagegroup_snap</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">source_sg_id</span><span class="p">,</span> <span class="n">target_sg_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">unlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">restore</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Modify a storage group snapshot.</span>
+
+<span class="sd">        Please note that only one parameter can be modified at a time.</span>
+<span class="sd">        Default action is not to create full copy</span>
+
+<span class="sd">        :param source_sg_id: the source sg id</span>
+<span class="sd">        :param target_sg_id: the target sg id (Can be None)</span>
+<span class="sd">        :param snap_name: the snapshot name</span>
+<span class="sd">        :param link: Flag to indicate action = Link</span>
+<span class="sd">        :param unlink: Flag to indicate action = Unlink</span>
+<span class="sd">        :param restore: Flag to indicate action = Restore</span>
+<span class="sd">        :param new_name: the new name for the snapshot</span>
+<span class="sd">        :param gen_num: the generation number</span>
+<span class="sd">        :param _async: flag to indicate if call should be async</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">link</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;linkStorageGroupName&#39;</span><span class="p">:</span> <span class="n">target_sg_id</span><span class="p">,</span>
+                                <span class="s1">&#39;copy&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                       <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;Link&#39;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">unlink</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;unlink&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;unlinkStorageGroupName&#39;</span><span class="p">:</span> <span class="n">target_sg_id</span><span class="p">},</span>
+                       <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;Unlink&#39;</span><span class="p">}</span>
+
+        <span class="k">elif</span> <span class="n">restore</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;Restore&#39;</span><span class="p">}</span>
+
+        <span class="k">elif</span> <span class="n">new_name</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">({</span><span class="s1">&#39;rename&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;newSnapshotName&#39;</span><span class="p">:</span> <span class="n">new_name</span><span class="p">},</span>
+                        <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;Rename&#39;</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ASYNC_UPDATE</span><span class="p">)</span>
+
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">{source_sg_id}</span><span class="s1">/snapshot/</span><span class="si">{snap_name}</span><span class="s1">/generation/</span><span class="si">{gen_num}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">source_sg_id</span><span class="o">=</span><span class="n">source_sg_id</span><span class="p">,</span>
+                <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">,</span>
+                <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">resource_name</span><span class="o">=</span><span class="n">resource_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.restore_snapshot"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.restore_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">restore_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Restore a storage group to its snapshot.</span>
+
+<span class="sd">        :param sg_id: the name of the storage group</span>
+<span class="sd">        :param snap_name: the name of the snapshot</span>
+<span class="sd">        :param gen_num: the generation number of the snapshot (int)</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_snap</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span>
+            <span class="n">restore</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.rename_snapshot"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.rename_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">rename_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">new_name</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rename an existing storage group snapshot.</span>
+
+<span class="sd">        :param sg_id: the name of the storage group</span>
+<span class="sd">        :param snap_name: the name of the snapshot</span>
+<span class="sd">        :param new_name: the new name of the snapshot</span>
+<span class="sd">        :param gen_num: generation number of a snapshot (int)</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_snap</span><span class="p">(</span>
+            <span class="n">sg_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span>
+            <span class="n">new_name</span><span class="o">=</span><span class="n">new_name</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.link_gen_snapshot"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.link_gen_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">link_gen_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">link_sg_name</span><span class="p">,</span>
+                          <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link a snapshot to another storage group.</span>
+
+<span class="sd">        Target storage group will be created if it does not exist.</span>
+
+<span class="sd">        :param sg_id: Source storage group name</span>
+<span class="sd">        :param snap_name: name of the snapshot</span>
+<span class="sd">        :param link_sg_name:  the target storage group name</span>
+<span class="sd">        :param _async: flag to indicate if call is async</span>
+<span class="sd">        :param gen_num: generation number of a snapshot (int)</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_snap</span><span class="p">(</span>
+            <span class="n">sg_id</span><span class="p">,</span> <span class="n">link_sg_name</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span>
+            <span class="n">link</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="n">_async</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.unlink_gen_snapshot"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.unlink_gen_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">unlink_gen_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">unlink_sg_name</span><span class="p">,</span>
+                            <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Unink a snapshot from another storage group.</span>
+
+<span class="sd">        :param sg_id: Source storage group name</span>
+<span class="sd">        :param snap_name: name of the snapshot</span>
+<span class="sd">        :param unlink_sg_name:  the target storage group name</span>
+<span class="sd">        :param _async: flag to indicate if call is async</span>
+<span class="sd">        :param gen_num: generation number of a snapshot (int)</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_snap</span><span class="p">(</span>
+            <span class="n">sg_id</span><span class="p">,</span> <span class="n">unlink_sg_name</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span>
+            <span class="n">unlink</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="n">_async</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.delete_storagegroup_snapshot"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.delete_storagegroup_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">delete_storagegroup_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete the snapshot of a storagegroup.</span>
+
+<span class="sd">        :param storagegroup: the storage group name</span>
+<span class="sd">        :param snap_name: the name of the snapshot</span>
+<span class="sd">        :param gen_num: the generation number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;storagegroup/</span><span class="si">{storagegroup}</span><span class="s1">/snapshot/</span><span class="si">{snap_name}</span><span class="s1">/generation/{&#39;</span>
+            <span class="s1">&#39;gen_num}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">storagegroup</span><span class="o">=</span><span class="n">storagegroup</span><span class="p">,</span>
+                <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">,</span>
+                <span class="n">gen_num</span><span class="o">=</span><span class="n">gen_num</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.choose_snapshot_from_list_in_console"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.choose_snapshot_from_list_in_console">[docs]</a>    <span class="k">def</span> <span class="nf">choose_snapshot_from_list_in_console</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allow a user to select a snapshot from a list.</span>
+
+<span class="sd">        :param storagegroup_id: the storagegoup id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">snaplist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storagegroup_snapshot_list</span><span class="p">(</span><span class="n">storagegroup_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Choose the snapshot you want from the below list: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">counter</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">snaplist</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{counter}</span><span class="s1">: </span><span class="si">{value}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">counter</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">snapselection</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Choice: &#39;</span><span class="p">)</span>
+        <span class="n">snapshot_id</span> <span class="o">=</span> <span class="p">(</span><span class="n">snaplist</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">snapselection</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">snapshot_id</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.is_vol_in_rep_session"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.is_vol_in_rep_session">[docs]</a>    <span class="k">def</span> <span class="nf">is_vol_in_rep_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if a volume is in a replication session.</span>
+
+<span class="sd">        :param device_id: the device id</span>
+<span class="sd">        :returns: snapvx_tgt -- bool, snapvx_src -- bool,</span>
+<span class="sd">                 rdf_grp -- list or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">snapvx_src</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">snapvx_tgt</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">rdf_grp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">volume_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_volume</span><span class="p">(</span><span class="n">device_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">volume_details</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Vol details: </span><span class="si">%(vol)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;vol&#39;</span><span class="p">:</span> <span class="n">volume_details</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">volume_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;snapvx_target&#39;</span><span class="p">):</span>
+                <span class="n">snapvx_tgt</span> <span class="o">=</span> <span class="n">volume_details</span><span class="p">[</span><span class="s1">&#39;snapvx_target&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">volume_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;snapvx_source&#39;</span><span class="p">):</span>
+                <span class="n">snapvx_src</span> <span class="o">=</span> <span class="n">volume_details</span><span class="p">[</span><span class="s1">&#39;snapvx_source&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">volume_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rdfGroupId&#39;</span><span class="p">):</span>
+                <span class="n">rdf_grp</span> <span class="o">=</span> <span class="n">volume_details</span><span class="p">[</span><span class="s1">&#39;rdfGroupId&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">snapvx_tgt</span><span class="p">,</span> <span class="n">snapvx_src</span><span class="p">,</span> <span class="n">rdf_grp</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get specific rdf group details.</span>
+
+<span class="sd">        :param rdf_number: the rdf number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="n">rdf_number</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get rdf group list from array.</span>
+
+<span class="sd">        :returns: list of rdf group dicts with &#39;rdfgNumber&#39; and &#39;label&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">)</span>
+        <span class="n">rdfg_dict_list</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rdfGroupID&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">rdfg_dict_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_volume"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">,</span> <span class="n">device_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get specific volume details, from an RDF group.</span>
+
+<span class="sd">        :param rdf_number: the rdf group number</span>
+<span class="sd">        :param device_id: the device id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{rdf}</span><span class="s1">/volume/</span><span class="si">{dev}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">rdf</span><span class="o">=</span><span class="n">rdf_number</span><span class="p">,</span> <span class="n">dev</span><span class="o">=</span><span class="n">device_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span>
+            <span class="n">resource_name</span><span class="o">=</span><span class="n">resource_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_volume_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_volume_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_volume_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get specific volume details, from an RDF group.</span>
+
+<span class="sd">        :param rdf_number: the rdf group number</span>
+<span class="sd">        :returns: list of device ids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{rdf_number}</span><span class="s1">/volume&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rdf_number</span><span class="o">=</span><span class="n">rdf_number</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;rdf_group&#39;</span><span class="p">,</span>
+            <span class="n">resource_name</span><span class="o">=</span><span class="n">resource_name</span><span class="p">)</span>
+        <span class="n">device_list</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">device_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.are_vols_rdf_paired"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired">[docs]</a>    <span class="k">def</span> <span class="nf">are_vols_rdf_paired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_array</span><span class="p">,</span> <span class="n">device_id</span><span class="p">,</span>
+                            <span class="n">target_device</span><span class="p">,</span> <span class="n">rdf_group</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if a pair of volumes are RDF paired.</span>
+
+<span class="sd">        :param remote_array: the remote array serial number</span>
+<span class="sd">        :param device_id: the device id</span>
+<span class="sd">        :param target_device: the target device id</span>
+<span class="sd">        :param rdf_group: the rdf group</span>
+<span class="sd">        :returns: paired -- bool, state -- string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paired</span><span class="p">,</span> <span class="n">local_vol_state</span><span class="p">,</span> <span class="n">rdf_pair_state</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group_volume</span><span class="p">(</span><span class="n">rdf_group</span><span class="p">,</span> <span class="n">device_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">volume</span><span class="p">:</span>
+            <span class="n">remote_volume</span> <span class="o">=</span> <span class="n">volume</span><span class="p">[</span><span class="s1">&#39;remoteVolumeName&#39;</span><span class="p">]</span>
+            <span class="n">remote_symm</span> <span class="o">=</span> <span class="n">volume</span><span class="p">[</span><span class="s1">&#39;remoteSymmetrixId&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">remote_volume</span> <span class="o">==</span> <span class="n">target_device</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="n">remote_array</span> <span class="o">==</span> <span class="n">remote_symm</span><span class="p">)):</span>
+                <span class="n">paired</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">local_vol_state</span> <span class="o">=</span> <span class="n">volume</span><span class="p">[</span><span class="s1">&#39;localVolumeState&#39;</span><span class="p">]</span>
+                <span class="n">rdf_pair_state</span> <span class="o">=</span> <span class="n">volume</span><span class="p">[</span><span class="s1">&#39;rdfpairState&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Cannot find source RDF volume </span><span class="si">%(device_id)s</span><span class="s1">.&#39;</span><span class="p">,</span>
+                        <span class="p">{</span><span class="s1">&#39;device_id&#39;</span><span class="p">:</span> <span class="n">device_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">paired</span><span class="p">,</span> <span class="n">local_vol_state</span><span class="p">,</span> <span class="n">rdf_pair_state</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_rdf_group_number"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_rdf_group_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_rdf_group_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdf_group_label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given an rdf_group_label, return the associated group number.</span>
+
+<span class="sd">        :param rdf_group_label: the group label</span>
+<span class="sd">        :returns: rdf_group_number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">rdf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group_list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rdf_list</span><span class="p">:</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="p">[</span><span class="n">rdf</span><span class="p">[</span><span class="s1">&#39;rdfgNumber&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">rdf</span> <span class="ow">in</span> <span class="n">rdf_list</span>
+                      <span class="k">if</span> <span class="n">rdf</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">rdf_group_label</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">number</span><span class="p">:</span>
+            <span class="n">rdf_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rdf_group</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rdf_group</span><span class="p">:</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">number</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_storagegroup_srdfg_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storagegroup_srdfg_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_storagegroup_srdfg_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the SRDF numbers for a storage group.</span>
+
+<span class="sd">        :param storagegroup_id: Storage Group Name of replicated group</span>
+<span class="sd">        :returns: list of RDFG numbers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{storagegroup_id}</span><span class="s1">/rdf_group&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">)</span>
+        <span class="n">rdfg_list</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rdfgs&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">rdfg_list</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.get_storagegroup_srdf_details"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storagegroup_srdf_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_storagegroup_srdf_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the SRDF details for an RDF group on a particular storagegroup.</span>
+
+<span class="sd">        :param storagegroup_id: name of storage group</span>
+<span class="sd">        :param rdfg_num: rdf number</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{storagegroup_id}</span><span class="s1">/rdf_group/</span><span class="si">{rdfg_num}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_num</span><span class="o">=</span><span class="n">rdfg_num</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.create_storagegroup_srdf_pairings"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.create_storagegroup_srdf_pairings">[docs]</a>    <span class="k">def</span> <span class="nf">create_storagegroup_srdf_pairings</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">remote_sid</span><span class="p">,</span> <span class="n">srdfmode</span><span class="p">,</span> <span class="n">establish</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rdfg_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">forceNewRdfGroup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;SRDF protect a storage group.</span>
+
+<span class="sd">        :param storagegroup_id: Unique string up to 32 Characters</span>
+<span class="sd">        :param remote_sid: Type Integer 12 digit VMAX ID e.g. 000197000008</span>
+<span class="sd">        :param srdfmode: String, values can be Active, AdaptiveCopyDisk,</span>
+<span class="sd">                         Synchronous, Asynchronous</span>
+<span class="sd">        :param establish: default is none. Bool</span>
+<span class="sd">        :param _async: Flag to indicate if call should be async</span>
+<span class="sd">                      (NOT to be confused with the SRDF mode)</span>
+<span class="sd">        :param rdfg_number: the required RDFG number (optional)</span>
+<span class="sd">        :returns: message and status Type JSON</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_type</span> <span class="o">=</span> <span class="s1">&#39;storagegroup/</span><span class="si">{storagegroup_id}</span><span class="s1">/rdf_group&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">)</span>
+        <span class="n">establish_sg</span> <span class="o">=</span> <span class="s1">&#39;True&#39;</span> <span class="k">if</span> <span class="n">establish</span> <span class="k">else</span> <span class="s1">&#39;False&#39;</span>
+        <span class="n">rdf_payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;replicationMode&#39;</span><span class="p">:</span> <span class="n">srdfmode</span><span class="p">,</span>
+                       <span class="s1">&#39;remoteSymmId&#39;</span><span class="p">:</span> <span class="n">remote_sid</span><span class="p">,</span>
+                       <span class="s1">&#39;remoteStorageGroupName&#39;</span><span class="p">:</span> <span class="n">storagegroup_id</span><span class="p">,</span>
+                       <span class="s1">&#39;establish&#39;</span><span class="p">:</span> <span class="n">establish_sg</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">rdfg_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rdf_payload</span><span class="p">[</span><span class="s1">&#39;rdfgNumber&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdfg_number</span>
+        <span class="k">if</span> <span class="n">forceNewRdfGroup</span><span class="p">:</span>
+            <span class="n">rdf_payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;forceNewRdfGroup&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
+            <span class="n">rdf_payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ASYNC_UPDATE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="n">res_type</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">rdf_payload</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.modify_storagegroup_srdf"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf">[docs]</a>    <span class="k">def</span> <span class="nf">modify_storagegroup_srdf</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">rdfg</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Modify the state of an srdf.</span>
+
+<span class="sd">        This may be a long running task depending on the size of the SRDF</span>
+<span class="sd">        group, can switch to async call if required.</span>
+
+<span class="sd">        :param storagegroup_id: name of storage group</span>
+<span class="sd">        :param action: the rdf action e.g. Suspend, Establish, SetMode etc</span>
+<span class="sd">        :param rdfg: rdf number</span>
+<span class="sd">        :param options: a dict of possible options - depends on action type,</span>
+<span class="sd">                        example options={setMode&#39;: {&#39;mode&#39;: &#39;Asynchronous&#39;}}</span>
+<span class="sd">        :param _async: flag to indicate if call should be async</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{storagegroup_id}</span><span class="s1">/rdf_group/</span><span class="si">{rdfg}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg</span><span class="o">=</span><span class="n">rdfg</span><span class="p">)</span>
+        <span class="n">srdf_actions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;ESTABLISH&#39;</span><span class="p">:</span> <span class="n">ESTABLISH</span><span class="p">,</span> <span class="s1">&#39;SPLIT&#39;</span><span class="p">:</span> <span class="n">SPLIT</span><span class="p">,</span> <span class="s1">&#39;SUSPEND&#39;</span><span class="p">:</span> <span class="n">SUSPEND</span><span class="p">,</span>
+            <span class="s1">&#39;RESTORE&#39;</span><span class="p">:</span> <span class="n">RESTORE</span><span class="p">,</span> <span class="s1">&#39;RESUME&#39;</span><span class="p">:</span> <span class="n">RESUME</span><span class="p">,</span> <span class="s1">&#39;FAILOVER&#39;</span><span class="p">:</span> <span class="n">FAILOVER</span><span class="p">,</span>
+            <span class="s1">&#39;FAILBACK&#39;</span><span class="p">:</span> <span class="n">FAILBACK</span><span class="p">,</span> <span class="s1">&#39;SWAP&#39;</span><span class="p">:</span> <span class="n">SWAP</span><span class="p">,</span> <span class="s1">&#39;SETBIAS&#39;</span><span class="p">:</span> <span class="n">SETBIAS</span><span class="p">,</span>
+            <span class="s1">&#39;SETMODE&#39;</span><span class="p">:</span> <span class="n">SETMODE</span><span class="p">}</span>
+        <span class="n">srdf_action</span> <span class="o">=</span> <span class="n">srdf_actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">srdf_action</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">srdf_action</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SRDF Action must be one of [Establish, Split, Suspend, &#39;</span>
+                   <span class="s1">&#39;Restore, Resume, Failover, Failback, Swap, SetBias, &#39;</span>
+                   <span class="s1">&#39;SetMode]&#39;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">exception</span><span class="o">.</span><span class="n">VolumeBackendAPIException</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ASYNC_UPDATE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_resource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span> <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.suspend_storagegroup_srdf"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.suspend_storagegroup_srdf">[docs]</a>    <span class="k">def</span> <span class="nf">suspend_storagegroup_srdf</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">suspend_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Suspend io on the links for the given storagegroup.</span>
+
+<span class="sd">        Optional parameters to set are &quot;bypass&quot;, &quot;metroBias&quot;, &quot;star&quot;,</span>
+<span class="sd">        &quot;immediate&quot;, &quot;hop2&quot;, &quot;consExempt&quot;, &quot;force&quot;, &quot;symForce&quot; - all</span>
+<span class="sd">        true/false.</span>
+
+<span class="sd">        :param storagegroup_id: the storagegroup id</span>
+<span class="sd">        :param rdfg_no: the rdf group no</span>
+<span class="sd">        :param suspend_options: Optional dict of suspend params</span>
+<span class="sd">        :param _async: flag to indicate async call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_srdf</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="p">,</span> <span class="s1">&#39;suspend&#39;</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">suspend_options</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="n">_async</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.establish_storagegroup_srdf"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.establish_storagegroup_srdf">[docs]</a>    <span class="k">def</span> <span class="nf">establish_storagegroup_srdf</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">establish_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Establish io on the links for the given storagegroup.</span>
+
+<span class="sd">        Optional parameters to set are &quot;bypass&quot;, &quot;metroBias&quot;, &quot;star&quot;,</span>
+<span class="sd">        &quot;hop2&quot;, &quot;force&quot;, &quot;symForce&quot;, &quot;full&quot; - all true/false.</span>
+
+<span class="sd">        :param storagegroup_id: the storagegroup id</span>
+<span class="sd">        :param rdfg_no: the rdf group no</span>
+<span class="sd">        :param establish_options: Optional dict of establish params</span>
+<span class="sd">        :param _async: flag to indicate async call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_srdf</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="p">,</span> <span class="s1">&#39;establish&#39;</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">establish_options</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="n">_async</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.failover_storagegroup_srdf"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.failover_storagegroup_srdf">[docs]</a>    <span class="k">def</span> <span class="nf">failover_storagegroup_srdf</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">failover_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Failover a given storagegroup.</span>
+
+<span class="sd">        Optional parameters to set are &quot;bypass&quot;, &quot;star&quot;, &quot;restore&quot;,</span>
+<span class="sd">        &quot;immediate&quot;, &quot;hop2&quot;, &quot;force&quot;, &quot;symForce&quot;, &quot;remote&quot;, &quot;establish&quot; - all</span>
+<span class="sd">        true/false.</span>
+
+<span class="sd">        :param storagegroup_id: the storagegroup id</span>
+<span class="sd">        :param rdfg_no: the rdf group no</span>
+<span class="sd">        :param failover_options: Optional dict of failover params</span>
+<span class="sd">        :param _async: flag to indicate async call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_srdf</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="p">,</span> <span class="s1">&#39;failover&#39;</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">failover_options</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="n">_async</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.failback_storagegroup_srdf"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.failback_storagegroup_srdf">[docs]</a>    <span class="k">def</span> <span class="nf">failback_storagegroup_srdf</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span> <span class="n">failback_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Failback a given storagegroup.</span>
+
+<span class="sd">        Optional parameters to set are &quot;bypass&quot;, &quot;recoverPoint&quot;, &quot;star&quot;,</span>
+<span class="sd">        &quot;hop2&quot;, &quot;force&quot;, &quot;symForce&quot;, &quot;remote&quot; - all true/false.</span>
+
+<span class="sd">        :param storagegroup_id: the storagegroup id</span>
+<span class="sd">        :param rdfg_no: the rdf group no</span>
+<span class="sd">        :param failback_options: Optional dict of failover params</span>
+<span class="sd">        :param _async: flag to indicate async call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storagegroup_srdf</span><span class="p">(</span>
+            <span class="n">storagegroup_id</span><span class="p">,</span> <span class="s1">&#39;failback&#39;</span><span class="p">,</span> <span class="n">rdfg_no</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">failback_options</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="n">_async</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicationFunctions.delete_storagegroup_srdf"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.replication.ReplicationFunctions.delete_storagegroup_srdf">[docs]</a>    <span class="k">def</span> <span class="nf">delete_storagegroup_srdf</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg_num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete srdf pairings for a given storagegroup.</span>
+
+<span class="sd">        :param storagegroup_id:</span>
+<span class="sd">        :param rdfg_num: the rdfg number to remove pairings from - can be list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get a list of SRDF groups for storage group</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rdfg_num</span><span class="p">:</span>
+            <span class="n">rdfg_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storagegroup_srdfg_list</span><span class="p">(</span><span class="n">storagegroup_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rdfg_num</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">rdfg_num</span> <span class="o">=</span> <span class="p">[</span><span class="n">rdfg_num</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">rdfg</span> <span class="ow">in</span> <span class="n">rdfg_num</span><span class="p">:</span>
+            <span class="n">res_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{storagegroup_id}</span><span class="s1">/rdf_group/</span><span class="si">{rdfg}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">storagegroup_id</span><span class="o">=</span><span class="n">storagegroup_id</span><span class="p">,</span> <span class="n">rdfg</span><span class="o">=</span><span class="n">rdfg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="n">REPLICATION</span><span class="p">,</span>
+                <span class="s1">&#39;storagegroup&#39;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Ciara Stacke
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
