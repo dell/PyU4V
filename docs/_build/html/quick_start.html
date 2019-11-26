@@ -238,43 +238,25 @@ initialisation, or in the configuration file.</p>
 on initialisation:</p>
 <blockquote>
 <div><ul>
-<li><ul class="first">
-<li><dl class="first docutils">
-<dt>Copy the pem file to the system certificate directory:</dt>
-<dd><div class="first last highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt</span>
+<li><p class="first">Copy the pem file to the system certificate directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt</span>
 </pre></div>
 </div>
-</dd>
-</dl>
-</li>
-</ul>
-<blockquote>
-<div><ul>
-<li><dl class="first docutils">
-<dt>Update CA certificate database with the following commands (Ensure the new cert file is highlighted)</dt>
-<dd><div class="first last highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># dpkg-reconfigure ca-certificates</span>
+<p>Update CA certificate database with the following commands (Ensure the new cert file is highlighted)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># dpkg-reconfigure ca-certificates</span>
 <span class="c1"># update-ca-certificates</span>
 </pre></div>
 </div>
-</dd>
-</dl>
-</li>
-<li><p class="first">If the conf file is being used, ensure that if the ‘verify’ tag is present, that it is set to True
+<p>If the conf file is being used, ensure that if the ‘verify’ tag is present, that it is set to True
 (“verify=True”) (If it is not set anywhere, ‘verify’ defaults to True)</p>
-</li>
-</ul>
-</div></blockquote>
 </li>
 </ul>
 </div></blockquote>
 <p>OR</p>
 <blockquote>
 <div><ul class="simple">
-<li><dl class="first docutils">
-<dt>In the conf file insert the following:</dt>
-<dd>verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.</dd>
-</dl>
-</li>
+<li>In the conf file insert the following:
+verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.</li>
 </ul>
 </div></blockquote>
 </div>
@@ -314,7 +296,7 @@ device id rather than a list of device ids, of which any could be the device tha
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Ciara Stacke
+        &copy; Copyright 2019, Dell EMC
 
     </p>
   </div>

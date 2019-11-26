@@ -62,11 +62,4 @@ This is to help keep track and document everything related to this repo. The cod
 SLAs and are intended to be supported through a community driven process.
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 

@@ -66,7 +66,7 @@ specifying ``PyU4V`` as the install package for ``pip``::
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==9.1.0.0
+    $ pip install PyU4V==3.1.7
 
 Copy the sample ``PyU4V.conf`` provided with PyU4V to either your working
 directory or within a directory named ``.PyU4V`` in your current users home
@@ -244,13 +244,14 @@ For neatness and readability we will enforce the following conventions going for
 
 11. Unix and OS X format only.  If in doubt run
 
-.. code-block::
+.. code-block:: bash
 
-   dos2unix myfile.txt
+   # dos2unix myfile.txt
 
 or in PyCharm:
 
-   File -> Line Separators -> LF- Unix and OS X (\n)
+   :guilabel:`File` -> :guilabel:`Line Separators` -> :guilabel:`LF- Unix and OS X (\n)`
+
 
 Support, Bugs, Issues
 ---------------------

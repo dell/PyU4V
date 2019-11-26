@@ -51,8 +51,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PyU4V'
-copyright = u'2018, Ciara Stacke'
-author = u'Ciara Stacke'
+copyright = u'2019, Dell EMC'
+author = u'Dell EMC'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

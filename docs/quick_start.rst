@@ -91,24 +91,26 @@ To set:
 2.	Either add the certificate to a ca-certificates bundle, OR add the path to the conf file/ pass it in as a parameter
 on initialisation:
 
-    * - Copy the pem file to the system certificate directory:
-          .. code-block:: bash
+    *   Copy the pem file to the system certificate directory:
 
-             # cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt
+        .. code-block:: bash
 
-       - Update CA certificate database with the following commands (Ensure the new cert file is highlighted)
-          .. code-block:: bash
+            # cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt
+
+        Update CA certificate database with the following commands (Ensure the new cert file is highlighted)
+
+        .. code-block:: bash
 
              # dpkg-reconfigure ca-certificates
              # update-ca-certificates
 
-       - If the conf file is being used, ensure that if the 'verify' tag is present, that it is set to True
-         ("verify=True") (If it is not set anywhere, 'verify' defaults to True)
+        If the conf file is being used, ensure that if the 'verify' tag is present, that it is set to True
+        ("verify=True") (If it is not set anywhere, 'verify' defaults to True)
 
 OR
 
-    * In the conf file insert the following:
-       verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.
+    *   In the conf file insert the following:
+        verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.
 
 Recommendations
 ---------------
