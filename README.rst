@@ -343,16 +343,6 @@ with the upstream PyU4V repo.
 For a full breakdown of contribution requirements, coding standards, submitting
 and everything else in between please refer to PyU4V ReadTheDocs_.
 
-
-Future
-------
-
-This is still a work in progress. To be expected in the future:
- - Expansion of the RestFunctions library
- - Improved exception handling and logging
- - Unittests
- - Tutorials
-
 Disclaimer
 ----------
 
@@ -364,7 +354,7 @@ the License.
 
 .. BadgeLinks
 
-.. |Maintenance| image:: https://img.shields.io/badge/Maintained-Yes-blue
+.. |Maintenance| image:: https://img.shields.io/badge/Maintained-Bug_fixes_only-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/commits/master
 .. |OpenSource| image:: https://img.shields.io/badge/Open%20Source-Yes-blue
    :target: https://github.com/MichaelMcAleer/PyU4V
