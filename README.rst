@@ -178,13 +178,6 @@ Examples
 There are a number of examples which can be run with minimal set-up. For details on how to run these,
 and other very useful information, please see Paul Martin's blog https://community.emc.com/people/PaulCork/blog
 
-FUTURE
-
-This is still a work in progress. To be expected in the future:
- - Expansion of the RestFunctions library
- - Improved exception handling and logging
- - Unittests
- - Tutorials
 
 Coding conventions
 ------------------
