@@ -27,7 +27,10 @@ Test file for migrate.py and migrate_utils.py
 """
 import platform
 
+from . import pyu4v_common_data as pcd  # noqa: H304
+from . import pyu4v_fakes as pf  # noqa: H304
 from PyU4V import provisioning
+from PyU4V import rest_requests
 from PyU4V.tools.openstack import migrate_utils
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
@@ -36,111 +39,18 @@ import mock
 import testtools
 
 
-class CommonData(object):
-    """Common data for use in test cases."""
-
-    # array info
-    array = '000197800123'
-    portgroup = 'myportgroup'
-    initiatorgroup = 'myinitiatorgroup'
-    sg_name = 'mystoragegroup'
-    host_name = 'myhost'
-
-    # Old masking views
-    smis_mv_1 = 'OS-myhost-No_SLO-I-MV'
-    smis_mv_2 = 'OS-myhost-SRP_1-Diamond-NONE-I-CD-MV'
-    smis_mv_3 = 'OS-myhost-SRP_1-Diamond-DSS-I-MV'
-    smis_mv_4 = 'OS-myhost-SRP_1-Silver-NONE-I-MV'
-    smis_mv_5 = 'OS-myhost-SRP_1-Bronze-OLTP-I-CD-MV'
-    smis_mv_6 = 'OS-myhost-SRP_1-Diamond-OLTP-I-RE-MV'
-    smis_mv_7 = 'OS-host-with-dashes-No_SLO-I-MV'
-    smis_mv_8 = 'OS-host-with-dashes-SRP_1-Diamond-NONE-I-MV'
-
-    # New masking view
-    rest_mv_1 = 'OS-myhost-I-myportgroup-MV'
-    rest_mv_2 = 'OS-myhost-I-portgroup-with-dashes-MV'
-    rest_mv_3 = 'OS-host-with-dash-I-myportgroup-MV'
-
-    # Old storage groups
-    smis_sg_1 = 'OS-myhost-No_SLO-I-SG'
-    smis_sg_2 = 'OS-myhost-SRP_1-Diamond-NONE-I-SG'
-    smis_sg_3 = 'OS-myhost-SRP_1-Diamond-DSS-I-SG'
-    smis_sg_4 = 'OS-myhost-SRP_1-Silver-NONE-I-CD-SG'
-    smis_sg_5 = 'OS-myhost-SRP_1-Diamond-OLTP-I-CD-SG'
-    smis_sg_6 = 'OS-myhost-SRP_1-Bronze-OLTP-I-RE-SG'
-    smis_sg_7 = 'OS-host-with_dashes-SRP_1-Diamond-OLTP-I-RE-SG'
-    smis_sg_8 = 'OS-myhost-SRP_1-Diamond-NONE-I-CD-SG'
-
-    # New parent storage groups
-    rest_parent_sg = 'OS-myhost-I-myportgroup-SG'
-
-    # New storage groups
-    rest_sg_1 = 'OS-myhost-No_SLO-os-iscsi-pg'
-    rest_sg_2 = 'OS-myhost-SRP_1-DiamodNONE-os-iscsi-pg-CD'
-    rest_sg_3 = 'OS-myhost-SRP_1-DiamodNONE-os-iscsi-pg'
-    rest_sg_4 = 'OS-myhost-SRP_1-DiamodOLTP-os-iscsi-pg-RE'
-    rest_sg_5 = 'OS-host-with-dashes-SRP_1-DiamodOLTP-myportgroup-RE'
-    rest_sg_6 = 'OS-myhost-SRP_1-DiamodOLTP-myportgroup-CD'
-
-    storagegroup = {'slo': 'Diamond',
-                    'workload': 'OLTP',
-                    'storageGroupId': 'test'}
-
-    maskingview = {'portGroupId': portgroup,
-                   'hostId': host_name,
-                   'storageGroupId': rest_parent_sg,
-                   'maskingViewId': rest_mv_1}
-
-    element_dict = {'new_mv_name': 'OS-myhost-I-myportgroup-MV',
-                    'workload': 'NONE',
-                    'new_sg_name': 'OS-myhost-SRP_1-DiamodNONE-myportgroup',
-                    'srp': 'SRP_1', 'port_group': 'myportgroup',
-                    'initiator_group': 'myinitiatorgroup',
-                    'new_sg_parent_name': 'OS-myhost-I-myportgroup-SG',
-                    'service_level': 'Diamond'}
-
-    element_dict_test = {'service_level': 'Diamond',
-                         'port_group': 'myportgroup',
-                         'initiator_group': 'myinitiatorgroup',
-                         'srp': 'SRP_1',
-                         'new_mv_name': 'OS-myhost-SRP_1-Diamond-NONE-I-CD-MV',
-                         'new_sg_name': 'OS-myhost-SRP_1-Diamond-NONE-I-CD-SG',
-                         'workload': 'NONE'}
-
-    mv_components = {'portGroupId': portgroup,
-                     'hostId': host_name,
-                     'storageGroupId': rest_sg_1,
-                     'maskingViewId': rest_mv_1}
-
-    device_list = ['0064F', '0088E', '00890', '00891', '00DF2', '00DF3']
-
-    host_io_limit_source = {'host_io_limit_mb_sec': '2000',
-                            'host_io_limit_io_sec': '2000',
-                            'dynamicDistribution': 'Always'}
-
-    host_io_limit_target = {'host_io_limit_mb_sec': '4000',
-                            'host_io_limit_io_sec': '4000',
-                            'dynamicDistribution': 'Never'}
-
-    source_sg_details = {'storageGroupId': smis_sg_2,
-                         'slo': 'Diamond',
-                         'srp': 'SRP_1',
-                         'hostIOLimit': host_io_limit_source}
-
-    target_sg_details = {'storageGroupId': rest_sg_3,
-                         'slo': 'Diamond',
-                         'srp': 'SRP_1',
-                         'hostIOLimit': host_io_limit_target}
-
-
 class TestMigrate(testtools.TestCase):
     """Test cases for migrate script."""
 
     def setUp(self):
         """Set up the test class."""
         super(TestMigrate, self).setUp()
-        self.data = CommonData()
-        conn = univmax_conn.U4VConn()
+        self.data = pcd.CommonData()
+        rest_requests.RestRequests.establish_rest_session = mock.Mock(
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
+        univmax_conn.file_path = config_file
+        conn = univmax_conn.U4VConn(array_id=self.data.array)
         self.utils = migrate_utils.MigrateUtils(conn)
 
     def test_get_mv_component_dict_old(self):
@@ -484,8 +394,8 @@ class TestMigrate(testtools.TestCase):
     def test_compile_new_element_names(self):
         """Test for compile_new_element_names."""
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_3, self.data.portgroup,
-            self.data.host_name, self.data.smis_sg_3)
+            self.data.smis_mv_3, self.data.m_portgroup,
+            self.data.m_host_name, self.data.smis_sg_3)
         self.assertEqual(
             'OS-myhost-I-myportgroup-SG', element_dict['new_sg_parent_name'])
         self.assertEqual('Diamond', element_dict['service_level'])
@@ -501,12 +411,12 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
-    def test_compile_new_element_names_test(self, mock_sg):
+                       return_value=pcd.CommonData.m_storagegroup)
+    def test_compile_new_element_names_revert(self, mock_sg):
         """Test for compile_new_element_names."""
         element_dict = self.utils.compile_new_element_names(
-            self.data.rest_mv_1, self.data.portgroup,
-            self.data.host_name, self.data.rest_sg_3, 'test')
+            self.data.rest_mv_1, self.data.m_portgroup,
+            self.data.m_host_name, self.data.rest_sg_3, 'revert')
         self.assertEqual('myhost', element_dict['initiator_group'])
         self.assertEqual('OS-myhost-SRP_1-Diamond-OLTP-I-MV',
                          element_dict['new_mv_name'])
@@ -521,29 +431,29 @@ class TestMigrate(testtools.TestCase):
                        'get_storage_group',
                        side_effect=exception.ResourceNotFoundException(
                            'exception'))
-    def test_compile_new_element_names_test_no_storage_group(self, mock_sg):
+    def test_compile_new_element_names_revert_no_storage_group(self, mock_sg):
         """Test for compile_new_element_names."""
         element_dict = self.utils.compile_new_element_names(
             self.data.rest_mv_1, self.data.portgroup,
-            self.data.host_name, self.data.rest_sg_3, 'test')
+            self.data.m_host_name, self.data.rest_sg_3, 'revert')
         self.assertEqual({}, element_dict)
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
                        return_value={
-                           'portGroupId': CommonData.portgroup,
-                           'hostId': CommonData.initiatorgroup,
-                           'storageGroupId': CommonData.sg_name,
+                           'portGroupId': pcd.CommonData.m_portgroup,
+                           'hostId': pcd.CommonData.m_initiatorgroup,
+                           'storageGroupId': pcd.CommonData.m_sg_name,
                        })
     def test_get_elements_from_masking_view(
             self, mock_details):
         """Test for get_elements_from_masking_view."""
         mv_components = self.utils.get_elements_from_masking_view(
             self.data.smis_mv_1)
-        self.assertEqual(self.data.sg_name, mv_components['storagegroup'])
-        self.assertEqual(self.data.portgroup, mv_components['portgroup'])
+        self.assertEqual(self.data.m_sg_name, mv_components['storagegroup'])
+        self.assertEqual(self.data.m_portgroup, mv_components['portgroup'])
         self.assertEqual(
-            self.data.initiatorgroup, mv_components['initiatorgroup'])
+            self.data.m_initiatorgroup, mv_components['initiatorgroup'])
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
@@ -563,7 +473,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
         self.assertEqual('No_SLO', component_dict['no_slo'])
 
-    def test_print_component_dict_test(self):
+    def test_print_component_dict_revert(self):
         """Test for print_component_dict."""
         component_dict = (
             self.utils.print_component_dict(self.data.rest_mv_2, revert=True))
@@ -579,15 +489,15 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
-    def test_get_element_dict_test(self, mock_sg):
-        """Test for get_element_dict_test."""
+                       return_value=pcd.CommonData.m_storagegroup)
+    def test_get_element_dict_revert(self, mock_sg):
+        """Test for get_element_dict_revert."""
         component_dict = self.utils.get_mv_component_dict(
             self.data.rest_mv_1, revert=True)
 
-        element_dict = self.utils.get_element_dict_test(
+        element_dict = self.utils.get_element_dict_revert(
             component_dict, self.data.rest_sg_4, '-RE', "",
-            self.data.portgroup, self.data.host_name)
+            self.data.m_portgroup, self.data.m_host_name)
         self.assertEqual('myhost', element_dict['initiator_group'])
         self.assertEqual('myportgroup', element_dict['port_group'])
         self.assertEqual('OS-myhost-SRP_1-Diamond-OLTP-I-RE-SG',
@@ -600,14 +510,14 @@ class TestMigrate(testtools.TestCase):
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
                        return_value={'slo': 'Diamond'})
-    def test_get_element_dict_test_no_workload(self, mock_sg):
-        """Test for get_element_dict_test."""
+    def test_get_element_dict_revert_no_workload(self, mock_sg):
+        """Test for get_element_dict_revert."""
         component_dict = self.utils.get_mv_component_dict(
             self.data.rest_mv_1, revert=True)
 
-        element_dict = self.utils.get_element_dict_test(
+        element_dict = self.utils.get_element_dict_revert(
             component_dict, self.data.rest_sg_2, '-CD', "",
-            self.data.portgroup, self.data.host_name)
+            self.data.m_portgroup, self.data.m_host_name)
         self.assertEqual('myhost', element_dict['initiator_group'])
         self.assertEqual('myportgroup', element_dict['port_group'])
         self.assertEqual('OS-myhost-SRP_1-Diamond-NONE-I-CD-SG',
@@ -623,7 +533,7 @@ class TestMigrate(testtools.TestCase):
 
         element_dict = self.utils.get_element_dict(
             component_dict, '-CD', "",
-            self.data.portgroup, self.data.host_name)
+            self.data.m_portgroup, self.data.m_host_name)
         self.assertEqual('myhost', element_dict['initiator_group'])
         self.assertEqual('myportgroup', element_dict['port_group'])
         self.assertEqual('OS-myhost-SRP_1-SilverNONE-myportgroup-CD',
@@ -637,78 +547,81 @@ class TestMigrate(testtools.TestCase):
                        return_value=True)
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
+                       return_value=pcd.CommonData.m_storagegroup)
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       return_value=CommonData.maskingview)
+                       return_value=pcd.CommonData.m_maskingview)
     def test_validate_existing_masking_view(
             self, mock_mv, mock_sg, mock_child):
         """Test for validate_existing_masking_view."""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.smis_mv_1)
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_1, self.data.portgroup,
-            self.data.initiatorgroup,
+            self.data.smis_mv_1, self.data.m_portgroup,
+            self.data.m_initiatorgroup,
             self.data.smis_sg_1)
         self.assertTrue(self.utils.validate_existing_masking_view(
-            new_masking_view_details, self.data.portgroup,
-            self.data.host_name, element_dict))
+            new_masking_view_details, self.data.m_portgroup,
+            self.data.m_host_name, element_dict))
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       return_value={'portGroupId': CommonData.portgroup,
-                                     'hostId': CommonData.host_name,
-                                     'storageGroupId': "random_sg",
-                                     'maskingViewId': CommonData.rest_mv_1})
+                       return_value={
+                           'portGroupId': pcd.CommonData.m_portgroup,
+                           'hostId': pcd.CommonData.m_host_name,
+                           'storageGroupId': "random_sg",
+                           'maskingViewId': pcd.CommonData.rest_mv_1})
     def test_validate_existing_masking_view_false(
             self, mock_mv):
         """Test for validate_existing_masking_view."""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.smis_mv_1)
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_1, self.data.portgroup,
-            self.data.initiatorgroup,
+            self.data.smis_mv_1, self.data.m_portgroup,
+            self.data.m_initiatorgroup,
             self.data.smis_sg_1)
         self.assertFalse(self.utils.validate_existing_masking_view(
-            new_masking_view_details, self.data.portgroup,
-            self.data.host_name, element_dict))
+            new_masking_view_details, self.data.m_portgroup,
+            self.data.m_host_name, element_dict))
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
+                       return_value=pcd.CommonData.m_storagegroup)
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       return_value={'portGroupId': CommonData.portgroup,
-                                     'hostId': CommonData.host_name,
-                                     'storageGroupId': CommonData.smis_sg_8,
-                                     'maskingViewId': CommonData.smis_mv_1})
-    def test_validate_existing_masking_view_test_true(
+                       return_value={
+                           'portGroupId': pcd.CommonData.m_portgroup,
+                           'hostId': pcd.CommonData.m_host_name,
+                           'storageGroupId': pcd.CommonData.smis_sg_8,
+                           'maskingViewId': pcd.CommonData.smis_mv_1})
+    def test_validate_existing_masking_view_revert_true(
             self, mock_mv, mock_sg):
         """Test for validate_existing_masking_view."""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.rest_mv_1)
         self.assertTrue(self.utils.validate_existing_masking_view(
-            new_masking_view_details, self.data.portgroup,
-            self.data.host_name, self.data.element_dict_test, revert=True))
+            new_masking_view_details, self.data.m_portgroup,
+            self.data.m_host_name, self.data.element_dict_revert, revert=True))
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       return_value={'portGroupId': CommonData.portgroup,
-                                     'hostId': CommonData.host_name,
-                                     'storageGroupId': "random_sg",
-                                     'maskingViewId': CommonData.rest_mv_1})
-    def test_validate_existing_masking_view_test_false(
+                       return_value={
+                           'portGroupId': pcd.CommonData.m_portgroup,
+                           'hostId': pcd.CommonData.m_host_name,
+                           'storageGroupId': "random_sg",
+                           'maskingViewId': pcd.CommonData.rest_mv_1})
+    def test_validate_existing_masking_view_revert_false(
             self, mock_mv):
         """Test for validate_existing_masking_view."""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.rest_mv_1)
         self.assertFalse(self.utils.validate_existing_masking_view(
             new_masking_view_details, self.data.portgroup,
-            self.data.host_name, self.data.element_dict_test, revert=True))
+            self.data.m_host_name, self.data.element_dict_revert, revert=True))
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
+                       return_value=pcd.CommonData.m_storagegroup)
     def test_get_storage_group(self, mock_sg):
         """Test for get_storage_group."""
         storage_group = self.utils.get_storage_group(
@@ -737,8 +650,8 @@ class TestMigrate(testtools.TestCase):
             self, mock_add, mock_create, mock_vol):
         """Test for create_child_storage_group_and_add_to_parent."""
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_1, self.data.portgroup,
-            self.data.initiatorgroup,
+            self.data.smis_mv_1, self.data.m_portgroup,
+            self.data.m_initiatorgroup,
             self.data.smis_sg_1)
         self.utils.create_child_storage_group_and_add_to_parent(
             element_dict)
@@ -757,8 +670,8 @@ class TestMigrate(testtools.TestCase):
             self, mock_empty, mock_sg, mock_create):
         """Test for get_or_create_cascaded_storage_group."""
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_2, self.data.portgroup,
-            self.data.initiatorgroup,
+            self.data.smis_mv_2, self.data.m_portgroup,
+            self.data.m_initiatorgroup,
             self.data.smis_sg_2)
         self.utils.get_or_create_cascaded_storage_group(element_dict)
         mock_empty.assert_called_once()
@@ -771,8 +684,8 @@ class TestMigrate(testtools.TestCase):
     def test_get_or_create_elements(self, mock_sg, mock_mv):
         """Test for get_or_create_elements."""
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_2, self.data.portgroup,
-            self.data.initiatorgroup,
+            self.data.smis_mv_2, self.data.m_portgroup,
+            self.data.m_initiatorgroup,
             self.data.smis_sg_2)
         self.utils.get_or_create_elements(element_dict)
         mock_mv.assert_called_once()
@@ -784,8 +697,8 @@ class TestMigrate(testtools.TestCase):
     def test_get_or_create_elements_except(self, mock_sg):
         """Test for get_or_create_elements."""
         element_dict = self.utils.compile_new_element_names(
-            self.data.smis_mv_2, self.data.portgroup,
-            self.data.initiatorgroup,
+            self.data.smis_mv_2, self.data.m_portgroup,
+            self.data.m_initiatorgroup,
             self.data.smis_sg_2)
         self.assertRaises(exception.ResourceNotFoundException,
                           self.utils.get_or_create_elements, element_dict)
@@ -794,20 +707,20 @@ class TestMigrate(testtools.TestCase):
                        'create_masking_view_existing_components')
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       side_effect=[None, CommonData.storagegroup])
+                       side_effect=[None, pcd.CommonData.m_storagegroup])
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'create_non_empty_storagegroup')
-    def test_get_or_create_elements_test(
+    def test_get_or_create_elements_revert(
             self, mock_create_sg, mock_sg, mock_cc):
         """Test for get_or_create_elements."""
         self.utils.get_or_create_elements(
-            self.data.element_dict_test, revert=True)
+            self.data.element_dict_revert, revert=True)
         mock_create_sg.assert_called_once()
         mock_create_sg.reset_mock()
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       return_value=CommonData.maskingview)
+                       return_value=pcd.CommonData.m_maskingview)
     def test_get_masking_view(self, mock_sg):
         """Test for get_masking_view."""
         masking_view = self.utils.get_masking_view(
@@ -829,11 +742,12 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       return_value=CommonData.mv_components)
+                       return_value=pcd.CommonData.mv_components)
     def test_get_or_create_masking_view(self, mock_mv):
         """Test for get_or_create_masking_view."""
         masking_view_details = self.utils.get_or_create_masking_view(
-            self.data.element_dict, self.data.portgroup, self.data.host_name)
+            self.data.element_dict, self.data.m_portgroup,
+            self.data.m_host_name)
         self.assertEqual('myhost', masking_view_details['hostId'])
         self.assertEqual('OS-myhost-No_SLO-os-iscsi-pg',
                          masking_view_details['storageGroupId'])
@@ -843,17 +757,18 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
+                       return_value=pcd.CommonData.m_storagegroup)
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'create_masking_view_existing_components')
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',
-                       side_effect=[None, CommonData.mv_components])
+                       side_effect=[None, pcd.CommonData.mv_components])
     def test_get_or_create_masking_view_none(
             self, mock_mv, mock_create, mock_sg):
         """Test for get_or_create_masking_view."""
         masking_view_details = self.utils.get_or_create_masking_view(
-            self.data.element_dict, self.data.portgroup, self.data.host_name)
+            self.data.element_dict, self.data.m_portgroup,
+            self.data.m_host_name)
         self.assertEqual('myhost', masking_view_details['hostId'])
         self.assertEqual('OS-myhost-No_SLO-os-iscsi-pg',
                          masking_view_details['storageGroupId'])
@@ -863,7 +778,8 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'move_volumes_between_storage_groups',
-                       return_value={'storageGroupId': CommonData.smis_sg_1})
+                       return_value={
+                           'storageGroupId': pcd.CommonData.smis_sg_1})
     def test_move_vols_from_source_to_target(self, mock_mv):
         """Test for move_vols_from_source_to_target."""
         source_sg = self.utils.move_vols_from_source_to_target(
@@ -875,7 +791,8 @@ class TestMigrate(testtools.TestCase):
                        'create_volume_from_sg_return_dev_id')
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'move_volumes_between_storage_groups',
-                       return_value={'storageGroupId': CommonData.smis_sg_1})
+                       return_value={
+                           'storageGroupId': pcd.CommonData.smis_sg_1})
     def test_move_vols_from_source_to_target_new_vol(
             self, mock_mv, mock_create_vol):
         """Test for move_vols_from_source_to_target."""
@@ -943,7 +860,7 @@ class TestMigrate(testtools.TestCase):
                        'input', return_value='Y')
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_vols_from_storagegroup',
-                       return_value=CommonData.device_list)
+                       return_value=pcd.CommonData.device_list)
     def test_get_volume_list_full(self, mock_vols, mock_yes):
         """Test for get_volume_list."""
         volume_list, create_vol = (
@@ -958,7 +875,7 @@ class TestMigrate(testtools.TestCase):
                        'input', return_value='N')
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_vols_from_storagegroup',
-                       return_value=CommonData.device_list)
+                       return_value=pcd.CommonData.device_list)
     def test_get_volume_list_subset(self, mock_vols, mock_no, mock_subset):
         """Test for get_volume_list."""
         volume_list, create_vol = (
@@ -971,7 +888,7 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       return_value=CommonData.storagegroup)
+                       return_value=pcd.CommonData.m_storagegroup)
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'input', return_value='Y')
     def test_choose_sg(self, mock_yes, mock_sg):
@@ -979,7 +896,7 @@ class TestMigrate(testtools.TestCase):
         element_dict, child_sg = self.utils.choose_sg(
             self.data.rest_mv_1,
             [self.data.rest_sg_6, self.data.rest_sg_3],
-            self.data.portgroup, self.data.initiatorgroup, True)
+            self.data.m_portgroup, self.data.m_initiatorgroup, True)
         self.assertEqual(
             'OS-myhost-SRP_1-Diamond-OLTP-I-CD-MV',
             element_dict['new_mv_name'])
@@ -997,8 +914,8 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       side_effect=[CommonData.source_sg_details,
-                                    CommonData.storagegroup])
+                       side_effect=[pcd.CommonData.source_sg_details,
+                                    pcd.CommonData.m_storagegroup])
     def test_set_qos_target_no_host_io(self, mock_sg):
         """Test for set_qos."""
         with mock.patch.object(provisioning.ProvisioningFunctions,
@@ -1009,8 +926,8 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       side_effect=[CommonData.source_sg_details,
-                                    CommonData.source_sg_details])
+                       side_effect=[pcd.CommonData.source_sg_details,
+                                    pcd.CommonData.source_sg_details])
     def test_set_qos_target_qos_same_as_source(self, mock_sg):
         """Test for set_qos."""
         with mock.patch.object(provisioning.ProvisioningFunctions,
@@ -1021,8 +938,8 @@ class TestMigrate(testtools.TestCase):
 
     @mock.patch.object(migrate_utils.MigrateUtils,
                        'get_storage_group',
-                       side_effect=[CommonData.source_sg_details,
-                                    CommonData.target_sg_details])
+                       side_effect=[pcd.CommonData.source_sg_details,
+                                    pcd.CommonData.target_sg_details])
     def test_set_qos_target_different_host_io(self, mock_sg):
         """Test for set_qos."""
         with mock.patch.object(provisioning.ProvisioningFunctions,

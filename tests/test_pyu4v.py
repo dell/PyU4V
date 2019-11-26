@@ -19,11 +19,6 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""Test PyU4V."""
-import ast
-import os
-import tempfile
-
 from PyU4V import common
 from PyU4V import performance
 from PyU4V import provisioning
@@ -34,695 +29,10 @@ from PyU4V.utils import config_handler
 from PyU4V.utils import exception
 
 import mock
-import requests
 import testtools
 
-
-class CommonData(object):
-    """Common array data."""
-
-    array = '000197800123'
-    remote_array = '000197800124'
-    srp = 'SRP_1'
-    slo = 'Diamond'
-    workload = 'DSS'
-    port_group_name_f = 'PU-fibre-PG'
-    port_group_name_i = 'PU-iscsi-PG'
-    masking_view_name_f = 'PU-HostX-F-MV'
-    masking_view_name_i = 'PU-HostX-I-MV'
-    initiatorgroup_name_f = 'PU-HostX-F-IG'
-    initiatorgroup_name_i = 'PU-HostX-I-IG'
-    hostgroup_id = 'PU-HostGroup-F-HG'
-    storagegroup_name = 'PU-mystoragegroup-SG'
-    failed_resource = 'PU-failed-resource'
-    volume_wwn = '600000345'
-    device_id = '00001'
-    device_id2 = '00002'
-    device_id3 = '00003'
-    rdf_group_name = '23_24_007'
-    rdf_group_no = '70'
-    u4v_version = '84'
-    parent_sg = 'PU-HostX-SG'
-    storagegroup_name_1 = 'PU-mystoragegroup1-SG'
-    storagegroup_name_2 = 'PU-mystoragegroup2-SG'
-    group_snapshot_name = 'Grp_snapshot'
-    target_group_name = 'Grp_target'
-    qos_storagegroup = 'PU-QOS-SG'
-    snapshot_name = 'snap_01234'
-    # director port info
-    director_id1 = 'FA-1D'
-    port_id1 = '4'
-    director_id2 = 'SE-4E'
-    port_id2 = '0'
-    port_key1 = {'directorId': director_id1, 'portId': port_id1}
-    port_key2 = {'directorId': director_id2, 'portId': port_id2}
-
-    # Connector info
-    wwpn1 = '123456789012345'
-    wwpn2 = '123456789054321'
-    wwnn1 = '223456789012345'
-    initiator = 'iqn.1993-08.org.debian: 01: 222'
-    ip, ip2 = u'123.456.7.8', u'123.456.7.9'
-    iqn = u'iqn.1992-04.com.emc:600009700bca30c01e3e012e00000001,t,0x0001'
-    iqn2 = u'iqn.1992-04.com.emc:600009700bca30c01e3e012e00000002,t,0x0001'
-
-    # VMAX data
-    # SLOprovisioning
-    compression_info = {'symmetrixId': ['000197800128']}
-    director_info = {'directorId': director_id1,
-                     'director_slot_number': 1,
-                     'availability': 'Online',
-                     'num_of_ports': 5}
-    director_list = {'directorId': [director_id1, director_id2]}
-    host_list = {'hostId': [initiatorgroup_name_f, initiatorgroup_name_i]}
-    initiatorgroup = [{'initiator': [wwpn1],
-                       'hostId': initiatorgroup_name_f,
-                       'maskingview': [masking_view_name_f]},
-                      {'initiator': [initiator],
-                       'hostId': initiatorgroup_name_i,
-                       'maskingview': [masking_view_name_i]}]
-
-    hostgroup = {'num_of_hosts': 1,
-                 'num_of_initiators': 4,
-                 'num_of_masking_views': 1,
-                 'host': [initiatorgroup[0]],
-                 'type': 'Fibre',
-                 'hostGroupId': hostgroup_id,
-                 'maskingview': [masking_view_name_f]}
-
-    hostgroup_list = {'hostGroupId': [hostgroup_id]}
-
-    initiator_list = [{'host': initiatorgroup_name_f,
-                       'initiatorId': wwpn1,
-                       'maskingview': [masking_view_name_f]},
-                      {'host': initiatorgroup_name_i,
-                       'initiatorId': initiator,
-                       'maskingview': [masking_view_name_i]},
-                      {'initiatorId': [
-                          'FA-1D:4:' + wwpn1,
-                          'SE-4E:0:' + initiator]}]
-
-    maskingview = [{'maskingViewId': masking_view_name_f,
-                    'portGroupId': port_group_name_f,
-                    'storageGroupId': storagegroup_name,
-                    'hostId': initiatorgroup_name_f,
-                    'maskingViewConnection': [
-                        {'host_lun_address': '0003'}]},
-                   {'maskingViewId': masking_view_name_i,
-                    'portGroupId': port_group_name_i,
-                    'storageGroupId': storagegroup_name_1,
-                    'hostId': initiatorgroup_name_i,
-                    'maskingViewConnection': [
-                        {'host_lun_address': '0003'}]},
-                   {'maskingViewId': [masking_view_name_f,
-                                      masking_view_name_i]}]
-
-    portgroup = [{'portGroupId': port_group_name_f,
-                  'symmetrixPortKey': [
-                      {'directorId': director_id1,
-                       'portId': 'FA-1D:4'}],
-                  'maskingview': [masking_view_name_f]},
-                 {'portGroupId': port_group_name_i,
-                  'symmetrixPortKey': [
-                      {'directorId': director_id2,
-                       'portId': 'SE-4E:0'}],
-                  'maskingview': [masking_view_name_i]}]
-
-    pg_list = {'portGroupId': [port_group_name_i, port_group_name_f]}
-
-    port_key_list = {'symmetrixPortKey': [port_key1, port_key2]}
-
-    port_list = [
-        {'symmetrixPort': {'num_of_masking_views': 1,
-                           'maskingview': [masking_view_name_f],
-                           'identifier': wwnn1,
-                           'symmetrixPortKey': port_key1,
-                           'portgroup': [port_group_name_f]}},
-        {'symmetrixPort': {'identifier': initiator,
-                           'symmetrixPortKey': port_key2,
-                           'ip_addresses': [ip],
-                           'num_of_masking_views': 1,
-                           'maskingview': [masking_view_name_i],
-                           'portgroup': [port_group_name_i]}}]
-
-    sg_details = [{'srp': srp,
-                   'num_of_vols': 2,
-                   'cap_gb': 2,
-                   'storageGroupId': storagegroup_name,
-                   'slo': slo,
-                   'workload': workload},
-                  {'srp': srp,
-                   'num_of_vols': 2,
-                   'cap_gb': 2,
-                   'storageGroupId': storagegroup_name_1,
-                   'slo': slo,
-                   'workload': workload,
-                   'maskingview': [masking_view_name_f],
-                   'parent_storage_group': [parent_sg]},
-                  {'srp': srp,
-                   'num_of_vols': 2,
-                   'cap_gb': 2,
-                   'storageGroupId': storagegroup_name_2,
-                   'slo': slo,
-                   'workload': workload,
-                   'maskingview': [masking_view_name_i]},
-                  {'srp': 'None',
-                   'num_of_vols': 2,
-                   'cap_gb': 2,
-                   'storageGroupId': parent_sg,
-                   'child_storage_group': [storagegroup_name_1],
-                   'maskingview': [masking_view_name_f]},
-                  {'srp': srp, 'num_of_vols': 2, 'cap_gb': 2,
-                   'storageGroupId': qos_storagegroup,
-                   'slo': slo, 'workload': workload,
-                   'hostIOLimit': {'host_io_limit_io_sec': '4000',
-                                   'dynamicDistribution': 'Always',
-                                   'host_io_limit_mb_sec': '4000'}}
-                  ]
-
-    sg_details_rep = [{'childNames': [],
-                       'numDevicesNonGk': 2,
-                       'isLinkTarget': False,
-                       'rdf': True,
-                       'capacityGB': 2.0,
-                       'name': storagegroup_name,
-                       'snapVXSnapshots': [group_snapshot_name],
-                       'symmetrixId': array,
-                       'numSnapVXSnapshots': 1}]
-
-    sg_details_migration = [{'targetArray': remote_array,
-                             'sourceArray': array,
-                             'totalCapacity': 8.0,
-                             'targetMaskingView': [masking_view_name_f],
-                             'state': 'Synchronized',
-                             'sourceMaskingView': [masking_view_name_i],
-                             'remainingCapacity': 0.0,
-                             'devicePairs': [{
-                                 'invalidSrc': False,
-                                 'srcVolumeName': 'my-vol',
-                                 'invalidTgt': False,
-                                 'tgtVolumeName': 'my-vol2',
-                                 'missingSrc': False,
-                                 'missingTgt': False
-                             }],
-                             'storageGroup': storagegroup_name}]
-
-    sg_rdf_details = [{'storageGroupName': storagegroup_name,
-                       'symmetrixId': array,
-                       'modes': ['Synchronous'],
-                       'rdfGroupNumber': rdf_group_no,
-                       'states': ['Synchronized']}]
-
-    sg_list = {'storageGroupId': [storagegroup_name,
-                                  storagegroup_name_1,
-                                  storagegroup_name_2]}
-
-    sg_list_rep = {'name': [storagegroup_name]}
-    sg_rdf_list = {'rdfgs': [rdf_group_no]}
-
-    sg_list_migration = {'name': [storagegroup_name]}
-
-    srp_details = {'srpSloDemandId': ['Bronze', 'Diamond', 'Gold',
-                                      'None', 'Optimized', 'Silver'],
-                   'srpId': srp,
-                   'total_used_cap_gb': 5244.7,
-                   'total_usable_cap_gb': 20514.4,
-                   'total_subscribed_cap_gb': 84970.1,
-                   'fba_used_capacity': 5244.7,
-                   'reserved_cap_percent': 10}
-
-    srp_list = {'srpId': [srp, 'SRP_2']}
-    compr_report = {'storageGroupCompressibility': [
-        {'num_of_volumes': 6, 'storageGroupId': storagegroup_name,
-         'allocated_cap_gb': 0.0, 'used_cap_gb': 0.0,
-         'compression_enabled': 'false'}, ]}
-
-    volume_details = [{'cap_gb': 2,
-                       'num_of_storage_groups': 1,
-                       'volumeId': device_id,
-                       'volume_identifier': 'my-vol',
-                       'wwn': volume_wwn,
-                       'snapvx_target': 'false',
-                       'snapvx_source': 'false',
-                       'storageGroupId': [storagegroup_name]},
-                      {'cap_gb': 1,
-                       'num_of_storage_groups': 1,
-                       'volumeId': device_id2,
-                       'volume_identifier': 'my-vol2',
-                       'wwn': '600012345',
-                       'storageGroupId': [storagegroup_name_1]},
-                      {'cap_gb': 1,
-                       'num_of_storage_groups': 0,
-                       'volumeId': device_id3,
-                       'volume_identifier': 'my-vol3',
-                       'wwn': '600012345'}]
-
-    volume_list = [
-        {'resultList': {'result': [{'volumeId': device_id}]}},
-        {'resultList': {'result': [{'volumeId': device_id2}]}},
-        {'expirationTime': 1517830955979, 'count': 2, 'maxPageSize': 1000,
-         'id': '123', 'resultList': {'result': [{'volumeId': device_id},
-                                                {'volumeId': device_id2}]}}]
-
-    workloadtype = {'workloadId': ['OLTP', 'OLTP_REP', 'DSS', 'DSS_REP']}
-    slo_list = {'sloId': ['Bronze', 'Diamond', 'Gold',
-                          'Optimized', 'Platinum', 'Silver']}
-    slo_details = {'sloBaseId': slo, 'num_of_workloads': 5, 'sloId': slo,
-                   'num_of_storage_groups': 1230,
-                   'workloadId': workloadtype['workloadId'],
-                   'storageGroupId': [storagegroup_name,
-                                      storagegroup_name_1,
-                                      storagegroup_name_2]}
-
-    # replication
-    capabilities = {'symmetrixCapability': [{'rdfCapable': True,
-                                             'snapVxCapable': True,
-                                             'symmetrixId': '0001111111'},
-                                            {'symmetrixId': array,
-                                             'snapVxCapable': True,
-                                             'rdfCapable': True}]}
-    group_snap_vx = {'generation': 0,
-                     'isLinked': False,
-                     'numUniqueTracks': 0,
-                     'isRestored': False,
-                     'name': group_snapshot_name,
-                     'numStorageGroupVolumes': 1,
-                     'state': ['Established'],
-                     'timeToLiveExpiryDate': 'N/A',
-                     'isExpired': False,
-                     'numSharedTracks': 0,
-                     'timestamp': '00:30:50 Fri, 02 Jun 2017 IST +0100',
-                     'numSourceVolumes': 1}
-    expired_snap = {'generation': 0,
-                    'isLinked': True,
-                    'name': group_snapshot_name,
-                    'numStorageGroupVolumes': 1,
-                    'state': ['Established'],
-                    'timeToLiveExpiryDate': '01:30:50 Fri, 02 Jun 2017 IST ',
-                    'isExpired': True,
-                    'linkedStorageGroup': [{'name': target_group_name}],
-                    'timestamp': '00:30:50 Fri, 02 Jun 2017 IST +0100',
-                    'numSourceVolumes': 1}
-    sg_snap_list = {'name': [group_snapshot_name]}
-    sg_snap_gen_list = {'generations': [0]}
-
-    rdf_group_list = {'rdfGroupID': [{'rdfgNumber': rdf_group_no,
-                                      'label': rdf_group_name}]}
-    rdf_group_details = {'modes': ['Synchronous'],
-                         'remoteSymmetrix': remote_array,
-                         'label': rdf_group_name,
-                         'type': 'Dynamic',
-                         'numDevices': 1,
-                         'remoteRdfgNumber': rdf_group_no,
-                         'rdfgNumber': rdf_group_no}
-    rdf_group_vol_details = {'remoteRdfGroupNumber': rdf_group_no,
-                             'localSymmetrixId': array,
-                             'volumeConfig': 'RDF1+TDEV',
-                             'localRdfGroupNumber': rdf_group_no,
-                             'localVolumeName': device_id,
-                             'rdfpairState': 'Synchronized',
-                             'remoteVolumeName': device_id2,
-                             'localVolumeState': 'Ready',
-                             'rdfMode': 'Synchronous',
-                             'remoteVolumeState': 'Write Disabled',
-                             'remoteSymmetrixId': remote_array}
-    rdf_group_vol_list = {'name': [device_id, device_id2]}
-
-    rep_info = {'symmetrixId': array, 'storageGroupCount': 1486,
-                'replicationCacheUsage': 0, 'rdfGroupCount': 7}
-
-    # migration
-    migration_info = {'symmetrixId': array, 'storageGroupCount': 1486,
-                      'local': True, 'migrationSessionCount': 10}
-    migration_capabilities = {'storageArrayCapability': [
-        {
-            'srdfsTarget': True,
-            'dmSource': True,
-            'srdfsSource': True,
-            'dmTarget': True,
-            'compression': True,
-            'arrayId': array
-        }
-    ]}
-    migration_environment_list = {'arrayId': [array]}
-    migration_environment_details = {'symmetrixId': array,
-                                     'otherSymmetrixId': remote_array,
-                                     'invalid': False,
-                                     'state': 'OK'}
-
-    # system
-    job_list = [{'status': 'SUCCEEDED',
-                 'jobId': '12345',
-                 'result': 'created',
-                 'resourceLink': 'storagegroup/%s' % storagegroup_name},
-                {'status': 'RUNNING', 'jobId': '55555'},
-                {'status': 'FAILED', 'jobId': '09999'}]
-    symmetrix = [{'symmetrixId': array,
-                  'model': 'VMAX250F',
-                  'ucode': '5977.1091.1092'}]
-    symm_list = {'symmetrixId': [array, remote_array]}
-    server_version = {'version': 'V8.4.0.6'}
-
-    # wlp
-    headroom = {'headroom': [{'headroomCapacity': 20348.29}]}
-    wlp = {'symmetrixDetails': {'processingDetails': {
-        'lastProcessedSpaTimestamp': 1517408700000,
-        'nextUpdate': 1038},
-        'spaRegistered': 'true'}}
-
-    iterator_page = {'result': [{}, {}]}
-
-    # performance
-    perf_response = {"resultList": {"result": [{"Reads": 32.146667,
-                                                "timestamp": 1566466200000}]}}
-    perf_response_legacy = [perf_response]
-
-
-class FakeResponse(object):
-    """Fake response."""
-
-    def __init__(self, status_code, return_object):
-        """__init__."""
-        self.status_code = status_code
-        self.return_object = return_object
-
-    def json(self):
-        """json."""
-        if self.return_object:
-            return self.return_object
-        else:
-            raise ValueError
-
-
-class FakeRequestsSession(object):
-    """Fake request session."""
-
-    def __init__(self, *args, **kwargs):
-        """__init__."""
-        self.data = CommonData()
-
-    def request(self, method, url, params=None, data=None, timeout=None):
-        """request."""
-        return_object = ''
-        status_code = 200
-        if method == 'GET':
-            status_code, return_object = self._get_request(url, params)
-
-        elif method == 'POST' or method == 'PUT':
-            status_code, return_object = self._post_or_put(url, data)
-
-        elif method == 'DELETE':
-            status_code, return_object = self._delete(url)
-
-        elif method == 'TIMEOUT':
-            raise requests.Timeout
-
-        elif method == 'EXCEPTION':
-            raise Exception
-
-        return FakeResponse(status_code, return_object)
-
-    def _get_request(self, url, params):
-        status_code = 200
-        return_object = None
-        if self.data.failed_resource in url:
-            status_code = 500
-            return_object = self.data.job_list[2]
-        elif 'sloprovisioning' in url:
-            if 'volume' in url:
-                return_object = self._sloprovisioning_volume(url, params)
-            elif 'storagegroup' in url:
-                return_object = self._sloprovisioning_sg(url)
-            elif 'srp' in url:
-                return_object = self._sloprovisioning_srp(url)
-            elif 'maskingview' in url:
-                return_object = self._sloprovisioning_mv(url)
-            elif 'portgroup' in url:
-                return_object = self._sloprovisioning_pg(url)
-            elif 'port' in url:
-                return_object = self._sloprovisioning_port(url)
-            elif 'director' in url:
-                return_object = self._sloprovisioning_port(url)
-            elif 'hostgroup' in url:
-                return_object = self._sloprovisioning_hg(url)
-            elif 'host' in url:
-                return_object = self._sloprovisioning_ig(url)
-            elif 'initiator' in url:
-                return_object = self._sloprovisioning_initiator(url)
-            elif 'workloadtype' in url:
-                return_object = self.data.workloadtype
-            elif 'compressionCapable' in url:
-                return_object = self.data.compression_info
-            elif '{}/slo'.format(self.data.array) in url:
-                if self.data.slo in url:
-                    return_object = self.data.slo_details
-                else:
-                    return_object = self.data.slo_list
-            else:
-                return_object = self.data.symm_list
-
-        elif 'replication' in url:
-            return_object = self._replication(url)
-
-        elif 'migration' in url:
-            return_object = self._migration(url)
-
-        elif 'system' in url:
-            return_object = self._system(url)
-
-        elif 'headroom' in url:
-            return_object = self.data.headroom
-
-        elif 'Iterator' in url:
-            return_object = self.data.iterator_page
-
-        elif 'wlp' in url:
-            return_object = self.data.wlp
-
-        return status_code, return_object
-
-    def _establish_rest_session(self):
-        ref_headers = {'content-type': 'application/json',
-                       'accept': 'application/json',
-                       'application-type': 'pyu4v'}
-        self.assertEqual(ref_headers, self.rest.session.headers)
-        self.assertEqual('smc', self.rest.session.auth.username)
-        self.assertEqual('smc', self.rest.session.auth.password)
-        self.assertEqual(False, self.rest.session.verify)
-
-    def _sloprovisioning_volume(self, url, params):
-        return_object = self.data.volume_list[2]
-        if params:
-            if '1' in params.values():
-                return_object = self.data.volume_list[0]
-            elif '2' in params.values():
-                return_object = self.data.volume_list[1]
-        else:
-            for vol in self.data.volume_details:
-                if vol['volumeId'] in url:
-                    return_object = vol
-                    break
-        return return_object
-
-    def _sloprovisioning_sg(self, url):
-        return_object = self.data.sg_list
-        for sg in self.data.sg_details:
-            if sg['storageGroupId'] in url:
-                return_object = sg
-                break
-        return return_object
-
-    def _sloprovisioning_mv(self, url):
-        if self.data.masking_view_name_i in url:
-            return_object = self.data.maskingview[1]
-        elif self.data.masking_view_name_f in url:
-            return_object = self.data.maskingview[0]
-        else:
-            return_object = self.data.maskingview[2]
-        return return_object
-
-    def _sloprovisioning_pg(self, url):
-        return_object = self.data.pg_list
-        for pg in self.data.portgroup:
-            if pg['portGroupId'] in url:
-                return_object = pg
-                break
-        return return_object
-
-    def _sloprovisioning_port(self, url):
-        return_object = None
-        if 'port/' in url:
-            for port in self.data.port_list:
-                if (port['symmetrixPort']['symmetrixPortKey']['directorId']
-                        in url):
-                    return_object = port
-                    break
-        elif 'port' in url:
-            return_object = self.data.port_key_list
-        else:
-            if self.data.director_id1 in url:
-                return_object = self.data.director_info
-            else:
-                return_object = self.data.director_list
-        return return_object
-
-    def _sloprovisioning_ig(self, url):
-        return_object = self.data.host_list
-        for ig in self.data.initiatorgroup:
-            if ig['hostId'] in url:
-                return_object = ig
-                break
-        return return_object
-
-    def _sloprovisioning_hg(self, url):
-        if self.data.hostgroup_id in url:
-            return_object = self.data.hostgroup
-        else:
-            return_object = self.data.hostgroup_list
-        return return_object
-
-    def _sloprovisioning_initiator(self, url):
-        return_object = self.data.initiator_list[2]
-        if self.data.wwpn1 in url:
-            return_object = self.data.initiator_list[0]
-        elif self.data.initiator in url:
-            return_object = self.data.initiator_list[1]
-        return return_object
-
-    def _sloprovisioning_srp(self, url):
-        return_object = self.data.srp_list
-        if self.data.srp in url:
-            if 'compressibility' in url:
-                return_object = self.data.compr_report
-            else:
-                return_object = self.data.srp_details
-        return return_object
-
-    def _replication(self, url):
-        return_object = self.data.rep_info
-        if 'storagegroup' in url:
-            return_object = self._replication_sg(url)
-        elif 'rdf_group' in url:
-            if self.data.device_id in url:
-                return_object = self.data.rdf_group_vol_details
-            elif 'volume' in url:
-                return_object = self.data.rdf_group_vol_list
-            elif self.data.rdf_group_no in url:
-                return_object = self.data.rdf_group_details
-            else:
-                return_object = self.data.rdf_group_list
-        elif 'capabilities' in url:
-            return_object = self.data.capabilities
-        return return_object
-
-    def _replication_sg(self, url):
-        return_object = self.data.sg_list_rep
-        if 'generation' in url:
-            if self.data.group_snapshot_name in url:
-                return_object = self.data.group_snap_vx
-            else:
-                return_object = self.data.sg_snap_gen_list
-        elif 'snapshot' in url:
-            return_object = self.data.sg_snap_list
-        elif 'rdf_group' in url:
-            return_object = self.data.sg_rdf_list
-            if self.data.rdf_group_no in url:
-                for sg in self.data.sg_rdf_details:
-                    if sg['storageGroupName'] in url:
-                        return_object = sg
-                        break
-        elif self.data.storagegroup_name in url:
-            return_object = self.data.sg_details_rep[0]
-        return return_object
-
-    def _migration(self, url):
-        return_object = self.data.migration_info
-        if 'storagegroup' in url:
-            return_object = self._migration_sg(url)
-        elif 'environment' in url:
-            env_name = self.data.migration_environment_list['arrayId'][0]
-            if '/environment/' + env_name in url:
-                return_object = self.data.migration_environment_details
-            else:
-                return_object = self.data.migration_environment_list
-        elif 'capabilities' in url:
-            return_object = self.data.migration_capabilities
-        return return_object
-
-    def _migration_sg(self, url):
-        return_object = self.data.sg_list_migration
-        if self.data.sg_list_migration['name'][0] in url:
-            return_object = self.data.sg_details_migration[0]
-        return return_object
-
-    def _system(self, url):
-        return_object = self.data.symm_list
-        if 'job' in url:
-            for job in self.data.job_list:
-                if job['jobId'] in url:
-                    return_object = job
-                    break
-        elif 'version' in url:
-            return_object = self.data.server_version
-        else:
-            for symm in self.data.symmetrix:
-                if symm['symmetrixId'] in url:
-                    return_object = symm
-                    break
-        return return_object
-
-    def _post_or_put(self, url, payload):
-        return_object = self.data.job_list[0]
-        status_code = 201
-        if self.data.failed_resource in url:
-            status_code = 500
-            return_object = self.data.job_list[2]
-        elif payload:
-            payload = ast.literal_eval(payload)
-            if self.data.failed_resource in payload.values():
-                status_code = 500
-                return_object = self.data.job_list[2]
-            if payload.get('executionOption'):
-                status_code = 202
-        return status_code, return_object
-
-    def _delete(self, url):
-        if self.data.failed_resource in url:
-            status_code = 500
-            return_object = self.data.job_list[2]
-        else:
-            status_code = 204
-            return_object = None
-        return status_code, return_object
-
-    def session(self):
-        """session."""
-        return FakeRequestsSession()
-
-
-class FakeConfigFile(object):
-    """Fake config file."""
-
-    def __init__(self):
-        """__init__."""
-
-    @staticmethod
-    def create_fake_config_file(
-            user='smc', password='smc', ip='10.0.0.75',
-            port='8443', array=CommonData.array, verify=False):
-        """create_fake_config_file."""
-        data = ('[setup] \nusername={user} \npassword={password} '
-                '\nserver_ip={ip}'
-                '\nport={port} \narray={array} \nverify={verify}'
-                .format(user=user, password=password,
-                        ip=ip, port=port, array=array, verify=verify))
-        filename = 'PyU4V.conf'
-        config_file_path = os.path.normpath(
-            tempfile.mkdtemp() + '/' + filename)
-
-        with open(config_file_path, 'w') as f:
-            f.writelines(data)
-        return config_file_path
+from . import pyu4v_common_data as pcd  # noqa: H304
+from . import pyu4v_fakes as pf  # noqa: H304
 
 
 class PyU4VCommonTest(testtools.TestCase):
@@ -731,10 +41,10 @@ class PyU4VCommonTest(testtools.TestCase):
     def setUp(self):
         """setUp."""
         super(PyU4VCommonTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
-        config_file = FakeConfigFile.create_fake_config_file()
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
         self.conn = univmax_conn.U4VConn(array_id=self.data.array)
         self.common = self.conn.common
@@ -1047,14 +357,14 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def setUp(self):
         """setUp."""
         super(PyU4VPerformanceTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
-        config_file = FakeConfigFile.create_fake_config_file()
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
         self.conn = univmax_conn.U4VConn(array_id=self.data.array)
         self.common = self.conn.common
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         self.performance = self.conn.performance
 
     def test_get_array_metrics(self):
@@ -1062,7 +372,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response):
             expected_response = {
-                'symmetrixID': CommonData.array, 'reporting_level': 'array',
+                'symmetrixID': pcd.CommonData.array,
+                'reporting_level': 'array',
                 'perf_data': [{"Reads": 32.146667, "timestamp": 1566466200000}]
             }
             actual_response = self.performance.get_array_metrics(
@@ -1072,7 +383,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response_legacy):
             expected_response = {
-                'symmetrixID': CommonData.array, 'reporting_level': 'array',
+                'symmetrixID': pcd.CommonData.array,
+                'reporting_level': 'array',
                 'perf_data': [{"Reads": 32.146667, "timestamp": 1566466200000}]
             }
             actual_response = self.performance.get_array_metrics(
@@ -1082,8 +394,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=list()):
             expected_response = {
-                'symmetrixID': CommonData.array, 'reporting_level': 'array',
-                'perf_data': []}
+                'symmetrixID': pcd.CommonData.array,
+                'reporting_level': 'array', 'perf_data': []}
             actual_response = self.performance.get_array_metrics(
                 start_date=1566466200000, end_date=1566466200000)
             self.assertEqual(expected_response, actual_response)
@@ -1093,7 +405,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response):
             expected_response = {
-                'symmetrixID': CommonData.array, 'sgname': 'test',
+                'symmetrixID': pcd.CommonData.array, 'sgname': 'test',
                 'reporting_level': 'StorageGroup', 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
             actual_response = self.performance.get_storage_group_metrics(
@@ -1103,7 +415,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response_legacy):
             expected_response = {
-                'symmetrixID': CommonData.array, 'sgname': 'test',
+                'symmetrixID': pcd.CommonData.array, 'sgname': 'test',
                 'reporting_level': 'StorageGroup', 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
             actual_response = self.performance.get_storage_group_metrics(
@@ -1113,7 +425,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=list()):
             expected_response = {
-                'symmetrixID': CommonData.array, 'sgname': 'test',
+                'symmetrixID': pcd.CommonData.array, 'sgname': 'test',
                 'reporting_level': 'StorageGroup', 'perf_data': []}
             actual_response = self.performance.get_storage_group_metrics(
                 sg_id='test', start_date=1566466200000, end_date=1566466200000)
@@ -1126,7 +438,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'FEDirector', 'perf_data': [
                     {'directorID': 'dir1', 'perf_data': [
                         {"Reads": 32.146667, "timestamp": 1566466200000}]},
@@ -1139,7 +451,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response_legacy):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'FEDirector', 'perf_data': [
                     {'directorID': 'dir1', 'perf_data': [
                         {"Reads": 32.146667, "timestamp": 1566466200000}]},
@@ -1152,7 +464,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=list()):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'FEDirector', 'perf_data': [
                     {'directorID': 'dir1', 'perf_data': []},
                     {'directorID': 'dir2', 'perf_data': []}]}
@@ -1168,7 +480,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response):
             expected_response = {
-                'symmetrixId': CommonData.array, 'director_id': 'FA-1D',
+                'symmetrixId': pcd.CommonData.array, 'director_id': 'FA-1D',
                 'directorType': 'FE', 'reporting_level': 'Director',
                 'availability': 'Online', 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
@@ -1180,7 +492,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response_legacy):
             expected_response = {
-                'symmetrixId': CommonData.array, 'director_id': 'FA-1D',
+                'symmetrixId': pcd.CommonData.array, 'director_id': 'FA-1D',
                 'directorType': 'FE', 'reporting_level': 'Director',
                 'availability': 'Online', 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
@@ -1192,7 +504,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=list()):
             expected_response = {
-                'symmetrixId': CommonData.array, 'director_id': 'FA-1D',
+                'symmetrixId': pcd.CommonData.array, 'director_id': 'FA-1D',
                 'directorType': 'FE', 'reporting_level': 'Director',
                 'availability': 'Online', 'perf_data': False,
                 'perf_msg': 'No active Director performance data available'}
@@ -1206,7 +518,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'PortGroup', 'pgname': 'test',
                 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
@@ -1217,7 +529,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response_legacy):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'PortGroup', 'pgname': 'test',
                 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
@@ -1228,7 +540,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=[]):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'PortGroup', 'pgname': 'test',
                 'perf_data': []}
             actual_response = self.performance.get_port_group_metrics(
@@ -1240,7 +552,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'Host', 'HostID': 'test',
                 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
@@ -1252,7 +564,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=self.data.perf_response_legacy):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'Host', 'HostID': 'test',
                 'perf_data': [
                     {"Reads": 32.146667, "timestamp": 1566466200000}]}
@@ -1264,7 +576,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(self.performance, 'request',
                                return_value=list()):
             expected_response = {
-                'symmetrixID': CommonData.array,
+                'symmetrixID': pcd.CommonData.array,
                 'reporting_level': 'Host', 'HostID': 'test',
                 'perf_data': []}
             actual_response = self.performance.get_host_metrics(
@@ -1286,10 +598,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
     def setUp(self):
         """setUp."""
         super(PyU4VProvisioningTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
-        config_file = FakeConfigFile.create_fake_config_file()
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
         self.conn = univmax_conn.U4VConn(array_id=self.data.array)
         self.common = self.conn.common
@@ -2150,10 +1462,10 @@ class PyU4VReplicationTest(testtools.TestCase):
     def setUp(self):
         """Setup."""
         super(PyU4VReplicationTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
-        config_file = FakeConfigFile.create_fake_config_file()
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
         self.conn = univmax_conn.U4VConn(array_id=self.data.array)
         self.common = self.conn.common
@@ -2218,10 +1530,10 @@ class PyU4VReplicationTest(testtools.TestCase):
 
     @mock.patch.object(replication.ReplicationFunctions,
                        'get_snapshot_generation_details',
-                       return_value=CommonData.expired_snap)
+                       return_value=pcd.CommonData.expired_snap)
     @mock.patch.object(replication.ReplicationFunctions,
                        'get_storagegroup_snapshot_generation_list',
-                       return_value=CommonData.sg_snap_gen_list)
+                       return_value=pcd.CommonData.sg_snap_gen_list)
     def test_find_expired_snapvx_snapshots(self, mock_gen_list, mock_snap):
         """Test find_expired_snapvx_snapshots."""
         ref_expired_snap_list = [
@@ -2460,10 +1772,10 @@ class PyU4VMigrationTest(testtools.TestCase):
     def setUp(self):
         """Setup."""
         super(PyU4VMigrationTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
-        config_file = FakeConfigFile.create_fake_config_file()
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
         self.conn = univmax_conn.U4VConn(array_id=self.data.array)
         self.common = self.conn.common
@@ -2560,9 +1872,9 @@ class PyU4VRestRequestsTest(testtools.TestCase):
     def setUp(self):
         """Setup."""
         super(PyU4VRestRequestsTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
+            return_value=pf.FakeRequestsSession())
         self.rest = rest_requests.RestRequests('smc', 'smc', False, 'base_url')
 
     def test_rest_request_exception(self):
@@ -2580,10 +1892,10 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
     def setUp(self):
         """Setup."""
         super(PyU4VUnivmaxConnTest, self).setUp()
-        self.data = CommonData()
+        self.data = pcd.CommonData()
         rest_requests.RestRequests.establish_rest_session = mock.Mock(
-            return_value=FakeRequestsSession())
-        config_file = FakeConfigFile.create_fake_config_file()
+            return_value=pf.FakeRequestsSession())
+        config_file = pf.FakeConfigFile.create_fake_config_file()
         univmax_conn.file_path = config_file
         self.conn = univmax_conn.U4VConn()
 
@@ -2608,7 +1920,7 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
         ip, port = '10.0.0.75', '8443'
         base_uri = ('https://{ip}:{port}/univmax/restapi'.format(ip=ip,
                                                                  port=port))
-        array = CommonData.array
+        array = pcd.CommonData.array
 
         self.assertEqual(array, self.conn.array_id)
         self.assertIsInstance(self.conn.rest_client,
@@ -2623,4 +1935,4 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
                                return_value=None):
             univmax_conn.file_path = None
             self.assertRaises(exception.MissingConfigurationException,
-                              univmax_conn.U4VConn, CommonData.array)
+                              univmax_conn.U4VConn, pcd.CommonData.array)
