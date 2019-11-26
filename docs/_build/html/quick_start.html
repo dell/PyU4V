@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Glossary" href="api.html" />
+    <link rel="next" title="Tools Guide" href="tools.html" />
     <link rel="prev" title="Installation Guide" href="installation.html" /> 
 </head>
 
@@ -94,6 +94,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html#indices-and-tables">Indices and tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html#indices-and-tables">Indices and tables</a></li>
 </ul>
@@ -226,9 +228,9 @@ initialisation, or in the configuration file.</p>
 <p>To set:</p>
 <ol class="arabic">
 <li><p class="first">Get the CA certificate of the Unisphere server.</p>
-<blockquote>
-<div><p># openssl s_client -showcerts -connect {server_hostname}:8443 &lt;/dev/null 2&gt;/dev/null|openssl x509 -outform PEM &gt; {server_hostname}.pem</p>
-</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># openssl s_client -showcerts -connect {server_hostname}:8443 &lt;/dev/null 2&gt;/dev/null|openssl x509 -outform PEM &gt; {server_hostname}.pem</span>
+</pre></div>
+</div>
 </li>
 </ol>
 <p>(This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)</p>
@@ -300,7 +302,7 @@ device id rather than a list of device ids, of which any could be the device tha
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api.html" class="btn btn-neutral float-right" title="API Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tools.html" class="btn btn-neutral float-right" title="Tools Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

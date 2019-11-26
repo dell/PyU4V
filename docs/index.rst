@@ -12,6 +12,7 @@ Welcome to PyU4V's documentation!
 
    installation
    quick_start
+   tools
    api
 
 Overview
@@ -34,6 +35,9 @@ Getting Started
 
 :doc:`quick_start`
   A quick start guide for PyU4V.
+
+:doc:`tools`
+  The tools guide for PyU4V
 
 :doc:`api`
   A glossary of all available functions.

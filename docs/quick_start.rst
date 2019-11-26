@@ -82,6 +82,8 @@ To set:
 
 1. Get the CA certificate of the Unisphere server.
 
+   .. code-block:: bash
+
         # openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
 
 (This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
