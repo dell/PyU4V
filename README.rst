@@ -250,7 +250,9 @@ For neatness and readability we will enforce the following conventions going for
 
 or in PyCharm:
 
-   :guilabel:`File` -> :guilabel:`Line Separators` -> :guilabel:`LF- Unix and OS X (\n)`
+.. code-block:: bash
+
+   `File` -> `Line Separators` -> `LF- Unix and OS X (\n)`
 
 
 Support, Bugs, Issues
