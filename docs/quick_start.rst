@@ -108,6 +108,13 @@ OR
     * In the conf file insert the following:
        verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.
 
+Recommendations
+---------------
+
+It is strongly recommended that you create a volume with a unique volume_name or volume_identifier.
+When you search for a volume device_id based on it's volume_name, it is preferable to receive a single
+device id rather than a list of device ids, of which any could be the device that you just created.
+
 Indices and tables
 ==================
 

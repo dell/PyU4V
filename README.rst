@@ -1,87 +1,179 @@
-================
-Welcome to PyU4V
-================
+===================
+Welcome to PyU4V3.1
+===================
 
-NOTE
+| |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
+| |Language| |PyVersions| |Platform| |DTotal| |DMonth| |DWeek|
 
-A library showing some of the functionality possible using the RestAPI of Dell EMC's Unisphere for VMAX.
-See the documentation here: http://pyu4v.readthedocs.io/.
-Get the Unisphere for VMAX Rest documentation by navigating to https://<ip-address>:<port-number>/univmax/restapi/docs,
-where <ip-address> = the ip of your Unisphere server and <port-number> = the corresponding port to connect through,
-eg: https://10.0.0.1:8443/univmax/restapi/docs.
+Overview
+--------
 
-VERSION 3
+PyU4V is a Python module that simplifies interaction with the Unisphere for
+PowerMax REST API.  It wraps REST calls with simple APIs that abstract the HTTP
+request and response handling.
 
-Please note that version '3.1.6' of the library is NOT BACKWARDS
-COMPATIBLE with scripts written with version 2.x of PyU4V, and does not
-support any Unisphere for VMAX version earlier than 8.4 - PyU4V version 2.0.2.6 is
-still available on Pip, and there is a 'stable/2.0' branch available on Github.
-Version 3.1.1 is now limited to security and bug fixes only. Features and
-enhancements from the community will be accepted after the next major PyU4V
-release.
+Full documentation and user guides can be found in PyU4V's ReadTheDocs_.
 
-WHAT'S SUPPORTED
+Note
+   You can get the Unisphere for PowerMax REST documentation by
+   navigating to a URL in your local instance of Unisphere for PowerMax.
+   Navigate to ``https://{ip-address}:{port}/univmax/restapi/docs``
+   where ``{ip-address}`` is the IP address of your Unisphere server and
+   ``{port}`` is the port it is listening on.
 
-This package supports Unisphere version 8.4 onwards. We support VMAX3 and
-VMAX All-Flash and PowerMAX.
+PyU4V Version 9.1
+-----------------
 
-INSTALLATION
++-----------------------+----------------------------+
+| **Author**            | Dell EMC                   |
++-----------------------+----------------------------+
+| **PyU4V Version**     | 3.1.x                      |
++-----------------------+----------------------------+
+| **Unisphere Version** | 8.4 and 9.0 series         |
++-----------------------+----------------------------+
+| **Array Model**       | VMAX-3, VMAX AFA, PowerMax |
++-----------------------+----------------------------+
+| **Array uCode**       | HyperMax OS, PowerMax OS   |
++-----------------------+----------------------------+
+| **Platforms**         | Linux, Windows             |
++-----------------------+----------------------------+
+| **Python**            | 2.7, 3.6, 3.7              |
++-----------------------+----------------------------+
+| **Requires**          | Requests_, Six_, urllib3_  |
++-----------------------+----------------------------+
 
-To give the master branch a try, clone the package using git (see the link above), and install the package using pip
-(switch to the newly cloned PyU4V directory and run 'pip install .'). Copy the sample PyU4V.conf into your working
-directory, and add your server and array details to the top of the PyU4V.conf configuration file, under the [setup]
-heading. Alternatively, you can pass some or all of these details on initialisation.
-Password, username, server_ip, port, and array MUST be set (either in the config file or on initialisation).
-Verify can be left as is, or you can enable SSL verification by following the directions below
-(see SSL CONFIGURATION).
 
-SSL CONFIGURATION
+Installation
+------------
 
-1. Get the CA certificate of the Unisphere server.
+Note
+    A full installation guide can be found in PyU4V's ReadTheDocs_ which
+    includes additional configuration options around PyU4V logging.
 
-    # openssl s_client -showcerts -connect {server_hostname}:8443 </dev/null 2>/dev/null|openssl x509 -outform PEM > {server_hostname}.pem
+PyU4V can be installed from source, via ``pip``, or run directly from the
+source directory. To clone PyU4V from source use ``git``::
 
-    (This pulls the CA cert file and saves it as server_hostname.pem e.g. esxi01vm01.pem)
-2.	Either (a) add the certificate to a ca-certificates bundle, OR (b) add the path to the conf file:
-    a. - Copy the pem file to the system certificate directory:
-          .. code-block:: bash
+    $ git clone https://github.com/dell/PyU4V
 
-             # cp {server_hostname}.pem /usr/share/ca-certificates/{server_hostname}.crt
+To install from source navigate into the new ``PyU4V`` directory and use
+``pip``::
 
-       - Update CA certificate database with the following commands (Ensure the new cert file is highlighted)
-          .. code-block:: bash
+    $ cd PyU4V/
+    $ pip install .
 
-             # dpkg-reconfigure ca-certificates
-             # update-ca-certificates
+Installing via ``pip`` without cloning from source can be achieved by
+specifying ``PyU4V`` as the install package for ``pip``::
 
-       - In the conf file ensure "verify=True" OR pass the value in on initialization
+    $ pip install PyU4V
+    # Install a specific version
+    $ pip install PyU4V==9.1.0.0
 
-    b. In the conf file insert the following:
-       verify=/{path-to-file}/{server_hostname}.pem OR pass the value in on initialization.
+Copy the sample ``PyU4V.conf`` provided with PyU4V to either your working
+directory or within a directory named ``.PyU4V`` in your current users home
+directory. The ``.sample`` suffix has to be removed for the configuration file
+to become valid for loading by PyU4V::
 
-USAGE
+    $ mkdir ~/.PyU4V
+    $ cp PyU4V/PyU4V.conf.sample ~/.PyU4V/PyU4V.conf
 
-PyU4V could also be used as the backend for a script, or a menu etc.
-Just import the PyU4V package, create the connection to the server by instantiating an instance of U4VConn, and you're
-good to go. The functions are divided up into categories - common, provisioning, replication and performance.
+Note
+    If ``PyU4V.conf`` is present in both the current working directory and the
+    current user's home directory, the version of ``PyU4V.conf`` in the current
+    working directory will take precedence.
+
+Edit PyU4V configuration settings in ``PyU4V.conf`` under the ``[setup]``
+heading, these setting will need to reflect your environment configuration::
+
+    [setup]
+    username=pyu4v-user
+    password=secret-pass
+    server_ip=10.0.0.75
+    port=8443
+    array=00012345678
+    verify=/path-to-file/server_hostname.pem
+
+Alternatively, you can pass some or all of these details on initialisation.
+Environment configuration values ``password``, ``username``, ``server_ip``,
+``port``, and ``array`` **must** be set either in the config file or on
+initialisation. SSL verification as indicated by the ``verify`` key in
+``PyU4V.conf`` is discussed in the next section.
+
+
+SSL Configuration
+-----------------
+
+In order to enable SSL enabled communication between your host and the
+Unisphere server there are some additional steps required. First you must
+extract the CA certificate from Unisphere then either add it to the system
+certificate bundle or specify the path to the cert in ``PyU4V.conf``. We will
+demonstrate both approaches here.
+
+Get the CA certificate of the Unisphere server::
+
+    $ openssl s_client -showcerts -connect {server_hostname}:8443 \
+    </dev/null 2>/dev/null|openssl x509 -outform PEM > {cert_name}.pem
+
+    # Example
+    $ openssl s_client -showcerts -connect 10.0.0.75:8443 \
+    </dev/null 2>/dev/null|openssl x509 -outform PEM > unisphere91.pem
+
+Where ``{server_host_ip}`` is the hostname or IP address of your Unisphere
+server and ``{cert_name}`` is the name for your CA cert. This pulls the CA cert
+file from the instance of Unisphere at ``10.0.0.75:8443`` and saves it as a
+``.pem`` file.
+
+To add the cert to a CA certificate bundle, copy the ``.pem`` file to the
+system certificate directory and update the CA certificate database::
+
+    # cp {cert_name}.pem /usr/share/ca-certificates/{cert_name}.crt
+    # dpkg-reconfigure ca-certificates
+    # update-ca-certificates
+
+Once the above steps are complete you will need to specify ``verify=True`` in
+``PyU4V.conf`` for PyU4V to load the required Unisphere CA cert from the system
+certificate bundle::
+
+    [setup]
+    verify=True
+
+Alternatively you can skip adding the certificate to a certificate bundle and
+pass it directly on PyU4V initialisation or specify the path to the certificate
+directly in ``PyU4V.conf``::
+
+    [setup]
+    verify=/path/to/file/{cert_name}.pem
+
+
+Initialise PyU4V Connection
+---------------------------
+
+Initialising PyU4V in your Python scripts is as simple as importing the library
+and initialising the connection (assuming you have ``PyU4V.conf`` configured as
+outlined in the previous section).
 
 .. code-block:: python
 
     import PyU4V
 
     conn = PyU4V.U4VConn()
-    conn.provisioning.get_host_list()
-    conn.replication.find_expired_snapvx_snapshots()
+    conn.common.get_unisphere_version()
+    >> {'version': 'V9.0.2'}
 
-If you wish to query another array without changing the configuration file, call the 'set_array_id(new_array_id)'
-function, e.g.
+If you wish to query another array without changing the configuration file,
+call the connection ``set_array_id()`` function:
 
 .. code-block:: python
 
     conn.set_array_id('000197123456')
 
+The various types of functionality provided by PyU4V is separated into logical
+sections such as ``replication``, ``provisioning``, and ``performance``. For a
+full API breakdown by section and some usage example please refer to the
+PyU4V ReadTheDocs_.
 
-EXAMPLES
+
+Examples
+--------
 
 There are a number of examples which can be run with minimal set-up. For details on how to run these,
 and other very useful information, please see Paul Martin's blog https://community.emc.com/people/PaulCork/blog
@@ -94,27 +186,8 @@ This is still a work in progress. To be expected in the future:
  - Unittests
  - Tutorials
 
-CONTRIBUTION
-
-Please do! Create a fork of the project into your own repository. Make all your necessary changes and create a pull
-request with a description on what was added or removed and details explaining the changes in lines of code.
-Please run the following:
-
-.. code-block:: bash
-
-   # tox -e py27
-   # tox -e py36
-   # tox -e py37
-   # tox -e pep8
-   # tox -e pylint
-
-.. note::
-   If you do not have all the versions of python installed, just run tox on
-   the versions you have. pep8 and pylint must run clean also.
-
-If it all looks good, I'll merge it.  Please refer to CONVENTIONS section for more details
-
-CONVENTIONS
+Coding conventions
+------------------
 
 For neatness and readability we will enforce the following conventions going forward.
 
@@ -186,14 +259,8 @@ or in PyCharm:
 
    File -> Line Separators -> LF- Unix and OS X (\n)
 
-
-SUPPORT
-
-Please file bugs and issues on the Github issues page for this project. This is to help keep track and document
-everything related to this repo. The code and documentation are released with no warranties or SLAs and are intended
-to be supported through a community driven process.
-
-OPENSTACK
+OpenStack
+---------
 
 Description
 
@@ -253,3 +320,86 @@ copy/create PyU4V.conf in that directory.
      group as the original.
    - If you find any issues, please open them on the Github issues page for
      this project.
+
+Support, Bugs, Issues
+---------------------
+
+Please file support requests, bugs, and issues on the PyU4V GitHub-Issues_
+page for this project. For further information on opening an issue and
+recommended issue templates please see the PyU4V ReadTheDocs_.
+
+For questions asked on StackOverFlow_, please tag them with ``Dell``,
+``Dell EMC``, ``PowerMax``, and ``PyU4V`` to maximise the chances of the
+correct community members assisting.
+
+Contributing
+------------
+
+PyU4V is built to be used openly by everyone, and in doing so we encourage
+everyone to submit anything they may deem to be an improvement, addition, bug
+fix, or other change which may benefit other users of PyU4V.
+
+There are some requirements when submitting for PyU4V, such as coding
+standards, building unit tests and continuous integration tests, and going
+through a formal code review process, however anyone familiar with open source
+development will be familiar with this process.  There are a number of core
+PyU4V reviewers and once a submission has approvals from two or more core
+reviewers and all tests are running cleanly then the request will be merged
+with the upstream PyU4V repo.
+
+For a full breakdown of contribution requirements, coding standards, submitting
+and everything else in between please refer to PyU4V ReadTheDocs_.
+
+
+Future
+------
+
+This is still a work in progress. To be expected in the future:
+ - Expansion of the RestFunctions library
+ - Improved exception handling and logging
+ - Unittests
+ - Tutorials
+
+Disclaimer
+----------
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the MIT License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+
+.. BadgeLinks
+
+.. |Maintenance| image:: https://img.shields.io/badge/Maintained-Yes-blue
+   :target: https://github.com/MichaelMcAleer/PyU4V/commits/master
+.. |OpenSource| image:: https://img.shields.io/badge/Open%20Source-Yes-blue
+   :target: https://github.com/MichaelMcAleer/PyU4V
+.. |AskUs| image:: https://img.shields.io/badge/Ask%20Us...-Anything-blue
+   :target: https://github.com/MichaelMcAleer/PyU4V/issues
+.. |License| image:: https://img.shields.io/badge/License-Apache%202.0-blue
+   :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/LICENSE
+.. |Test| image:: https://img.shields.io/badge/Tests-Passing-blue
+.. |Build| image:: https://img.shields.io/badge/Build-Passing-blue
+.. |Docs| image:: https://img.shields.io/badge/Docs-Passing-blue
+.. |Language| image:: https://img.shields.io/badge/Language-Python%20-blue
+   :target: https://www.python.org/
+.. |PyVersions| image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7-blue
+   :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/README.rst
+.. |Platform| image:: https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue
+   :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/README.rst
+.. |DTotal| image:: https://pepy.tech/badge/pyu4v
+   :target: https://pepy.tech/project/pyu4v
+.. |DMonth| image:: https://pepy.tech/badge/pyu4v/month
+   :target: https://pepy.tech/project/pyu4v/month
+.. |DWeek| image:: https://pepy.tech/badge/pyu4v/week
+   :target: https://pepy.tech/project/pyu4v/week
+
+.. README URL Links
+
+.. _Requests: https://realpython.com/python-requests/
+.. _Six: https://six.readthedocs.io/
+.. _urllib3: https://urllib3.readthedocs.io/en/latest/
+.. _ReadTheDocs: https://pyu4v.readthedocs.io/en/latest/
+.. _GitHub-Issues: https://github.com/MichaelMcAleer/PyU4V/issues
+.. _StackOverFlow: https://stackoverflow.com/search?q=PyU4V

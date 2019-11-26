@@ -51,6 +51,14 @@ PyU4V\.rest\_requests module
     :undoc-members:
     :show-inheritance:
 
+PyU4V\tools\openstack\.migrate\_utils module
+--------------------------------------------
+
+.. automodule:: PyU4V.tools.openstack.migrate_utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Subpackages
 -----------
 

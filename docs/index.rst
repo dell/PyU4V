@@ -53,10 +53,8 @@ do suggest you move to this version when possible.
 Feedback, Bug Reporting, Feature Requests
 -----------------------------------------
 
-We greatly value your feedback! Please file bugs and issues on the `Github issues page for this project <https://github.com/ciarams87/PyU4V/issues>`_.
-This is to help keep track and document everything related to this repo. For general discussions and further support you
-can join the `{code} Community slack channel <https://community.emccode.com/>`_. Lastly, for questions asked on
-Stackoverflow.com, please tag them with Dell or Dell EMC. The code and documentation are released with no warranties or
+We greatly value your feedback! Please file bugs and issues on the `Github issues page for this project <https://github.com/MichaelMcAleer/PyU4V/issues>`_.
+This is to help keep track and document everything related to this repo. The code and documentation are released with no warranties or
 SLAs and are intended to be supported through a community driven process.
 
 
@@ -66,3 +64,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+

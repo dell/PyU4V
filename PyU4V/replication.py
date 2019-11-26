@@ -557,7 +557,7 @@ class ReplicationFunctions(object):
         :param action: the rdf action e.g. Suspend, Establish, SetMode etc
         :param rdfg: rdf number
         :param options: a dict of possible options - depends on action type,
-        example options={setMode': {'mode': 'Asynchronous'}}
+                        example options={setMode': {'mode': 'Asynchronous'}}
         :param _async: flag to indicate if call should be async
         """
         res_name = '{storagegroup_id}/rdf_group/{rdfg}'.format(
