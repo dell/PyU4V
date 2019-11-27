@@ -9,4 +9,3 @@ API Glossary
 
 
 * :ref:`genindex`
-* :ref:`modindex`
