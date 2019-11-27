@@ -68,9 +68,5 @@ copy/create PyU4V.conf in that directory.
    - If you find any issues, please open them on the Github issues page for
      this project.
 
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`

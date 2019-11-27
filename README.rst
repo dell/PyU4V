@@ -186,21 +186,21 @@ For neatness and readability we will enforce the following conventions going for
 
 1. Single quotes ' unless double quotes " necessary.
 
-2. use .format() when manipulating strings
+2. use ``.format()`` when manipulating strings
 
 .. code-block::
 
    my_string= '/{variable1}, thanks for contributing to {variable2}'.format(
        variable1=’Hello’, variable2=’PyU4V’)
 
-3. We cannot use .format() in logging due to pylint error (W1202) so we follow the following format:
+3. We cannot use ``.format()`` in logging due to pylint error (W1202) so we follow the following format:
 
 .. code-block::
 
    my_message = 'Hello, this is my log message.'
    logger.debug('message: %(my_message)s', {my_message: my_message})
 
-4. Use :returns: in docstring.  Pep8 will guide you with all the other docstring conventions
+4. Use ``:returns:`` in docstring.  Pep8 will guide you with all the other docstring conventions
 
 .. code-block::
 
