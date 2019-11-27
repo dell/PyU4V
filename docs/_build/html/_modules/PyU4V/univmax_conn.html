@@ -1,55 +1,157 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.univmax_conn &mdash; PyU4V 3.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
     
-    <title>PyU4V.univmax_conn &#8212; PyU4V 3.0.0 documentation</title>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '3.0.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Tools Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PyU4V.univmax_conn</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for PyU4V.univmax_conn</h1><div class="highlight"><pre>
 <span></span><span class="c1"># The MIT License (MIT)</span>
-<span class="c1"># Copyright (c) 2016 Dell Inc. or its subsidiaries.</span>
+<span class="c1"># Copyright (c) 2019 Dell Inc. or its subsidiaries.</span>
 
 <span class="c1"># Permission is hereby granted, free of charge, to any person</span>
 <span class="c1"># obtaining a copy of this software and associated documentation</span>
@@ -69,57 +171,68 @@
 <span class="c1"># CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span>
 <span class="c1"># TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <span class="c1"># SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;univmax_conn.py.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">PyU4V.rest_requests</span> <span class="k">import</span> <span class="n">RestRequests</span>
-<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">config_handler</span>
-<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">constants</span>
 <span class="kn">from</span> <span class="nn">PyU4V.common</span> <span class="k">import</span> <span class="n">CommonFunctions</span>
+<span class="kn">from</span> <span class="nn">PyU4V.migration</span> <span class="k">import</span> <span class="n">MigrationFunctions</span>
 <span class="kn">from</span> <span class="nn">PyU4V.performance</span> <span class="k">import</span> <span class="n">PerformanceFunctions</span>
 <span class="kn">from</span> <span class="nn">PyU4V.provisioning</span> <span class="k">import</span> <span class="n">ProvisioningFunctions</span>
 <span class="kn">from</span> <span class="nn">PyU4V.replication</span> <span class="k">import</span> <span class="n">ReplicationFunctions</span>
+<span class="kn">from</span> <span class="nn">PyU4V.rest_requests</span> <span class="k">import</span> <span class="n">RestRequests</span>
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">config_handler</span>
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">exception</span>
 
 <span class="n">file_path</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">CFG</span> <span class="o">=</span> <span class="n">config_handler</span><span class="o">.</span><span class="n">set_logger_and_config</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="U4VConn"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.univmax_conn.U4VConn">[docs]</a><span class="k">class</span> <span class="nc">U4VConn</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;U4VConn.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">server_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">u4v_version</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">UNIVMAX_VERSION</span><span class="p">,</span>
-                 <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">array_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">array_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">application_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;__init__.&quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">config_handler</span><span class="o">.</span><span class="n">set_logger_and_config</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">-</span> <span class="mi">3600000</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">CFG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;array&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;array&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No array id specified. Please set &quot;</span>
-                            <span class="s2">&quot;array ID using the &#39;set_array_id(array_id)&#39; &quot;</span>
-                            <span class="s2">&quot;function.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">CFG</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No array id specified. Please set &#39;</span>
+                            <span class="s1">&#39;array ID using the &quot;set_array_id(array_id)&quot; &#39;</span>
+                            <span class="s1">&#39;function.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
-                <span class="n">username</span> <span class="o">=</span> <span class="n">CFG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">)</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">password</span><span class="p">:</span>
-                <span class="n">password</span> <span class="o">=</span> <span class="n">CFG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">server_ip</span><span class="p">:</span>
-                <span class="n">server_ip</span> <span class="o">=</span> <span class="n">CFG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;server_ip&#39;</span><span class="p">)</span>
+                <span class="n">server_ip</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;server_ip&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
-                <span class="n">port</span> <span class="o">=</span> <span class="n">CFG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">)</span>
+                <span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">verify</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">verify</span> <span class="o">=</span> <span class="n">CFG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;verify&#39;</span><span class="p">)</span>
+                <span class="n">verify</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;verify&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">verify</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
                     <span class="n">verify</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">elif</span> <span class="n">verify</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
                     <span class="n">verify</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">verify</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">base_url</span> <span class="o">=</span> <span class="s1">&#39;https://</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">/univmax/restapi&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server_ip</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rest_client</span> <span class="o">=</span> <span class="n">RestRequests</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">verify</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">server_ip</span><span class="p">,</span> <span class="n">port</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">exception</span><span class="o">.</span><span class="n">MissingConfigurationException</span>
+        <span class="n">base_url</span> <span class="o">=</span> <span class="s1">&#39;https://</span><span class="si">{server_ip}</span><span class="s1">:</span><span class="si">{port}</span><span class="s1">/univmax/restapi&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">server_ip</span><span class="o">=</span><span class="n">server_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest_client</span> <span class="o">=</span> <span class="n">RestRequests</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">verify</span><span class="p">,</span>
+                                        <span class="n">base_url</span><span class="p">,</span> <span class="n">application_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest_client</span><span class="o">.</span><span class="n">rest_request</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span> <span class="o">=</span> <span class="n">u4v_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">=</span> <span class="n">CommonFunctions</span><span class="p">(</span>
@@ -132,10 +245,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">replication</span> <span class="o">=</span> <span class="n">ReplicationFunctions</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">provisioning</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">migration</span> <span class="o">=</span> <span class="n">MigrationFunctions</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
 
 <div class="viewcode-block" id="U4VConn.close_session"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.univmax_conn.U4VConn.close_session">[docs]</a>    <span class="k">def</span> <span class="nf">close_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close the current rest session</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Close the current rest session.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rest_client</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="U4VConn.set_requests_timeout"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.univmax_conn.U4VConn.set_requests_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">set_requests_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_value</span><span class="p">):</span>
@@ -153,44 +267,47 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">migration</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span></div></div>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Dell EMC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, Ciara Stacke.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

@@ -1,51 +1,153 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.common &mdash; PyU4V 3.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
     
-    <title>PyU4V.common &#8212; PyU4V 3.0.0 documentation</title>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '3.0.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Tools Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PyU4V.common</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for PyU4V.common</h1><div class="highlight"><pre>
 <span></span><span class="c1"># The MIT License (MIT)</span>
@@ -69,15 +171,16 @@
 <span class="c1"># CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span>
 <span class="c1"># TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <span class="c1"># SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;common.py.&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">import</span> <span class="nn">six</span>
-
-<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">config_handler</span>
 <span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">constants</span>
 <span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">exception</span>
+
+<span class="kn">import</span> <span class="nn">six</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -101,7 +204,10 @@
 
 
 <div class="viewcode-block" id="CommonFunctions"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions">[docs]</a><span class="k">class</span> <span class="nc">CommonFunctions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CommonFunctions.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">retries</span><span class="p">,</span> <span class="n">u4v_version</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;__init__.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">retries</span>
@@ -136,7 +242,7 @@
                         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rc&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rc</span><span class="p">,</span> <span class="n">status</span>
                         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;task&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">,</span> <span class="n">task</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">exception_message</span> <span class="o">=</span> <span class="s2">&quot;Issue encountered waiting for job.&quot;</span>
+                <span class="n">exception_message</span> <span class="o">=</span> <span class="s1">&#39;Issue encountered waiting for job.&#39;</span>
                 <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exception_message</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">exception</span><span class="o">.</span><span class="n">VolumeBackendAPIException</span><span class="p">(</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">exception_message</span><span class="p">)</span>
@@ -151,12 +257,12 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
             <span class="n">kwargs</span> <span class="o">=</span> <span class="n">_wait_for_job_complete</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;retries&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;_wait_for_job_complete failed after &quot;</span>
-                          <span class="s2">&quot;</span><span class="si">%(retries)d</span><span class="s2"> tries.&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;retries&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;retries&#39;</span><span class="p">]})</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;_wait_for_job_complete failed after &#39;</span>
+                          <span class="s1">&#39;</span><span class="si">%(retries)d</span><span class="s1"> tries.&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;retries&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;retries&#39;</span><span class="p">]})</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rc&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span>
                 <span class="k">break</span>
 
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Return code is: </span><span class="si">%(rc)lu</span><span class="s2">. Result is </span><span class="si">%(res)s</span><span class="s2">.&quot;</span><span class="p">,</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Return code is: </span><span class="si">%(rc)lu</span><span class="s1">. Result is </span><span class="si">%(res)s</span><span class="s1">.&#39;</span><span class="p">,</span>
                   <span class="p">{</span><span class="s1">&#39;rc&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rc&#39;</span><span class="p">],</span> <span class="s1">&#39;res&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]})</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rc&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">],</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;task&#39;</span><span class="p">])</span></div>
@@ -166,7 +272,8 @@
 
 <span class="sd">        :param job_id: the job id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">job_url</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/system/job/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+        <span class="n">job_url</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/system/job/</span><span class="si">{job_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">job_url</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_is_job_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">):</span>
@@ -192,8 +299,8 @@
                 <span class="n">rc</span><span class="p">,</span> <span class="n">complete</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">complete</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">task</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CommonFunctions.check_status_code_success"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.check_status_code_success">[docs]</a>    <span class="k">def</span> <span class="nf">check_status_code_success</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonFunctions.check_status_code_success"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.check_status_code_success">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_status_code_success</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Check if a status code indicates success.</span>
 
 <span class="sd">        :param operation: the operation</span>
@@ -204,9 +311,9 @@
         <span class="k">if</span> <span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">STATUS_200</span><span class="p">,</span> <span class="n">STATUS_201</span><span class="p">,</span>
                                <span class="n">STATUS_202</span><span class="p">,</span> <span class="n">STATUS_204</span><span class="p">]:</span>
             <span class="n">exception_message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s1">&#39;Error </span><span class="si">{operation}</span><span class="s1">. The status code received &#39;</span>
-                    <span class="s1">&#39;is </span><span class="si">{sc}</span><span class="s1"> and the message is </span><span class="si">{message}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">))</span>
+                <span class="s1">&#39;Error </span><span class="si">{operation}</span><span class="s1">. The status code received &#39;</span>
+                <span class="s1">&#39;is </span><span class="si">{sc}</span><span class="s1"> and the message is </span><span class="si">{message}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">status_code</span> <span class="o">==</span> <span class="n">STATUS_404</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">exception</span><span class="o">.</span><span class="n">ResourceNotFoundException</span><span class="p">(</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">exception_message</span><span class="p">)</span>
@@ -230,8 +337,8 @@
             <span class="n">rc</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_job_complete</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">exception_message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;Error </span><span class="si">{operation}</span><span class="s2">. Status code: </span><span class="si">{sc}</span><span class="s2">. &quot;</span>
-                    <span class="s2">&quot;Error: </span><span class="si">{error}</span><span class="s2">. Status: </span><span class="si">{status}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s1">&#39;Error </span><span class="si">{operation}</span><span class="s1">. Status code: </span><span class="si">{sc}</span><span class="s1">. &#39;</span>
+                    <span class="s1">&#39;Error: </span><span class="si">{error}</span><span class="s1">. Status: </span><span class="si">{status}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">rc</span><span class="p">,</span>
                         <span class="n">error</span><span class="o">=</span><span class="n">six</span><span class="o">.</span><span class="n">text_type</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
                         <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">))</span>
@@ -240,29 +347,84 @@
                     <span class="n">data</span><span class="o">=</span><span class="n">exception_message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">task</span></div>
 
-    <span class="k">def</span> <span class="nf">_build_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
-                   <span class="n">resource_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Build the target url.</span>
-<span class="sd">.</span>
-<span class="sd">        :param array: the array serial number</span>
-<span class="sd">        :param category: the resource category e.g. sloprovisioning</span>
-<span class="sd">        :param resource_type: the resource type e.g. maskingview</span>
-<span class="sd">        :param resource_name: the name of a specific resource</span>
-<span class="sd">        :param version: the U4V version</span>
-<span class="sd">        :returns: target url -- string</span>
+    <span class="k">def</span> <span class="nf">_build_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the target URI.</span>
+
+<span class="sd">        :param args: optional arguments passed in to form URI</span>
+<span class="sd">        :param kwargs: optional key word arguments passed in to form URI</span>
+<span class="sd">        :returns: target URI -- string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Version control logic</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;no_version&#39;</span><span class="p">):</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;no_version&#39;</span><span class="p">):</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;no_version&#39;</span><span class="p">):</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Version has been specified along with no_version &#39;</span>
+                      <span class="s1">&#39;flag, ignoring no_version flag and using version &#39;</span>
+                      <span class="s1">&#39;</span><span class="si">%(version)s</span><span class="s1">.&#39;</span><span class="p">,</span>
+                      <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">})</span>
             <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/</span><span class="si">{category}</span><span class="s1">/symmetrix/&#39;</span>
-                      <span class="s1">&#39;</span><span class="si">{array}</span><span class="s1">/</span><span class="si">{resource_type}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                       <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">,</span>
-                       <span class="n">resource_type</span><span class="o">=</span><span class="n">resource_type</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">resource_name</span><span class="p">:</span>
-            <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource_name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">resource_name</span><span class="o">=</span><span class="n">resource_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
-            <span class="n">target_uri</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/</span><span class="si">{version}{target}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target_uri</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;no_version&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># Old method - has arguments passed which define URI</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">))</span>
+
+            <span class="n">array_id</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">resource_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_name&#39;</span><span class="p">)</span>
+
+            <span class="n">target_uri</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;/</span><span class="si">{cat}</span><span class="s1">/symmetrix/</span><span class="si">{array_id}</span><span class="s1">/</span><span class="si">{res_type}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">cat</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
+                <span class="n">array_id</span><span class="o">=</span><span class="n">array_id</span><span class="p">,</span>
+                <span class="n">res_type</span><span class="o">=</span><span class="n">resource_type</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">resource_name</span><span class="p">:</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource_name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">resource_name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_name&#39;</span><span class="p">))</span>
+
+        <span class="c1"># New method - new method is to have only keyword arguments passed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">,</span> <span class="s1">&#39;common&#39;</span><span class="p">]:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+
+            <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{category}</span><span class="s1">/</span><span class="si">{resource_level}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">),</span>
+                <span class="n">resource_level</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level_id&#39;</span><span class="p">):</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource_level_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">resource_level_id</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level_id&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_type&#39;</span><span class="p">):</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource_type}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">resource_type</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_type&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_type_id&#39;</span><span class="p">):</span>
+                    <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource_type_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">resource_type_id</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_type_id&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource&#39;</span><span class="p">):</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">resource</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_id&#39;</span><span class="p">):</span>
+                    <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{resource_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">resource_id</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_id&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object_type&#39;</span><span class="p">):</span>
+                <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object_type&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object_type_id&#39;</span><span class="p">):</span>
+                    <span class="n">target_uri</span> <span class="o">+=</span> <span class="s1">&#39;/</span><span class="si">{object_type_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">object_type_id</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object_type_id&#39;</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">target_uri</span>
 
 <div class="viewcode-block" id="CommonFunctions.get_request"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_request">[docs]</a>    <span class="k">def</span> <span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_uri</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -275,102 +437,211 @@
 <span class="sd">        :raises: ResourceNotFoundException</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">message</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">GET</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;get </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="p">)</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;get </span><span class="si">{resource_type}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="o">=</span><span class="n">resource_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_status_code_success</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">message</span></div>
 
-<div class="viewcode-block" id="CommonFunctions.get_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_resource">[docs]</a>    <span class="k">def</span> <span class="nf">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
-                     <span class="n">resource_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get resource details from array.</span>
+<div class="viewcode-block" id="CommonFunctions.get_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_resource">[docs]</a>    <span class="k">def</span> <span class="nf">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get resource details from the array.</span>
 
-<span class="sd">        :param array: the array serial number</span>
-<span class="sd">        :param category: the resource category e.g. sloprovisioning</span>
-<span class="sd">        :param resource_type: the resource type e.g. maskingview</span>
-<span class="sd">        :param resource_name: the name of a specific resource</span>
-<span class="sd">        :param params: query parameters</span>
+<span class="sd">        The args passed in are</span>
+<span class="sd">        positional and should be passed in using the order they are listed in</span>
+<span class="sd">        below.</span>
+
+<span class="sd">        :param args: Traditional Method</span>
+<span class="sd">            param0 array_id: the array serial number</span>
+<span class="sd">            param1 category: the resource category e.g. sloprovisioning</span>
+<span class="sd">            param2 resource_type: the resource type e.g. maskingview</span>
+<span class="sd">        :param kwargs: Traditional Method</span>
+<span class="sd">            param version: optional version of Unisphere</span>
+<span class="sd">            param resource_name: optional name of a specific resource</span>
+<span class="sd">            param params: optional dict of filter params</span>
+<span class="sd">        :param kwargs: New Method</span>
+<span class="sd">            param version: the version of Unisphere</span>
+<span class="sd">            param no_version: (boolean) if the URI required no version</span>
+<span class="sd">            param category: the resource category e.g. sloprovisioning, system</span>
+<span class="sd">            param resource_level: the resource level e.g. storagegroup, alert</span>
+<span class="sd">            param resource_level_id: the resource level ID</span>
+<span class="sd">            param resource_type: the name of a specific resource</span>
+<span class="sd">            param resource_type_id: the name of a specific resource</span>
+<span class="sd">            param resource: the name of a specific resource</span>
+<span class="sd">            param resource_id: the name of a specific resource</span>
+<span class="sd">            param object_type: the name of a specific resource</span>
+<span class="sd">            param object_type_id: the name of a specific resource</span>
+<span class="sd">            param params: query parameters</span>
+
 <span class="sd">        :returns: resource object -- dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
-                                     <span class="n">resource_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CommonFunctions.create_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.create_resource">[docs]</a>    <span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span>
-                        <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;params&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CommonFunctions.create_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.create_resource">[docs]</a>    <span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a resource.</span>
 
-<span class="sd">        :param array: the array serial number</span>
-<span class="sd">        :param category: the category</span>
-<span class="sd">        :param resource_type: the resource type</span>
-<span class="sd">        :param payload: the payload</span>
-<span class="sd">        :param version: the U4V version</span>
+<span class="sd">        The args passed in are positional and should be</span>
+<span class="sd">        passed in using the order they are listed in below.</span>
+
+<span class="sd">        :param args: Traditional Method</span>
+<span class="sd">            param0 array_id: the array serial number</span>
+<span class="sd">            param1 category:  the resource category e.g. sloprovisioning</span>
+<span class="sd">            param2 resource_type: the resource type e.g. maskingview</span>
+<span class="sd">        :param kwargs: Traditional Method</span>
+<span class="sd">            param version: optional version of Unisphere</span>
+<span class="sd">            param resource_name: optional name of a specific resource</span>
+<span class="sd">            param payload: optional payload dict</span>
+<span class="sd">        :param kwargs: New Method</span>
+<span class="sd">            param version: the version of Unisphere</span>
+<span class="sd">            param no_version: (boolean) if the URI required no version</span>
+<span class="sd">            param category: the resource category e.g. sloprovisioning, system</span>
+<span class="sd">            param resource_level: the resource level e.g. storagegroup, alert</span>
+<span class="sd">            param resource_level_id: the resource level ID</span>
+<span class="sd">            param resource_type: the name of a specific resource</span>
+<span class="sd">            param resource_type_id: the name of a specific resource</span>
+<span class="sd">            param resource: the name of a specific resource</span>
+<span class="sd">            param resource_id: the name of a specific resource</span>
+<span class="sd">            param object_type: the name of a specific resource</span>
+<span class="sd">            param object_type_id: the name of a specific resource</span>
+<span class="sd">            param payload: optional payload dict</span>
+
 <span class="sd">        :returns: message -- string, server response</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
-                                     <span class="n">version</span><span class="p">)</span>
-        <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span>
-                                            <span class="n">request_object</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
-        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;Create </span><span class="si">{}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;Create </span><span class="si">{resource_type}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">resource_type</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">check_status_code_success</span><span class="p">(</span>
             <span class="n">operation</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">message</span></div>
 
-<div class="viewcode-block" id="CommonFunctions.modify_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.modify_resource">[docs]</a>    <span class="k">def</span> <span class="nf">modify_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span>
-                        <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonFunctions.modify_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.modify_resource">[docs]</a>    <span class="k">def</span> <span class="nf">modify_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Modify a resource.</span>
 
-<span class="sd">        :param array: the array serial number</span>
-<span class="sd">        :param category: the category</span>
-<span class="sd">        :param resource_type: the resource type</span>
-<span class="sd">        :param payload: the payload</span>
-<span class="sd">        :param version: the uv4 version</span>
-<span class="sd">        :param resource_name: the resource name</span>
+<span class="sd">        The args passed in are positional and should be</span>
+<span class="sd">        passed in using the order they are listed in below.</span>
+
+<span class="sd">        :param args: Traditional Method</span>
+<span class="sd">            param0 array_id: the array serial number</span>
+<span class="sd">            param1 category: the resource category e.g. sloprovisioning</span>
+<span class="sd">            param2 resource_type: the resource type e.g. maskingview</span>
+<span class="sd">        :param kwargs: Traditional Method</span>
+<span class="sd">            param version: optional version of Unisphere</span>
+<span class="sd">            param resource_name: optional name of a specific resource</span>
+<span class="sd">            param payload: optional payload dict</span>
+<span class="sd">        :param kwargs: New Method</span>
+<span class="sd">            param version: the version of Unisphere</span>
+<span class="sd">            param no_version: (boolean) if the URI required no version</span>
+<span class="sd">            param category: the resource category e.g. sloprovisioning, system</span>
+<span class="sd">            param resource_level: the resource level e.g. storagegroup, alert</span>
+<span class="sd">            param resource_level_id: the resource level ID</span>
+<span class="sd">            param resource_type: the name of a specific resource</span>
+<span class="sd">            param resource_type_id: the name of a specific resource</span>
+<span class="sd">            param resource: the name of a specific resource</span>
+<span class="sd">            param resource_id: the name of a specific resource</span>
+<span class="sd">            param object_type: the name of a specific resource</span>
+<span class="sd">            param object_type_id: the name of a specific resource</span>
+<span class="sd">            param payload: optional payload dict</span>
+
 <span class="sd">        :returns: message -- string (server response)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
-                                     <span class="n">resource_name</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-        <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">PUT</span><span class="p">,</span>
-                                            <span class="n">request_object</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
-        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;modify </span><span class="si">{}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="n">PUT</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;Modify </span><span class="si">{resource_type}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">resource_type</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">check_status_code_success</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">message</span></div>
 
-<div class="viewcode-block" id="CommonFunctions.delete_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.delete_resource">[docs]</a>    <span class="k">def</span> <span class="nf">delete_resource</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">,</span>
-            <span class="n">payload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonFunctions.delete_resource"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.delete_resource">[docs]</a>    <span class="k">def</span> <span class="nf">delete_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Delete a resource.</span>
 
-<span class="sd">        :param array: the array serial number</span>
-<span class="sd">        :param category: the resource category e.g. sloprovisioning</span>
-<span class="sd">        :param resource_type: the type of resource to be deleted</span>
-<span class="sd">        :param resource_name: the name of the resource to be deleted</span>
-<span class="sd">        :param payload: the payload, optional</span>
-<span class="sd">        :param params: dict of optional query params</span>
+<span class="sd">        The args passed in are positional and should be</span>
+<span class="sd">        passed in using the order they are listed in below.</span>
+
+<span class="sd">        :param args: Traditional Method</span>
+<span class="sd">            param0 array_id: the array serial number</span>
+<span class="sd">            param1 category: the resource category e.g. sloprovisioning</span>
+<span class="sd">            param2 resource_type: the resource type e.g. maskingview</span>
+<span class="sd">        :param kwargs: Traditional Method</span>
+<span class="sd">            param version: optional version of Unisphere</span>
+<span class="sd">            param resource_name: optional name of a specific resource</span>
+<span class="sd">            param payload: optional payload dict</span>
+<span class="sd">        :param kwargs: New Method</span>
+<span class="sd">            param version: the version of Unisphere</span>
+<span class="sd">            param no_version: (boolean) if the URI required no version</span>
+<span class="sd">            param category: the resource category e.g. sloprovisioning, system</span>
+<span class="sd">            param resource_level: the resource level e.g. storagegroup, alert</span>
+<span class="sd">            param resource_level_id: the resource level ID</span>
+<span class="sd">            param resource_type: the name of a specific resource</span>
+<span class="sd">            param resource_type_id: the name of a specific resource</span>
+<span class="sd">            param resource: the name of a specific resource</span>
+<span class="sd">            param resource_id: the name of a specific resource</span>
+<span class="sd">            param object_type: the name of a specific resource</span>
+<span class="sd">            param object_type_id: the name of a specific resource</span>
+<span class="sd">            param payload: optional payload dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span>
-                                     <span class="n">resource_name</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="n">target_uri</span><span class="p">,</span> <span class="n">DELETE</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;delete </span><span class="si">{}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="p">)</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="n">DELETE</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resource_level&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resource_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;Delete </span><span class="si">{resource_type}</span><span class="s1"> resource&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">resource_type</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">check_status_code_success</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CommonFunctions.create_list_from_file"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.create_list_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">create_list_from_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonFunctions.create_list_from_file"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.create_list_from_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_list_from_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Given a file, create a list from its contents.</span>
 
 <span class="sd">        :param file_name: the path to the file</span>
-<span class="sd">        :return: list of contents</span>
+<span class="sd">        :returns: list of contents</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">list_item</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
         <span class="n">raw_list</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">list_item</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_list</span><span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CommonFunctions.read_csv_values"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.read_csv_values">[docs]</a>    <span class="k">def</span> <span class="nf">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reads any csv file with headers.</span>
+<div class="viewcode-block" id="CommonFunctions.read_csv_values"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.read_csv_values">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read any csv file with headers.</span>
 
 <span class="sd">        You can extract the multiple lists from the headers in the CSV file.</span>
 <span class="sd">        In your own script, call this function and assign to data variable,</span>
@@ -380,7 +651,7 @@
 <span class="sd">        policylist = data[&#39;policy&#39;]</span>
 
 <span class="sd">        :param file_name: path to CSV file</span>
-<span class="sd">        :return: Dictionary of data parsed from CSV</span>
+<span class="sd">        :returns: Dictionary of data parsed from CSV</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># open the file in universal line ending mode</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;rU&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
@@ -398,10 +669,11 @@
 <div class="viewcode-block" id="CommonFunctions.get_uni_version"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_uni_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_uni_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the unisphere version from the server.</span>
 
-<span class="sd">        :return: version and major_version(e.g. (&quot;V8.4.0.16&quot;, &quot;84&quot;))</span>
+<span class="sd">        :returns: version and major_version(e.g. (&quot;V8.4.0.16&quot;, &quot;84&quot;))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">version</span><span class="p">,</span> <span class="n">major_version</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/system/version&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/system/version&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">):</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
@@ -410,24 +682,26 @@
         <span class="k">return</span> <span class="n">version</span><span class="p">,</span> <span class="n">major_version</span></div>
 
 <div class="viewcode-block" id="CommonFunctions.get_array_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_array_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_array_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of arrays.</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of arrays.</span>
 
 <span class="sd">        :param filters: optional dict of filters</span>
-<span class="sd">        :return: dict</span>
+<span class="sd">        :returns: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/system/symmetrix&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/system/symmetrix&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;symmetrix&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">filters</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="CommonFunctions.get_v3_or_newer_array_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_v3_or_newer_array_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_v3_or_newer_array_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of V3 or newer arrays in the environment.</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of V3 or newer arrays in the environment.</span>
 
 <span class="sd">        :param filters: optional dict of filters</span>
-<span class="sd">        :return: list of array ids</span>
+<span class="sd">        :returns: list of array ids</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/sloprovisioning/symmetrix&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/sloprovisioning/symmetrix&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;symmetrix&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">filters</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">]</span>
@@ -436,10 +710,10 @@
 <div class="viewcode-block" id="CommonFunctions.get_array"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_array">[docs]</a>    <span class="k">def</span> <span class="nf">get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return details on specific array.</span>
 
-<span class="sd">        :return: server response</span>
+<span class="sd">        :returns: server response</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/system/symmetrix/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">array_id</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/system/symmetrix/</span><span class="si">{array_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">array_id</span><span class="o">=</span><span class="n">array_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;symmetrix&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CommonFunctions.get_iterator_page_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.common.CommonFunctions.get_iterator_page_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_iterator_page_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator_id</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
@@ -448,10 +722,11 @@
 <span class="sd">        :param iterator_id: the id of the iterator</span>
 <span class="sd">        :param start: the start number</span>
 <span class="sd">        :param end: the end number</span>
-<span class="sd">        :return: list of results</span>
+<span class="sd">        :returns: list of results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">page_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;common/Iterator/</span><span class="si">{}</span><span class="s1">/page&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iterator_id</span><span class="p">)</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/common/Iterator/</span><span class="si">{iterator_id}</span><span class="s1">/page&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">iterator_id</span><span class="o">=</span><span class="n">iterator_id</span><span class="p">)</span>
         <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;iterator&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">filters</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">):</span>
@@ -467,11 +742,11 @@
 <span class="sd">        &quot;nextUpdate&quot;: 1038},</span>
 <span class="sd">        &quot;spaRegistered&quot;: True}</span>
 
-<span class="sd">        :return: dict</span>
+<span class="sd">        :returns: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">wlp_details</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/wlp/symmetrix/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">array_id</span><span class="p">))</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/</span><span class="si">{version}</span><span class="s1">/wlp/symmetrix/</span><span class="si">{array_id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U4V_VERSION</span><span class="p">,</span> <span class="n">array_id</span><span class="o">=</span><span class="n">array_id</span><span class="p">))</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="s1">&#39;wlp&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;symmetrixDetails&#39;</span><span class="p">):</span>
             <span class="n">wlp_details</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;symmetrixDetails&#39;</span><span class="p">]</span>
@@ -492,7 +767,7 @@
 <span class="sd">        :param workload: the workload type (DSS, OLTP, DSS_REP, OLTP_REP)</span>
 <span class="sd">        :param srp: the storage resource pool. Default SRP_1.</span>
 <span class="sd">        :param slo: the service level. Default Diamond.</span>
-<span class="sd">        :return: dict</span>
+<span class="sd">        :returns: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headroom</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;srp&#39;</span><span class="p">:</span> <span class="n">srp</span><span class="p">,</span> <span class="s1">&#39;slo&#39;</span><span class="p">:</span> <span class="n">slo</span><span class="p">,</span> <span class="s1">&#39;workloadtype&#39;</span><span class="p">:</span> <span class="n">workload</span><span class="p">}</span>
@@ -503,41 +778,43 @@
         <span class="k">return</span> <span class="n">headroom</span></div></div>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Dell EMC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, Ciara Stacke.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

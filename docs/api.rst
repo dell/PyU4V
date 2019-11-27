@@ -8,9 +8,4 @@ API Glossary
    source/PyU4V
 
 
-Indices and tables
-==================
-
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

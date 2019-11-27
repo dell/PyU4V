@@ -1076,7 +1076,7 @@ class ProvisioningFunctions(object):
         :param workload: the workload (e.g. DSS)
         :param disable_compression: flag for disabling compression (AF only)
         :param _async: Flag to indicate if this call should be asyncronously
-        executed
+                       executed
         :returns: dict
         """
         return self.create_storage_group(
@@ -1124,7 +1124,7 @@ class ProvisioningFunctions(object):
         :param _async: Flag to indicate if call should be async
         :param vol_name: name to give to the volume, optional
         :param create_new_volumes: when true will force create new
-        volumes, optional
+                                   volumes, optional
         :returns: dict
         """
         add_vol_info = {

@@ -296,18 +296,15 @@ class CommonFunctions(object):
         positional and should be passed in using the order they are listed in
         below.
 
-        Traditional Method:
-        :param args:
+        :param args: Traditional Method
             param0 array_id: the array serial number
             param1 category: the resource category e.g. sloprovisioning
             param2 resource_type: the resource type e.g. maskingview
-        :param kwargs:
+        :param kwargs: Traditional Method
             param version: optional version of Unisphere
             param resource_name: optional name of a specific resource
             param params: optional dict of filter params
-
-        New Method:
-        :param kwargs:
+        :param kwargs: New Method
             param version: the version of Unisphere
             param no_version: (boolean) if the URI required no version
             param category: the resource category e.g. sloprovisioning, system
@@ -341,18 +338,15 @@ class CommonFunctions(object):
         The args passed in are positional and should be
         passed in using the order they are listed in below.
 
-        Traditional Method:
-        :param args:
+        :param args: Traditional Method
             param0 array_id: the array serial number
-            param1 category: the resource category e.g. sloprovisioning
+            param1 category:  the resource category e.g. sloprovisioning
             param2 resource_type: the resource type e.g. maskingview
-        :param kwargs:
+        :param kwargs: Traditional Method
             param version: optional version of Unisphere
             param resource_name: optional name of a specific resource
             param payload: optional payload dict
-
-        New Method:
-        :param kwargs:
+        :param kwargs: New Method
             param version: the version of Unisphere
             param no_version: (boolean) if the URI required no version
             param category: the resource category e.g. sloprovisioning, system
@@ -393,18 +387,15 @@ class CommonFunctions(object):
         The args passed in are positional and should be
         passed in using the order they are listed in below.
 
-        Traditional Method:
-        :param args:
+        :param args: Traditional Method
             param0 array_id: the array serial number
             param1 category: the resource category e.g. sloprovisioning
             param2 resource_type: the resource type e.g. maskingview
-        :param kwargs:
+        :param kwargs: Traditional Method
             param version: optional version of Unisphere
             param resource_name: optional name of a specific resource
             param payload: optional payload dict
-
-        New Method:
-        :param kwargs:
+        :param kwargs: New Method
             param version: the version of Unisphere
             param no_version: (boolean) if the URI required no version
             param category: the resource category e.g. sloprovisioning, system
@@ -444,18 +435,15 @@ class CommonFunctions(object):
         The args passed in are positional and should be
         passed in using the order they are listed in below.
 
-        Traditional Method:
-        :param args:
+        :param args: Traditional Method
             param0 array_id: the array serial number
             param1 category: the resource category e.g. sloprovisioning
             param2 resource_type: the resource type e.g. maskingview
-        :param kwargs:
+        :param kwargs: Traditional Method
             param version: optional version of Unisphere
             param resource_name: optional name of a specific resource
             param payload: optional payload dict
-
-        New Method:
-        :param kwargs:
+        :param kwargs: New Method
             param version: the version of Unisphere
             param no_version: (boolean) if the URI required no version
             param category: the resource category e.g. sloprovisioning, system

@@ -29,9 +29,5 @@ site-packages easily:
     $ cd PyU4V
     $ pip install .
 
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`

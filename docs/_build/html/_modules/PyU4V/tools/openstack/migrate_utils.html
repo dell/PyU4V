@@ -1,0 +1,1068 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.tools.openstack.migrate_utils &mdash; PyU4V 3.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tools.html">Tools Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>PyU4V.tools.openstack.migrate_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for PyU4V.tools.openstack.migrate_utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The MIT License (MIT)</span>
+<span class="c1"># Copyright (c) 2019 Dell Inc. or its subsidiaries.</span>
+
+<span class="c1"># Permission is hereby granted, free of charge, to any person</span>
+<span class="c1"># obtaining a copy of this software and associated documentation</span>
+<span class="c1"># files (the &quot;Software&quot;), to deal in the Software without restriction,</span>
+<span class="c1"># including without limitation the rights to use, copy, modify,</span>
+<span class="c1"># merge, publish, distribute, sublicense, and/or sell copies of</span>
+<span class="c1"># the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+
+<span class="c1"># The above copyright notice and this permission notice shall be</span>
+<span class="c1"># included in all copies or substantial portions of the Software.</span>
+
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,</span>
+<span class="c1"># EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES</span>
+<span class="c1"># OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</span>
+<span class="c1"># IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY</span>
+<span class="c1"># CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span>
+<span class="c1"># TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
+<span class="c1"># SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">OpenStack migrate_utils.py.</span>
+
+<span class="sd">Migrate utilities for OpenStack</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">input</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">exception</span>
+
+<span class="kn">import</span> <span class="nn">prettytable</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">YES_CONSTANTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">]</span>
+<span class="n">NO_CONSTANTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">]</span>
+<span class="n">EXIT_CONSTANTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span>
+
+<span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.6&#39;</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+<span class="n">INFO</span> <span class="o">=</span> <span class="s1">&#39;INFO&#39;</span>
+<span class="n">WARNING</span> <span class="o">=</span> <span class="s1">&#39;WARNING&#39;</span>
+<span class="n">ERROR</span> <span class="o">=</span> <span class="s1">&#39;ERROR&#39;</span>
+
+
+<div class="viewcode-block" id="MigrateUtils"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils">[docs]</a><span class="k">class</span> <span class="nc">MigrateUtils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;OpenStack migrate utils.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class.</span>
+
+<span class="sd">        :param conn: the request connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">conn</span>
+
+<div class="viewcode-block" id="MigrateUtils.check_input"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_input">[docs]</a>    <span class="k">def</span> <span class="nf">check_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt_str</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check the input against the expected option.</span>
+
+<span class="sd">        :param txt_str: text string</span>
+<span class="sd">        :param option: &#39;Y&#39;, &#39;N&#39; or &#39;X&#39;</span>
+<span class="sd">        :returns: boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">txt_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">YES_CONSTANTS</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">txt_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">NO_CONSTANTS</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;I am exiting&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">txt_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">EXIT_CONSTANTS</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.print_to_log"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.print_to_log">[docs]</a>    <span class="k">def</span> <span class="nf">print_to_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_str</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print to the logs</span>
+
+<span class="sd">        :param print_str: string to print</span>
+<span class="sd">        :param level: the debug level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">print_str</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="n">WARNING</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">print_str</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="n">INFO</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">print_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">print_str</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.print_pretty_table"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.print_pretty_table">[docs]</a>    <span class="k">def</span> <span class="nf">print_pretty_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print the data in the dict.</span>
+
+<span class="sd">        :param datadict: the data dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">prettytable</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">([</span><span class="s1">&#39;Key&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">datadict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.smart_print"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.smart_print">[docs]</a>    <span class="k">def</span> <span class="nf">smart_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_str</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print with variable arguments.</span>
+
+<span class="sd">        :param print_str: the print string</span>
+<span class="sd">        :param level: the debug level</span>
+<span class="sd">        :param args: one or more arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">print_str</span> <span class="o">=</span> <span class="n">print_str</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_to_log</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">print_str</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_elements_from_masking_view"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_elements_from_masking_view">[docs]</a>    <span class="k">def</span> <span class="nf">get_elements_from_masking_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get components from masking view.</span>
+
+<span class="sd">        :param mv_name: masking view name</span>
+<span class="sd">        :returns: strings - portgroup, storagegroup, host</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mv_components</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;portgroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_element_from_masking_view</span><span class="p">(</span>
+                    <span class="n">mv_name</span><span class="p">,</span> <span class="n">portgroup</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;storagegroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_element_from_masking_view</span><span class="p">(</span>
+                    <span class="n">mv_name</span><span class="p">,</span> <span class="n">storagegroup</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;initiatorgroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_element_from_masking_view</span><span class="p">(</span>
+                    <span class="n">mv_name</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">exception</span><span class="o">.</span><span class="n">ResourceNotFoundException</span><span class="p">:</span>
+            <span class="n">exception_message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Cannot find one of the components of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">mv_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">exception_message</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">exception</span><span class="o">.</span><span class="n">ResourceNotFoundException</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">exception_message</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">mv_components</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mv_components</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.verify_protocol"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.verify_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">verify_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Verify the protocol.</span>
+
+<span class="sd">        :param protocol: &#39;I&#39; or &#39;F&#39;</span>
+<span class="sd">        :returns: boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="kc">True</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s1">&#39;I&#39;</span> <span class="ow">in</span> <span class="n">protocol</span> <span class="ow">or</span> <span class="s1">&#39;F&#39;</span> <span class="ow">in</span> <span class="n">protocol</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_object_components"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_object_components">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_str</span><span class="p">,</span> <span class="n">input_str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get components from input string.</span>
+
+<span class="sd">        :param regex_str: the regex</span>
+<span class="sd">        :param input_str: the input string</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_str</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">full_str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_object_components_and_correct_host"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_object_components_and_correct_host">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_components_and_correct_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_str</span><span class="p">,</span> <span class="n">input_str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get components from input string.</span>
+
+<span class="sd">        :param regex_str: the regex</span>
+<span class="sd">        :param input_str: the input string</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">object_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_components</span><span class="p">(</span><span class="n">regex_str</span><span class="p">,</span> <span class="n">input_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">object_dict</span> <span class="ow">and</span> <span class="s1">&#39;host&#39;</span> <span class="ow">in</span> <span class="n">object_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">object_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span>
+                <span class="n">object_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">object_dict</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_mv_component_dict"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_mv_component_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_mv_component_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get components from input string.</span>
+
+<span class="sd">        :param mv_name: the masking view name</span>
+<span class="sd">        :param revert: is it a revert back</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+            <span class="n">regex_str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;prefix&gt;OS)-(?P&lt;host&gt;.+?)(?P&lt;protocol&gt;I|F)-&#39;</span>
+                         <span class="sa">r</span><span class="s1">&#39;(?P&lt;portgroup&gt;(?!CD|RE|CD-RE).+)-(?P&lt;postfix&gt;MV)$&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">regex_str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;prefix&gt;OS)-(?P&lt;host&gt;.+?)((?P&lt;srp&gt;SRP.+?)-&#39;</span>
+                         <span class="sa">r</span><span class="s1">&#39;(?P&lt;slo&gt;.+?)-(?P&lt;workload&gt;.+?)|(?P&lt;no_slo&gt;No_SLO))-&#39;</span>
+                         <span class="sa">r</span><span class="s1">&#39;(?P&lt;protocol&gt;I|F)(?P&lt;CD&gt;-CD|s*)(?P&lt;RE&gt;-RE|s*)-&#39;</span>
+                         <span class="sa">r</span><span class="s1">&#39;(?P&lt;postfix&gt;MV)$&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_components_and_correct_host</span><span class="p">(</span><span class="n">regex_str</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.truncate_string"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.truncate_string">[docs]</a>    <span class="k">def</span> <span class="nf">truncate_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_to_truncate</span><span class="p">,</span> <span class="n">max_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Truncate a string by taking first and last characters.</span>
+
+<span class="sd">        :param str_to_truncate: the string to be truncated</span>
+<span class="sd">        :param max_num: the maximum number of characters</span>
+<span class="sd">        :returns: string -- truncated string or original string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">str_to_truncate</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_num</span><span class="p">:</span>
+            <span class="n">new_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">str_to_truncate</span><span class="p">)</span> <span class="o">-</span> <span class="n">max_num</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">first_chars</span> <span class="o">=</span> <span class="n">str_to_truncate</span><span class="p">[:</span><span class="n">max_num</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">last_chars</span> <span class="o">=</span> <span class="n">str_to_truncate</span><span class="p">[</span><span class="n">new_num</span><span class="p">:]</span>
+            <span class="n">str_to_truncate</span> <span class="o">=</span> <span class="n">first_chars</span> <span class="o">+</span> <span class="n">last_chars</span>
+        <span class="k">return</span> <span class="n">str_to_truncate</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.print_component_dict"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.print_component_dict">[docs]</a>    <span class="k">def</span> <span class="nf">print_component_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print the components to the screen.</span>
+
+<span class="sd">        :param mv_name: the masking view name</span>
+<span class="sd">        :param revert: is it a revert back</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="s1">&#39;Checking if masking view is in the following format: &#39;</span><span class="p">,</span>
+                <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">OS-[shortHostName]-[protocol]-[portgroup_name]-MV&#39;</span><span class="p">,</span>
+                <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mv_component_dict</span><span class="p">(</span><span class="n">mv_name</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="s1">&#39;Checking if masking view is in the following 2 formats: &#39;</span><span class="p">,</span>
+                <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">OS-[shortHostName]-[SRP]-[SLO]-[workload]-[protocol]-MV&#39;</span><span class="p">,</span>
+                <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">OR&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">OS-[shortHostName]-No_SLO-[protocol]-MV&#39;</span><span class="p">,</span>
+                             <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mv_component_dict</span><span class="p">(</span><span class="n">mv_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;COMPONENTS OF </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">component_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">component_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">component_dict</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.check_mv_for_migration"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_mv_for_migration">[docs]</a>    <span class="k">def</span> <span class="nf">check_mv_for_migration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the masking view can be migrated.</span>
+
+<span class="sd">        :param mv_name: the masking view name</span>
+<span class="sd">        :param test: is it a test case</span>
+<span class="sd">        :returns: boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+            <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_component_dict</span><span class="p">(</span><span class="n">mv_name</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">component_dict</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verify_protocol</span><span class="p">(</span>
+                    <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]):</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> HAS BEEN VERIFIED TO BEING IN THE NEW FORMAT.&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> IS NOT IN THE NEW FORMAT, MIGRATION WILL NOT &#39;</span>
+                    <span class="s1">&#39;PROCEED.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_component_dict</span><span class="p">(</span><span class="n">mv_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">component_dict</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verify_protocol</span><span class="p">(</span>
+                    <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]):</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> HAS BEEN VERIFIED TO BEING IN THE OLD FORMAT.&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> IS NOT IN THE OLD FORMAT, MIGRATION WILL NOT &#39;</span>
+                             <span class="s1">&#39;PROCEED.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_sg_component_dict"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_component_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_sg_component_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse the storage group string.</span>
+
+<span class="sd">        :param sg_name: the storage group name</span>
+<span class="sd">        :param test: is it a test case</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">regex_str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;prefix&gt;OS)-(?P&lt;host&gt;.+?)&#39;</span>
+                     <span class="sa">r</span><span class="s1">&#39;((?P&lt;no_slo&gt;No_SLO)|((?P&lt;srp&gt;SRP.+?)-&#39;</span>
+                     <span class="sa">r</span><span class="s1">&#39;(?P&lt;sloworkload&gt;.+?)))-(?P&lt;portgroup&gt;.+?)&#39;</span>
+                     <span class="sa">r</span><span class="s1">&#39;(?P&lt;after_pg&gt;$|-CD|-RE)&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_components_and_correct_host</span><span class="p">(</span><span class="n">regex_str</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_element_dict_revert"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict_revert">[docs]</a>    <span class="k">def</span> <span class="nf">get_element_dict_revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_dict</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">,</span> <span class="n">cd_str</span><span class="p">,</span> <span class="n">re_str</span><span class="p">,</span>
+                              <span class="n">pg_name</span><span class="p">,</span> <span class="n">host_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile elements from mv, sg, host etc.</span>
+
+<span class="sd">        :param component_dict: masking view dict</span>
+<span class="sd">        :param sg_name: storage group name</span>
+<span class="sd">        :param cd_str: compression disabled</span>
+<span class="sd">        :param re_str: replication enabled</span>
+<span class="sd">        :param pg_name: port group name</span>
+<span class="sd">        :param host_name: host name</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">sg_component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sg_component_dict</span><span class="p">(</span><span class="n">sg_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sg_component_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sg_component_dict</span><span class="p">[</span><span class="s1">&#39;sloworkload&#39;</span><span class="p">]:</span>
+                <span class="n">storagegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span><span class="n">sg_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">storagegroup</span><span class="p">:</span>
+                    <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span><span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span>
+                              <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+                              <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">sg_component_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]</span>
+                              <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">storagegroup</span><span class="p">[</span><span class="s1">&#39;slo&#39;</span><span class="p">]</span>
+                              <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span><span class="n">storagegroup</span><span class="p">)</span>
+                              <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span>
+                              <span class="o">+</span> <span class="n">cd_str</span> <span class="o">+</span> <span class="n">re_str</span><span class="p">)</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-MV&#39;</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-SG&#39;</span>
+
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sg_component_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;service_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">storagegroup</span><span class="p">[</span><span class="s1">&#39;slo&#39;</span><span class="p">]</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span><span class="n">storagegroup</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">element_dict</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span><span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                          <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                          <span class="o">+</span> <span class="s1">&#39;No_SLO&#39;</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                          <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span>
+                          <span class="o">+</span> <span class="n">cd_str</span> <span class="o">+</span> <span class="n">re_str</span><span class="p">)</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-MV&#39;</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-SG&#39;</span>
+
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;port_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pg_name</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;initiator_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host_name</span>
+        <span class="k">return</span> <span class="n">element_dict</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_workload"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_workload">[docs]</a>    <span class="k">def</span> <span class="nf">get_workload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storagegroup</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the workload from the storagegroup object.</span>
+
+<span class="sd">        :param storagegroup: storagegroup object</span>
+<span class="sd">        :returns: workload</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">workload</span> <span class="o">=</span> <span class="n">storagegroup</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">workload</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+        <span class="k">return</span> <span class="n">workload</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_element_dict"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_element_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_dict</span><span class="p">,</span> <span class="n">cd_str</span><span class="p">,</span> <span class="n">re_str</span><span class="p">,</span>
+                         <span class="n">pg_name</span><span class="p">,</span> <span class="n">host_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile elements from mv, sg, host etc.</span>
+
+<span class="sd">        :param component_dict: masking view dict</span>
+<span class="sd">        :param cd_str: compression disabled</span>
+<span class="sd">        :param re_str: replication enabled</span>
+<span class="sd">        :param pg_name: port group name</span>
+<span class="sd">        :param host_name: host name</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                       <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                       <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                       <span class="o">+</span> <span class="n">pg_name</span> <span class="o">+</span> <span class="s1">&#39;-MV&#39;</span><span class="p">)</span>
+        <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                              <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                              <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span>
+                                              <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">pg_name</span> <span class="o">+</span> <span class="s1">&#39;-SG&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]:</span>
+            <span class="n">slo_wl_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">truncate_string</span><span class="p">(</span>
+                <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;slo&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                           <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                           <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                           <span class="o">+</span> <span class="n">slo_wl_combo</span>
+                                           <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">pg_name</span> <span class="o">+</span> <span class="n">cd_str</span> <span class="o">+</span> <span class="n">re_str</span><span class="p">)</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">]</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;service_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;slo&#39;</span><span class="p">]</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                           <span class="o">+</span> <span class="n">component_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                           <span class="o">+</span> <span class="s1">&#39;No_SLO&#39;</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+                                           <span class="o">+</span> <span class="n">pg_name</span> <span class="o">+</span> <span class="n">cd_str</span> <span class="o">+</span> <span class="n">re_str</span><span class="p">)</span>
+        <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;port_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pg_name</span>
+        <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;initiator_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host_name</span>
+        <span class="k">return</span> <span class="n">element_dict</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.compile_new_element_names"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.compile_new_element_names">[docs]</a>    <span class="k">def</span> <span class="nf">compile_new_element_names</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">,</span> <span class="n">pg_name</span><span class="p">,</span> <span class="n">host_name</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile elements from mv, sg, host etc.</span>
+
+<span class="sd">        :param mv_name: masking view name</span>
+<span class="sd">        :param pg_name: port group name</span>
+<span class="sd">        :param host_name: host name</span>
+<span class="sd">        :param sg_name: storage group name</span>
+<span class="sd">        :param test: is it a test case</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">cd_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">re_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">regex_all</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">S+&#39;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;^OS-&#39;</span> <span class="o">+</span> <span class="n">regex_all</span> <span class="o">+</span> <span class="s1">&#39;-CD&#39;</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">):</span>
+            <span class="n">cd_str</span> <span class="o">=</span> <span class="s1">&#39;-CD&#39;</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;CD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;CD&#39;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;^OS-&#39;</span> <span class="o">+</span> <span class="n">regex_all</span> <span class="o">+</span> <span class="s1">&#39;-RE&#39;</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">):</span>
+            <span class="n">re_str</span> <span class="o">=</span> <span class="s1">&#39;-RE&#39;</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;RE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;RE&#39;</span>
+        <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mv_component_dict</span><span class="p">(</span><span class="n">mv_name</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">component_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+                <span class="n">element_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_dict_revert</span><span class="p">(</span>
+                    <span class="n">component_dict</span><span class="p">,</span> <span class="n">sg_name</span><span class="p">,</span> <span class="n">cd_str</span><span class="p">,</span> <span class="n">re_str</span><span class="p">,</span>
+                    <span class="n">pg_name</span><span class="p">,</span> <span class="n">host_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">element_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_dict</span><span class="p">(</span>
+                    <span class="n">component_dict</span><span class="p">,</span> <span class="n">cd_str</span><span class="p">,</span> <span class="n">re_str</span><span class="p">,</span>
+                    <span class="n">pg_name</span><span class="p">,</span> <span class="n">host_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;UNABLE TO PARSE </span><span class="si">%s</span><span class="s1">, MIGRATION WILL NOT &#39;</span> \
+                        <span class="s1">&#39;PROCEED.&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">element_dict</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.validate_existing_masking_view"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_existing_masking_view">[docs]</a>    <span class="k">def</span> <span class="nf">validate_existing_masking_view</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">mv_details</span><span class="p">,</span> <span class="n">old_port_group</span><span class="p">,</span> <span class="n">old_host</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">,</span>
+            <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the masking view.</span>
+
+<span class="sd">        :param mv_details: masking view details</span>
+<span class="sd">        :param old_port_group: port group name</span>
+<span class="sd">        :param old_host: host name</span>
+<span class="sd">        :param element_dict: the element dictionary</span>
+<span class="sd">        :param revert: is it a revert back</span>
+<span class="sd">        :returns: Boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+            <span class="s1">&#39;NEW MASKING VIEW </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">mv_details</span><span class="p">[</span><span class="s1">&#39;maskingViewId&#39;</span><span class="p">])</span>
+        <span class="n">mv_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elements_from_masking_view</span><span class="p">(</span>
+            <span class="n">mv_details</span><span class="p">[</span><span class="s1">&#39;maskingViewId&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">old_port_group</span> <span class="o">!=</span> <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;portgroup&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="s1">&#39;Portgroups are not equal, please assess&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">old_host</span> <span class="o">!=</span> <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;initiatorgroup&#39;</span><span class="p">]:</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;Hosts are not equal, please assess&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;storagegroup&#39;</span><span class="p">]:</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;Storage group is not equal, please assess&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span>
+                    <span class="n">mv_components</span><span class="p">[</span><span class="s1">&#39;storagegroup&#39;</span><span class="p">]):</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;Parent storage group is not equal, please assess&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Check if child storage group exists</span>
+            <span class="n">child_storagegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">child_storagegroup</span><span class="p">:</span>
+                <span class="c1"># Check if the child SG is part of the parent</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">is_child_sg_in_parent_sg</span><span class="p">(</span>
+                        <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span>
+                        <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">]):</span>
+                    <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;The child sg is not part of the parent sg: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                        <span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+                    <span class="c1"># Now add the new storage group to the parent</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">add_child_sg_to_parent_sg</span><span class="p">(</span>
+                            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span>
+                            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_child_storage_group_and_add_to_parent</span><span class="p">(</span>
+                    <span class="n">element_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_storage_group"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the storage group object from the name.</span>
+
+<span class="sd">        :param storage_group_name: storage group name</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">storagegroup</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">storagegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+                <span class="n">storage_group_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">exception</span><span class="o">.</span><span class="n">ResourceNotFoundException</span><span class="p">:</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;Storage group </span><span class="si">%s</span><span class="s1"> not found&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">storagegroup</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.create_child_storage_group_and_add_to_parent"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.create_child_storage_group_and_add_to_parent">[docs]</a>    <span class="k">def</span> <span class="nf">create_child_storage_group_and_add_to_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create child storage group.</span>
+
+<span class="sd">        :param element_dict: element dictionary</span>
+<span class="sd">        :returns: parent storage group</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> child storage group does not exist so creating it.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+        <span class="c1"># Create a new child storage group with one volume in it</span>
+        <span class="n">disable_compression</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s1">&#39;CD&#39;</span> <span class="ow">in</span> <span class="n">element_dict</span><span class="p">:</span>
+            <span class="n">disable_compression</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="s1">&#39;srp&#39;</span> <span class="ow">in</span> <span class="n">element_dict</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_non_empty_storagegroup</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">],</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;service_level&#39;</span><span class="p">],</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">],</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;GB&#39;</span><span class="p">,</span>
+                <span class="n">disable_compression</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_empty_sg</span><span class="p">(</span>
+                <span class="kc">None</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># Add a volume to it</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_volume_from_sg_return_dev_id</span><span class="p">(</span>
+                <span class="s1">&#39;first_vol&#39;</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;CREATED CHILD STORAGE GROUP </span><span class="si">%s</span><span class="s1">.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="c1"># Add the child to the parent storage group</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">add_child_sg_to_parent_sg</span><span class="p">(</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">])</span>
+        <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;ADDED CHILD STORAGE GROUP </span><span class="si">%s</span><span class="s1"> TO PARENT STORAGE GROUP </span><span class="si">%s</span><span class="s1">.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span>
+                         <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_or_create_cascaded_storage_group"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_or_create_cascaded_storage_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_or_create_cascaded_storage_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or create cascaded storage group.</span>
+
+<span class="sd">        :param element_dict: element dictionary</span>
+<span class="sd">        :returns: parent storage group</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">storagegroup_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">storagegroup_parent</span><span class="p">:</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> parent storage group does not exist so&#39;</span>
+                <span class="s1">&#39;creating it.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">])</span>
+            <span class="c1"># Create a new empty parent storage group</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_empty_sg</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">],</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">],</span>
+                <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">storagegroup_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_parent_name&#39;</span><span class="p">])</span>
+        <span class="n">storagegroup_child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">storagegroup_child</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_child_storage_group_and_add_to_parent</span><span class="p">(</span><span class="n">element_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">storagegroup_parent</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_or_create_elements"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_or_create_elements">[docs]</a>    <span class="k">def</span> <span class="nf">get_or_create_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or create component elements.</span>
+
+<span class="sd">        :param element_dict: element dictionary</span>
+<span class="sd">        :param revert: is it a revert back</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+            <span class="n">storagegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">storagegroup</span><span class="p">:</span>
+                <span class="c1"># Create a new storage group with one volume in it</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_non_empty_storagegroup</span><span class="p">(</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;srp&#39;</span><span class="p">],</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">],</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;service_level&#39;</span><span class="p">],</span>
+                    <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;workload&#39;</span><span class="p">],</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;GB&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">storagegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_sg_name&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">storagegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create_cascaded_storage_group</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">storagegroup</span><span class="p">:</span>
+            <span class="n">port_group</span> <span class="o">=</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;port_group&#39;</span><span class="p">]</span>
+            <span class="n">initiator_group</span> <span class="o">=</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;initiator_group&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_masking_view_existing_components</span><span class="p">(</span>
+                <span class="n">port_group</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">],</span>
+                <span class="n">storagegroup</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">],</span>
+                <span class="n">host_name</span><span class="o">=</span><span class="n">initiator_group</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exception_message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Cannot create or find the storagegroup.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">exception_message</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">exception</span><span class="o">.</span><span class="n">ResourceNotFoundException</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">exception_message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_masking_view"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view">[docs]</a>    <span class="k">def</span> <span class="nf">get_masking_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the masking view object from the name.</span>
+
+<span class="sd">        :param mv_name: masking view name</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">masking_view</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">masking_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_masking_view</span><span class="p">(</span>
+                <span class="n">mv_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">exception</span><span class="o">.</span><span class="n">ResourceNotFoundException</span><span class="p">:</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;Masking view </span><span class="si">%s</span><span class="s1"> not found.&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">mv_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">masking_view</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_or_create_masking_view"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_or_create_masking_view">[docs]</a>    <span class="k">def</span> <span class="nf">get_or_create_masking_view</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">,</span> <span class="n">portgroup</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or create masking view from component elements.</span>
+
+<span class="sd">        :param element_dict: element dictionary</span>
+<span class="sd">        :param portgroup: port group name</span>
+<span class="sd">        :param host: host name</span>
+<span class="sd">        :param test: is it a test case</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_masking_view_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_masking_view</span><span class="p">(</span>
+            <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">new_masking_view_details</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_existing_masking_view</span><span class="p">(</span>
+                    <span class="n">new_masking_view_details</span><span class="p">,</span> <span class="n">portgroup</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span>
+                    <span class="n">element_dict</span><span class="p">,</span> <span class="n">revert</span><span class="p">):</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;The existing masking view </span><span class="si">%s</span><span class="s1"> will be used.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                    <span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;Something is wrong with the existing masking view </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                    <span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;Creating masking view </span><span class="si">%s</span><span class="s1">.&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create_elements</span><span class="p">(</span><span class="n">element_dict</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
+            <span class="n">new_masking_view_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_masking_view</span><span class="p">(</span>
+                <span class="n">element_dict</span><span class="p">[</span><span class="s1">&#39;new_mv_name&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">new_masking_view_details</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.move_vols_from_source_to_target"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_vols_from_source_to_target">[docs]</a>    <span class="k">def</span> <span class="nf">move_vols_from_source_to_target</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">device_ids</span><span class="p">,</span> <span class="n">source_sg</span><span class="p">,</span> <span class="n">target_sg</span><span class="p">,</span> <span class="n">create_vol_f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or create masking view from component elements.</span>
+
+<span class="sd">        :param device_ids: list of device ids</span>
+<span class="sd">        :param source_sg: the source sg</span>
+<span class="sd">        :param target_sg: the target sg</span>
+<span class="sd">        :param create_vol_f: create volume flag</span>
+<span class="sd">        :returns: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Moving </span><span class="si">%d</span><span class="s1"> volume(s) from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+            <span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_ids</span><span class="p">),</span> <span class="n">source_sg</span><span class="p">,</span> <span class="n">target_sg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Please be patient, this may take several minutes...&#39;</span><span class="p">,</span>
+            <span class="n">DEBUG</span><span class="p">)</span>
+        <span class="c1"># Create a small volume</span>
+        <span class="k">if</span> <span class="n">create_vol_f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_volume_from_sg_return_dev_id</span><span class="p">(</span>
+                <span class="s1">&#39;last_vol&#39;</span><span class="p">,</span> <span class="n">source_sg</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="c1"># Move the volume from the old storage group to the</span>
+        <span class="c1"># new storage group</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">move_volumes_between_storage_groups</span><span class="p">(</span>
+            <span class="n">device_ids</span><span class="p">,</span> <span class="n">source_sg</span><span class="p">,</span> <span class="n">target_sg</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.validate_list"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_list">[docs]</a>    <span class="k">def</span> <span class="nf">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_list</span><span class="p">,</span> <span class="n">sub_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the sub list is within the full list.</span>
+
+<span class="sd">        :param full_list: full list</span>
+<span class="sd">        :param sub_list: sub list</span>
+<span class="sd">        :returns: Boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">elem</span> <span class="ow">in</span> <span class="n">full_list</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">sub_list</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.choose_subset_volumes"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_subset_volumes">[docs]</a>    <span class="k">def</span> <span class="nf">choose_subset_volumes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">,</span> <span class="n">volume_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the sub list is within the full list.</span>
+
+<span class="sd">        :param storage_group_name: storage group name</span>
+<span class="sd">        :param volume_list: sub list</span>
+<span class="sd">        :returns: volume_list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">create_vol</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;Here is the full list of volumes in SG </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                         <span class="n">DEBUG</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">,</span> <span class="n">volume_list</span><span class="p">)</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Which do you want to migrate (comma separated list): &#39;</span><span class="p">,</span>
+               <span class="n">volume_list</span><span class="p">)</span>
+        <span class="n">txt_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">txt_out</span><span class="p">:</span>
+            <span class="n">sub_volume_list</span> <span class="o">=</span> <span class="n">txt_out</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">sub_volume_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sub_volume_list</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_list</span><span class="p">(</span><span class="n">volume_list</span><span class="p">,</span> <span class="n">sub_volume_list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">volume_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_volume_list</span><span class="p">):</span>
+                    <span class="n">create_vol</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">volume_list</span> <span class="o">=</span> <span class="n">sub_volume_list</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Unable to validate your list, &#39;</span>
+                             <span class="s1">&#39;no volumes will be migrated.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">)</span>
+                <span class="n">volume_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;You cannot input an empty list&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;Do you want to choose again Y/N or X:&#39;</span>
+            <span class="n">txt_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_input</span><span class="p">(</span><span class="n">txt_out</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">):</span>
+                <span class="n">volume_list</span><span class="p">,</span> <span class="n">create_vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_subset_volumes</span><span class="p">(</span>
+                    <span class="n">storage_group_name</span><span class="p">,</span> <span class="n">volume_list</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">volume_list</span><span class="p">,</span> <span class="n">create_vol</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_volume_list"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_volume_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_volume_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the list of volumes from the storage group.</span>
+
+<span class="sd">        :param storage_group_name: the storage group name</span>
+<span class="sd">        :returns: List, Boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">create_vol</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">volume_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_vols_from_storagegroup</span><span class="p">(</span>
+            <span class="n">storage_group_name</span><span class="p">)</span>
+        <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;There are </span><span class="si">%d</span><span class="s1"> volume in storage group </span><span class="si">%s</span><span class="s1">.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">volume_list</span><span class="p">),</span>
+                         <span class="n">storage_group_name</span><span class="p">)</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Do you want to migrate all </span><span class="si">%s</span><span class="s1"> volumes: Y/N: &#39;</span>
+               <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">volume_list</span><span class="p">))</span>
+        <span class="n">txt_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_input</span><span class="p">(</span><span class="n">txt_out</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">):</span>
+            <span class="c1"># Move list of devices from old to new masking view</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Moving all volumes between source &#39;</span>
+                         <span class="s1">&#39;and target storage groups.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">create_vol</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">volume_list</span><span class="p">,</span> <span class="n">create_vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_subset_volumes</span><span class="p">(</span>
+                <span class="n">storage_group_name</span><span class="p">,</span> <span class="n">volume_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">volume_list</span><span class="p">,</span> <span class="n">create_vol</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.choose_sg"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_sg">[docs]</a>    <span class="k">def</span> <span class="nf">choose_sg</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">masking_view</span><span class="p">,</span> <span class="n">child_sg_list</span><span class="p">,</span> <span class="n">portgroup</span><span class="p">,</span> <span class="n">initiatorgroup</span><span class="p">,</span>
+            <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Choose a child storage group from the list.</span>
+
+<span class="sd">        :param masking_view: the masking view</span>
+<span class="sd">        :param child_sg_list: the storage group list</span>
+<span class="sd">        :param portgroup: The port group name</span>
+<span class="sd">        :param initiatorgoup: the initiator group name</span>
+<span class="sd">        :param revert: revert back</span>
+<span class="sd">        :returns: dict, string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">child_sg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">child_sg</span> <span class="ow">in</span> <span class="n">child_sg_list</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Which storage group do you want to migrate:</span><span class="se">\n\t</span><span class="s1"> &#39;</span>
+                   <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">. Y/N: &#39;</span> <span class="o">%</span> <span class="n">child_sg</span><span class="p">)</span>
+            <span class="n">txt_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;Y&#39;</span> <span class="ow">in</span> <span class="n">txt_out</span><span class="p">:</span>
+                <span class="c1"># Compile the new names of the SGs and MV</span>
+                <span class="n">element_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_new_element_names</span><span class="p">(</span>
+                    <span class="n">masking_view</span><span class="p">,</span> <span class="n">portgroup</span><span class="p">,</span> <span class="n">initiatorgroup</span><span class="p">,</span> <span class="n">child_sg</span><span class="p">,</span>
+                    <span class="n">revert</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">element_dict</span><span class="p">,</span> <span class="n">child_sg</span>
+        <span class="k">return</span> <span class="n">element_dict</span><span class="p">,</span> <span class="n">child_sg</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.validate_masking_view"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_masking_view">[docs]</a>    <span class="k">def</span> <span class="nf">validate_masking_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">masking_view</span><span class="p">,</span> <span class="n">revert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the masking view string.</span>
+
+<span class="sd">        :param masking_view: masking view name</span>
+<span class="sd">        :param revert: revert back</span>
+<span class="sd">        :returns: boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;^OS-&#39;</span><span class="p">,</span> <span class="n">masking_view</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mv_component_dict</span><span class="p">(</span>
+                        <span class="n">masking_view</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">else</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mv_component_dict</span><span class="p">(</span>
+                        <span class="n">masking_view</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.input"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.input">[docs]</a>    <span class="k">def</span> <span class="nf">input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle input.</span>
+
+<span class="sd">        :param txt: text in</span>
+<span class="sd">        :returns: txt_out</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">txt_out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">txt_out</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">EOFError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;Problem with input stream&#39;</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">txt_out</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.get_sg_qos_details"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_qos_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_sg_qos_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_details</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the storage group QoS details.</span>
+
+<span class="sd">        :param sg_details:</span>
+<span class="sd">        :returns: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">qos_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sg_qos_details</span> <span class="o">=</span> <span class="n">sg_details</span><span class="p">[</span><span class="s1">&#39;hostIOLimit&#39;</span><span class="p">]</span>
+            <span class="n">qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxiops&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sg_qos_details</span><span class="p">[</span><span class="s1">&#39;host_io_limit_io_sec&#39;</span><span class="p">]</span>
+            <span class="n">qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxmbps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sg_qos_details</span><span class="p">[</span><span class="s1">&#39;host_io_limit_mb_sec&#39;</span><span class="p">]</span>
+            <span class="n">qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_distribution_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">sg_qos_details</span><span class="p">[</span><span class="s1">&#39;dynamicDistribution&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span>
+                <span class="s1">&#39;hostIOLimit(QoS details) not set storage group </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span>
+                <span class="n">DEBUG</span><span class="p">,</span> <span class="n">sg_details</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">qos_dict</span></div>
+
+<div class="viewcode-block" id="MigrateUtils.set_qos"><a class="viewcode-back" href="../../../../source/PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.set_qos">[docs]</a>    <span class="k">def</span> <span class="nf">set_qos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_sg_name</span><span class="p">,</span> <span class="n">target_sg_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check and set QoS.</span>
+
+<span class="sd">        :param source sg: source SG name</span>
+<span class="sd">        :param target_sg: target SG name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">property_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">source_qos_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">target_qos_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">source_sg_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span><span class="n">source_sg_name</span><span class="p">)</span>
+        <span class="n">target_sg_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span><span class="n">target_sg_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">source_sg_details</span><span class="p">:</span>
+            <span class="n">source_qos_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sg_qos_details</span><span class="p">(</span><span class="n">source_sg_details</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_sg_details</span><span class="p">:</span>
+            <span class="n">target_qos_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sg_qos_details</span><span class="p">(</span><span class="n">target_sg_details</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source_qos_dict</span> <span class="ow">and</span> <span class="n">target_qos_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxiops&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">target_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxiops&#39;</span><span class="p">]:</span>
+                <span class="n">property_dict</span><span class="p">[</span><span class="s1">&#39;host_io_limit_io_sec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxiops&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxmbps&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">target_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxmbps&#39;</span><span class="p">]:</span>
+                <span class="n">property_dict</span><span class="p">[</span><span class="s1">&#39;host_io_limit_mb_sec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxmbps&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_distribution_type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span>
+                    <span class="n">target_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_distribution_type&#39;</span><span class="p">]):</span>
+                <span class="n">property_dict</span><span class="p">[</span><span class="s1">&#39;dynamicDistribution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_distribution_type&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">source_qos_dict</span><span class="p">:</span>
+            <span class="n">property_dict</span><span class="p">[</span><span class="s1">&#39;host_io_limit_io_sec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxiops&#39;</span><span class="p">])</span>
+            <span class="n">property_dict</span><span class="p">[</span><span class="s1">&#39;host_io_limit_mb_sec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_maxmbps&#39;</span><span class="p">])</span>
+            <span class="n">property_dict</span><span class="p">[</span><span class="s1">&#39;dynamicDistribution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">source_qos_dict</span><span class="p">[</span><span class="s1">&#39;sg_distribution_type&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">target_qos_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s1">&#39;Resetting target HostIO limits&#39;</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">property_dict</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;editStorageGroupActionParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;setHostIOLimitsParam&#39;</span><span class="p">:</span> <span class="n">property_dict</span><span class="p">}}</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">modify_storage_group</span><span class="p">(</span>
+                <span class="n">target_sg_name</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+            <span class="n">print_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Host IO details have changed:&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="n">print_str</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">target_sg_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_pretty_table</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;hostIOLimit&#39;</span><span class="p">])</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Dell EMC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

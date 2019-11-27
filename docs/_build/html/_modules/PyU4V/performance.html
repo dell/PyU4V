@@ -1,55 +1,157 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.performance &mdash; PyU4V 3.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
     
-    <title>PyU4V.performance &#8212; PyU4V 3.0.0 documentation</title>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '3.0.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Tools Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PyU4V.performance</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for PyU4V.performance</h1><div class="highlight"><pre>
 <span></span><span class="c1"># The MIT License (MIT)</span>
-<span class="c1"># Copyright (c) 2016 Dell Inc. or its subsidiaries.</span>
+<span class="c1"># Copyright (c) 2019 Dell Inc. or its subsidiaries.</span>
 
 <span class="c1"># Permission is hereby granted, free of charge, to any person</span>
 <span class="c1"># obtaining a copy of this software and associated documentation</span>
@@ -69,11 +171,11 @@
 <span class="c1"># CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span>
 <span class="c1"># TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <span class="c1"># SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;performance.py.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">config_handler</span>
 <span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="k">import</span> <span class="n">constants</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -84,7 +186,10 @@
 
 
 <div class="viewcode-block" id="PerformanceFunctions"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions">[docs]</a><span class="k">class</span> <span class="nc">PerformanceFunctions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;PerformanceFunctions.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">common</span><span class="p">,</span> <span class="n">provisioning</span><span class="p">,</span> <span class="n">u4v_version</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;__init__.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">-</span> <span class="mi">3600000</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
@@ -96,9 +201,9 @@
 <div class="viewcode-block" id="PerformanceFunctions.get_fe_director_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_fe_director_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_fe_director_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get list of all FE Directors.</span>
 
-<span class="sd">        :return: director list</span>
+<span class="sd">        :returns: director list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/FEDirector/keys&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/FEDirector/keys&#39;</span>
         <span class="n">dir_payload</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;symmetrixId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">})</span>
 
         <span class="n">dir_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
@@ -109,11 +214,11 @@
         <span class="k">return</span> <span class="n">dir_list</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.get_fe_port_list"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_fe_port_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_fe_port_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Function to get a list of all front end ports in the array.</span>
+        <span class="sd">&quot;&quot;&quot;Get a list of all front end ports in the array.</span>
 
-<span class="sd">        :return: List of Directors and Ports</span>
+<span class="sd">        :returns: List of Directors and Ports</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/FEPort/keys&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/FEPort/keys&#39;</span>
         <span class="n">port_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">dir_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fe_director_list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">director</span> <span class="ow">in</span> <span class="n">dir_list</span><span class="p">:</span>
@@ -129,12 +234,28 @@
             <span class="n">port_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">port_details</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">port_list</span></div>
 
+<div class="viewcode-block" id="PerformanceFunctions.get_days_to_full"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_days_to_full">[docs]</a>    <span class="k">def</span> <span class="nf">get_days_to_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">array_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,):</span>
+        <span class="sd">&quot;&quot;&quot;Get days to full.</span>
+
+<span class="sd">        Requests Days to Full Metrics from performance stats</span>
+<span class="sd">        requires at least 10 Days of Performance data</span>
+
+<span class="sd">        :returns: Requested stats</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">array_id</span><span class="p">:</span>
+            <span class="n">array_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
+
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/daystofull&#39;</span>
+        <span class="n">port_perf_payload</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;symmetrixId&quot;</span><span class="p">:</span> <span class="n">array_id</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">port_perf_payload</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="PerformanceFunctions.get_fe_port_util_last4hrs"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_fe_port_util_last4hrs">[docs]</a>    <span class="k">def</span> <span class="nf">get_fe_port_util_last4hrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_id</span><span class="p">,</span> <span class="n">port_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get stats for last 4 hours.</span>
 
 <span class="sd">        Currently only coded for one metric - can be adapted for multiple.</span>
 
-<span class="sd">        :return: Requested stats</span>
+<span class="sd">        :returns: Requested stats</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">end_date</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
         <span class="n">start_date</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_date</span> <span class="o">-</span> <span class="mi">14400000</span><span class="p">)</span>
@@ -152,15 +273,15 @@
 
 <div class="viewcode-block" id="PerformanceFunctions.get_fe_director_metrics"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_fe_director_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">get_fe_director_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span>
                                 <span class="n">director</span><span class="p">,</span> <span class="n">dataformat</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Function to get one or more metrics for front end directors.</span>
+        <span class="sd">&quot;&quot;&quot;Get one or more metrics for front end directors.</span>
 
 <span class="sd">        :param start_date: Date EPOCH Time in Milliseconds</span>
 <span class="sd">        :param end_date: Date EPOCH Time in Milliseconds</span>
 <span class="sd">        :param director: List of FE Directors</span>
 <span class="sd">        :param dataformat: Average or Maximum</span>
-<span class="sd">        :return: JSON Payload, and RETURN CODE 200 for success</span>
+<span class="sd">        :returns: JSON Payload, and RETURN CODE 200 for success</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/FEDirector/metrics&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/FEDirector/metrics&#39;</span>
         <span class="n">fe_director_param</span> <span class="o">=</span> <span class="p">({</span>
             <span class="s2">&quot;symmetrixId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
             <span class="s2">&quot;directorId&quot;</span><span class="p">:</span> <span class="n">director</span><span class="p">,</span>
@@ -186,7 +307,7 @@
 
 <div class="viewcode-block" id="PerformanceFunctions.get_fe_port_metrics"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_fe_port_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">get_fe_port_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">director_id</span><span class="p">,</span>
                             <span class="n">port_id</span><span class="p">,</span> <span class="n">dataformat</span><span class="p">,</span> <span class="n">metriclist</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Function to get one or more Metrics for Front end Director ports.</span>
+        <span class="sd">&quot;&quot;&quot;Get one or more Metrics for Front end Director ports.</span>
 
 <span class="sd">        The metric list can contain a list of one or more of PercentBusy,</span>
 <span class="sd">        IOs, MBRead, MBWritten, MBs, AvgIOSize, SpeedGBs, MaxSpeedGBs,</span>
@@ -198,16 +319,16 @@
 <span class="sd">        :param port_id: port id</span>
 <span class="sd">        :param dataformat: Average or Maximum</span>
 <span class="sd">        :param metriclist: list of one or more metrics</span>
-<span class="sd">        :return: JSON Payload, and RETURN CODE 200 for success</span>
+<span class="sd">        :returns: JSON Payload, and RETURN CODE 200 for success</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/FEPort/metrics&quot;</span>
-        <span class="n">fe_director_param</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;symmetrixId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
-                              <span class="s2">&quot;directorId&quot;</span><span class="p">:</span> <span class="n">director_id</span><span class="p">,</span>
-                              <span class="s2">&quot;endDate&quot;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span>
-                              <span class="s2">&quot;dataFormat&quot;</span><span class="p">:</span> <span class="n">dataformat</span><span class="p">,</span>
-                              <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">metriclist</span><span class="p">],</span>
-                              <span class="s2">&quot;portId&quot;</span><span class="p">:</span> <span class="n">port_id</span><span class="p">,</span>
-                              <span class="s2">&quot;startDate&quot;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">})</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/FEPort/metrics&#39;</span>
+        <span class="n">fe_director_param</span> <span class="o">=</span> <span class="p">({</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+                              <span class="s1">&#39;directorId&#39;</span><span class="p">:</span> <span class="n">director_id</span><span class="p">,</span>
+                              <span class="s1">&#39;endDate&#39;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span>
+                              <span class="s1">&#39;dataFormat&#39;</span><span class="p">:</span> <span class="n">dataformat</span><span class="p">,</span>
+                              <span class="s1">&#39;metrics&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">metriclist</span><span class="p">],</span>
+                              <span class="s1">&#39;portId&#39;</span><span class="p">:</span> <span class="n">port_id</span><span class="p">,</span>
+                              <span class="s1">&#39;startDate&#39;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">})</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">fe_director_param</span><span class="p">)</span></div>
@@ -220,9 +341,9 @@
 
 <span class="sd">        :param start_date: EPOCH Time</span>
 <span class="sd">        :param end_date: Epoch Time</span>
-<span class="sd">        :return: array_results_combined</span>
+<span class="sd">        :returns: array_results_combined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/Array/metrics&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/Array/metrics&#39;</span>
         <span class="n">array_perf_payload</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;symmetrixId&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
             <span class="s1">&#39;endDate&#39;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span>
@@ -255,9 +376,9 @@
             <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">array_perf_payload</span><span class="p">)</span>
         <span class="n">array_results_combined</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">array_results_combined</span><span class="p">[</span><span class="s1">&#39;symmetrixID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
-        <span class="n">array_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span>
-        <span class="n">array_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">array_perf_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+        <span class="n">array_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;array&#39;</span>
+        <span class="n">array_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_perf_details</span><span class="p">(</span>
+            <span class="n">array_perf_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">array_results_combined</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.get_storage_group_metrics"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_storage_group_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_group_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_id</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
@@ -266,7 +387,7 @@
 <span class="sd">        :param sg_id: the storage group id</span>
 <span class="sd">        :param start_date: the start date</span>
 <span class="sd">        :param end_date: the end date</span>
-<span class="sd">        :return: sg_results_combined</span>
+<span class="sd">        :returns: sg_results_combined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/StorageGroup/metrics&#39;</span>
         <span class="n">sg_perf_payload</span> <span class="o">=</span> <span class="p">{</span>
@@ -325,10 +446,10 @@
             <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">sg_perf_payload</span><span class="p">)</span>
         <span class="n">sg_results_combined</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">sg_results_combined</span><span class="p">[</span><span class="s1">&#39;symmetrixID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
-        <span class="n">sg_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;StorageGroup&quot;</span>
+        <span class="n">sg_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;StorageGroup&#39;</span>
         <span class="n">sg_results_combined</span><span class="p">[</span><span class="s1">&#39;sgname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sg_id</span>
-        <span class="n">sg_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">sg_perf_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+        <span class="n">sg_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_perf_details</span><span class="p">(</span>
+            <span class="n">sg_perf_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sg_results_combined</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.get_all_fe_director_metrics"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_all_fe_director_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_fe_director_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
@@ -339,22 +460,22 @@
 
 <span class="sd">        :param start_date: start date</span>
 <span class="sd">        :param end_date: end date</span>
-<span class="sd">        :return: director_results_combined</span>
+<span class="sd">        :returns: director_results_combined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dir_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fe_director_list</span><span class="p">()</span>
         <span class="n">director_results_combined</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">director_results_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># print(&quot;this is the director list %s&quot; % dir_list)</span>
         <span class="k">for</span> <span class="n">fe_director</span> <span class="ow">in</span> <span class="n">dir_list</span><span class="p">:</span>
             <span class="n">director_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fe_director_metrics</span><span class="p">(</span>
                 <span class="n">director</span><span class="o">=</span><span class="n">fe_director</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
                 <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">dataformat</span><span class="o">=</span><span class="s1">&#39;Average&#39;</span><span class="p">)</span>
-            <span class="n">director_results</span> <span class="o">=</span> <span class="p">({</span>
-                <span class="s2">&quot;directorID&quot;</span><span class="p">:</span> <span class="n">fe_director</span><span class="p">,</span>
-                <span class="s2">&quot;perfdata&quot;</span><span class="p">:</span> <span class="n">director_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">]})</span>
+            <span class="n">director_results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">director_results</span><span class="p">[</span><span class="s1">&#39;directorID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fe_director</span>
+            <span class="n">director_results</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_perf_details</span><span class="p">(</span>
+                <span class="n">director_metrics</span><span class="p">)</span>
             <span class="n">director_results_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">director_results</span><span class="p">)</span>
         <span class="n">director_results_combined</span><span class="p">[</span><span class="s1">&#39;symmetrixID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
-        <span class="n">director_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FEDirector&quot;</span>
+        <span class="n">director_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;FEDirector&#39;</span>
         <span class="n">director_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">director_results_list</span>
         <span class="k">return</span> <span class="n">director_results_combined</span></div>
 
@@ -367,7 +488,7 @@
 <span class="sd">        :param director_id: Director ID</span>
 <span class="sd">        :param start_date: start date</span>
 <span class="sd">        :param end_date: end date</span>
-<span class="sd">        :return: Combined payload</span>
+<span class="sd">        :returns: Combined payload</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create Director level target URIs</span>
         <span class="n">director_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_director</span><span class="p">(</span><span class="n">director_id</span><span class="p">)</span>
@@ -465,8 +586,8 @@
             <span class="n">perf_metrics_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
                 <span class="n">be_director_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">be_director_payload</span><span class="p">)</span>
             <span class="n">director_type</span> <span class="o">=</span> <span class="s1">&#39;BE&#39;</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="s1">&#39;EF&#39;</span> <span class="ow">in</span> <span class="n">director_id</span> <span class="ow">or</span> <span class="s1">&#39;FA&#39;</span> <span class="ow">in</span> <span class="n">director_id</span>
-              <span class="ow">or</span> <span class="s1">&#39;FE&#39;</span> <span class="ow">in</span> <span class="n">director_id</span> <span class="ow">or</span> <span class="s1">&#39;SE&#39;</span> <span class="ow">in</span> <span class="n">director_id</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="s1">&#39;EF&#39;</span> <span class="ow">in</span> <span class="n">director_id</span> <span class="ow">or</span> <span class="s1">&#39;FA&#39;</span> <span class="ow">in</span> <span class="n">director_id</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="s1">&#39;FE&#39;</span> <span class="ow">in</span> <span class="n">director_id</span> <span class="ow">or</span> <span class="s1">&#39;SE&#39;</span> <span class="ow">in</span> <span class="n">director_id</span><span class="p">)):</span>
             <span class="n">perf_metrics_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
                 <span class="n">fe_director_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">fe_director_payload</span><span class="p">)</span>
             <span class="n">director_type</span> <span class="o">=</span> <span class="s1">&#39;FE&#39;</span>
@@ -489,7 +610,7 @@
 
         <span class="c1"># Set combined payload values not present in returned REST metrics</span>
         <span class="n">combined_payload</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Director&quot;</span>
+        <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Director&#39;</span>
         <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;symmetrixId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
         <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;director_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">director_id</span>
         <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;directorType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">director_type</span>
@@ -507,13 +628,12 @@
         <span class="c1"># If no Director level performance information is retrieved...</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">perf_metrics_payload</span><span class="p">:</span>
             <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;perf_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;No active Director &quot;</span>
-                                            <span class="s2">&quot;performance data available&quot;</span><span class="p">)</span>
-
+            <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;perf_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;No active Director &#39;</span>
+                                            <span class="s1">&#39;performance data available&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Performance metrics returned...</span>
-            <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">perf_metrics_payload</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+            <span class="n">combined_payload</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_perf_details</span><span class="p">(</span>
+                <span class="n">perf_metrics_payload</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">combined_payload</span></div>
 
@@ -523,7 +643,7 @@
 <span class="sd">        :param pg_id: port group id</span>
 <span class="sd">        :param start_date: the start date</span>
 <span class="sd">        :param end_date: the end date</span>
-<span class="sd">        :return: pg_results_combined</span>
+<span class="sd">        :returns: pg_results_combined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/PortGroup/metrics&#39;</span>
         <span class="n">pg_perf_payload</span> <span class="o">=</span> <span class="p">{</span>
@@ -540,10 +660,10 @@
             <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">pg_perf_payload</span><span class="p">)</span>
         <span class="n">pg_results_combined</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">pg_results_combined</span><span class="p">[</span><span class="s1">&#39;symmetrixID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
-        <span class="n">pg_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;PortGroup&quot;</span>
+        <span class="n">pg_results_combined</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PortGroup&#39;</span>
         <span class="n">pg_results_combined</span><span class="p">[</span><span class="s1">&#39;pgname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pg_id</span>
-        <span class="n">pg_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">pg_perf_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+        <span class="n">pg_results_combined</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_perf_details</span><span class="p">(</span>
+            <span class="n">pg_perf_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pg_results_combined</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.get_host_metrics"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_host_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">get_host_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
@@ -555,9 +675,9 @@
 <span class="sd">        :param host: the host name</span>
 <span class="sd">        :param start_date: EPOCH Time</span>
 <span class="sd">        :param end_date: Epoch Time</span>
-<span class="sd">        :return: Formatted results</span>
+<span class="sd">        :returns: Formatted results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/Host/metrics&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/Host/metrics&#39;</span>
         <span class="n">host_perf_payload</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;symmetrixId&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
             <span class="s1">&#39;endDate&#39;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span>
@@ -571,19 +691,21 @@
             <span class="n">target_uri</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">host_perf_payload</span><span class="p">)</span>
         <span class="n">host_results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">host_results</span><span class="p">[</span><span class="s1">&#39;symmetrixID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>
-        <span class="n">host_results</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Host&quot;</span>
+        <span class="n">host_results</span><span class="p">[</span><span class="s1">&#39;reporting_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Host&#39;</span>
         <span class="n">host_results</span><span class="p">[</span><span class="s1">&#39;HostID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host</span>
-        <span class="n">host_results</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host_perf_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">]</span>
+        <span class="n">host_results</span><span class="p">[</span><span class="s1">&#39;perf_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_perf_details</span><span class="p">(</span>
+            <span class="n">host_perf_data</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">host_results</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.get_perf_threshold_categories"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_perf_threshold_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_perf_threshold_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get performance threshold categories.</span>
 
-<span class="sd">        :return: category_list</span>
+<span class="sd">        :returns: category_list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/threshold/categories&quot;</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/threshold/categories&#39;</span>
         <span class="n">categories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">GET</span><span class="p">)</span>
-        <span class="n">category_list</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;endpoint&quot;</span><span class="p">]</span>
+        <span class="n">category_list</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;endpoint&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">category_list</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.get_perf_category_threshold_settings"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.get_perf_category_threshold_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_perf_category_threshold_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
@@ -593,9 +715,10 @@
 <span class="sd">        get_threshold_categories).</span>
 
 <span class="sd">        :param category:</span>
-<span class="sd">        :return: dict, sc</span>
+<span class="sd">        :returns: dict, sc</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/threshold/list/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/threshold/list/</span><span class="si">{category}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">GET</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.set_perf_threshold_and_alert"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.set_perf_threshold_and_alert">[docs]</a>    <span class="k">def</span> <span class="nf">set_perf_threshold_and_alert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">firstthreshold</span><span class="p">,</span>
@@ -615,16 +738,17 @@
 <span class="sd">        :param secondthreshold: the second threshold</span>
 <span class="sd">        :param notify: Notify user with Alert Boolean</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">payload</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;secondThresholdSamples&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-                    <span class="s2">&quot;firstThreshold&quot;</span><span class="p">:</span> <span class="n">firstthreshold</span><span class="p">,</span>
-                    <span class="s2">&quot;firstThresholdSamples&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-                    <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">metric</span><span class="p">,</span> <span class="s2">&quot;alert&quot;</span><span class="p">:</span> <span class="n">notify</span><span class="p">,</span>
-                    <span class="s2">&quot;firstThresholdOccurrrences&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                    <span class="s2">&quot;firstThresholdSeverity&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;secondThresholdSeverity&quot;</span><span class="p">:</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;secondThreshold&quot;</span><span class="p">:</span> <span class="n">secondthreshold</span><span class="p">,</span>
-                    <span class="s2">&quot;secondThresholdOccurrrences&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
-        <span class="n">target_uri</span> <span class="o">=</span> <span class="s2">&quot;/performance/threshold/update/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">({</span><span class="s1">&#39;secondThresholdSamples&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="s1">&#39;firstThreshold&#39;</span><span class="p">:</span> <span class="n">firstthreshold</span><span class="p">,</span>
+                    <span class="s1">&#39;firstThresholdSamples&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="n">metric</span><span class="p">,</span> <span class="s1">&#39;alert&#39;</span><span class="p">:</span> <span class="n">notify</span><span class="p">,</span>
+                    <span class="s1">&#39;firstThresholdOccurrrences&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                    <span class="s1">&#39;firstThresholdSeverity&#39;</span><span class="p">:</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;secondThresholdSeverity&#39;</span><span class="p">:</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;secondThreshold&#39;</span><span class="p">:</span> <span class="n">secondthreshold</span><span class="p">,</span>
+                    <span class="s1">&#39;secondThresholdOccurrrences&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+        <span class="n">target_uri</span> <span class="o">=</span> <span class="s1">&#39;/performance/threshold/update/</span><span class="si">{category}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">target_uri</span><span class="p">,</span> <span class="n">PUT</span><span class="p">,</span> <span class="n">request_object</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span></div>
 
@@ -646,18 +770,18 @@
                                      <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span>
                                      <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_MINIMAL</span><span class="p">)</span>
 
-            <span class="n">eventwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;firstthreshold&quot;</span><span class="p">,</span>
-                                  <span class="s2">&quot;secondthreshold&quot;</span><span class="p">,</span> <span class="s2">&quot;notify&quot;</span><span class="p">,</span> <span class="s2">&quot;kpi&quot;</span><span class="p">])</span>
+            <span class="n">eventwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;metric&#39;</span><span class="p">,</span> <span class="s1">&#39;firstthreshold&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;secondthreshold&#39;</span><span class="p">,</span> <span class="s1">&#39;notify&#39;</span><span class="p">,</span> <span class="s1">&#39;kpi&#39;</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">category_list</span><span class="p">:</span>
                 <span class="n">metric_setting</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">get_perf_category_threshold_settings</span><span class="p">(</span><span class="n">category</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span>
                         <span class="s1">&#39;performanceThreshold&#39;</span><span class="p">])</span>
                 <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metric_setting</span><span class="p">:</span>
-                        <span class="n">eventwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
-                            <span class="p">[</span><span class="n">category</span><span class="p">,</span> <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metric&#39;</span><span class="p">),</span>
-                             <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;firstThreshold&#39;</span><span class="p">),</span> <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                                <span class="s1">&#39;secondThreshold&#39;</span><span class="p">),</span> <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alertError&#39;</span><span class="p">),</span>
-                             <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kpi&#39;</span><span class="p">)])</span></div>
+                    <span class="n">eventwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">category</span><span class="p">,</span> <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metric&#39;</span><span class="p">),</span>
+                         <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;firstThreshold&#39;</span><span class="p">),</span> <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="s1">&#39;secondThreshold&#39;</span><span class="p">),</span> <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alertError&#39;</span><span class="p">),</span>
+                         <span class="n">metric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kpi&#39;</span><span class="p">)])</span></div>
 
 <div class="viewcode-block" id="PerformanceFunctions.set_perfthresholds_csv"><a class="viewcode-back" href="../../source/PyU4V.html#PyU4V.performance.PerformanceFunctions.set_perfthresholds_csv">[docs]</a>    <span class="k">def</span> <span class="nf">set_perfthresholds_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csvfilename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set performance thresholds using a CSV file.</span>
@@ -666,67 +790,89 @@
 <span class="sd">        used with generate_threshold_settings_csv to produce CSV file that</span>
 <span class="sd">        can be edited and uploaded. The CSV file should have the following</span>
 <span class="sd">        headers format category,metric,firstthreshold,secondthreshold,</span>
-<span class="sd">        notify,kpi,array,HostReads,100000,300000,true,true</span>
-<span class="sd">        array,HostWrites,100000,300000,true,false cur</span>
+<span class="sd">        notify,kpi,array,HostReads,100000,300000,True,True</span>
+<span class="sd">        array,HostWrites,100000,300000,True,False</span>
+<span class="sd">        Boolean values are case sensitive ensure that when editing file that</span>
+<span class="sd">        they are True or False.  KPI setting can not be changed with REST</span>
+<span class="sd">        API in current implementation, if you change this value it will not</span>
+<span class="sd">        be updated in the UI. Only notify alert Boolean can be changed with</span>
+<span class="sd">        REST. Only KPI Metrics should be alterted on, note if you are changing</span>
+<span class="sd">        default threshold values for metrics used for dashboard views these</span>
+<span class="sd">        will also update the numbers used for your dashboards.  It&#39;s not</span>
+<span class="sd">        recommended to alert on every value as this will just create noise.</span>
 
 <span class="sd">        :param csvfilename: the path to the csv file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">read_csv_values</span><span class="p">(</span><span class="n">csvfilename</span><span class="p">)</span>
-        <span class="n">firstthreshold_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;firstthreshold&quot;</span><span class="p">)</span>
-        <span class="n">secondthreshold_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secondthreshold&quot;</span><span class="p">)</span>
-        <span class="n">notify_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;notify&quot;</span><span class="p">)</span>
-        <span class="n">categrory_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
-        <span class="n">metric_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metric&quot;</span><span class="p">)</span>
-        <span class="n">kpimetric_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kpi&quot;</span><span class="p">)</span>
+        <span class="n">firstthreshold_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;firstthreshold&#39;</span><span class="p">)</span>
+        <span class="n">secondthreshold_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secondthreshold&#39;</span><span class="p">)</span>
+        <span class="n">notify_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;notify&#39;</span><span class="p">)</span>
+        <span class="n">categrory_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+        <span class="n">metric_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metric&#39;</span><span class="p">)</span>
+        <span class="n">kpimetric_list</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kpi&#39;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">categrory_list</span><span class="p">,</span> <span class="n">metric_list</span><span class="p">,</span>
                                     <span class="n">firstthreshold_list</span><span class="p">,</span>
                                     <span class="n">secondthreshold_list</span><span class="p">,</span> <span class="n">notify_list</span><span class="p">,</span>
                                     <span class="n">kpimetric_list</span><span class="p">):</span>
-            <span class="c1"># if k :</span>
-            <span class="c1"># uncomment line above if you only want to update KPI values,</span>
-            <span class="c1"># doing this will reduce runtime of set_perfthresholds_csv</span>
-            <span class="c1"># you can restrict futher by filtering on category values e.g.</span>
-            <span class="c1"># if c =&quot;Array&quot; or &quot;RDFS&quot;: to restrict to update certain array</span>
-            <span class="c1"># categories</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_perf_threshold_and_alert</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></div></div>
+            <span class="k">if</span> <span class="n">k</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_perf_threshold_and_alert</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_extract_perf_details</span><span class="p">(</span><span class="n">perf_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extract performance data from a REST response.</span>
+
+<span class="sd">        :param perf_data: the JSON response from U4V REST API</span>
+<span class="sd">        :returns: performance data --list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">perf_response</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">perf_response</span> <span class="o">=</span> <span class="p">(</span><span class="n">perf_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">perf_response</span> <span class="o">=</span> <span class="p">(</span><span class="n">perf_data</span><span class="p">[</span><span class="s1">&#39;resultList&#39;</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">perf_response</span></div>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Dell EMC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PyU4V 3.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, Ciara Stacke.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>
