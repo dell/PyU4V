@@ -6,6 +6,7 @@ password=smc
 server_ip=10.0.0.75
 port=8443
 array=00012345678
+; remote_array=00012345679
 ; verify=True
 verify=/path-to-file/server_hostname.pem
 
@@ -13,33 +14,37 @@ verify=/path-to-file/server_hostname.pem
 [loggers]
 keys=root,PyU4V
 
-[handlers]
-keys=consoleHandler, fileHandler
-
-[formatters]
-keys=simpleFormatter
-
 [logger_root]
-level=INFO
 handlers=consoleHandler, fileHandler
 
 [logger_PyU4V]
+; Set PyU4V log level by changing level, valid values are:
+; DEBUG, INFO, WARNING, ERROR, CRITICAL
 level=INFO
 handlers=consoleHandler, fileHandler
 qualname=PyU4V
 propagate=0
 
+[handlers]
+keys=consoleHandler, fileHandler
+
 [handler_consoleHandler]
 class=StreamHandler
-level=INFO
 formatter=simpleFormatter
 args=(sys.stdout,)
 
 [handler_fileHandler]
 class=handlers.RotatingFileHandler
-level=INFO
 formatter=simpleFormatter
-args=(PyU4V.log, 'a')
+; Output log file to working directory, change 'PyU4V.log' to path of your
+; choice to change log file output location. The file handler will limit log
+; file sizes to 10MB before rotating to a new one beginning PyU4V.log, a
+; maximum of 10 log files will be kept and old log files named PyU4V.log.1,
+; PyU4V.log.2 etc.
+args=('PyU4V.log', 'a', 10485760, 10)
+
+[formatters]
+keys=simpleFormatter
 
 [formatter_simpleFormatter]
 format=%(asctime)s - %(name)s - %(levelname)s - %(message)s

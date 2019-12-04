@@ -1,0 +1,129 @@
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""file_handler.py"""
+
+import csv
+import logging
+
+LOG = logging.getLogger(__name__)
+
+
+def create_list_from_file(file_name):
+    """Given a file, create a list from its contents.
+
+    :param file_name: the path to the file -- str
+    :returns: file contents -- list
+    """
+    with open(file_name) as f:
+        list_item = f.readlines()
+    raw_list = map(lambda s: s.strip(), list_item)
+    return list(raw_list)
+
+
+def read_csv_values(file_name, convert=False):
+    """Read any csv file with headers.
+
+    You can extract the multiple lists from the headers in the CSV file.
+    In your own script, call this function and assign to data variable,
+    then extract the lists to the variables. Example:
+    data = fh.read_csv_values(mycsv.csv)
+    sg_name_list = data['sgname']
+    policy_list = data['policy']
+
+    :param file_name: path to CSV file -- str
+    :param convert: convert strings to equivalent data type -- bool
+    :returns: CSV parsed data -- dict
+    """
+
+    def _convert(s):
+        # Convert a string representation of a bool or number to equivalent
+        # types that can be used in Python
+        if convert:
+            try:
+                if s.lower() == 'true':
+                    s = True
+                elif s.lower() == 'false':
+                    s = False
+                else:
+                    s = float(s)
+            except ValueError:
+                pass
+        return s
+
+    # open the file in universal line ending mode
+    with open(file_name, newline='') as infile:
+        # read the file as a dictionary for each row ({header : value})
+        reader = csv.DictReader(infile)
+        data = dict()
+        for row in reader:
+            for header, value in row.items():
+                try:
+                    data[header].append(_convert(value))
+                except KeyError:
+                    data[header] = [_convert(value)]
+    return data
+
+
+def write_to_csv_file(file_name, data):
+    """Write list data to CSV spreadsheet.
+
+    :param file_name: name of the file to be written to -- str
+    :param data: data to be written to file -- list
+    """
+    if data:
+        with open(bytes(file_name, 'UTF-8'), 'wt', newline='') as csv_file:
+            event_writer = csv.writer(csv_file,
+                                      delimiter=',',
+                                      quotechar='|',
+                                      quoting=csv.QUOTE_MINIMAL)
+            event_writer.writerow(data[0])
+            remaining_data = data[1:]
+
+        if remaining_data:
+            with open(bytes(file_name, 'UTF-8'), 'a', newline='') as csv_file:
+                event_writer = csv.writer(csv_file,
+                                          delimiter=',',
+                                          quotechar='|',
+                                          quoting=csv.QUOTE_MINIMAL)
+                for line in remaining_data:
+                    event_writer.writerow(line)
+        else:
+            LOG.error('Only one line of data was provided for writing to CSV '
+                      'file.')
+    else:
+        LOG.error('No data was provided to write to CSV file.')
+
+
+def write_dict_to_csv_file(file_path, dictionary):
+    """Write dictionary data to CSV spreadsheet.
+
+    :param file_path: path including name of the file to be written to -- str
+    :param dictionary: data to be written to file -- dict
+    """
+    columns = list(dictionary.keys())
+    num_values = 0
+    for column in columns:
+        col_length = len(dictionary.get(column))
+        if col_length > num_values:
+            num_values = col_length
+
+    data_for_file = list()
+    data_for_file.append(columns)
+    for i in range(0, num_values):
+        csv_line = list()
+        for column in columns:
+            csv_line.append(dictionary.get(column)[i])
+        data_for_file.append(csv_line)
+
+    write_to_csv_file(file_path, data_for_file)

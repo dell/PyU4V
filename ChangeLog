@@ -1,0 +1,328 @@
+PyU4V Change Log
+================
+
+Version 9.1.0.0 - released 4/12/19
+==================================
+
+Enhancements
+------------
+- Changed from MIT License to Apache 2.0 License
+- Python 2.7 has been removed as a supported Python version in advance of
+  discontinued community support
+- Doc strings have been standardised through out PyU4V
+- Snake case has been implemented across method names and old methods set for
+  deprecation (see refactoring/deprecation list below)
+- Unisphere version has been moved from a user-set variable to a constant set
+  by PyU4V.
+- If the user does not supply environment settings or they cannot be loaded
+  from the config file an exception is raised during initialisation of
+  U4VConn()
+- Imports have been correctly implemented so class instances are not passed
+  around except for the rest_client
+- List/Dict comprehension have been cleaned up
+- Decorators have been created for deprecating/refactoring methods, see section
+  'Refactoring & Deprecation' below
+- Methods have been changed from old build_uri method to new build_uri method
+  so there are zero hard coded endpoints
+- Workload Planner functions have been moved out of common.py and into their
+  own file workload_planner.py
+- File handling functions have been moved to utils.file_handler.py
+- Added .gitignore file to prevent any unwanted files merging with upstream
+  repo
+- Logger log level now only set in one place in PyU4V.conf
+- Logger rotating file handler set up to create log files no bigger than 10MB
+  and rotate through 10 of them with the most recent always being PyU4V.log
+- Separate handling of SSLError, Timeout, HTTPError, and ConnectionError REST
+  exceptions, allows for more granularity when diagnosing problems
+- PyU4V will run a Unisphere validation check in U4VConn() __init__, if the
+  version does not meet the required minimum set the driver gracefully exits
+- A new REST header has been added called user-agent which specifies the
+  current version of PyU4V in use, the platform running it and release
+  information, and the Python version in use
+- System endpoints have been added to PyU4V, enhancements feature system health
+  checks, disk, and tag information
+- Users can write dictionary to CSV from utils.file_handler
+- CSV reader can convert string representations of boolean and float values to
+  the correct type for processing
+- Page list iterator now can iterate through all pages automatically, merge all
+  results into one list and return to the user
+- Performance section had a complete overhaul, from top to bottom it is an
+  entirely new section. Old methods have been fixed but all marked for
+  deprecation. For more information see 'Refactoring & Deprecation' section
+  below
+- Performance constants have been moved out of the package wide constants file
+  into their own performance_constants file
+- PyU4V README and ReadTheDocs had a complete overhaul from their previous
+  state and can be considered complete revisions
+- Retry decorator added to decorators.py to allow functions to be attempted
+  multiple times before failing.
+- Check if a given string is a valid ipv4 or ipv6 address
+- Functions now expect integer numbers instead of string representations of
+  numbers expected by the Unisphere REST API, the intention is to make the use
+  of PyU4V as simple as possible and let us take care of casting required types
+- Online Device Expansion is included presenting users with the ability to
+  extend R2 devices in the same operation as extending R1 devices.
+
+Provisioning Enhancements
+-------------------------
+- get_available_initiator_wwn_as_list() : Get a list of available initiator
+  WWNs
+- get_in_use_initiator() : Get an initiator that is in use filterable by
+  director type
+- get_available_initiator() : Get an available initiator filterable by director
+  type
+- get_fa_directors() : Get all FA directors on the array.
+- get_active_masking_view_connections() : Get list of active connections from
+  any masking view
+- format_director_port : Format separate director port into single string
+- get_any_director_port : Get a non-GuestOS port from a director
+
+Fixes
+-----
+- When searching for volumes by volume name, if more than one volume matches
+  the input volume name a list of volume device IDs will be returned, if only
+  one volume is matched just that device ID is returned as a string
+- Fix for establishing a session when none exists during rest requests
+- PyU4V.conf loading on Windows from user home directory now working as
+  intended from default location of ~/.PyU4V
+- Removed CFG from header of univmax_conn.py and set it in __init__ so users
+  file_path is now read as intended
+- Removed CFG from header of utils files, it was unnecessary to have it
+  included there, it only needs set once in U4VConn()
+- The function migration.get_storage_group_list() set includeMigrations to
+  False incorrectly returns all SGs in the migratingNames list, a new function
+  migration.get_storage_groups() has been added which returns the default
+  response of a dict containing all SG names and those SGs which are part of a
+  migration session
+- The function migration.delete_environment() was deleted as it is a duplicate
+  of function migration.delete_migration_environment()
+- CSV writer has been changed to use correct file writing modes and practices
+- Pull #30 Modify initiator reverses alias name during a rename operation
+- Pull #34 Get target wwn fails to split director:port return value
+- Pull #38 Incorrect type in docstring of get_size_of_device_on_array
+- Split returned port ids correctly during port group create/modify operations.
+
+Tests
+-----
+- 100% unit test coverage with all tests running cleanly across both unit and
+  CI
+- All suitable functions now have a respective Continuous Integration (CI) test
+- Extensive CI test coverage
+- Requests session establish is tested instead of mocking behaviour
+- Fake request session mock has been changed so it does not adversely affect
+  other tests when full suite of tests is run
+
+Refactoring & Deprecations
+--------------------------
+The following methods have either been refactored and marked for deprecation
+after PyU4V 9.3 or just marked for deprecation with no refactoring. To reduce
+the impact on end-users which may use these methods in their scripts an n+2
+deprecation policy has been adopted.
+
+For any methods marked for deprecation in the current release, they will need
+to remain in PyU4V for two full releases before being completely removed.  As
+this policy has only just been implemented for PyU4V 9.1, all methods below
+marked for deprecation after PyU4V 9.3 will be removed entirely in PyU4V 9.4 or
+whatever the equivalent version is for n+2.
+
+It is assumed that after two full releases users will have had enough time and
+notice to make the required changes in their code. Any methods which have been
+refactored in favour of other methods will be clearly marked in the associated
+logs generated when a refactored function is in use.
+
+PyU4V/common.py
+---------------
+- _build_uri_args() has been marked for deprecation, please use new format
+  _build_uri()
+- create_list_from_file() has been refactored and marked for deprecation,
+  please use alternative function utils.file_handler.create_list_from_file()
+- read_csv_values() has been refactored and marked for deprecation, please
+  use alternative function utils.file_handler.read_csv_values()
+- get_wlp_information() has been refactored and marked for deprecation, please
+  use alternative function WLPFunctions.get_wlp_information()
+- get_headroom() has been refactored and marked for deprecation, please use
+  alternative function WLPFunctions.get_headroom()
+
+PyU4V/performance.py
+--------------------
+- get_perf_threshold_categories() has been refactored and marked for
+  deprecation, please use alternative function get_threshold_categories()
+- get_perf_category_threshold_settings() has been refactored and marked for
+  deprecation, please use alternative function
+  get_category_threshold_settings()
+- set_perf_threshold_and_alert() has been refactored and marked for
+  deprecation, please use alternative function update_threshold()
+- set_perfthresholds_csv() has been refactored and marked for deprecation,
+  please use alternative function update_threshold()
+- get_fe_director_list() has been refactored and marked for deprecation,
+  please use alternative function get_frontend_director_keys()
+- get_fe_port_list() has been refactored and marked for deprecation,
+  please use alternative function get_frontend_port_keys()
+- get_fe_port_util_last4hrs() has been marked for deprecation, use standard get
+  FE Director performance stats call and specify the start and end time
+  manually
+- get_fe_director_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_frontend_director_stats()
+- get_fe_port_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_frontend_port_stats()
+- get_array_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_array_stats()
+- get_storage_group_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_storage_group_stats()
+- get_all_fe_director_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_storage_group_stats()
+- get_all_fe_director_metrics() has been marked for deprecation, use standard
+  get FE Director performance stats call and specify all required array IDs
+- get_director_info() has been marked for deprecation, use standard
+  get Director performance stats call and specify all required array IDs and
+  type
+- get_port_group_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_port_group_stats()
+- get_host_metrics() has been refactored and marked for deprecation,
+  please use alternative function get_host_stats()
+
+PyU4V/provisioning.py
+---------------------
+- get_mvs_from_host() has been refactored and marked for
+  deprecation, please use alternative function get_masking_views_from_host()
+- get_hostgroup() has been refactored and marked for
+  deprecation, please use alternative function get_host_group()
+- get_hostgroup_list() has been refactored and marked for
+  deprecation, please use alternative function get_host_group_list()
+- create_hostgroup() has been refactored and marked for
+  deprecation, please use alternative function create_host_group()
+- modify_hostgroup() has been refactored and marked for
+  deprecation, please use alternative function modify_host_group()
+- delete_hostgroup() has been refactored and marked for
+  deprecation, please use alternative function delete_host_group()
+- get_masking_views_by_host() has been refactored and marked for deprecation,
+  please use alternative function get_masking_views_by_initiator_group()
+- get_common_masking_views() has been refactored and marked for deprecation,
+  please use alternative function get_port_group_common_masking_views()
+- get_host_from_maskingview() has been refactored and marked for
+  deprecation, please use alternative function get_host_from_masking_view()
+- get_storagegroup_from_maskingview() has been refactored and marked for
+  deprecation, please use alternative function
+  get_storage_group_from_masking_view()
+- get_portgroup_from_maskingview() has been refactored and marked for
+  deprecation, please use alternative function
+  get_port_group_from_masking_view()
+- get_maskingview_connections() has been refactored and marked for
+  deprecation, please use alternative function get_masking_view_connections()
+- find_host_lun_id_for_vol() has been refactored and marked for
+  deprecation, please use alternative function find_host_lun_id_for_volume()
+- get_portgroup() has been refactored and marked for
+  deprecation, please use alternative function get_port_group()
+- get_portgroup_list() has been refactored and marked for deprecation,
+  please use alternative function get_port_group_list()
+- get_ports_from_pg() has been refactored and marked for deprecation,
+  please use alternative function get_ports_from_port_group()
+- get_target_wwns_from_pg() has been refactored and marked for
+  deprecation, please use alternative function
+  get_target_wwns_from_port_group()
+- create_portgroup() has been refactored and marked for
+  deprecation, please use alternative function create_port_group()
+- create_multiport_portgroup() has been refactored and marked for
+  deprecation, please use alternative function create_multiport_port_group()
+- create_portgroup_from_file() has been refactored and marked for
+  deprecation, please use alternative function create_port_group_from_file()
+- modify_portgroup() has been refactored and marked for deprecation,
+  please use alternative function modify_port_group()
+- delete_portgroup() has been refactored and marked for deprecation,
+  please use alternative function delete_port_group()
+- get_slo_list() has been refactored and marked for
+  deprecation, please use alternative function get_service_level_list()
+- get_slo() has been refactored and marked for
+  deprecation, please use alternative function get_service_level()
+- modify_slo() has been refactored and marked for
+  deprecation, please use alternative function modify_service_level()
+- get_mv_from_sg() has been refactored and marked for
+  deprecation, please use alternative function
+  get_masking_view_from_storage_group()
+- get_num_vols_in_sg() has been refactored and marked for deprecation,
+  please use alternative function get_num_vols_in_storage_group()
+- is_child_sg_in_parent_sg() has been refactored and marked for deprecation,
+  please use alternative function
+  is_child_storage_group_in_parent_storage_group()
+- get_child_sg_from_parent() has been refactored and marked for deprecation,
+  please use alternative function get_child_storage_groups_from_parent()
+- create_non_empty_storagegroup() has been refactored and marked for
+  deprecation, please use alternative function create_non_empty_storage_group()
+- create_empty_sg() has been refactored and marked for deprecation,
+  please use alternative function create_empty_storage_group()
+- add_existing_vol_to_sg() has been refactored and marked for deprecation,
+  please use alternative function add_existing_volume_to_storage_group()
+- add_new_vol_to_storagegroup() has been refactored and marked for deprecation,
+  please use alternative function add_new_volume_to_storage_group()
+- remove_vol_from_storagegroup() has been refactored and marked for
+  deprecation, please use alternative function
+  remove_volume_from_storage_group()
+- create_volume_from_sg_return_dev_id() has been refactored and marked for
+  deprecation, please use alternative function
+  create_volume_from_storage_group_return_id()
+- add_child_sg_to_parent_sg() has been refactored and marked for deprecation,
+  please use alternative function add_child_storage_group_to_parent_group()
+- remove_child_sg_from_parent_sg() has been refactored and marked for
+  deprecation, please use alternative function
+  remove_child_storage_group_from_parent_group()
+- update_storagegroup_qos() has been refactored and marked for deprecation,
+  please use alternative function update_storage_group_qos()
+- delete_storagegroup() has been refactored and marked for deprecation,
+  please use alternative function delete_storage_group()
+- get_vol_effective_wwn_details_84() has been refactored and marked for
+  deprecation, please use alternative function
+  get_volume_effective_wwn_details()
+- get_vols_from_storagegroup() has been refactored and marked for deprecation,
+  please use alternative function get_volumes_from_storage_group()
+- get_storagegroup_from_vol() has been refactored and marked for deprecation,
+  please use alternative function get_storage_group_from_volume()
+- is_volume_in_storagegroup() has been refactored and marked for deprecation,
+  please use alternative function is_volume_in_storage_group()
+
+PyU4V/replication.py
+--------------------
+- get_storage_group_rep() has been refactored and marked for deprecation,
+  please use alternative function get_storage_group_srdf_details()
+- get_storage_group_rep_list() has been refactored and marked for deprecation,
+  please use alternative function get_replication_enabled_storage_groups()
+- get_storagegroup_snapshot_list() has been refactored and marked for
+  deprecation, please use alternative function
+  get_storage_group_snapshot_list()
+- create_storagegroup_snap() has been refactored and marked for deprecation,
+  please use alternative function create_storage_group_snap()
+- get_storagegroup_snapshot_generation_list() has been refactored and marked
+  for deprecation, please use alternative function
+  get_storage_group_snapshot_generation_list()
+- modify_storagegroup_snap() has been refactored and marked for deprecation,
+  please use alternative function modify_storage_group_snapshot()
+- delete_storagegroup_snapshot() has been refactored and marked for
+  deprecation, please use alternative function delete_storage_group_snapshot()
+- choose_snapshot_from_list_in_console() has marked for deprecation
+- is_vol_in_rep_session() has been refactored and marked for deprecation,
+  please use alternative function is_volume_in_replication_session()
+- are_vols_rdf_paired() has been refactored and marked for deprecation,
+  please use alternative function are_volumes_rdf_paired()
+- get_storagegroup_srdfg_list() has been refactored and marked for deprecation,
+  please use alternative function get_storage_group_srdf_group_list()
+- get_storagegroup_srdf_details() has been refactored and marked for
+  deprecation, please use alternative function get_storage_group_rdf_details()
+- create_storagegroup_srdf_pairings() has been refactored and marked for
+  deprecation, please use alternative function
+  create_storage_group_srdf_pairings()
+- modify_storagegroup_srdf() has been refactored and marked for deprecation,
+  please use alternative function modify_storage_group_srdf()
+- suspend_storagegroup_srdf() has been refactored and marked for deprecation,
+  please use alternative function suspend_storage_group_srdf()
+- establish_storagegroup_srdf() has been refactored and marked for deprecation,
+  please use alternative function establish_storage_group_srdf()
+- failover_storagegroup_srdf() has been refactored and marked for deprecation,
+  please use alternative function failover_storage_group_srdf()
+- failback_storagegroup_srdf() has been refactored and marked for deprecation,
+  please use alternative function failback_storage_group_srdf()
+- delete_storagegroup_srdf() has been refactored and marked for deprecation,
+  please use alternative function delete_storage_group_srdf()
+
+PyU4V/utils/console.py
+----------------------
+- choose_from_list() has been marked for deprecation, please implement any
+  console driven commands from your own scripts and not from PyU4V

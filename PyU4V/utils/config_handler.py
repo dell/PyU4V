@@ -1,24 +1,16 @@
-# The MIT License (MIT)
 # Copyright (c) 2019 Dell Inc. or its subsidiaries.
-
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation
-# files (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """config_handler.py."""
 
 try:
@@ -31,11 +23,28 @@ import os
 
 
 def set_logger_and_config(file_path=None):
-    """Set logger and config file."""
-    cfg, conf_file, set_null_logger = None, None, True
-    # register configuration file
-    conf_file_name = 'PyU4V.conf'
-    if file_path is not None:
+    """Set logger and config file.
+
+    :param file_path: path to PyU4V configuration file -- str
+    :returns: config parser -- obj
+    """
+    cfg, conf_file = None, None
+    # Get configuration file
+    conf_file = _get_config_file(file_path)
+    # Get configuration and logging settings
+    if conf_file:
+        cfg = _get_config_and_set_logger(conf_file)
+    return cfg
+
+
+def _get_config_file(file_path=None):
+    """Get config file from file path, working directory, or ~/.PyU4V.
+
+    :param file_path: path to file -- str
+    :returns: config file path -- str
+    """
+    conf_file_name, conf_file = 'PyU4V.conf', None
+    if file_path:
         if os.path.isfile(file_path):
             conf_file = file_path
     elif os.path.isfile(conf_file_name):
@@ -45,24 +54,21 @@ def set_logger_and_config(file_path=None):
             home_path=os.path.expanduser('~')))
         if os.path.isfile(global_path):
             conf_file = global_path
-    if conf_file is not None:
-        set_null_logger = False
-        try:
-            cfg = Config.ConfigParser()
-            cfg.read(conf_file)
-            logging.config.fileConfig(conf_file)
-            logging.getLogger(__name__)
-        except Exception:
-            set_null_logger = True
-    if set_null_logger is True:
-        # Set default logging handler to avoid "No handler found" warnings.
-        try:  # Python 2.7+
-            from logging import NullHandler
-        except ImportError:
-            class NullHandler(logging.Handler):
-                def emit(self, record):
-                    pass
+    return conf_file
 
-        logging.getLogger(__name__).addHandler(NullHandler())
 
+def _get_config_and_set_logger(file_path):
+    """Get config file from file path, read settings, and set logger options.
+
+    :param file_path: path to file -- str
+    :returns: config parser -- obj
+    """
+    cfg = None
+    try:
+        cfg = Config.ConfigParser()
+        cfg.read(file_path)
+        logging.config.fileConfig(file_path)
+        logging.getLogger(__name__)
+    except Exception:
+        logging.getLogger(__name__).addHandler(logging.NullHandler())
     return cfg
