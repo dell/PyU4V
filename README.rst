@@ -1,6 +1,5 @@
-======================
-Welcome to PyU4V 3.1.7
-======================
+Welcome to PyU4V 9.1
+====================
 
 | |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
 | |Language| |PyVersions| |Unisphere| |Platform| |DTotal| |DMonth| |DWeek|
@@ -21,15 +20,15 @@ Note
    where ``{ip-address}`` is the IP address of your Unisphere server and
    ``{port}`` is the port it is listening on.
 
-PyU4V Version 3.1.7
--------------------
+PyU4V Version 9.1
+-----------------
 
 +-----------------------+----------------------------+
 | **Author**            | Dell EMC                   |
 +-----------------------+----------------------------+
-| **PyU4V Version**     | 3.1.7                      |
+| **PyU4V Version**     | 9.1.0.0                    |
 +-----------------------+----------------------------+
-| **Unisphere Version** | 8.4 and 9.0 series         |
+| **Unisphere Version** | 9.1.0.5                    |
 +-----------------------+----------------------------+
 | **Array Model**       | VMAX-3, VMAX AFA, PowerMax |
 +-----------------------+----------------------------+
@@ -37,11 +36,26 @@ PyU4V Version 3.1.7
 +-----------------------+----------------------------+
 | **Platforms**         | Linux, Windows             |
 +-----------------------+----------------------------+
-| **Python**            | 2.7, 3.6, 3.7              |
+| **Python**            | 3.6, 3.7                   |
 +-----------------------+----------------------------+
 | **Requires**          | Requests_, Six_, urllib3_  |
 +-----------------------+----------------------------+
 
+Note
+    If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V 9.1 with any
+    version of Unisphere older than 9.1.x
+
+Note
+    PyU4V version 9.1.x is compatible with scripts written for PyU4V versions
+    >= 3.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
+    scripts in later versions of PyU4V. If you have scripts written which
+    specifically target Unisphere REST 8.4 or 9.0 endpoints these are still
+    accessible via PyU4V 9.1.x however you will need to ensure you are passing
+    the version required when performing these calls as PyU4V 9.1 will default
+    to using 9.1 endpoints exclusively.  You will also need to pay special
+    attention to any REST JSON payloads in custom scripts as payloads are
+    subject to change between major Unisphere REST releases.
 
 Installation
 ------------
@@ -66,7 +80,7 @@ specifying ``PyU4V`` as the install package for ``pip``::
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==3.1.7
+    $ pip install PyU4V==9.1.0.0
 
 Copy the sample ``PyU4V.conf`` provided with PyU4V to either your working
 directory or within a directory named ``.PyU4V`` in your current users home
@@ -98,8 +112,7 @@ Environment configuration values ``password``, ``username``, ``server_ip``,
 initialisation. SSL verification as indicated by the ``verify`` key in
 ``PyU4V.conf`` is discussed in the next section.
 
-
-SSL Configuration
+SSL CONFIGURATION
 -----------------
 
 In order to enable SSL enabled communication between your host and the
@@ -143,7 +156,6 @@ directly in ``PyU4V.conf``::
     [setup]
     verify=/path/to/file/{cert_name}.pem
 
-
 Initialise PyU4V Connection
 ---------------------------
 
@@ -157,7 +169,7 @@ outlined in the previous section).
 
     conn = PyU4V.U4VConn()
     conn.common.get_unisphere_version()
-    >> {'version': 'V9.0.2'}
+    >> {'version': 'V9.1.0.5'}
 
 If you wish to query another array without changing the configuration file,
 call the connection ``set_array_id()`` function:
@@ -170,90 +182,6 @@ The various types of functionality provided by PyU4V is separated into logical
 sections such as ``replication``, ``provisioning``, and ``performance``. For a
 full API breakdown by section and some usage example please refer to the
 PyU4V ReadTheDocs_.
-
-
-Examples
---------
-
-There are a number of examples which can be run with minimal set-up. For details on how to run these,
-and other very useful information, please see Paul Martin's blog https://community.emc.com/people/PaulCork/blog
-
-
-Coding conventions
-------------------
-
-For neatness and readability we will enforce the following conventions going forward.
-
-1. Single quotes ' unless double quotes " necessary.
-
-2. use ``.format()`` when manipulating strings
-
-.. code-block::
-
-   my_string= '/{variable1}, thanks for contributing to {variable2}'.format(
-       variable1=’Hello’, variable2=’PyU4V’)
-
-3. We cannot use ``.format()`` in logging due to pylint error (W1202) so we follow the following format:
-
-.. code-block::
-
-   my_message = 'Hello, this is my log message.'
-   logger.debug('message: %(my_message)s', {my_message: my_message})
-
-4. Use ``:returns:`` in docstring.  Pep8 will guide you with all the other docstring conventions
-
-.. code-block::
-
-   """The is my summary of the method with full stop.
-
-   This is a brief description of what the method does.  Keep
-   it as simple as possible.
-
-   :param parameter1: brief description of parameter 1
-   :param parameter2: brief description of parameter 2
-   :returns: what gets returned from method, omit if none
-   :raises: Exceptions raised, omit if none
-    """
-
-5. Class name is mixed case with no underscores _
-
-.. code-block::
-
-   class ClassFunctions(object):
-       """Collection of functions ClassFunctions."""
-
-6. Public Methods are separated by underscores _.  Make the name as meaningful as possible
-
-.. code-block::
-
-    def public_function_does_exactly_what_it_says_it_does(self):
-        """Function does exactly what it says on the tin."""
-
-7. Private Methods are prefixed and separated by underscores _.  Make the name as meaningful as possible
-
-.. code-block::
-
-    def _private_function_does_exactly_what_it_says_it_does(self):
-        """Function does exactly what it says on the tin."""
-
-8. If functions seems to big or too complicated then consider breaking them into smaller functions.
-
-9. Each new function must be unit tested.
-
-10. Each bug fix must be unit tested.
-
-11. Unix and OS X format only.  If in doubt run
-
-.. code-block:: bash
-
-   # dos2unix myfile.txt
-
-or in PyCharm:
-
-.. code-block:: bash
-
-   `File` -> `Line Separators` -> `LF- Unix and OS X (\n)`
-
 
 Support, Bugs, Issues
 ---------------------
@@ -284,42 +212,36 @@ with the upstream PyU4V repo.
 For a full breakdown of contribution requirements, coding standards, submitting
 and everything else in between please refer to PyU4V ReadTheDocs_.
 
-Tools
------
-
-Please refer to the Tools section of ReadTheDocs_ for OpenStack functionality
-to migrate volumes to the new REST masking view structure.
-
 Disclaimer
 ----------
 
 Unless required by applicable law or agreed to in writing, software distributed
-under the MIT License is distributed on an "AS IS" BASIS, WITHOUT
+under the Apache 2.0 License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 
 .. BadgeLinks
 
-.. |Maintenance| image:: https://img.shields.io/badge/Maintained-Bug_fixes_only-blue
+.. |Maintenance| image:: https://img.shields.io/badge/Maintained-Yes-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/commits/master
 .. |OpenSource| image:: https://img.shields.io/badge/Open%20Source-Yes-blue
    :target: https://github.com/MichaelMcAleer/PyU4V
 .. |AskUs| image:: https://img.shields.io/badge/Ask%20Us...-Anything-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/issues
-.. |License| image:: https://img.shields.io/badge/License-MIT-blue
+.. |License| image:: https://img.shields.io/badge/License-Apache%202.0-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/LICENSE
 .. |Test| image:: https://img.shields.io/badge/Tests-Passing-blue
 .. |Build| image:: https://img.shields.io/badge/Build-Passing-blue
 .. |Docs| image:: https://img.shields.io/badge/Docs-Passing-blue
 .. |Language| image:: https://img.shields.io/badge/Language-Python%20-blue
    :target: https://www.python.org/
-.. |PyVersions| image:: https://img.shields.io/badge/Python-2.7%20%7C%203.6%20%7C%203.7-blue
+.. |PyVersions| image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/README.rst
 .. |Platform| image:: https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue
    :target: https://github.com/MichaelMcAleer/PyU4V/blob/master/README.rst
-.. |Unisphere| image:: https://img.shields.io/badge/Unisphere-8.4.x%20%7C%209.0.x-blue
-   :target: https://www.dell.com/support/home/us/en/19/product-support/product/u
+.. |Unisphere| image:: https://img.shields.io/badge/Unisphere-9.1.0.5-blue
+   :target: https://www.dell.com/support/home/us/en/19/product-support/product/unisphere-powermax/overview
 .. |DTotal| image:: https://pepy.tech/badge/pyu4v
    :target: https://pepy.tech/project/pyu4v
 .. |DMonth| image:: https://pepy.tech/badge/pyu4v/month

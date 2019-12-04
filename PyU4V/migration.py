@@ -1,44 +1,41 @@
-# The MIT License (MIT)
 # Copyright (c) 2019 Dell Inc. or its subsidiaries.
-
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation
-# files (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """migration.py."""
+
 import logging
 
+from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
 
 LOG = logging.getLogger(__name__)
 
-MIGRATION = constants.MIGRATION
+# Resource constants
 ASYNC_UPDATE = constants.ASYNC_UPDATE
+MIGRATION = constants.MIGRATION
+SYMMETRIX = constants.SYMMETRIX
+ENVIRONMENT = constants.ENVIRONMENT
+CAPABILITIES = constants.CAPABILITIES
+STORAGEGROUP = constants.STORAGEGROUP
 
 
 class MigrationFunctions(object):
     """MigrationFunctions."""
 
-    def __init__(self, array_id, request, common, u4v_version):
+    def __init__(self, array_id, rest_client):
         """__init__."""
+        self.common = CommonFunctions(rest_client)
         self.array_id = array_id
-        self.common = common
-        self.request = request
-        self.U4V_VERSION = u4v_version
         self.get_resource = self.common.get_resource
         self.create_resource = self.common.create_resource
         self.modify_resource = self.common.modify_resource
@@ -47,11 +44,11 @@ class MigrationFunctions(object):
     def get_migration_info(self):
         """Return migration information for an array.
 
-        :returns: dict
+        :returns: migration info -- dict
         """
-        target_uri = '/{version}/migration/symmetrix/{array_id}'.format(
-            version=self.U4V_VERSION, array_id=self.array_id)
-        return self.common.get_request(target_uri, 'migration info')
+        return self.get_resource(
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id)
 
     def create_migration_environment(self, target_array_id):
         """Create a new migration environment between two arrays.
@@ -59,14 +56,13 @@ class MigrationFunctions(object):
         Creates a new migration environment between two arrays for use
         with non disruptive migrations
 
-        :param target_array_id: 12 Digit serial number of target array
-        :returns: dict
+        :param target_array_id: target array id -- str
+        :returns: migration environment info -- dict
         """
-        payload = {"otherArrayId": target_array_id}
-        return self.create_resource(category='migration',
-                                    resource_level='symmetrix',
-                                    payload=payload,
-                                    resource_level_id=self.array_id)
+        return self.create_resource(
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            payload={'otherArrayId': target_array_id})
 
     def delete_migration_environment(self, target_array_id):
         """Delete migration environment.
@@ -74,25 +70,25 @@ class MigrationFunctions(object):
         Given a target array will delete migration environment, used once
         all migrations are complete
 
-        :param target_array_id: 12 Digit serial number of target array
+        :param target_array_id: target array id -- str
         """
         self.delete_resource(
-            self.array_id, MIGRATION, 'environment',
-            resource_name=target_array_id)
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=ENVIRONMENT, resource_type_id=target_array_id)
 
     def get_array_migration_capabilities(self):
         """Check what migration facilities are available.
 
-        :returns: array_capabilities dict
+        :returns: array capabilities -- dict
         """
-        array_capabilities = {}
-        target_uri = ('/{version}/migration/capabilities/symmetrix'.format(
-            version=self.U4V_VERSION))
-        capabilities = self.common.get_request(
-            target_uri, 'migration capabilities')
+        capabilities = self.get_resource(
+            category=MIGRATION, resource_level=CAPABILITIES,
+            resource_type=SYMMETRIX)
         symm_list = (
             capabilities.get(
-                'storageArrayCapability', []) if capabilities else [])
+                'storageArrayCapability', list()) if capabilities else list())
+        array_capabilities = dict()
         for symm in symm_list:
             if symm['arrayId'] == self.array_id:
                 array_capabilities = symm
@@ -101,75 +97,79 @@ class MigrationFunctions(object):
 
     # Environment endpoints
     def get_environment_list(self):
-        """Get list of all environments.
+        """Get list of all migration environments.
 
-        :returns: list of all environments
+        :returns: environments -- list
         """
-        response = self.get_resource(self.array_id, MIGRATION, 'environment')
-        environment_list = response.get('arrayId', []) if response else []
-        return environment_list
+        response = self.get_resource(
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=ENVIRONMENT)
+        return response.get('arrayId', list()) if response else list()
 
-    def get_environment(self, environment_name):
+    def get_environment(self, target_array_id):
         """Given a name, return migration environment details.
 
-        :param environment_name: the name of the migration environment
-        returns: environment dict
+        :param target_array_id: target array id -- str
+        :returns: environment details -- dict
         """
         return self.get_resource(
-            self.array_id, MIGRATION, 'environment',
-            resource_name=environment_name)
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=ENVIRONMENT, resource_type_id=target_array_id)
 
-    def delete_environment(self, environment_name):
-        """Given a name, delete the migration environment.
-
-        :param environment_name: the name of the environment
-        """
-        return self.delete_resource(
-            self.array_id, MIGRATION, 'environment',
-            resource_name=environment_name)
-
-    # Storage group endpoints
     def get_storage_group_list(self, include_migrations=False):
-        """Get list of all storage groups.
+        """Get list of all storage groups or migrating storage groups.
 
-        :param include_migrations: return only SGs with migration sessions
-        :returns: list of storage groups or migrating storage groups
+        :param include_migrations: return only SGs with migration
+                                   sessions -- bool
+        :returns: storage groups or migrating storage groups -- list
         """
-        filters = {}
-        if include_migrations:
-            filters.update({'includeMigrations': True})
         response = self.get_resource(
-            self.array_id, MIGRATION, 'storagegroup', params=filters)
-        key = 'migratingName' if include_migrations else 'name'
-        storage_group_list = response.get(key, []) if response else []
-        return storage_group_list
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP)
+        return response.get('migratingName') if include_migrations else(
+            response.get('name'))
+
+    def get_storage_groups(self):
+        """Get all storage groups and migrating storage groups.
+
+        :returns: storage groups and migrating storage groups -- dict
+        """
+        response = self.get_resource(
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP)
+        return response
 
     def get_storage_group(self, storage_group_name):
-        """Given a name, return storage group details wrt migration.
+        """Given a name, return storage group migrations details.
 
-        :param storage_group_name: the name of the storage group
-        :returns: storage group dict
+        :param storage_group_name: storage group id -- str
+        :returns: storage group details -- dict
         """
         return self.get_resource(
-            self.array_id, MIGRATION, 'storagegroup',
-            resource_name=storage_group_name)
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_name)
 
     def create_storage_group_migration(
             self, storage_group_name, target_array_id, srp_id=None,
-            port_group_id=None, no_compression=None, pre_copy=None,
-            validate=None):
+            port_group_id=None, no_compression=False, pre_copy=False,
+            validate=False):
         """Create a migration session for a storage group.
 
-        :param storage_group_name: the name of the new SG migration session
-        :param target_array_id: the id of the target array
-        :param srp_id: the id of the storage resource pool to use
-        :param port_group_id: the id of the port group to use
-        :param no_compression: boolean, whether or not to use compression
-        :param pre_copy: boolean, whether or not to pre copy
-        :param validate: boolean, whether or not to validate
-        :returns: the new storage group dict
+        :param storage_group_name: storage group id -- str
+        :param target_array_id: target array id -- str
+        :param srp_id: storage resource pool id -- str
+        :param port_group_id: port group id -- str
+        :param no_compression: dont use compression -- bool
+        :param pre_copy: use pre copy -- bool
+        :param validate: validate -- bool
+        :returns: new storage group -- dict
         """
-        payload = {"otherArrayId": target_array_id}
+        payload = {'otherArrayId': target_array_id}
         if srp_id:
             payload.update({'srpId': srp_id})
         if port_group_id:
@@ -180,35 +180,44 @@ class MigrationFunctions(object):
             payload.update({'preCopy': pre_copy})
         if validate:
             payload.update({'validate': validate})
+
         return self.create_resource(
-            self.array_id, MIGRATION, 'storagegroup',
-            resource_name=storage_group_name, payload=payload)
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_name,
+            payload=payload)
 
     def modify_storage_group_migration(
             self, storage_group_name, action, options=None, _async=False):
         """Modify the state of a storage group's migration session.
 
-        :param storage_group_name: name of the storage group
-        :param action: the migration action e.g. Cutover, Sync, Commit,
-                       Recover, ReadyTgt
-        :param options: a dict of possible options - depends on action type.
-                        example options={'cutover': {'force': True}}
-        :param _async: flag to indicate if call should be async
+        Valid migrations options are 'Cutover', 'Sync', 'Commit', 'Recover',
+        and 'ReadyTgt'.
+
+        :param storage_group_name: storage group id -- str
+        :param action: migration action -- str
+        :param options: migration options, example:
+                        {cutover': {'force': True}} -- dict
+        :param _async: if call should be async -- bool
+        :returns: modified storage group info -- dict
         """
         payload = {'action': action}
-        if options and action:
+        if options:
             payload.update(options)
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_resource(
-            self.array_id, MIGRATION, 'storagegroup',
-            resource_name=storage_group_name, payload=payload)
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_name,
+            payload=payload)
 
     def delete_storage_group_migration(self, storage_group_name):
         """Given a name, delete the storage group migration session.
 
-        :param storage_group_name: the name of the migrating storage group
+        :param storage_group_name: storage group id -- str
         """
         self.delete_resource(
-            self.array_id, MIGRATION, 'storagegroup',
-            resource_name=storage_group_name)
+            category=MIGRATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_name)

@@ -1,34 +1,29 @@
-# The MIT License (MIT)
-# Copyright (c) 2016 Dell Inc. or its subsidiaries.
-
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation
-# files (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """common.py."""
 
-import csv
 import logging
+import math
+import re
+import six
+import socket
 import time
 
 from PyU4V.utils import constants
+from PyU4V.utils import decorators
 from PyU4V.utils import exception
-
-import six
+from PyU4V.utils import file_handler
 
 LOG = logging.getLogger(__name__)
 
@@ -38,35 +33,49 @@ POST = constants.POST
 PUT = constants.PUT
 DELETE = constants.DELETE
 
-# U4V constants
+# Status code constants
 STATUS_200 = constants.STATUS_200
 STATUS_201 = constants.STATUS_201
 STATUS_202 = constants.STATUS_202
 STATUS_204 = constants.STATUS_204
 STATUS_401 = constants.STATUS_401
 STATUS_404 = constants.STATUS_404
+
 # Job constants
 INCOMPLETE_LIST = constants.INCOMPLETE_LIST
 CREATED = constants.CREATED
 SUCCEEDED = constants.SUCCEEDED
 
+# Resource constants
+SYSTEM = constants.SYSTEM
+JOB = constants.JOB
+VERSION = constants.VERSION
+SYMMETRIX = constants.SYMMETRIX
+SLOPROVISIONING = constants.SLOPROVISIONING
+COMMON = constants.COMMON
+ITERATOR = constants.ITERATOR
+PAGE = constants.PAGE
+WLP = constants.WLP
+HEADROOM = constants.HEADROOM
+
 
 class CommonFunctions(object):
     """CommonFunctions."""
 
-    def __init__(self, request, interval, retries, u4v_version):
+    def __init__(self, rest_client):
         """__init__."""
-        self.request = request
-        self.interval = interval
-        self.retries = retries
-        self.U4V_VERSION = u4v_version
+        self.rest_client = rest_client
+        self.request = self.rest_client.rest_request
+        self.interval = self.rest_client.interval
+        self.retries = self.rest_client.retries
+        self.UNI_VERSION = constants.UNISPHERE_VERSION
 
     def wait_for_job_complete(self, job):
         """Given the job wait for it to complete.
 
-        :param job: the job dict
-        :returns: rc -- int, result -- string, status -- string,
-                  task -- list of dicts detailing tasks in the job
+        :param job: job details -- dict
+        :returns: response code, result, status, task details -- int, str, str,
+                  list
         :raises: VolumeBackendAPIException
         """
         res, tasks = None, None
@@ -78,7 +87,7 @@ class CommonFunctions(object):
             return 0, res, job['status'], tasks
 
         def _wait_for_job_complete():
-            # Called at an interval until the job is finished.
+            """Called at an interval until the job is finished."""
             retries = kwargs['retries']
             try:
                 kwargs['retries'] = retries + 1
@@ -89,6 +98,8 @@ class CommonFunctions(object):
                         kwargs['wait_for_job_called'] = True
                         kwargs['rc'], kwargs['status'] = rc, status
                         kwargs['result'], kwargs['task'] = result, task
+                    else:
+                        kwargs['status'], kwargs['task'] = status, task
             except Exception:
                 exception_message = 'Issue encountered waiting for job.'
                 LOG.exception(exception_message)
@@ -105,31 +116,31 @@ class CommonFunctions(object):
             time.sleep(self.interval)
             kwargs = _wait_for_job_complete()
             if kwargs['retries'] > self.retries:
-                LOG.error('_wait_for_job_complete failed after '
-                          '%(retries)d tries.', {'retries': kwargs['retries']})
+                LOG.error('_wait_for_job_complete failed after {cnt} '
+                          'tries.'.format(cnt=kwargs['retries']))
                 kwargs['rc'], kwargs['result'] = -1, kwargs['result']
                 break
 
-        LOG.debug('Return code is: %(rc)lu. Result is %(res)s.',
-                  {'rc': kwargs['rc'], 'res': kwargs['result']})
+        LOG.debug('Return code is: {rc}. Result is {res}.'.format(
+            rc=kwargs['rc'], res=kwargs['result']))
         return (kwargs['rc'], kwargs['result'],
                 kwargs['status'], kwargs['task'])
 
     def get_job_by_id(self, job_id):
         """Get details of a specific job.
 
-        :param job_id: the job id
+        :param job_id: job id -- str
+        :returns: job details -- dict
         """
-        job_url = '/{version}/system/job/{job_id}'.format(
-            version=self.U4V_VERSION, job_id=job_id)
-        return self.get_request(job_url, 'job')
+        return self.get_resource(category=SYSTEM, resource_level=JOB,
+                                 resource_level_id=job_id)
 
     def _is_job_finished(self, job_id):
         """Check if the job is finished.
 
-        :param job_id: the id of the job
-        :returns: complete -- bool, result -- string,
-                  rc -- int, status -- string, task -- list of dicts
+        :param job_id: job id -- str
+        :returns: job complete, result, response code, status, task
+                  details -- bool, str, int, str, list
         """
         complete, rc, status, result, task = False, 0, None, None, None
         job = self.get_job_by_id(job_id)
@@ -151,17 +162,16 @@ class CommonFunctions(object):
     def check_status_code_success(operation, status_code, message):
         """Check if a status code indicates success.
 
-        :param operation: the operation
-        :param status_code: the status code
-        :param message: the server response
+        :param operation: operation being performed -- str
+        :param status_code: status code -- int
+        :param message: server response -- str
         :raises: VolumeBackendAPIException
         """
         if status_code not in [STATUS_200, STATUS_201,
                                STATUS_202, STATUS_204]:
             exception_message = (
-                'Error {operation}. The status code received '
-                'is {sc} and the message is {message}.'.format(
-                    operation=operation, sc=status_code, message=message))
+                'Error {op}. The status code received is {sc} and the message '
+                'is {msg}.'.format(op=operation, sc=status_code, msg=message))
             if status_code == STATUS_404:
                 raise exception.ResourceNotFoundException(
                     data=exception_message)
@@ -174,10 +184,10 @@ class CommonFunctions(object):
     def wait_for_job(self, operation, status_code, job):
         """Check if call is async, wait for it to complete.
 
-        :param operation: the operation being performed
-        :param status_code: the status code
-        :param job: the job
-        :returns: task -- list of dicts detailing tasks in the job
+        :param operation: operation being performed -- str
+        :param status_code: status code -- int
+        :param job: job id -- str
+        :returns: task details -- list
         :raises: VolumeBackendAPIException
         """
         task = None
@@ -185,11 +195,10 @@ class CommonFunctions(object):
             rc, result, status, task = self.wait_for_job_complete(job)
             if rc != 0:
                 exception_message = (
-                    'Error {operation}. Status code: {sc}. '
-                    'Error: {error}. Status: {status}.'.format(
-                        operation=operation, sc=rc,
-                        error=six.text_type(result),
-                        status=status))
+                    'Error {op}. Status code: {sc}. Error: {err}. '
+                    'Status: {st}.'.format(
+                        op=operation, sc=rc, err=six.text_type(result),
+                        st=status))
                 LOG.error(exception_message)
                 raise exception.VolumeBackendAPIException(
                     data=exception_message)
@@ -198,56 +207,28 @@ class CommonFunctions(object):
     def _build_uri(self, *args, **kwargs):
         """Build the target URI.
 
-        :param args: optional arguments passed in to form URI
-        :param kwargs: optional key word arguments passed in to form URI
-        :returns: target URI -- string
+        :param args: arguments passed in to form URI -- str
+        :param kwargs: key word arguments passed in to form URI -- str
+        :returns: target URI -- str
         """
-        target_uri = ''
-        version = None
-
-        # Version control logic
-        if kwargs.get('version') and not kwargs.get('no_version'):
-            version = kwargs['version']
-        elif kwargs.get('version') and kwargs.get('no_version'):
-            version = kwargs['version']
-        elif not kwargs.get('version') and not kwargs.get('no_version'):
-            LOG.debug('Version has been specified along with no_version '
-                      'flag, ignoring no_version flag and using version '
-                      '%(version)s.',
-                      {'version': version})
-            version = self.U4V_VERSION
-        elif kwargs['no_version'] and not kwargs.get('version'):
-            pass
-
+        target_uri, version = str(), None
         # Old method - has arguments passed which define URI
         if args:
-            if version:
-                target_uri += ('/{version}'.format(version=version))
-
-            array_id = args[0]
-            category = args[1]
-            resource_type = args[2]
-            resource_name = kwargs.get('resource_name')
-
-            target_uri += ('/{cat}/symmetrix/{array_id}/{res_type}'.format(
-                cat=category,
-                array_id=array_id,
-                res_type=resource_type))
-
-            if resource_name:
-                target_uri += '/{resource_name}'.format(
-                    resource_name=kwargs.get('resource_name'))
-
+            target_uri = self._build_uri_args(*args, **kwargs)
         # New method - new method is to have only keyword arguments passed
-        if not args and kwargs:
-            if kwargs.get('category') in ['performance', 'common']:
-                version = None
+        elif not args and kwargs:
+            if kwargs.get('category') not in ['performance', 'common']:
+                version = self._build_uri_get_version(kwargs.get('version'),
+                                                      kwargs.get('no_version'))
             if version:
                 target_uri += '/{version}'.format(version=version)
 
-            target_uri += '/{category}/{resource_level}'.format(
-                category=kwargs.get('category'),
-                resource_level=kwargs.get('resource_level'))
+            target_uri += '/{category}'.format(
+                category=kwargs.get('category'))
+
+            if kwargs.get('resource_level'):
+                target_uri += '/{resource_level}'.format(
+                    resource_level=kwargs.get('resource_level'))
 
             if kwargs.get('resource_level_id'):
                 target_uri += '/{resource_level_id}'.format(
@@ -268,261 +249,240 @@ class CommonFunctions(object):
                         resource_id=kwargs.get('resource_id'))
 
             if kwargs.get('object_type'):
-                target_uri += '/{}'.format(kwargs.get('object_type'))
+                target_uri += '/{object_type}'.format(
+                    object_type=kwargs.get('object_type'))
                 if kwargs.get('object_type_id'):
                     target_uri += '/{object_type_id}'.format(
                         object_type_id=kwargs.get('object_type_id'))
 
         return target_uri
 
+    @decorators.deprecation_notice('CommonFunctions', 9.1, 9.3)
+    def _build_uri_args(self, *args, **kwargs):
+        """Legacy method for building target URI.
+
+        DEPRECATION NOTICE: CommonFunctions._build_uri_args() will be
+        deprecated in PyU4V version 9.3 in favour of
+        CommonFunctions._build_uri() with kwargs only. For further information
+        please consult PyU4V 9.1 release notes.
+
+        :param args: arguments passed in to form URI -- str
+        :param kwargs: key word arguments passed in to form URI -- str
+        :returns: the target URI -- str
+        """
+        version = self._build_uri_get_version(kwargs.get('version'),
+                                              kwargs.get('no_version'))
+        array_id, category, resource_type = args[0], args[1], args[2]
+        resource_name = kwargs.get('resource_name')
+        target_uri = str()
+
+        if version:
+            target_uri += ('/{version}'.format(version=version))
+        target_uri += ('/{cat}/symmetrix/{array_id}/{res_type}'.format(
+            cat=category, array_id=array_id, res_type=resource_type))
+        if resource_name:
+            target_uri += '/{resource_name}'.format(
+                resource_name=kwargs.get('resource_name'))
+        return target_uri
+
+    def _build_uri_get_version(self, version=None, no_version=False):
+        """Get the Unisphere version for the target URI.
+
+        :param version: version to use from kwargs -- str
+        :param no_version: if URI should be versionless -- bool
+        :returns: version -- str
+        """
+        if not version and no_version:
+            version = None
+        elif not version and not no_version:
+            version = self.UNI_VERSION
+        elif version and no_version:
+            LOG.debug(
+                'Version has been specified along with no_version flag, '
+                'ignoring no_version flag and using version {ver}'.format(
+                    ver=version))
+        return version
+
     def get_request(self, target_uri, resource_type, params=None):
         """Send a GET request to the array.
 
-        :param target_uri: the target uri
-        :param resource_type: the resource type, e.g. maskingview
-        :param params: optional dict of filter params
-        :returns: resource_object -- dict or None
+        :param target_uri: target uri -- str
+        :param resource_type: the resource type, e.g. maskingview -- str
+        :param params: optional filter params -- dict
+        :returns: resource_object -- dict
         :raises: ResourceNotFoundException
         """
         message, sc = self.request(target_uri, GET, params=params)
-        operation = 'get {resource_type}'.format(resource_type=resource_type)
+        operation = 'GET {resource_type}'.format(resource_type=resource_type)
         self.check_status_code_success(operation, sc, message)
         return message
 
     def get_resource(self, *args, **kwargs):
         """Get resource details from the array.
 
-        The args passed in are
-        positional and should be passed in using the order they are listed in
-        below.
-
-        :param args: Traditional Method
-            param0 array_id: the array serial number
-            param1 category: the resource category e.g. sloprovisioning
-            param2 resource_type: the resource type e.g. maskingview
-        :param kwargs: Traditional Method
-            param version: optional version of Unisphere
-            param resource_name: optional name of a specific resource
-            param params: optional dict of filter params
-        :param kwargs: New Method
-            param version: the version of Unisphere
-            param no_version: (boolean) if the URI required no version
-            param category: the resource category e.g. sloprovisioning, system
-            param resource_level: the resource level e.g. storagegroup, alert
-            param resource_level_id: the resource level ID
-            param resource_type: the name of a specific resource
-            param resource_type_id: the name of a specific resource
-            param resource: the name of a specific resource
-            param resource_id: the name of a specific resource
-            param object_type: the name of a specific resource
-            param object_type_id: the name of a specific resource
-            param params: query parameters
+        :param kwargs:
+            param version: Unisphere version -- int
+            param no_version: if versionless uri -- bool
+            param category: resource category e.g. sloprovisioning -- str
+            param resource_level: resource level e.g. storagegroup -- str
+            param resource_level_id: resource level id -- str
+            param resource_type: optional name of resource -- str
+            param resource_type_id: optional name of resource -- str
+            param resource: optional name of resource -- str
+            param resource_id: optional name of resource -- str
+            param object_type: optional name of resource -- str
+            param object_type_id: optional name of resource -- str
+            param params: query parameters -- dict
 
         :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
-
+        resource_type = None
         if args:
             resource_type = args[2]
         elif not args and kwargs:
             resource_type = kwargs.get('resource_level')
-        else:
-            resource_type = None
-
         return self.get_request(
             target_uri, resource_type, kwargs.get('params'))
 
     def create_resource(self, *args, **kwargs):
         """Create a resource.
 
-        The args passed in are positional and should be
-        passed in using the order they are listed in below.
+        :param kwargs:
+            param version: Unisphere version -- int
+            param no_version: if versionless uri -- bool
+            param category: resource category e.g. sloprovisioning -- str
+            param resource_level: resource level e.g. storagegroup -- str
+            param resource_level_id: resource level id -- str
+            param resource_type: optional name of resource -- str
+            param resource_type_id: optional name of resource -- str
+            param resource: optional name of resource -- str
+            param resource_id: optional name of resource -- str
+            param object_type: optional name of resource -- str
+            param object_type_id: optional name of resource -- str
+            param payload: query parameters -- dict
 
-        :param args: Traditional Method
-            param0 array_id: the array serial number
-            param1 category:  the resource category e.g. sloprovisioning
-            param2 resource_type: the resource type e.g. maskingview
-        :param kwargs: Traditional Method
-            param version: optional version of Unisphere
-            param resource_name: optional name of a specific resource
-            param payload: optional payload dict
-        :param kwargs: New Method
-            param version: the version of Unisphere
-            param no_version: (boolean) if the URI required no version
-            param category: the resource category e.g. sloprovisioning, system
-            param resource_level: the resource level e.g. storagegroup, alert
-            param resource_level_id: the resource level ID
-            param resource_type: the name of a specific resource
-            param resource_type_id: the name of a specific resource
-            param resource: the name of a specific resource
-            param resource_id: the name of a specific resource
-            param object_type: the name of a specific resource
-            param object_type_id: the name of a specific resource
-            param payload: optional payload dict
-
-        :returns: message -- string, server response
+        :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
-
         message, status_code = self.request(
             target_uri, POST, request_object=kwargs.get('payload'))
-
+        resource_type = None
         if args:
             resource_type = args[2]
         elif not args and kwargs:
             resource_type = kwargs.get('resource_level')
-        else:
-            resource_type = None
-
-        operation = 'Create {resource_type} resource'.format(
-            resource_type=resource_type)
-
-        self.check_status_code_success(
-            operation, status_code, message)
+        operation = ('POST {resource_type} resource'.format(
+            resource_type=resource_type))
+        self.check_status_code_success(operation, status_code, message)
         return message
 
     def modify_resource(self, *args, **kwargs):
         """Modify a resource.
 
-        The args passed in are positional and should be
-        passed in using the order they are listed in below.
+        :param kwargs:
+            param version: Unisphere version -- int
+            param no_version: if versionless uri -- bool
+            param category: resource category e.g. sloprovisioning -- str
+            param resource_level: resource level e.g. storagegroup -- str
+            param resource_level_id: resource level id -- str
+            param resource_type: optional name of resource -- str
+            param resource_type_id: optional name of resource -- str
+            param resource: optional name of resource -- str
+            param resource_id: optional name of resource -- str
+            param object_type: optional name of resource -- str
+            param object_type_id: optional name of resource -- str
+            param payload: query parameters
 
-        :param args: Traditional Method
-            param0 array_id: the array serial number
-            param1 category: the resource category e.g. sloprovisioning
-            param2 resource_type: the resource type e.g. maskingview
-        :param kwargs: Traditional Method
-            param version: optional version of Unisphere
-            param resource_name: optional name of a specific resource
-            param payload: optional payload dict
-        :param kwargs: New Method
-            param version: the version of Unisphere
-            param no_version: (boolean) if the URI required no version
-            param category: the resource category e.g. sloprovisioning, system
-            param resource_level: the resource level e.g. storagegroup, alert
-            param resource_level_id: the resource level ID
-            param resource_type: the name of a specific resource
-            param resource_type_id: the name of a specific resource
-            param resource: the name of a specific resource
-            param resource_id: the name of a specific resource
-            param object_type: the name of a specific resource
-            param object_type_id: the name of a specific resource
-            param payload: optional payload dict
-
-        :returns: message -- string (server response)
+        :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
-
         message, status_code = self.request(
             target_uri, PUT, request_object=kwargs.get('payload'))
-
+        resource_type = None
         if args:
             resource_type = args[2]
         elif not args and kwargs:
             resource_type = kwargs.get('resource_level')
-        else:
-            resource_type = None
-
-        operation = 'Modify {resource_type} resource'.format(
-            resource_type=resource_type)
-
+        operation = ('PUT {resource_type} resource'.format(
+            resource_type=resource_type))
         self.check_status_code_success(operation, status_code, message)
         return message
 
     def delete_resource(self, *args, **kwargs):
         """Delete a resource.
 
-        The args passed in are positional and should be
-        passed in using the order they are listed in below.
-
-        :param args: Traditional Method
-            param0 array_id: the array serial number
-            param1 category: the resource category e.g. sloprovisioning
-            param2 resource_type: the resource type e.g. maskingview
-        :param kwargs: Traditional Method
-            param version: optional version of Unisphere
-            param resource_name: optional name of a specific resource
-            param payload: optional payload dict
-        :param kwargs: New Method
-            param version: the version of Unisphere
-            param no_version: (boolean) if the URI required no version
-            param category: the resource category e.g. sloprovisioning, system
-            param resource_level: the resource level e.g. storagegroup, alert
-            param resource_level_id: the resource level ID
-            param resource_type: the name of a specific resource
-            param resource_type_id: the name of a specific resource
-            param resource: the name of a specific resource
-            param resource_id: the name of a specific resource
-            param object_type: the name of a specific resource
-            param object_type_id: the name of a specific resource
-            param payload: optional payload dict
+        :param kwargs:
+            param version: Unisphere version -- int
+            param no_version: if versionless uri -- bool
+            param category: resource category e.g. sloprovisioning -- str
+            param resource_level: resource level e.g. storagegroup -- str
+            param resource_level_id: resource level id -- str
+            param resource_type: optional name of resource -- str
+            param resource_type_id: optional name of resource -- str
+            param resource: optional name of resource -- str
+            param resource_id: optional name of resource -- str
+            param object_type: optional name of resource -- str
+            param object_type_id: optional name of resource -- str
+            param payload: query parameters
         """
         target_uri = self._build_uri(*args, **kwargs)
-
         message, status_code = self.request(
             target_uri, DELETE, request_object=kwargs.get('payload'),
             params=kwargs.get('payload'))
-
+        resource_type = None
         if args:
             resource_type = args[2]
         elif not args and kwargs:
             resource_type = kwargs.get('resource_level')
-        else:
-            resource_type = None
-
-        operation = 'Delete {resource_type} resource'.format(
-            resource_type=resource_type)
-
+        operation = ('DELETE {resource_type} resource'.format(
+            resource_type=resource_type))
         self.check_status_code_success(operation, status_code, message)
 
     @staticmethod
+    @decorators.refactoring_notice(
+        'CommonFunctions', 'utils.file_handler.create_list_from_file',
+        9.1, 9.3)
     def create_list_from_file(file_name):
         """Given a file, create a list from its contents.
 
-        :param file_name: the path to the file
-        :returns: list of contents
+        DEPRECATION NOTICE: CommonFunctions.create_list_from_file() will be
+        refactored in PyU4V version 9.3 in favour of
+        utils.file_handler.create_list_from_file(). For further information
+        please consult PyU4V 9.1 release notes.
+
+        :param file_name: path to the file -- str
+        :returns: file contents -- list
         """
-        with open(file_name) as f:
-            list_item = f.readlines()
-        raw_list = map(lambda s: s.strip(), list_item)
-        return list(raw_list)
+        return file_handler.create_list_from_file(file_name)
 
     @staticmethod
+    @decorators.refactoring_notice(
+        'CommonFunctions', 'utils.file_handler.read_csv_values', 9.1, 9.3)
     def read_csv_values(file_name):
         """Read any csv file with headers.
 
+        DEPRECATION NOTICE: CommonFunctions.read_csv_values() will be
+        refactored in PyU4V version 9.3 in favour of
+        utils.file_handler.read_csv_values(). For further information please
+        consult PyU4V 9.1 release notes.
+
         You can extract the multiple lists from the headers in the CSV file.
         In your own script, call this function and assign to data variable,
-        then extract the lists to the variables. Example:
-        data=ru.read_csv_values(mycsv.csv)
-        sgnamelist = data['sgname']
-        policylist = data['policy']
+        then extract the lists to the variables.
 
-        :param file_name: path to CSV file
-        :returns: Dictionary of data parsed from CSV
+        :param file_name: path to the file -- str
+        :returns: file contents -- dict
         """
-        # open the file in universal line ending mode
-        with open(file_name, 'rU') as infile:
-            # read the file as a dictionary for each row ({header : value})
-            reader = csv.DictReader(infile)
-            data = {}
-            for row in reader:
-                for header, value in row.items():
-                    try:
-                        data[header].append(value)
-                    except KeyError:
-                        data[header] = [value]
-        return data
+        return file_handler.read_csv_values(file_name)
 
     def get_uni_version(self):
         """Get the unisphere version from the server.
 
-        :returns: version and major_version(e.g. ("V8.4.0.16", "84"))
+        :returns: version and major_version e.g. "V9.1.0.2", "91" -- str, str
         """
         version, major_version = None, None
-        target_uri = '/{version}/system/version'.format(
-            version=self.U4V_VERSION)
-        response = self.get_request(target_uri, 'version')
+        response = self.get_resource(category=VERSION, no_version=True)
         if response and response.get('version'):
             version = response['version']
             version_list = version.split('.')
@@ -532,95 +492,153 @@ class CommonFunctions(object):
     def get_array_list(self, filters=None):
         """Return a list of arrays.
 
-        :param filters: optional dict of filters
-        :returns: list
+        :param filters: optional filters -- dict
+        :returns: arrays ids -- list
         """
-        target_uri = '/{version}/system/symmetrix'.format(
-            version=self.U4V_VERSION)
-        response = self.get_request(target_uri, 'symmetrix', params=filters)
-        if response and response.get('symmetrixId'):
-            return response['symmetrixId']
-        return []
+        response = self.get_resource(
+            category=SYSTEM, resource_level=SYMMETRIX, params=filters)
+        return response.get('symmetrixId', list()) if response else list()
 
     def get_v3_or_newer_array_list(self, filters=None):
         """Return a list of V3 or newer arrays in the environment.
 
-        :param filters: optional dict of filters
-        :returns: list of array ids
+        :param filters: optional filters -- dict
+        :returns: arrays ids -- list
         """
-        target_uri = '/{version}/sloprovisioning/symmetrix'.format(
-            version=self.U4V_VERSION)
-        response = self.get_request(target_uri, 'symmetrix', params=filters)
-        if response and response.get('symmetrixId'):
-            return response['symmetrixId']
-        return []
+        response = self.get_resource(
+            category=SLOPROVISIONING, resource_level=SYMMETRIX, params=filters)
+        return response.get('symmetrixId', list()) if response else list()
 
     def get_array(self, array_id):
-        """Return details on specific array.
+        """Get array details.
 
-        :returns: server response
+        :param array_id: array id -- str
+        :returns: array details -- dict
         """
-        target_uri = '/{version}/system/symmetrix/{array_id}'.format(
-            version=self.U4V_VERSION, array_id=array_id)
-        return self.get_request(target_uri, 'symmetrix')
+        return self.get_resource(category=SYSTEM, resource_level=SYMMETRIX,
+                                 resource_level_id=array_id)
 
     def get_iterator_page_list(self, iterator_id, start, end):
         """Get a page of results from an iterator instance.
 
-        :param iterator_id: the id of the iterator
-        :param start: the start number
-        :param end: the end number
-        :returns: list of results
+        :param iterator_id: iterator id -- str
+        :param start: the start number -- int
+        :param end: the end number -- int
+        :returns: iterator page results -- dict
         """
-        page_list = []
-        target_uri = '/common/Iterator/{iterator_id}/page'.format(
-            iterator_id=iterator_id)
-        filters = {'from': start, 'to': end}
-        response = self.get_request(target_uri, 'iterator', params=filters)
-        if response and response.get('result'):
-            page_list = response['result']
-        return page_list
+        response = self.get_resource(
+            no_version=True, category=COMMON, resource_level=ITERATOR,
+            resource_level_id=iterator_id, resource_type=PAGE,
+            params={'from': start, 'to': end})
+        return response.get('result', list()) if response else list()
 
+    def get_iterator_results(self, rest_response):
+        """Get all results from all pages of an iterator if count > 1000.
+
+        :param rest_response: response JSON from REST API -- dict
+        :returns: all results -- dict
+        """
+        full_response = list()
+        full_response += rest_response['resultList']['result']
+
+        if rest_response.get('count') and int(rest_response.get('count')) > 0:
+            count = rest_response.get('count')
+            max_page_size = rest_response.get('maxPageSize')
+            if int(count) > int(max_page_size):
+                total_iterations = int(math.ceil(count / float(max_page_size)))
+                iterator_id = rest_response.get('id')
+                # We skip to second page as we already have the first page in
+                # the input param rest_response
+                for x in range(1, total_iterations):
+                    start = x * max_page_size + 1
+                    end = (x + 1) * max_page_size
+                    if end > count:
+                        end = count
+                    full_response += self.get_iterator_page_list(iterator_id,
+                                                                 start, end)
+        return full_response
+
+    @decorators.refactoring_notice(
+        'CommonFunctions', 'WLPFunctions.get_wlp_information', 9.1, 9.3)
     def get_wlp_information(self, array_id):
-        """Get the latest timestamp from WLP for processing New Workloads.
+        """Get the latest timestamp from WLP for processing new Workloads.
 
-        Ezample return:
-        {"processingDetails": {
-        "lastProcessedSpaTimestamp": 1517408700000,
-        "nextUpdate": 1038},
-        "spaRegistered": True}
+        DEPRECATION NOTICE: CommonFunctions.get_wlp_information() will be
+        refactored in PyU4V version 9.3 in favour of
+        WLPFunctions.get_wlp_information(). For further information please
+        consult PyU4V 9.1 release notes.
 
-        :returns: dict
+        :param array_id: array id -- str
+        :returns: wlp details -- dict
         """
-        wlp_details = None
-        target_uri = ('/{version}/wlp/symmetrix/{array_id}'.format(
-            version=self.U4V_VERSION, array_id=array_id))
-        response = self.get_request(target_uri, 'wlp')
-        if response and response.get('symmetrixDetails'):
-            wlp_details = response['symmetrixDetails']
-        return wlp_details
+        response = self.get_resource(category=WLP, resource_level=SYMMETRIX,
+                                     resource_level_id=array_id)
+        return response if response else dict()
 
-    def get_headroom(self, array_id, workload, srp="SRP_1", slo="Diamond"):
+    @decorators.refactoring_notice(
+        'CommonFunctions', 'WLPFunctions.get_headroom', 9.1, 9.3)
+    def get_headroom(self, array_id, workload=None, srp=None, slo=None):
         """Get the Remaining Headroom Capacity.
 
-        Get the headroom capacity for a given srp/ slo/ workload combination.
-        Example output:
-        [{'workloadType': 'OLTP',
-        'headroomCapacity': 29076.34, 'processingDetails':
-        {'lastProcessedSpaTimestamp': 1485302100000,
-        'nextUpdate': 1670}, 'sloName': 'Diamond',
-        'srp': 'SRP_1', 'emulation': 'FBA'}]})
+        DEPRECATION NOTICE: CommonFunctions.get_headroom() will be refactored
+        in PyU4V version 9.3 in favour of WLPFunctions.get_headroom(). For
+        further information please consult PyU4V 9.1 release notes.
 
-        :param array_id: the array serial number
-        :param workload: the workload type (DSS, OLTP, DSS_REP, OLTP_REP)
-        :param srp: the storage resource pool. Default SRP_1.
-        :param slo: the service level. Default Diamond.
-        :returns: dict
+        Get the headroom capacity for a given srp/ slo/ workload combination.
+
+        :param array_id: array id -- str
+        :param workload: the workload type -- str
+        :param srp: storage resource pool id -- str
+        :param slo: service level id -- str
+        :returns: headroom details -- dict
         """
-        headroom = []
-        params = {'srp': srp, 'slo': slo, 'workloadtype': workload}
-        response = self.get_resource(array_id, 'wlp', 'headroom',
-                                     params=params)
-        if response and response.get('headroom'):
-            headroom = response['headroom']
-        return headroom
+        params = dict()
+        if srp:
+            params['srp'] = srp
+        if slo:
+            params['slo'] = slo
+        if workload:
+            params['workloadtype'] = workload
+
+        response = self.get_resource(
+            category=WLP,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=HEADROOM, params=params)
+        return response.get('gbHeadroom', list()) if response else list()
+
+    @staticmethod
+    def check_ipv4(ipv4):
+        """Check if a given string is a valid ipv6 address
+
+        :param ipv4: ipv4 address -- str
+        :returns: string is valid ipv4 address -- bool
+        """
+        try:
+            socket.inet_pton(socket.AF_INET, ipv4)
+            return True
+        except socket.error:
+            return False
+
+    @staticmethod
+    def check_ipv6(ipv6):
+        """Check if a given string is a valid ipv6 address
+
+        :param ipv6: ipv6 address -- str
+        :returns: string is valid ipv6 address -- bool
+        """
+        try:
+            socket.inet_pton(socket.AF_INET6, ipv6)
+            return True
+        except socket.error:
+            return False
+
+    @staticmethod
+    def convert_to_snake_case(camel_case_string):
+        """Convert a string from camel case to snake case.
+
+        :param camel_case_string: string for formatting -- str
+        :returns: snake case variant -- str
+        """
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', camel_case_string)
+        s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+        return s2.replace('__', '_')

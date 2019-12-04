@@ -185,7 +185,8 @@ disable=
  consider-using-set-comprehension,
  consider-using-in,
  useless-return,
- chained-comparison
+ chained-comparison,
+ logging-format-interpolation
 
 [REPORTS]
 # Tells whether to display a full report or only the messages.

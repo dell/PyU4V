@@ -1,0 +1,652 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Programmers Guide &mdash; PyU4V 9.1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Glossary" href="api.html" />
+    <link rel="prev" title="Issues &amp; Support" href="support.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recommendations.html">PyU4V Usage Recommendations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to PyU4V</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Issues &amp; Support</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Programmers Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#first-connection-to-pyu4v">First connection to PyU4V</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-synchronous-provisioning-creating-storage-for-a-host">A-Synchronous Provisioning &amp; Creating Storage for a Host</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-replication-with-snapvx">Local Replication with SnapVX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remote-replication-with-srdf">Remote Replication with SRDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-metrics-gathering">Performance Metrics Gathering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#system">System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-handling-thresholds">File Handling &amp; Thresholds</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">API Index</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Programmers Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/programmers_guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="programmers-guide">
+<h1>Programmers Guide<a class="headerlink" href="#programmers-guide" title="Permalink to this headline">¶</a></h1>
+<p>In this section a number of examples demonstrating various PyU4V functionality
+are provided. If you have an example which you believe would make a good
+addition here let us know be opening a support issue and we will review it for
+addition!</p>
+<p>Although the scope of these programmers examples is limited, it is worth
+pointing out that if you want to see a working example of any function
+you can do so by looking at that function’s associated continuous integration
+test.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the first two examples print statements will be included to show how
+responses from REST requests for newly created assets can be used for
+further operations, in all later examples print statements will not be
+included for succinctness.</p>
+</div>
+<div class="section" id="first-connection-to-pyu4v">
+<h2>First connection to PyU4V<a class="headerlink" href="#first-connection-to-pyu4v" title="Permalink to this headline">¶</a></h2>
+<p>In this basic example we initialise a connection with Unisphere, retrieving
+version and array information, and finishing by closing the REST session.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/unisphere_connect.py.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+
+<span class="c1"># Initialise PyU4V connection to Unisphere</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">(</span>
+    <span class="n">u4v_version</span><span class="o">=</span><span class="s1">&#39;90&#39;</span><span class="p">,</span> <span class="n">server_ip</span><span class="o">=</span><span class="s1">&#39;10.0.0.75&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8443</span><span class="p">,</span>
+    <span class="n">verify</span><span class="o">=</span><span class="s1">&#39;~/.PyU4V/Unisphere91.pem&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">&#39;pyu4v-user&#39;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s1">&#39;secret-pass&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get the Unisphere version</span>
+<span class="n">version</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_uni_version</span><span class="p">()</span>
+
+<span class="c1"># Retrieve a list of arrays managed by your instance of Unisphere</span>
+<span class="n">array_list</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_array_list</span><span class="p">()</span>
+
+<span class="c1"># Output results to screen</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Congratulations on your first connection to Unisphere, your &#39;</span>
+      <span class="s1">&#39;version is: {ver}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ver</span><span class="o">=</span><span class="n">version</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;This instance of Unisphere instance manages the following arrays: &#39;</span>
+      <span class="s1">&#39;{arr_list}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arr_list</span><span class="o">=</span><span class="n">array_list</span><span class="p">))</span>
+
+<span class="c1"># GET those arrays which are local to this instance of Unisphere</span>
+<span class="n">local_array_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">array_id</span> <span class="ow">in</span> <span class="n">array_list</span><span class="p">:</span>
+    <span class="n">array_details</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_array</span><span class="p">(</span><span class="n">array_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array_details</span><span class="p">[</span><span class="s1">&#39;local&#39;</span><span class="p">]:</span>
+        <span class="n">local_array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array_id</span><span class="p">)</span>
+
+<span class="c1"># Output results to screen</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;The following arrays are local to this Unisphere instance: &#39;</span>
+      <span class="s1">&#39;{arr_list}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arr_list</span><span class="o">=</span><span class="n">local_array_list</span><span class="p">))</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-synchronous-provisioning-creating-storage-for-a-host">
+<h2>A-Synchronous Provisioning &amp; Creating Storage for a Host<a class="headerlink" href="#a-synchronous-provisioning-creating-storage-for-a-host" title="Permalink to this headline">¶</a></h2>
+<p>This example demonstrates checking an array SRP and service level to determine
+if there is enough headroom to provision storage of a set size, if so, proceed
+to creating a storage group with volume. Create a host, port group, and masking
+view to tie all the elements together, close the session when done.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/async_provision.py&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+
+<span class="c1"># Initialise PyU4V connection to Unisphere</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">(</span>
+    <span class="n">u4v_version</span><span class="o">=</span><span class="s1">&#39;90&#39;</span><span class="p">,</span> <span class="n">server_ip</span><span class="o">=</span><span class="s1">&#39;10.0.0.75&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8443</span><span class="p">,</span>
+    <span class="n">verify</span><span class="o">=</span><span class="s1">&#39;~/.PyU4V/Unisphere91.pem&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">&#39;pyu4v-user&#39;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s1">&#39;secret-pass&#39;</span><span class="p">)</span>
+
+<span class="c1"># Before provisioning storage we are going to check that there is enough</span>
+<span class="c1"># headroom left on the array for our provisioning operations</span>
+<span class="n">REQUESTED_CAPACITY</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># Get the available headroom for the SRP and service level required</span>
+<span class="n">headroom_info</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">wlp</span><span class="o">.</span><span class="n">get_headroom</span><span class="p">(</span><span class="n">array_id</span><span class="o">=</span><span class="n">conn</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+                                      <span class="n">srp</span><span class="o">=</span><span class="s1">&#39;SRP_1&#39;</span><span class="p">,</span> <span class="n">slo</span><span class="o">=</span><span class="s1">&#39;Diamond&#39;</span><span class="p">)</span>
+
+<span class="c1"># Extract the capacity value from the headroom_info REST response</span>
+<span class="n">headroom_capacity</span> <span class="o">=</span> <span class="n">headroom_info</span><span class="p">[</span>
+    <span class="s1">&#39;OLTP&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;headroom&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;headroomCapacity&#39;</span><span class="p">]</span>
+
+<span class="c1"># If the requested capacity of 10GB is less than or equal to the available</span>
+<span class="c1"># capacity proceed with the provisioning operations</span>
+<span class="k">if</span> <span class="n">REQUESTED_CAPACITY</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">headroom_capacity</span><span class="p">):</span>
+    <span class="c1"># Create a non-empty storage group using asynchronous request - we can</span>
+    <span class="c1"># wait until the job completes or proceed with operations and check</span>
+    <span class="c1"># back at a later time</span>
+    <span class="n">storage_group_async_job</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_non_empty_storage_group</span><span class="p">(</span>
+            <span class="n">srp_id</span><span class="o">=</span><span class="s1">&#39;SRP_1&#39;</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="o">=</span><span class="s1">&#39;example-sg&#39;</span><span class="p">,</span>
+            <span class="n">service_level</span><span class="o">=</span><span class="s1">&#39;Diamond&#39;</span><span class="p">,</span> <span class="n">num_vols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">vol_size</span><span class="o">=</span><span class="n">REQUESTED_CAPACITY</span><span class="p">,</span> <span class="n">cap_unit</span><span class="o">=</span><span class="s1">&#39;GB&#39;</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+    <span class="c1"># We will wait this time on the results of the storage group create</span>
+    <span class="c1"># request</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">wait_for_job</span><span class="p">(</span><span class="n">operation</span><span class="o">=</span><span class="s1">&#39;Create SG with volume&#39;</span><span class="p">,</span>
+                             <span class="n">job</span><span class="o">=</span><span class="n">storage_group_async_job</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Storage Group created successfully...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Get information on our new storage group</span>
+    <span class="n">storage_group_info</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">get_storage_group</span><span class="p">(</span>
+        <span class="n">storage_group_name</span><span class="o">=</span><span class="s1">&#39;Example-SG&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Storage Group details: {details}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">details</span><span class="o">=</span><span class="n">storage_group_info</span><span class="p">))</span>
+
+    <span class="c1"># Create a Host using supplied initiator IDs, these can be also be</span>
+    <span class="c1"># retrieved via the call conn.provisioning.get_available_initiator()</span>
+    <span class="n">initiator_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;iqn:2019-test1&#39;</span><span class="p">,</span> <span class="s1">&#39;iqn:2019-test1&#39;</span><span class="p">]</span>
+    <span class="n">host_info</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_host</span><span class="p">(</span>
+        <span class="n">host_name</span><span class="o">=</span><span class="s1">&#39;Example-Host&#39;</span><span class="p">,</span> <span class="n">initiator_list</span><span class="o">=</span><span class="n">initiator_list</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Host created successfully...&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;New Host details: {details}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="n">host_info</span><span class="p">))</span>
+
+    <span class="c1"># Create a Port Group using supplied ports, these could be also be</span>
+    <span class="c1"># retrieved via the call conn.provisioning.get_port_list()</span>
+    <span class="n">port_group_info</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_port_group</span><span class="p">(</span>
+        <span class="n">port_group_id</span><span class="o">=</span><span class="s1">&#39;Example-PG&#39;</span><span class="p">,</span> <span class="n">director_id</span><span class="o">=</span><span class="s1">&#39;SE-01&#39;</span><span class="p">,</span> <span class="n">port_id</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Port Group created successfully...&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Port Group details: {details}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="n">port_group_info</span><span class="p">))</span>
+
+    <span class="c1"># Create a Masking View and tie all the elements we have created</span>
+    <span class="c1"># together</span>
+    <span class="n">masking_view_info</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_masking_view_existing_components</span><span class="p">(</span>
+            <span class="n">port_group_name</span><span class="o">=</span><span class="s1">&#39;Example-PG&#39;</span><span class="p">,</span> <span class="n">masking_view_name</span><span class="o">=</span><span class="s1">&#39;Example-MV&#39;</span><span class="p">,</span>
+            <span class="n">storage_group_name</span><span class="o">=</span><span class="s1">&#39;Example-SG&#39;</span><span class="p">,</span> <span class="n">host_name</span><span class="o">=</span><span class="s1">&#39;Example-Host&#39;</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Masking View created...&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Masking View details: {details}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">details</span><span class="o">=</span><span class="n">masking_view_info</span><span class="p">))</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-replication-with-snapvx">
+<h2>Local Replication with SnapVX<a class="headerlink" href="#local-replication-with-snapvx" title="Permalink to this headline">¶</a></h2>
+<p>In this example a new storage group is created with a single 1GB volume. A
+snapshot name is generated using the current time so it can be easily
+identified, and the storage group snapshot is created. The operation is
+verified by querying for a list of snapshots for a given storage group and
+confirming the snapshot we created is present in that list.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/create_snapshot.py&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># Initialise PyU4V connection to Unisphere</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">()</span>
+
+<span class="c1"># Create storage Group with one volume using settings specified for</span>
+<span class="c1"># service level and capacity</span>
+<span class="n">storage_group</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_non_empty_storage_group</span><span class="p">(</span>
+    <span class="n">srp_id</span><span class="o">=</span><span class="s1">&#39;SRP_1&#39;</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="o">=</span><span class="s1">&#39;PyU4V_SG&#39;</span><span class="p">,</span> <span class="n">service_level</span><span class="o">=</span><span class="s1">&#39;Diamond&#39;</span><span class="p">,</span>
+    <span class="n">workload</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">num_vols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vol_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cap_unit</span><span class="o">=</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span>
+
+<span class="c1"># Define a Name for the Snapshot, in this case the name auto appends</span>
+<span class="c1"># the host</span>
+<span class="c1"># time for when it was taken for ease of identification</span>
+<span class="n">snap_name</span> <span class="o">=</span> <span class="s1">&#39;PyU4V_Snap_&#39;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%m%Y%H%M%S&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create the snapshot of the storage group containing the volume and</span>
+<span class="c1"># storage group created in the previous step</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">create_storage_group_snapshot</span><span class="p">(</span>
+    <span class="n">storage_group_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">],</span> <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">)</span>
+
+<span class="c1"># Confirm the snapshot was created successfully, get a list of storage</span>
+<span class="c1"># group snapshots</span>
+<span class="n">snap_list</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">get_storage_group_snapshot_list</span><span class="p">(</span>
+    <span class="n">storage_group_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">])</span>
+
+<span class="c1"># Assert the snapshot name is in the list of storage group snapshots</span>
+<span class="k">assert</span> <span class="n">snapshot</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">snap_list</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example will create a storage group with a volume, create a snapshot
+of that storage group and link the snapshot to a new storage group. This is a
+typical workflow for provisioning a dev environment and making a copy
+available.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/link_snapshot.py&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">strftime</span>
+
+<span class="c1"># Set up connection to Unisphere for PowerMax Server, details collected</span>
+<span class="c1"># from configuration file in working directory where script is stored.</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">()</span>
+
+<span class="c1"># Create storage Group with one volume</span>
+<span class="n">storage_group</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_non_empty_storage_group</span><span class="p">(</span>
+    <span class="n">srp_id</span><span class="o">=</span><span class="s1">&#39;SRP_1&#39;</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="o">=</span><span class="s1">&#39;PyU4V_SG&#39;</span><span class="p">,</span> <span class="n">service_level</span><span class="o">=</span><span class="s1">&#39;Diamond&#39;</span><span class="p">,</span>
+    <span class="n">workload</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">num_vols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vol_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cap_unit</span><span class="o">=</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span>
+
+<span class="c1"># Define a Name for the Snapshot, in this case the name auto appends the</span>
+<span class="c1"># host time for when it was taken for ease of identification</span>
+<span class="n">snap_name</span> <span class="o">=</span> <span class="s1">&#39;PyU4V_Snap_&#39;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%m%Y%H%M%S&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create the snapshot of the storage group containing the volume and</span>
+<span class="c1"># storage group created in the previous step</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">create_storage_group_snapshot</span><span class="p">(</span>
+    <span class="n">storage_group_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">],</span> <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">)</span>
+
+<span class="c1"># Link The Snapshot to a new storage group, the API will automatically</span>
+<span class="c1"># create the link storage group with the right number of volumes if one</span>
+<span class="c1"># with that name doesn&#39;t already exist</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">modify_storage_group_snapshot</span><span class="p">(</span>
+    <span class="n">src_storage_grp_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">],</span>
+    <span class="n">tgt_storage_grp_id</span><span class="o">=</span><span class="s1">&#39;PyU4V_LNK_SG&#39;</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">snap_name</span><span class="o">=</span><span class="n">snap_name</span><span class="p">,</span> <span class="n">gen_num</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="remote-replication-with-srdf">
+<h2>Remote Replication with SRDF<a class="headerlink" href="#remote-replication-with-srdf" title="Permalink to this headline">¶</a></h2>
+<p>This example will create a storage group on the PowerMax array with some
+volumes.  Once the storage group has been created it will protect the volumes
+in the storage group to a remote array using SRDF/Metro, providing
+Active/Active business continuity via Symmetrix Remote Data Facility (SRDF).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;srdf_example.py&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+
+<span class="c1"># Initialise PyU4V connection to Unisphere</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">()</span>
+
+<span class="c1"># Create storage Group with one volume using settings specified for</span>
+<span class="c1"># service level and capacity</span>
+<span class="n">storage_group</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">provisioning</span><span class="o">.</span><span class="n">create_non_empty_storage_group</span><span class="p">(</span>
+    <span class="n">srp_id</span><span class="o">=</span><span class="s1">&#39;SRP_1&#39;</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="o">=</span><span class="s1">&#39;PyU4V_SG&#39;</span><span class="p">,</span> <span class="n">service_level</span><span class="o">=</span><span class="s1">&#39;Diamond&#39;</span><span class="p">,</span>
+    <span class="n">workload</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">num_vols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vol_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cap_unit</span><span class="o">=</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span>
+
+<span class="c1"># Make a call to setup the remote replication, this will automatically</span>
+<span class="c1"># create a storage group with the same name on the remote array with the</span>
+<span class="c1"># correct volume count and size, the example here is executed</span>
+<span class="c1"># asynchronously and a wait is added to poll the async job id until</span>
+<span class="c1"># complete</span>
+<span class="n">srdf_job_id</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">create_storage_group_srdf_pairings</span><span class="p">(</span>
+    <span class="n">storage_group_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">],</span>
+    <span class="n">remote_sid</span><span class="o">=</span><span class="n">conn</span><span class="o">.</span><span class="n">remote_array</span><span class="p">,</span> <span class="n">srdf_mode</span><span class="o">=</span><span class="s2">&quot;Active&quot;</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Wait until the previous create SRDF pairing job has completed before</span>
+<span class="c1"># proceeding</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">wait_for_job_complete</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="n">srdf_job_id</span><span class="p">)</span>
+
+<span class="c1"># The now protected storage group will have an RDFG associated with it,</span>
+<span class="c1"># using the function conn.replication.get_storage_group_rdfg() function we</span>
+<span class="c1"># can retrieve a list of RDFGs associated with the storage group, in this</span>
+<span class="c1"># case there will only be one</span>
+<span class="n">rdfg_list</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">get_storage_group_srdf_group_list</span><span class="p">(</span>
+    <span class="n">storage_group_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">])</span>
+
+<span class="c1"># Extract the (only) RDFG number from the retrieved list</span>
+<span class="n">rdfg_number</span> <span class="o">=</span> <span class="n">rdfg_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Finally the details of the protected storage group can be output to the</span>
+<span class="c1"># user.</span>
+<span class="n">storage_group_srdf_info</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">get_storage_group_srdf_details</span><span class="p">(</span>
+    <span class="n">storage_group_id</span><span class="o">=</span><span class="n">storage_group</span><span class="p">[</span><span class="s1">&#39;storageGroupId&#39;</span><span class="p">],</span>
+    <span class="n">rdfg_num</span><span class="o">=</span><span class="n">rdfg_number</span><span class="p">)</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="performance-metrics-gathering">
+<h2>Performance Metrics Gathering<a class="headerlink" href="#performance-metrics-gathering" title="Permalink to this headline">¶</a></h2>
+<p>This example demonstrates a range of performance functionality such as getting
+performance categories and metrics, timestamps from Unisphere for an array,
+get recent only performance information, and getting ResponseTime for all
+SRPs in an array.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/performance_data_retrieval.py&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">PyU4V</span> <span class="kn">import</span> <span class="n">U4VConn</span>
+
+<span class="c1"># Initialise PyU4V Unisphere connection</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">(</span>
+    <span class="n">u4v_version</span><span class="o">=</span><span class="s1">&#39;90&#39;</span><span class="p">,</span> <span class="n">server_ip</span><span class="o">=</span><span class="s1">&#39;10.0.0.75&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8443</span><span class="p">,</span>
+    <span class="n">verify</span><span class="o">=</span><span class="s1">&#39;~/.PyU4V/Unisphere91.pem&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">&#39;pyu4v-user&#39;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s1">&#39;secret-pass&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get a list of performance categories</span>
+<span class="n">category_list</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_performance_categories_list</span><span class="p">()</span>
+
+<span class="c1"># Get a list of supported metrics for the category &#39;FEDirector&#39;</span>
+<span class="n">fe_dir_metrics</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_performance_metrics_list</span><span class="p">(</span>
+    <span class="n">category</span><span class="o">=</span><span class="s1">&#39;FEDirector&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get a list of KPI only metrics for the category &#39;StorageGroup&#39;</span>
+<span class="n">storage_group_metrics</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_performance_metrics_list</span><span class="p">(</span>
+    <span class="n">category</span><span class="o">=</span><span class="s1">&#39;StorageGroup&#39;</span><span class="p">,</span> <span class="n">kpi_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Get array KPI performance metrics for the most recent timestamp only,</span>
+<span class="c1"># set recency so timestamp has to be less than 5 minutes old</span>
+<span class="n">array_performance_data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_array_stats</span><span class="p">(</span><span class="n">metrics</span><span class="o">=</span><span class="s1">&#39;KPI&#39;</span><span class="p">,</span>
+                                                          <span class="n">recency</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Get ResponseTime for each SRP for the last 4 hours</span>
+<span class="c1"># Firstly get the most recent performance timestamp for your array</span>
+<span class="n">recent_timestamp</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_last_available_timestamp</span><span class="p">()</span>
+<span class="c1"># Set the performance recency value to 10 minutes and check if the most</span>
+<span class="c1"># recent timestamp meets that recency value</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">recency</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">is_recent_ten</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">is_timestamp_current</span><span class="p">(</span><span class="n">recent_timestamp</span><span class="p">)</span>
+<span class="c1"># Recency can also be passed to is_timestamp_current</span>
+<span class="n">is_recent_five</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">is_timestamp_current</span><span class="p">(</span><span class="n">recent_timestamp</span><span class="p">,</span>
+                                                       <span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Get the start and end times by providing the most recent timestamp and</span>
+<span class="c1"># specifying a 4 hour difference</span>
+<span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_timestamp_by_hour</span><span class="p">(</span>
+    <span class="n">end_time</span><span class="o">=</span><span class="n">recent_timestamp</span><span class="p">,</span> <span class="n">hours_difference</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="c1"># Get the list of SRPs</span>
+<span class="n">srp_keys</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_storage_resource_pool_keys</span><span class="p">()</span>
+<span class="n">srp_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">srp_keys</span><span class="p">:</span>
+    <span class="n">srp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;srpId&#39;</span><span class="p">))</span>
+<span class="c1"># Get the performance data for each of the SRPs in the list</span>
+<span class="k">for</span> <span class="n">srp</span> <span class="ow">in</span> <span class="n">srp_list</span><span class="p">:</span>
+    <span class="n">srp_data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">get_storage_resource_pool_stats</span><span class="p">(</span>
+        <span class="n">srp_id</span><span class="o">=</span><span class="n">srp</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s1">&#39;ResponseTime&#39;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="o">=</span><span class="n">end_time</span><span class="p">)</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="system">
+<h2>System<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h2>
+<p>This example of system calls demonstrates performing a system health check,
+retrieving information from the last health check, querying for all installed
+disk IDs in an array and outputting information about each.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/system_health_check.py.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+
+<span class="c1"># Initialise PyU4V connection to Unisphere</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">(</span>
+        <span class="n">u4v_version</span><span class="o">=</span><span class="s1">&#39;90&#39;</span><span class="p">,</span> <span class="n">server_ip</span><span class="o">=</span><span class="s1">&#39;10.0.0.75&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8443</span><span class="p">,</span>
+        <span class="n">verify</span><span class="o">=</span><span class="s1">&#39;~/.PyU4V/Unisphere91.pem&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">&#39;pyu4v-user&#39;</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s1">&#39;secret-pass&#39;</span><span class="p">)</span>
+
+<span class="c1"># Perform a system health check, this call can take 15-20 minutes to</span>
+<span class="c1"># complete in Unisphere due to the nature of the checks performed</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">perform_health_check</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;test-hc-dec19&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get details of the last system health check</span>
+<span class="n">health_check</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">get_system_health</span><span class="p">()</span>
+
+<span class="c1"># Get a list of physical disks installed in the array</span>
+<span class="n">disk_list</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">get_disk_id_list</span><span class="p">()</span>
+
+<span class="c1"># Get disk information for each disk installed</span>
+<span class="k">for</span> <span class="n">disk</span> <span class="ow">in</span> <span class="n">disk_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;disk_ids&#39;</span><span class="p">):</span>
+    <span class="n">disk_info</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">get_disk_details</span><span class="p">(</span><span class="n">disk_id</span><span class="o">=</span><span class="n">disk</span><span class="p">)</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="file-handling-thresholds">
+<h2>File Handling &amp; Thresholds<a class="headerlink" href="#file-handling-thresholds" title="Permalink to this headline">¶</a></h2>
+<p>In this example both performance threshold calls and CSV file handling with
+PyU4V are demonstrated.  A call is made to retrieve a full list of performance
+threshold settings and output the results to a CSV file at a path specified
+by the user. That CSV file is read into a Python dictionary and the respective
+values within are updated. Once complete the updated threshold settings are
+uploaded to Unisphere to take immediate effect.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;examples/thresholds.py.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">PyU4V</span>
+
+<span class="c1"># Initialise PyU4V connection to Unisphere</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">U4VConn</span><span class="p">()</span>
+
+<span class="c1"># Set the CSV file name and path</span>
+<span class="n">current_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">output_csv_name</span> <span class="o">=</span> <span class="s1">&#39;thresholds-test.csv&#39;</span>
+<span class="n">output_csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="n">output_csv_name</span><span class="p">)</span>
+
+<span class="c1"># Generate a CSV file with all of the thresholds and corresponding values</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">generate_threshold_settings_csv</span><span class="p">(</span>
+    <span class="n">output_csv_path</span><span class="o">=</span><span class="n">output_csv_path</span><span class="p">)</span>
+
+<span class="c1"># Read the CSV values into a dictionary, cast all string booleans and</span>
+<span class="c1"># numbers to their proper types</span>
+<span class="n">threshold_dict</span> <span class="o">=</span> <span class="n">PyU4V</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">read_csv_values</span><span class="p">(</span><span class="n">output_csv_path</span><span class="p">,</span>
+                                                          <span class="n">convert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Increase all of the first threshold values by 5 and second threshold</span>
+<span class="c1"># values by 10, alert only on the KPIs</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">threshold_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metric&#39;</span><span class="p">))):</span>
+    <span class="n">threshold_dict</span><span class="p">[</span><span class="s1">&#39;firstThreshold&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">5</span>
+    <span class="n">threshold_dict</span><span class="p">[</span><span class="s1">&#39;secondThreshold&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">5</span>
+    <span class="k">if</span> <span class="n">threshold_dict</span><span class="p">[</span><span class="s1">&#39;kpi&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">threshold_dict</span><span class="p">[</span><span class="s1">&#39;alertError&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+<span class="c1"># Process the CSV file and update the thresholds with their corresponding</span>
+<span class="c1"># values, we are only going to set the threshold value if it is a KPI</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">set_thresholds_from_csv</span><span class="p">(</span><span class="n">csv_file_path</span><span class="o">=</span><span class="n">output_csv_path</span><span class="p">,</span>
+                                         <span class="n">kpi_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># It is also possible to set a threshold value without editing the values</span>
+<span class="c1"># in a CSV, the threshold metric and be edited directly</span>
+<span class="n">threshold_settings</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">update_threshold_settings</span><span class="p">(</span>
+    <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Array&#39;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;PercentCacheWP&#39;</span><span class="p">,</span> <span class="n">alert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">first_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">first_threshold_occurrences</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">first_threshold_samples</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">first_threshold_severity</span><span class="o">=</span><span class="s1">&#39;INFORMATION&#39;</span><span class="p">,</span>
+    <span class="n">second_threshold</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">second_threshold_occurrences</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">second_threshold_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">second_threshold_severity</span><span class="o">=</span><span class="s1">&#39;CRITICAL&#39;</span><span class="p">)</span>
+
+<span class="c1"># Close the session</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="support.html" class="btn btn-neutral float-left" title="Issues &amp; Support" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019 Dell Inc. or its subsidiaries.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

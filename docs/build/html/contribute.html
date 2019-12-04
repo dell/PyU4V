@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Contribute to PyU4V &mdash; PyU4V 9.1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Issues &amp; Support" href="support.html" />
+    <link rel="prev" title="PyU4V Usage Recommendations" href="recommendations.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recommendations.html">PyU4V Usage Recommendations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contribute to PyU4V</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#conventions">Conventions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Issues &amp; Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="programmers_guide.html">Programmers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">API Index</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Contribute to PyU4V</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/contribute.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="contribute-to-pyu4v">
+<h1>Contribute to PyU4V<a class="headerlink" href="#contribute-to-pyu4v" title="Permalink to this headline">¶</a></h1>
+<p>Please do! Create a fork of the project into your own repository. Make all your
+necessary changes and create a pull request with a description on what was
+added or removed and details explaining the changes in lines of code.</p>
+<p>The following tests must all run cleanly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> PyU4V
+$ tox -e py36
+$ tox -e py37
+$ tox -e pep8
+$ tox -e pylint
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you do not have all the versions of Python installed, just run tox on
+the versions you have.</p>
+</div>
+<p>Once the above tests all run clean and CI tests are run to ensure there is no
+impact on existing functionality, PyU4V core reviewers will review the code
+to ensure it conforms to all conventions outlined in the section below. If all
+looks good we will merge it to the PyU4V master branch.</p>
+<div class="section" id="conventions">
+<h2>Conventions<a class="headerlink" href="#conventions" title="Permalink to this headline">¶</a></h2>
+<p>For neatness and readability we will enforce the following conventions going
+forward on all code in PyU4V.</p>
+<ol class="arabic simple">
+<li><p>Single quotes <code class="docutils literal notranslate"><span class="pre">'</span></code> unless double quotes <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> necessary.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.format()</span></code> for string concatenation.</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>my_string = &#39;{variable1}, thanks for contributing to {variable2}&#39;.format(
+    variable1=’Hello’, variable2=’PyU4V’)
+</pre></div>
+</div>
+<p>3. Use the following format for doc strings, the return description uses
+<code class="docutils literal notranslate"><span class="pre">:returns:</span></code> instead of the docstring default <code class="docutils literal notranslate"><span class="pre">:return:</span></code>.  Pep8 will
+guide you with all the docstring conventions.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_test_func</span><span class="p">(</span><span class="n">input_1</span><span class="p">,</span> <span class="n">input_2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The is my summary of the method with full stop.</span>
+
+<span class="sd">    This is a brief description of what the method does.  Keep</span>
+<span class="sd">    it as simple as possible.</span>
+
+<span class="sd">    :param input_1: brief description of input parameter 1, if it goes over</span>
+<span class="sd">                    one line it must be indented with the start of the</span>
+<span class="sd">                    previous lines -- str</span>
+<span class="sd">    :param input_2: brief description of input parameter 2, you must also</span>
+<span class="sd">                    provide the input parameter type after the description</span>
+<span class="sd">                    after double dash -- int</span>
+<span class="sd">    :returns: what gets returned from method, omit if none, type must also</span>
+<span class="sd">              be specified, in this case it is a boolean -- bool</span>
+<span class="sd">    :raises: Exceptions raised, omit if none</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="n">input_1</span> <span class="ow">or</span> <span class="n">input_2</span> <span class="k">else</span> <span class="k">raise</span> <span class="ne">Exception</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Class names are mixed case with no underscores <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p></li>
+</ol>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClassFunctions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Collection of functions ClassFunctions.&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>6. Public Methods are separated by underscores <code class="docutils literal notranslate"><span class="pre">_</span></code>.  Make the name as
+meaningful as possible.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">public_function_does_exactly_what_it_says_it_does</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function does exactly what it says on the tin.&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>7. Private Methods are prefixed and separated by underscores <code class="docutils literal notranslate"><span class="pre">_</span></code>.  Make the
+name as meaningful as possible.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_private_function_does_exactly_what_it_says_it_does</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function does exactly what it says on the tin.&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>8. If functions seems to big or too complicated then consider breaking them
+into smaller functions.</p>
+<p>9. If a line of code must extend over more than one line, use parenthesis
+<code class="docutils literal notranslate"><span class="pre">()</span></code> around the code instead of <code class="docutils literal notranslate"><span class="pre">\</span></code> at the end of the line.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">my_multi_line_string</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;This is an example of a string &#39;</span>
+                        <span class="s1">&#39;that extends over more than one line.&#39;</span><span class="p">)</span>
+
+<span class="n">my_multi_line_function</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">this_is_a_very_long_function_call_that_cannot_meet_79_char_limit</span><span class="p">())</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="10">
+<li><p>Each new function must be unit tested.</p></li>
+<li><p>Each bug fix must be unit tested.</p></li>
+<li><p>Unix and OS X format only.  If in doubt run</p></li>
+</ol>
+<div class="highlight-Bash notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get install dos2unix
+$ dos2unix myfile.txt
+</pre></div>
+</div>
+<p>or in PyCharm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="o">-&gt;</span> <span class="n">Line</span> <span class="n">Separators</span> <span class="o">-&gt;</span> <span class="n">LF</span><span class="o">-</span> <span class="n">Unix</span> <span class="ow">and</span> <span class="n">OS</span> <span class="n">X</span> <span class="p">(</span>\<span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="support.html" class="btn btn-neutral float-right" title="Issues &amp; Support" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="recommendations.html" class="btn btn-neutral float-left" title="PyU4V Usage Recommendations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019 Dell Inc. or its subsidiaries.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

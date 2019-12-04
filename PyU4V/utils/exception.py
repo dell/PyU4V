@@ -1,35 +1,22 @@
-# The MIT License (MIT)
 # Copyright (c) 2019 Dell Inc. or its subsidiaries.
-
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation
-# files (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""Exception package."""
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""exception.py"""
 
 import logging
-
-# Register configuration file
-from PyU4V.utils import config_handler
-
 import six
 
 LOG = logging.getLogger(__name__)
-CFG = config_handler.set_logger_and_config()
 
 
 class PyU4VException(Exception):
@@ -37,7 +24,7 @@ class PyU4VException(Exception):
 
     message = 'An unknown exception occurred.'
     code = 500
-    headers = {}
+    headers = dict()
     safe = False
 
     def __init__(self, message=None, **kwargs):
@@ -46,10 +33,7 @@ class PyU4VException(Exception):
         self.kwargs['message'] = message
 
         if 'code' not in self.kwargs:
-            try:
-                self.kwargs['code'] = self.code
-            except AttributeError:
-                pass
+            self.kwargs['code'] = self.code
 
         for k, v in self.kwargs.items():
             if isinstance(v, Exception):
@@ -58,15 +42,8 @@ class PyU4VException(Exception):
         if self._should_format():
             try:
                 message = self.message % kwargs
-
             except Exception:
-                # kwargs doesn't match a variable in the message
-                # log the issue and the kwargs
-                LOG.exception('Exception in string format operation')
-                for name, value in kwargs.items():
-                    LOG.error('%(name)s: %(value)s',
-                              {'name': name, 'value': value})
-                # at least get the core message out if something happened
+                self._log_exception()
                 message = self.message
         elif isinstance(message, Exception):
             message = six.text_type(message)
@@ -77,8 +54,13 @@ class PyU4VException(Exception):
     def _should_format(self):
         return self.kwargs['message'] is None or '%(message)' in self.message
 
+    def _log_exception(self):
+        LOG.exception('Exception in string format operation:')
+        for name, value in self.kwargs.items():
+            LOG.error("%(name)s: %(value)s",
+                      {'name': name, 'value': value})
+
     def __unicode__(self):
-        """__unicode__."""
         return self.msg
 
 
@@ -104,7 +86,7 @@ class InvalidInputException(PyU4VException):
 class UnauthorizedRequestException(PyU4VException):
     """UnauthorizedRequestException."""
 
-    meesage = 'Unauthorized request - please check credentials'
+    message = 'Unauthorized request - please check credentials'
 
 
 class MissingConfigurationException(PyU4VException):
