@@ -26,7 +26,7 @@ PyU4V Version 9.1
 +-----------------------+----------------------------+
 | **Author**            | Dell EMC                   |
 +-----------------------+----------------------------+
-| **PyU4V Version**     | 9.1.0.0                    |
+| **PyU4V Version**     | 9.1.1.0                    |
 +-----------------------+----------------------------+
 | **Unisphere Version** | 9.1.0.5                    |
 +-----------------------+----------------------------+
@@ -211,6 +211,12 @@ with the upstream PyU4V repo.
 
 For a full breakdown of contribution requirements, coding standards, submitting
 and everything else in between please refer to PyU4V ReadTheDocs_.
+
+Tools
+-----
+
+Please refer to the Tools section of ReadTheDocs_ for OpenStack functionality
+to migrate volumes to the new REST masking view structure.
 
 Disclaimer
 ----------

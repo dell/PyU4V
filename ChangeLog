@@ -326,3 +326,7 @@ PyU4V/utils/console.py
 ----------------------
 - choose_from_list() has been marked for deprecation, please implement any
   console driven commands from your own scripts and not from PyU4V
+
+Version 9.1.1.0 - released x/12/19
+==================================
+- OpenStack migrate tool and corresponding documentation
