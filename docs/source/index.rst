@@ -9,6 +9,7 @@
     contribute
     support
     programmers_guide
+    tools
     api
     genindex
 
@@ -91,6 +92,9 @@ Getting Started
 
 :doc:`programmers_guide`
     A range of examples demonstrating various PyU4V module usage.
+
+:doc:`tools`
+  The tools guide for PyU4V
 
 :doc:`api`
     A glossary of all available functions.
