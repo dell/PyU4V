@@ -212,13 +212,13 @@
 </li>
       <li><a href="PyU4V.html#PyU4V.common.CommonFunctions.check_ipv6">check_ipv6() (PyU4V.common.CommonFunctions static method)</a>
 </li>
-      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_mv_for_migration">check_mv_for_migration() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
+      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_masking_view_for_migration">check_masking_view_for_migration() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.common.CommonFunctions.check_status_code_success">check_status_code_success() (PyU4V.common.CommonFunctions static method)</a>
 </li>
-      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_sg">choose_sg() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
-</li>
       <li><a href="PyU4V.html#PyU4V.replication.ReplicationFunctions.choose_snapshot_from_list_in_console">choose_snapshot_from_list_in_console() (PyU4V.replication.ReplicationFunctions method)</a>
+</li>
+      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_storage_group">choose_storage_group() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_subset_volumes">choose_subset_volumes() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
@@ -642,14 +642,16 @@
         <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view">(PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
       </ul></li>
+      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view_component_dict">get_masking_view_component_dict() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
+</li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_masking_view_connections">get_masking_view_connections() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_masking_view_from_storage_group">get_masking_view_from_storage_group() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
-      <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_masking_view_list">get_masking_view_list() (PyU4V.provisioning.ProvisioningFunctions method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_masking_view_list">get_masking_view_list() (PyU4V.provisioning.ProvisioningFunctions method)</a>
+</li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_masking_views_by_host">get_masking_views_by_host() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_masking_views_by_initiator_group">get_masking_views_by_initiator_group() (PyU4V.provisioning.ProvisioningFunctions method)</a>
@@ -661,8 +663,6 @@
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_maskingview_connections">get_maskingview_connections() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.migration.MigrationFunctions.get_migration_info">get_migration_info() (PyU4V.migration.MigrationFunctions method)</a>
-</li>
-      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_mv_component_dict">get_mv_component_dict() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_mv_from_sg">get_mv_from_sg() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
@@ -764,10 +764,6 @@
 </li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_service_level_list">get_service_level_list() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
-      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_component_dict">get_sg_component_dict() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
-</li>
-      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_qos_details">get_sg_qos_details() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
-</li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_size_of_device_on_array">get_size_of_device_on_array() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_slo">get_slo() (PyU4V.provisioning.ProvisioningFunctions method)</a>
@@ -796,6 +792,8 @@
 </li>
       <li><a href="PyU4V.html#PyU4V.performance.PerformanceFunctions.get_storage_group_by_pool_stats">get_storage_group_by_pool_stats() (PyU4V.performance.PerformanceFunctions method)</a>
 </li>
+      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group_component_dict">get_storage_group_component_dict() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
+</li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_storage_group_demand_report">get_storage_group_demand_report() (PyU4V.provisioning.ProvisioningFunctions method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.get_storage_group_from_masking_view">get_storage_group_from_masking_view() (PyU4V.provisioning.ProvisioningFunctions method)</a>
@@ -811,6 +809,8 @@
 </li>
       </ul></li>
       <li><a href="PyU4V.html#PyU4V.performance.PerformanceFunctions.get_storage_group_metrics">get_storage_group_metrics() (PyU4V.performance.PerformanceFunctions method)</a>
+</li>
+      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group_qos_details">get_storage_group_qos_details() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
       <li><a href="PyU4V.html#PyU4V.replication.ReplicationFunctions.get_storage_group_rep">get_storage_group_rep() (PyU4V.replication.ReplicationFunctions method)</a>
 </li>
@@ -1016,9 +1016,9 @@
 </li>
       <li><a href="PyU4V.html#PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf">modify_storagegroup_srdf() (PyU4V.replication.ReplicationFunctions method)</a>
 </li>
-      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_vols_from_source_to_target">move_vols_from_source_to_target() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
-</li>
       <li><a href="PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.move_volumes_between_storage_groups">move_volumes_between_storage_groups() (PyU4V.provisioning.ProvisioningFunctions method)</a>
+</li>
+      <li><a href="PyU4V.html#PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_volumes_from_source_to_target">move_volumes_from_source_to_target() (PyU4V.tools.openstack.migrate_utils.MigrateUtils method)</a>
 </li>
   </ul></td>
 </tr></table>

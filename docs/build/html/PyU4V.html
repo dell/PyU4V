@@ -6481,8 +6481,8 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>txt_str</strong> – text string</li>
-<li><strong>option</strong> – ‘Y’, ‘N’ or ‘X’</li>
+<li><strong>txt_str</strong> – text string – str</li>
+<li><strong>option</strong> – ‘Y’, ‘N’ or ‘X’ – str</li>
 </ul>
 </td>
 </tr>
@@ -6494,20 +6494,20 @@ default to ‘PyU4V-array_id-date-time’</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_mv_for_migration">
-<code class="descname">check_mv_for_migration</code><span class="sig-paren">(</span><em>mv_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.check_mv_for_migration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_mv_for_migration" title="Permalink to this definition">¶</a></dt>
+<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_masking_view_for_migration">
+<code class="descname">check_masking_view_for_migration</code><span class="sig-paren">(</span><em>masking_view_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.check_masking_view_for_migration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.check_masking_view_for_migration" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the masking view can be migrated.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mv_name</strong> – the masking view name</li>
-<li><strong>test</strong> – is it a test case</li>
+<li><strong>masking_view_name</strong> – the masking view name – str</li>
+<li><strong>test</strong> – is it a test case – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">boolean</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">flag – boolean</p>
 </td>
 </tr>
 </tbody>
@@ -6515,23 +6515,23 @@ default to ‘PyU4V-array_id-date-time’</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_sg">
-<code class="descname">choose_sg</code><span class="sig-paren">(</span><em>masking_view</em>, <em>child_sg_list</em>, <em>portgroup</em>, <em>initiatorgroup</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.choose_sg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_sg" title="Permalink to this definition">¶</a></dt>
+<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_storage_group">
+<code class="descname">choose_storage_group</code><span class="sig-paren">(</span><em>masking_view_name</em>, <em>child_storage_group_list</em>, <em>port_group</em>, <em>initiator_group</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.choose_storage_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.choose_storage_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose a child storage group from the list.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>masking_view</strong> – the masking view</li>
-<li><strong>child_sg_list</strong> – the storage group list</li>
-<li><strong>portgroup</strong> – The port group name</li>
-<li><strong>initiatorgoup</strong> – the initiator group name</li>
-<li><strong>revert</strong> – revert back</li>
+<li><strong>masking_view_name</strong> – the masking view name – str</li>
+<li><strong>child_storage_group_list</strong> – the storage group list – list</li>
+<li><strong>port_group</strong> – The port group name – str</li>
+<li><strong>initiator_group</strong> – the initiator group name – str</li>
+<li><strong>revert</strong> – revert back – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict, string</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">element details – dict, child storage group name – str</p>
 </td>
 </tr>
 </tbody>
@@ -6547,12 +6547,12 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>storage_group_name</strong> – storage group name</li>
-<li><strong>volume_list</strong> – sub list</li>
+<li><strong>storage_group_name</strong> – storage group name – str</li>
+<li><strong>volume_list</strong> – sub list – list</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">volume_list</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">volume_list – list</p>
 </td>
 </tr>
 </tbody>
@@ -6561,22 +6561,22 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.compile_new_element_names">
-<code class="descname">compile_new_element_names</code><span class="sig-paren">(</span><em>mv_name</em>, <em>pg_name</em>, <em>host_name</em>, <em>sg_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.compile_new_element_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.compile_new_element_names" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compile_new_element_names</code><span class="sig-paren">(</span><em>masking_view_name</em>, <em>port_group_name</em>, <em>host_name</em>, <em>storage_group_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.compile_new_element_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.compile_new_element_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile elements from mv, sg, host etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mv_name</strong> – masking view name</li>
-<li><strong>pg_name</strong> – port group name</li>
-<li><strong>host_name</strong> – host name</li>
-<li><strong>sg_name</strong> – storage group name</li>
-<li><strong>test</strong> – is it a test case</li>
+<li><strong>masking_view_name</strong> – masking view name – str</li>
+<li><strong>port_group_name</strong> – port group name – str</li>
+<li><strong>host_name</strong> – host name – str</li>
+<li><strong>storage_group_name</strong> – storage group name – str</li>
+<li><strong>test</strong> – is it a test case – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">element details – dict</p>
 </td>
 </tr>
 </tbody>
@@ -6591,9 +6591,7 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element_dict</strong> – element dictionary</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">parent storage group</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element_dict</strong> – element details – dict</td>
 </tr>
 </tbody>
 </table>
@@ -6601,22 +6599,22 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict">
-<code class="descname">get_element_dict</code><span class="sig-paren">(</span><em>component_dict</em>, <em>cd_str</em>, <em>re_str</em>, <em>pg_name</em>, <em>host_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_element_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_element_dict</code><span class="sig-paren">(</span><em>component_dict</em>, <em>cd_str</em>, <em>re_str</em>, <em>port_group_name</em>, <em>host_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_element_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile elements from mv, sg, host etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>component_dict</strong> – masking view dict</li>
-<li><strong>cd_str</strong> – compression disabled</li>
-<li><strong>re_str</strong> – replication enabled</li>
-<li><strong>pg_name</strong> – port group name</li>
-<li><strong>host_name</strong> – host name</li>
+<li><strong>component_dict</strong> – masking view dict – dict</li>
+<li><strong>cd_str</strong> – compression disabled – str</li>
+<li><strong>re_str</strong> – replication enabled – str</li>
+<li><strong>port_group_name</strong> – port group name – str</li>
+<li><strong>host_name</strong> – host name – str</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">element details – dict</p>
 </td>
 </tr>
 </tbody>
@@ -6625,23 +6623,23 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict_revert">
-<code class="descname">get_element_dict_revert</code><span class="sig-paren">(</span><em>component_dict</em>, <em>sg_name</em>, <em>cd_str</em>, <em>re_str</em>, <em>pg_name</em>, <em>host_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_element_dict_revert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict_revert" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_element_dict_revert</code><span class="sig-paren">(</span><em>component_dict</em>, <em>storage_group_name</em>, <em>cd_str</em>, <em>re_str</em>, <em>port_group_name</em>, <em>host_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_element_dict_revert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_element_dict_revert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile elements from mv, sg, host etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>component_dict</strong> – masking view dict</li>
-<li><strong>sg_name</strong> – storage group name</li>
-<li><strong>cd_str</strong> – compression disabled</li>
-<li><strong>re_str</strong> – replication enabled</li>
-<li><strong>pg_name</strong> – port group name</li>
-<li><strong>host_name</strong> – host name</li>
+<li><strong>component_dict</strong> – masking view dict – dict</li>
+<li><strong>storage_group_name</strong> – storage group name – str</li>
+<li><strong>cd_str</strong> – compression disabled – str</li>
+<li><strong>re_str</strong> – replication enabled – str</li>
+<li><strong>port_group_name</strong> – port group name – str</li>
+<li><strong>host_name</strong> – host name – str</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">element details – dict</p>
 </td>
 </tr>
 </tbody>
@@ -6650,15 +6648,15 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_elements_from_masking_view">
-<code class="descname">get_elements_from_masking_view</code><span class="sig-paren">(</span><em>mv_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_elements_from_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_elements_from_masking_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_elements_from_masking_view</code><span class="sig-paren">(</span><em>masking_view_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_elements_from_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_elements_from_masking_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get components from masking view.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mv_name</strong> – masking view name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>masking_view_name</strong> – masking view name – str</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">strings - portgroup, storagegroup, host</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">portgroup – str, storagegroup – str, host – str</td>
 </tr>
 </tbody>
 </table>
@@ -6666,35 +6664,35 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view">
-<code class="descname">get_masking_view</code><span class="sig-paren">(</span><em>mv_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_masking_view</code><span class="sig-paren">(</span><em>masking_view_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the masking view object from the name.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mv_name</strong> – masking view name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>masking_view_name</strong> – masking view name – str</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">masking view – dict</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_mv_component_dict">
-<code class="descname">get_mv_component_dict</code><span class="sig-paren">(</span><em>mv_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_mv_component_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_mv_component_dict" title="Permalink to this definition">¶</a></dt>
+<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view_component_dict">
+<code class="descname">get_masking_view_component_dict</code><span class="sig-paren">(</span><em>masking_view_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_masking_view_component_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_masking_view_component_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get components from input string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mv_name</strong> – the masking view name</li>
-<li><strong>revert</strong> – is it a revert back</li>
+<li><strong>masking_view_name</strong> – the masking view name – str</li>
+<li><strong>revert</strong> – is it a revert back – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">object components – dict</p>
 </td>
 </tr>
 </tbody>
@@ -6710,8 +6708,8 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>regex_str</strong> – the regex</li>
-<li><strong>input_str</strong> – the input string</li>
+<li><strong>regex_str</strong> – the regex – str</li>
+<li><strong>input_str</strong> – the input string – str</li>
 </ul>
 </td>
 </tr>
@@ -6731,12 +6729,12 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>regex_str</strong> – the regex</li>
-<li><strong>input_str</strong> – the input string</li>
+<li><strong>regex_str</strong> – the regex – str</li>
+<li><strong>input_str</strong> – the input string – str</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">object components – dict</p>
 </td>
 </tr>
 </tbody>
@@ -6751,9 +6749,9 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element_dict</strong> – element dictionary</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element_dict</strong> – element dictionary – dict</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">parent storage group</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">parent storage group – dict</td>
 </tr>
 </tbody>
 </table>
@@ -6768,8 +6766,8 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>element_dict</strong> – element dictionary</li>
-<li><strong>revert</strong> – is it a revert back</li>
+<li><strong>element_dict</strong> – element details – dict</li>
+<li><strong>revert</strong> – is it a revert back – boolean</li>
 </ul>
 </td>
 </tr>
@@ -6779,59 +6777,22 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_or_create_masking_view">
-<code class="descname">get_or_create_masking_view</code><span class="sig-paren">(</span><em>element_dict</em>, <em>portgroup</em>, <em>host</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_or_create_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_or_create_masking_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_or_create_masking_view</code><span class="sig-paren">(</span><em>element_dict</em>, <em>port_group</em>, <em>host</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_or_create_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_or_create_masking_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or create masking view from component elements.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>element_dict</strong> – element dictionary</li>
-<li><strong>portgroup</strong> – port group name</li>
-<li><strong>host</strong> – host name</li>
-<li><strong>test</strong> – is it a test case</li>
+<li><strong>element_dict</strong> – element details – dict</li>
+<li><strong>port_group</strong> – port group name – str</li>
+<li><strong>host</strong> – host name – str</li>
+<li><strong>test</strong> – is it a test case – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">masking view – dict</p>
 </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_component_dict">
-<code class="descname">get_sg_component_dict</code><span class="sig-paren">(</span><em>sg_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_sg_component_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_component_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse the storage group string.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sg_name</strong> – the storage group name</li>
-<li><strong>test</strong> – is it a test case</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_qos_details">
-<code class="descname">get_sg_qos_details</code><span class="sig-paren">(</span><em>sg_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_sg_qos_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_sg_qos_details" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the storage group QoS details.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sg_details</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -6845,9 +6806,46 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> – storage group name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> – storage group name – str</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">storage group – dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group_component_dict">
+<code class="descname">get_storage_group_component_dict</code><span class="sig-paren">(</span><em>storage_group_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_storage_group_component_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group_component_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the storage group string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storage_group_name</strong> – the storage group name – str</li>
+<li><strong>test</strong> – is it a test case – boolean</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">object components – dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group_qos_details">
+<code class="descname">get_storage_group_qos_details</code><span class="sig-paren">(</span><em>storage_group_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_storage_group_qos_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_storage_group_qos_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the storage group QoS details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">storage_group_details – dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">QoS details – dict</td>
 </tr>
 </tbody>
 </table>
@@ -6861,9 +6859,9 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> – the storage group name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group_name</strong> – the storage group name – str</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List, Boolean</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">volume list – list, create volume – boolean</td>
 </tr>
 </tbody>
 </table>
@@ -6871,15 +6869,15 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_workload">
-<code class="descname">get_workload</code><span class="sig-paren">(</span><em>storagegroup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_workload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_workload" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_workload</code><span class="sig-paren">(</span><em>storage_group</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.get_workload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.get_workload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the workload from the storagegroup object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storagegroup</strong> – storagegroup object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage_group</strong> – storagegroup – object</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">workload</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">workload – str</td>
 </tr>
 </tbody>
 </table>
@@ -6893,31 +6891,31 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – text in</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – text in – str</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">txt_out</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">txt_out – str</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_vols_from_source_to_target">
-<code class="descname">move_vols_from_source_to_target</code><span class="sig-paren">(</span><em>device_ids</em>, <em>source_sg</em>, <em>target_sg</em>, <em>create_vol_f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.move_vols_from_source_to_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_vols_from_source_to_target" title="Permalink to this definition">¶</a></dt>
+<dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_volumes_from_source_to_target">
+<code class="descname">move_volumes_from_source_to_target</code><span class="sig-paren">(</span><em>device_ids</em>, <em>source_storage_group</em>, <em>target_storage_group</em>, <em>create_volume_flag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.move_volumes_from_source_to_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.move_volumes_from_source_to_target" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or create masking view from component elements.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>device_ids</strong> – list of device ids</li>
-<li><strong>source_sg</strong> – the source sg</li>
-<li><strong>target_sg</strong> – the target sg</li>
-<li><strong>create_vol_f</strong> – create volume flag</li>
+<li><strong>device_ids</strong> – list of device ids – str</li>
+<li><strong>source_storage_group</strong> – the source sg – str</li>
+<li><strong>target_storage_group</strong> – the target sg – str</li>
+<li><strong>create_volume_flag</strong> – create volume flag – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">message – str</p>
 </td>
 </tr>
 </tbody>
@@ -6926,19 +6924,19 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.print_component_dict">
-<code class="descname">print_component_dict</code><span class="sig-paren">(</span><em>mv_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.print_component_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.print_component_dict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">print_component_dict</code><span class="sig-paren">(</span><em>masking_view_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.print_component_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.print_component_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the components to the screen.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mv_name</strong> – the masking view name</li>
-<li><strong>revert</strong> – is it a revert back</li>
+<li><strong>masking_view_name</strong> – the masking view name – str</li>
+<li><strong>revert</strong> – is it a revert back – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">component details – dict</p>
 </td>
 </tr>
 </tbody>
@@ -6953,7 +6951,7 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datadict</strong> – the data dictionary</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datadict</strong> – the data dictionary – dict</td>
 </tr>
 </tbody>
 </table>
@@ -6968,8 +6966,8 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>print_str</strong> – string to print</li>
-<li><strong>level</strong> – the debug level</li>
+<li><strong>print_str</strong> – string to print – str</li>
+<li><strong>level</strong> – the debug level – str</li>
 </ul>
 </td>
 </tr>
@@ -6979,15 +6977,15 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.set_qos">
-<code class="descname">set_qos</code><span class="sig-paren">(</span><em>source_sg_name</em>, <em>target_sg_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.set_qos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.set_qos" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_qos</code><span class="sig-paren">(</span><em>source_storage_group_name</em>, <em>target_storage_group_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.set_qos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.set_qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check and set QoS.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sg</strong> (<em>source</em>) – source SG name</li>
-<li><strong>target_sg</strong> – target SG name</li>
+<li><strong>source_storage_group_name</strong> – source SG name – str</li>
+<li><strong>target_storage_group_name</strong> – target SG name – str</li>
 </ul>
 </td>
 </tr>
@@ -7004,8 +7002,8 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>print_str</strong> – the print string</li>
-<li><strong>level</strong> – the debug level</li>
+<li><strong>print_str</strong> – the print string – str</li>
+<li><strong>level</strong> – the debug level – str</li>
 <li><strong>args</strong> – one or more arguments</li>
 </ul>
 </td>
@@ -7023,12 +7021,12 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>str_to_truncate</strong> – the string to be truncated</li>
-<li><strong>max_num</strong> – the maximum number of characters</li>
+<li><strong>str_to_truncate</strong> – the string to be truncated – str</li>
+<li><strong>max_num</strong> – the maximum number of characters – int</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string – truncated string or original string</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">truncated string or original string – str</p>
 </td>
 </tr>
 </tbody>
@@ -7037,22 +7035,22 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_existing_masking_view">
-<code class="descname">validate_existing_masking_view</code><span class="sig-paren">(</span><em>mv_details</em>, <em>old_port_group</em>, <em>old_host</em>, <em>element_dict</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.validate_existing_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_existing_masking_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">validate_existing_masking_view</code><span class="sig-paren">(</span><em>masking_view_details</em>, <em>old_port_group</em>, <em>old_host</em>, <em>element_dict</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.validate_existing_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_existing_masking_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate the masking view.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mv_details</strong> – masking view details</li>
-<li><strong>old_port_group</strong> – port group name</li>
-<li><strong>old_host</strong> – host name</li>
-<li><strong>element_dict</strong> – the element dictionary</li>
-<li><strong>revert</strong> – is it a revert back</li>
+<li><strong>masking_view_details</strong> – masking view details – dict</li>
+<li><strong>old_port_group</strong> – port group name – str</li>
+<li><strong>old_host</strong> – host name – str</li>
+<li><strong>element_dict</strong> – the element dictionary – dict</li>
+<li><strong>revert</strong> – is it a revert back – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Boolean</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">flag – boolean</p>
 </td>
 </tr>
 </tbody>
@@ -7068,12 +7066,12 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>full_list</strong> – full list</li>
-<li><strong>sub_list</strong> – sub list</li>
+<li><strong>full_list</strong> – full list – list</li>
+<li><strong>sub_list</strong> – sub list – list</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Boolean</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">flag – boolean</p>
 </td>
 </tr>
 </tbody>
@@ -7082,19 +7080,19 @@ default to ‘PyU4V-array_id-date-time’</li>
 
 <dl class="method">
 <dt id="PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_masking_view">
-<code class="descname">validate_masking_view</code><span class="sig-paren">(</span><em>masking_view</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.validate_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_masking_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">validate_masking_view</code><span class="sig-paren">(</span><em>masking_view_name</em>, <em>revert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/tools/openstack/migrate_utils.html#MigrateUtils.validate_masking_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.tools.openstack.migrate_utils.MigrateUtils.validate_masking_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate the masking view string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>masking_view</strong> – masking view name</li>
-<li><strong>revert</strong> – revert back</li>
+<li><strong>masking_view_name</strong> – masking view name – str</li>
+<li><strong>revert</strong> – revert back – boolean</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">boolean</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validate flag – boolean</p>
 </td>
 </tr>
 </tbody>
@@ -7109,7 +7107,7 @@ default to ‘PyU4V-array_id-date-time’</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>protocol</strong> – ‘I’ or ‘F’</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>protocol</strong> – ‘I’ or ‘F’ – str</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean</td>
 </tr>
