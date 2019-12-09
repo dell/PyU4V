@@ -49,15 +49,15 @@ class MigrateUtils(object):
     def __init__(self, conn):
         """Initialize class.
 
-        :param conn: the request connection
+        :param conn: the request connection -- obj
         """
         self.conn = conn
 
     def check_input(self, txt_str, option):
         """Check the input against the expected option.
 
-        :param txt_str: text string
-        :param option: 'Y', 'N' or 'X'
+        :param txt_str: text string -- str
+        :param option: 'Y', 'N' or 'X' -- str
         :returns: boolean
         """
         if option == 'Y':
@@ -73,8 +73,8 @@ class MigrateUtils(object):
     def print_to_log(self, print_str, level=DEBUG):
         """Print to the logs
 
-        :param print_str: string to print
-        :param level: the debug level
+        :param print_str: string to print -- str
+        :param level: the debug level -- str
         """
         if level == ERROR:
             LOG.error(print_str)
@@ -88,7 +88,7 @@ class MigrateUtils(object):
     def print_pretty_table(self, datadict):
         """Print the data in the dict.
 
-        :param datadict: the data dictionary
+        :param datadict: the data dictionary -- dict
         """
         t = prettytable.PrettyTable(['Key', 'Value'])
         for k, v in datadict.items():
@@ -101,45 +101,45 @@ class MigrateUtils(object):
     def smart_print(self, print_str, level, *args):
         """Print with variable arguments.
 
-        :param print_str: the print string
-        :param level: the debug level
+        :param print_str: the print string -- str
+        :param level: the debug level -- str
         :param args: one or more arguments
         """
         print_str = print_str % (args)
         self.print_to_log(print_str, level)
         print(print_str)
 
-    def get_elements_from_masking_view(self, mv_name):
+    def get_elements_from_masking_view(self, masking_view_name):
         """Get components from masking view.
 
-        :param mv_name: masking view name
-        :returns: strings - portgroup, storagegroup, host
+        :param masking_view_name: masking view name -- str
+        :returns: portgroup -- str, storagegroup -- str, host -- str
         """
-        mv_components = {}
+        masking_view_components = {}
         try:
-            mv_components['portgroup'] = (
+            masking_view_components['portgroup'] = (
                 self.conn.provisioning.get_element_from_masking_view(
-                    mv_name, portgroup=True))
-            mv_components['storagegroup'] = (
+                    masking_view_name, portgroup=True))
+            masking_view_components['storagegroup'] = (
                 self.conn.provisioning.get_element_from_masking_view(
-                    mv_name, storagegroup=True))
-            mv_components['initiatorgroup'] = (
+                    masking_view_name, storagegroup=True))
+            masking_view_components['initiatorgroup'] = (
                 self.conn.provisioning.get_element_from_masking_view(
-                    mv_name, host=True))
+                    masking_view_name, host=True))
         except exception.ResourceNotFoundException:
             exception_message = (
-                'Cannot find one of the components of %s' % mv_name)
+                'Cannot find one of the components of %s' % masking_view_name)
             self.smart_print(exception_message, ERROR)
             raise exception.ResourceNotFoundException(
                 data=exception_message)
 
-        self.print_pretty_table(mv_components)
-        return mv_components
+        self.print_pretty_table(masking_view_components)
+        return masking_view_components
 
     def verify_protocol(self, protocol):
         """Verify the protocol.
 
-        :param protocol: 'I' or 'F'
+        :param protocol: 'I' or 'F' -- str
         :returns: boolean
         """
         return (True if len(protocol) == 1 and (
@@ -148,8 +148,8 @@ class MigrateUtils(object):
     def get_object_components(self, regex_str, input_str):
         """Get components from input string.
 
-        :param regex_str: the regex
-        :param input_str: the input string
+        :param regex_str: the regex -- str
+        :param input_str: the input string -- str
         :returns: dict
         """
         full_str = re.compile(regex_str)
@@ -159,9 +159,9 @@ class MigrateUtils(object):
     def get_object_components_and_correct_host(self, regex_str, input_str):
         """Get components from input string.
 
-        :param regex_str: the regex
-        :param input_str: the input string
-        :returns: dict
+        :param regex_str: the regex -- str
+        :param input_str: the input string -- str
+        :returns: object components -- dict
         """
         object_dict = self.get_object_components(regex_str, input_str)
         if object_dict and 'host' in object_dict:
@@ -169,12 +169,13 @@ class MigrateUtils(object):
                 object_dict['host'] = object_dict['host'][:-1]
         return object_dict
 
-    def get_mv_component_dict(self, mv_name, revert=False):
+    def get_masking_view_component_dict(
+            self, masking_view_name, revert=False):
         """Get components from input string.
 
-        :param mv_name: the masking view name
-        :param revert: is it a revert back
-        :returns: dict
+        :param masking_view_name: the masking view name -- str
+        :param revert: is it a revert back -- boolean
+        :returns: object components -- dict
         """
         if revert:
             regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)(?P<protocol>I|F)-'
@@ -184,14 +185,15 @@ class MigrateUtils(object):
                          r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
                          r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
                          r'(?P<postfix>MV)$')
-        return self.get_object_components_and_correct_host(regex_str, mv_name)
+        return self.get_object_components_and_correct_host(
+            regex_str, masking_view_name)
 
     def truncate_string(self, str_to_truncate, max_num):
         """Truncate a string by taking first and last characters.
 
-        :param str_to_truncate: the string to be truncated
-        :param max_num: the maximum number of characters
-        :returns: string -- truncated string or original string
+        :param str_to_truncate: the string to be truncated -- str
+        :param max_num: the maximum number of characters -- int
+        :returns: truncated string or original string -- str
         """
         if len(str_to_truncate) > max_num:
             new_num = len(str_to_truncate) - max_num // 2
@@ -200,12 +202,12 @@ class MigrateUtils(object):
             str_to_truncate = first_chars + last_chars
         return str_to_truncate
 
-    def print_component_dict(self, mv_name, revert=False):
+    def print_component_dict(self, masking_view_name, revert=False):
         """Print the components to the screen.
 
-        :param mv_name: the masking view name
-        :param revert: is it a revert back
-        :returns: dict
+        :param masking_view_name: the masking view name -- str
+        :param revert: is it a revert back -- boolean
+        :returns: component details -- dict
         """
         if revert:
             self.smart_print('\n', DEBUG)
@@ -215,7 +217,8 @@ class MigrateUtils(object):
             self.smart_print(
                 '\tOS-[shortHostName]-[protocol]-[portgroup_name]-MV',
                 DEBUG)
-            component_dict = self.get_mv_component_dict(mv_name, revert)
+            component_dict = self.get_masking_view_component_dict(
+                masking_view_name, revert)
             print('\n')
         else:
             self.smart_print('\n', DEBUG)
@@ -229,77 +232,83 @@ class MigrateUtils(object):
             self.smart_print('\tOS-[shortHostName]-No_SLO-[protocol]-MV',
                              DEBUG)
             self.smart_print('\n', DEBUG)
-            component_dict = self.get_mv_component_dict(mv_name)
-            self.smart_print('COMPONENTS OF %s', DEBUG, mv_name)
+            component_dict = self.get_masking_view_component_dict(
+                masking_view_name)
+            self.smart_print('COMPONENTS OF %s', DEBUG, masking_view_name)
         if component_dict:
             self.print_pretty_table(component_dict)
 
         return component_dict
 
-    def check_mv_for_migration(self, mv_name, revert=False):
+    def check_masking_view_for_migration(
+            self, masking_view_name, revert=False):
         """Check if the masking view can be migrated.
 
-        :param mv_name: the masking view name
-        :param test: is it a test case
-        :returns: boolean
+        :param masking_view_name: the masking view name -- str
+        :param test: is it a test case -- boolean
+        :returns: flag -- boolean
         """
         if revert:
-            component_dict = self.print_component_dict(mv_name, revert)
+            component_dict = self.print_component_dict(
+                masking_view_name, revert)
             if component_dict and self.verify_protocol(
                     component_dict['protocol']):
                 print_str = '%s HAS BEEN VERIFIED TO BEING IN THE NEW FORMAT.'
-                self.smart_print(print_str, DEBUG, mv_name)
+                self.smart_print(print_str, DEBUG, masking_view_name)
                 return True
             else:
                 print_str = (
                     '%s IS NOT IN THE NEW FORMAT, MIGRATION WILL NOT '
                     'PROCEED.')
-                self.smart_print(print_str, WARNING, mv_name)
+                self.smart_print(print_str, WARNING, masking_view_name)
                 return False
         else:
-            component_dict = self.print_component_dict(mv_name)
+            component_dict = self.print_component_dict(masking_view_name)
             if component_dict and self.verify_protocol(
                     component_dict['protocol']):
                 print_str = '%s HAS BEEN VERIFIED TO BEING IN THE OLD FORMAT.'
-                self.smart_print(print_str, DEBUG, mv_name)
+                self.smart_print(print_str, DEBUG, masking_view_name)
                 return True
             else:
                 print_str = ('%s IS NOT IN THE OLD FORMAT, MIGRATION WILL NOT '
                              'PROCEED.')
-                self.smart_print(print_str, WARNING, mv_name)
+                self.smart_print(print_str, WARNING, masking_view_name)
                 return False
 
-    def get_sg_component_dict(self, sg_name):
+    def get_storage_group_component_dict(self, storage_group_name):
         """Parse the storage group string.
 
-        :param sg_name: the storage group name
-        :param test: is it a test case
-        :returns: dict
+        :param storage_group_name: the storage group name -- str
+        :param test: is it a test case -- boolean
+        :returns: object components -- dict
         """
         regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)'
                      r'((?P<no_slo>No_SLO)|((?P<srp>SRP.+?)-'
                      r'(?P<sloworkload>.+?)))-(?P<portgroup>.+?)'
                      r'(?P<after_pg>$|-CD|-RE)')
-        return self.get_object_components_and_correct_host(regex_str, sg_name)
+        return self.get_object_components_and_correct_host(
+            regex_str, storage_group_name)
 
-    def get_element_dict_revert(self, component_dict, sg_name, cd_str, re_str,
-                              pg_name, host_name):
+    def get_element_dict_revert(
+            self, component_dict, storage_group_name, cd_str, re_str,
+            port_group_name, host_name):
         """Compile elements from mv, sg, host etc.
 
-        :param component_dict: masking view dict
-        :param sg_name: storage group name
-        :param cd_str: compression disabled
-        :param re_str: replication enabled
-        :param pg_name: port group name
-        :param host_name: host name
-        :returns: dict
+        :param component_dict: masking view dict -- dict
+        :param storage_group_name: storage group name -- str
+        :param cd_str: compression disabled -- str
+        :param re_str: replication enabled -- str
+        :param port_group_name: port group name -- str
+        :param host_name: host name -- str
+        :returns: element details -- dict
         """
         element_dict = {}
 
-        sg_component_dict = self.get_sg_component_dict(sg_name)
+        sg_component_dict = self.get_storage_group_component_dict(
+            storage_group_name)
         if sg_component_dict:
             if sg_component_dict['sloworkload']:
-                storagegroup = self.get_storage_group(sg_name)
+                storagegroup = self.get_storage_group(storage_group_name)
                 if storagegroup:
                     prefix = (component_dict['prefix']
                               + '-' + component_dict['host']
@@ -325,42 +334,42 @@ class MigrateUtils(object):
                 element_dict['new_mv_name'] = prefix + '-MV'
                 element_dict['new_sg_name'] = prefix + '-SG'
 
-            element_dict['port_group'] = pg_name
+            element_dict['port_group'] = port_group_name
             element_dict['initiator_group'] = host_name
         return element_dict
 
-    def get_workload(self, storagegroup):
+    def get_workload(self, storage_group):
         """Get the workload from the storagegroup object.
 
-        :param storagegroup: storagegroup object
-        :returns: workload
+        :param storage_group: storagegroup -- object
+        :returns: workload -- str
         """
         try:
-            workload = storagegroup['workload']
+            workload = storage_group['workload']
         except KeyError:
             workload = 'NONE'
         return workload
 
     def get_element_dict(self, component_dict, cd_str, re_str,
-                         pg_name, host_name):
+                         port_group_name, host_name):
         """Compile elements from mv, sg, host etc.
 
-        :param component_dict: masking view dict
-        :param cd_str: compression disabled
-        :param re_str: replication enabled
-        :param pg_name: port group name
-        :param host_name: host name
-        :returns: dict
+        :param component_dict: masking view dict -- dict
+        :param cd_str: compression disabled -- str
+        :param re_str: replication enabled -- str
+        :param port_group_name: port group name -- str
+        :param host_name: host name -- str
+        :returns: element details -- dict
         """
         element_dict = {}
         element_dict['new_mv_name'] = (component_dict['prefix'] + '-'
                                        + component_dict['host'] + '-'
                                        + component_dict['protocol'] + '-'
-                                       + pg_name + '-MV')
+                                       + port_group_name + '-MV')
         element_dict['new_sg_parent_name'] = (component_dict['prefix'] + '-'
                                               + component_dict['host'] + '-'
                                               + component_dict['protocol']
-                                              + '-' + pg_name + '-SG')
+                                              + '-' + port_group_name + '-SG')
 
         if component_dict['srp']:
             slo_wl_combo = self.truncate_string(
@@ -369,7 +378,8 @@ class MigrateUtils(object):
                                            + component_dict['host'] + '-'
                                            + component_dict['srp'] + '-'
                                            + slo_wl_combo
-                                           + '-' + pg_name + cd_str + re_str)
+                                           + '-' + port_group_name + cd_str
+                                           + re_str)
             element_dict['srp'] = component_dict['srp']
             element_dict['service_level'] = component_dict['slo']
             element_dict['workload'] = component_dict['workload']
@@ -377,129 +387,122 @@ class MigrateUtils(object):
             element_dict['new_sg_name'] = (component_dict['prefix'] + '-'
                                            + component_dict['host'] + '-'
                                            + 'No_SLO' + '-'
-                                           + pg_name + cd_str + re_str)
-        element_dict['port_group'] = pg_name
+                                           + port_group_name + cd_str
+                                           + re_str)
+        element_dict['port_group'] = port_group_name
         element_dict['initiator_group'] = host_name
         return element_dict
 
     def compile_new_element_names(
-            self, mv_name, pg_name, host_name, sg_name, revert=False):
+            self, masking_view_name, port_group_name, host_name,
+            storage_group_name, revert=False):
         """Compile elements from mv, sg, host etc.
 
-        :param mv_name: masking view name
-        :param pg_name: port group name
-        :param host_name: host name
-        :param sg_name: storage group name
-        :param test: is it a test case
-        :returns: dict
+        :param masking_view_name: masking view name -- str
+        :param port_group_name: port group name -- str
+        :param host_name: host name -- str
+        :param storage_group_name: storage group name -- str
+        :param test: is it a test case -- boolean
+        :returns: element details -- dict
         """
         element_dict = {}
         cd_str = ''
         re_str = ''
         regex_all = '\\S+'
-        if re.search('^OS-' + regex_all + '-CD', sg_name):
+        if re.search('^OS-' + regex_all + '-CD', storage_group_name):
             cd_str = '-CD'
             element_dict['CD'] = 'CD'
-        if re.search('^OS-' + regex_all + '-RE', sg_name):
+        if re.search('^OS-' + regex_all + '-RE', storage_group_name):
             re_str = '-RE'
             element_dict['RE'] = 'RE'
-        component_dict = self.get_mv_component_dict(mv_name, revert)
+        component_dict = self.get_masking_view_component_dict(
+            masking_view_name, revert)
         if component_dict:
             if revert:
                 element_dict = self.get_element_dict_revert(
-                    component_dict, sg_name, cd_str, re_str,
-                    pg_name, host_name)
+                    component_dict, storage_group_name, cd_str, re_str,
+                    port_group_name, host_name)
             else:
                 element_dict = self.get_element_dict(
                     component_dict, cd_str, re_str,
-                    pg_name, host_name)
+                    port_group_name, host_name)
         else:
             print_str = 'UNABLE TO PARSE %s, MIGRATION WILL NOT ' \
                         'PROCEED.'
-            self.smart_print(print_str, WARNING, mv_name)
+            self.smart_print(print_str, WARNING, masking_view_name)
 
         return element_dict
 
     def validate_existing_masking_view(
-            self, mv_details, old_port_group, old_host, element_dict,
-            revert=False):
+            self, masking_view_details, old_port_group, old_host,
+            element_dict, revert=False):
         """Validate the masking view.
 
-        :param mv_details: masking view details
-        :param old_port_group: port group name
-        :param old_host: host name
-        :param element_dict: the element dictionary
-        :param revert: is it a revert back
-        :returns: Boolean
+        :param masking_view_details: masking view details -- dict
+        :param old_port_group: port group name -- str
+        :param old_host: host name -- str
+        :param element_dict: the element dictionary -- dict
+        :param revert: is it a revert back -- boolean
+        :returns: flag -- boolean
         """
         self.smart_print(
-            'NEW MASKING VIEW %s', DEBUG, mv_details['maskingViewId'])
-        mv_components = self.get_elements_from_masking_view(
-            mv_details['maskingViewId'])
-        if old_port_group != mv_components['portgroup']:
+            'NEW MASKING VIEW %s', DEBUG,
+            masking_view_details['maskingViewId'])
+        masking_view_components = self.get_elements_from_masking_view(
+            masking_view_details['maskingViewId'])
+        if old_port_group != masking_view_components['portgroup']:
             self.smart_print(
                 'Portgroups are not equal, please assess', DEBUG)
             return False
-        if old_host != mv_components['initiatorgroup']:
+        if old_host != masking_view_components['initiatorgroup']:
             print_str = 'Hosts are not equal, please assess'
             self.smart_print(print_str, WARNING)
             return False
         if revert:
-            if element_dict['new_sg_name'] != mv_components['storagegroup']:
+            if element_dict['new_sg_name'] != (
+                    masking_view_components['storagegroup']):
                 print_str = 'Storage group is not equal, please assess'
                 self.smart_print(print_str, WARNING)
                 return False
         else:
             if element_dict['new_sg_parent_name'] != (
-                    mv_components['storagegroup']):
+                    masking_view_components['storagegroup']):
                 print_str = (
                     'Parent storage group is not equal, please assess')
                 self.smart_print(print_str, WARNING)
                 return False
             # Check if child storage group exists
-            child_storagegroup = self.get_storage_group(
+            child_storage_group = self.get_storage_group(
                 element_dict['new_sg_name'])
-            if child_storagegroup:
+            if child_storage_group:
                 # Check if the child SG is part of the parent
-                if not self.conn.provisioning.is_child_sg_in_parent_sg(
-                        element_dict['new_sg_name'],
-                        element_dict['new_sg_parent_name']):
-                    print_str = (
-                        'The child sg is not part of the parent sg: %s')
-                    self.smart_print(
-                        print_str, DEBUG, element_dict['new_sg_name'])
-                    # Now add the new storage group to the parent
-                    message = (
-                        self.conn.provisioning.add_child_sg_to_parent_sg(
-                            element_dict['new_sg_name'],
-                            element_dict['new_sg_parent_name']))
-                    self.get_storage_group(message, DEBUG)
+                self._existing_child_storage_group_check(
+                    element_dict['new_sg_name'],
+                    element_dict['new_sg_parent_name'])
             else:
                 self.create_child_storage_group_and_add_to_parent(
                     element_dict)
-
         return True
 
     def get_storage_group(self, storage_group_name):
         """Get the storage group object from the name.
 
-        :param storage_group_name: storage group name
-        :returns: dict
+        :param storage_group_name: storage group name -- str
+        :returns: storage group -- dict
         """
-        storagegroup = None
+        storage_group = None
         try:
-            storagegroup = self.conn.provisioning.get_storage_group(
+            storage_group = self.conn.provisioning.get_storage_group(
                 storage_group_name)
         except exception.ResourceNotFoundException:
             print_str = 'Storage group %s not found'
             self.smart_print(print_str, WARNING, storage_group_name)
-        return storagegroup
+        return storage_group
 
     def create_child_storage_group_and_add_to_parent(self, element_dict):
         """Create child storage group.
 
-        :param element_dict: element dictionary
-        :returns: parent storage group
+        :param element_dict: element details -- dict
         """
         print_str = '%s child storage group does not exist so creating it.'
         self.smart_print(print_str, DEBUG, element_dict['new_sg_name'])
@@ -508,85 +511,118 @@ class MigrateUtils(object):
         if 'CD' in element_dict:
             disable_compression = True
         if 'srp' in element_dict:
-            message = self.conn.provisioning.create_non_empty_storagegroup(
+            message = self.conn.provisioning.create_non_empty_storage_group(
                 element_dict['srp'],
                 element_dict['new_sg_name'],
                 element_dict['service_level'],
                 element_dict['workload'], '1', '1', 'GB',
                 disable_compression)
         else:
-            message = self.conn.provisioning.create_empty_sg(
+            message = self.conn.provisioning.create_empty_storage_group(
                 None, element_dict['new_sg_name'], None, None)
             # Add a volume to it
-            self.conn.provisioning.create_volume_from_sg_return_dev_id(
+            self.conn.provisioning.create_volume_from_storage_group_return_id(
                 'first_vol', element_dict['new_sg_name'], '1')
 
         print_str = 'CREATED CHILD STORAGE GROUP %s.'
         self.smart_print(print_str, DEBUG, element_dict['new_sg_name'])
         self.print_pretty_table(message)
         # Add the child to the parent storage group
-        message = self.conn.provisioning.add_child_sg_to_parent_sg(
-            element_dict['new_sg_name'], element_dict['new_sg_parent_name'])
+        self._add_child_to_parent(element_dict['new_sg_name'],
+                                  element_dict['new_sg_parent_name'])
+
+    def _existing_child_storage_group_check(
+            self, storage_group_child, storage_group_parent):
+        """Check that child is part of parent, if not, add it
+
+        :param child_storage_group: child storage group name -- str
+        :param parent_storage_group: parent storage group name -- str
+        """
+        prov = self.conn.provisioning
+        if not prov.is_child_storage_group_in_parent_storage_group(
+                storage_group_child, storage_group_parent):
+            print_str = (
+                'The child sg is not part of the parent sg: %s')
+            self.smart_print(
+                print_str, DEBUG, storage_group_child)
+            self._add_child_to_parent(
+                storage_group_child, storage_group_parent)
+
+    def _add_child_to_parent(self, child_storage_group, parent_storage_group):
+        """Add child storage group to parent storage group
+
+        :param child_storage_group: child storage group name -- str
+        :param parent_storage_group: parent storage group name -- str
+        """
+        message = (
+            self.conn.provisioning.add_child_storage_group_to_parent_group(
+                child_storage_group, parent_storage_group))
         print_str = 'ADDED CHILD STORAGE GROUP %s TO PARENT STORAGE GROUP %s.'
-        self.smart_print(print_str, DEBUG, element_dict['new_sg_name'],
-                         element_dict['new_sg_parent_name'])
+        self.smart_print(print_str, DEBUG, child_storage_group,
+                         parent_storage_group)
         self.print_pretty_table(message)
 
     def get_or_create_cascaded_storage_group(self, element_dict):
         """Get or create cascaded storage group.
 
-        :param element_dict: element dictionary
-        :returns: parent storage group
+        :param element_dict: element dictionary -- dict
+        :returns: parent storage group -- dict
         """
-        storagegroup_parent = self.get_storage_group(
+        storage_group_parent = self.get_storage_group(
             element_dict['new_sg_parent_name'])
-        if not storagegroup_parent:
+        if not storage_group_parent:
             print_str = (
-                '%s parent storage group does not exist so'
+                '%s parent storage group does not exist so '
                 'creating it.')
             self.smart_print(
                 print_str, DEBUG, element_dict['new_sg_parent_name'])
             # Create a new empty parent storage group
-            message = self.conn.provisioning.create_empty_sg(
+            message = self.conn.provisioning.create_empty_storage_group(
                 element_dict['srp'], element_dict['new_sg_parent_name'],
                 None, None)
             self.print_pretty_table(message)
-            storagegroup_parent = self.get_storage_group(
+            storage_group_parent = self.get_storage_group(
                 element_dict['new_sg_parent_name'])
-        storagegroup_child = self.get_storage_group(
+        storage_group_child = self.get_storage_group(
             element_dict['new_sg_name'])
-        if not storagegroup_child:
+        if not storage_group_child:
             self.create_child_storage_group_and_add_to_parent(element_dict)
-        return storagegroup_parent
+        else:
+            self._existing_child_storage_group_check(
+                element_dict['new_sg_name'],
+                element_dict['new_sg_parent_name'])
+
+        return storage_group_parent
 
     def get_or_create_elements(self, element_dict, revert=False):
         """Get or create component elements.
 
-        :param element_dict: element dictionary
-        :param revert: is it a revert back
+        :param element_dict: element details -- dict
+        :param revert: is it a revert back -- boolean
         """
         if revert:
-            storagegroup = self.get_storage_group(
+            storage_group = self.get_storage_group(
                 element_dict['new_sg_name'])
-            if not storagegroup:
+            if not storage_group:
                 # Create a new storage group with one volume in it
-                message = self.conn.provisioning.create_non_empty_storagegroup(
+                prov = self.conn.provisioning
+                message = prov.create_non_empty_storage_group(
                     element_dict['srp'],
                     element_dict['new_sg_name'],
                     element_dict['service_level'],
                     element_dict['workload'], '1', '1', 'GB')
                 self.print_pretty_table(message)
-            storagegroup = self.get_storage_group(
+            storage_group = self.get_storage_group(
                 element_dict['new_sg_name'])
         else:
-            storagegroup = self.get_or_create_cascaded_storage_group(
+            storage_group = self.get_or_create_cascaded_storage_group(
                 element_dict)
-        if storagegroup:
+        if storage_group:
             port_group = element_dict['port_group']
             initiator_group = element_dict['initiator_group']
             self.conn.provisioning.create_masking_view_existing_components(
                 port_group, element_dict['new_mv_name'],
-                storagegroup['storageGroupId'],
+                storage_group['storageGroupId'],
                 host_name=initiator_group)
         else:
             exception_message = (
@@ -595,36 +631,36 @@ class MigrateUtils(object):
             raise exception.ResourceNotFoundException(
                 data=exception_message)
 
-    def get_masking_view(self, mv_name):
+    def get_masking_view(self, masking_view_name):
         """Get the masking view object from the name.
 
-        :param mv_name: masking view name
-        :returns: dict
+        :param masking_view_name: masking view name -- str
+        :returns: masking view -- dict
         """
         masking_view = None
         try:
             masking_view = self.conn.provisioning.get_masking_view(
-                mv_name)
+                masking_view_name)
         except exception.ResourceNotFoundException:
             print_str = 'Masking view %s not found.'
-            self.smart_print(print_str, WARNING, mv_name)
+            self.smart_print(print_str, WARNING, masking_view_name)
         return masking_view
 
     def get_or_create_masking_view(
-            self, element_dict, portgroup, host, revert=False):
+            self, element_dict, port_group, host, revert=False):
         """Get or create masking view from component elements.
 
-        :param element_dict: element dictionary
-        :param portgroup: port group name
-        :param host: host name
-        :param test: is it a test case
-        :returns: dict
+        :param element_dict: element details -- dict
+        :param port_group: port group name -- str
+        :param host: host name -- str
+        :param test: is it a test case -- boolean
+        :returns: masking view -- dict
         """
         new_masking_view_details = self.get_masking_view(
             element_dict['new_mv_name'])
         if new_masking_view_details:
             if self.validate_existing_masking_view(
-                    new_masking_view_details, portgroup, host,
+                    new_masking_view_details, port_group, host,
                     element_dict, revert):
                 print_str = (
                     'The existing masking view %s will be used.')
@@ -644,49 +680,52 @@ class MigrateUtils(object):
                 element_dict['new_mv_name'])
         return new_masking_view_details
 
-    def move_vols_from_source_to_target(
-            self, device_ids, source_sg, target_sg, create_vol_f):
+    def move_volumes_from_source_to_target(
+            self, device_ids, source_storage_group, target_storage_group,
+            create_volume_flag):
         """Get or create masking view from component elements.
 
-        :param device_ids: list of device ids
-        :param source_sg: the source sg
-        :param target_sg: the target sg
-        :param create_vol_f: create volume flag
-        :returns: string
+        :param device_ids: list of device ids -- str
+        :param source_storage_group: the source sg -- str
+        :param target_storage_group: the target sg -- str
+        :param create_volume_flag: create volume flag -- boolean
+        :returns: message -- str
         """
         print_str = '\nMoving %d volume(s) from %s to %s.'
         self.smart_print(
-            print_str, DEBUG, len(device_ids), source_sg, target_sg)
+            print_str, DEBUG, len(device_ids), source_storage_group,
+            target_storage_group)
         self.smart_print(
             '\nPlease be patient, this may take several minutes...',
             DEBUG)
         # Create a small volume
-        if create_vol_f:
-            self.conn.provisioning.create_volume_from_sg_return_dev_id(
-                'last_vol', source_sg, '1')
+        if create_volume_flag:
+            self.conn.provisioning.create_volume_from_storage_group_return_id(
+                'last_vol', source_storage_group, '1')
         # Move the volume from the old storage group to the
         # new storage group
         message = self.conn.provisioning.move_volumes_between_storage_groups(
-            device_ids, source_sg, target_sg, force=False)
+            device_ids, source_storage_group, target_storage_group,
+            force=False)
         return message
 
     def validate_list(self, full_list, sub_list):
         """Validate the sub list is within the full list.
 
-        :param full_list: full list
-        :param sub_list: sub list
-        :returns: Boolean
+        :param full_list: full list -- list
+        :param sub_list: sub list -- list
+        :returns: flag -- boolean
         """
         return True if all(elem in full_list for elem in sub_list) else False
 
     def choose_subset_volumes(self, storage_group_name, volume_list):
         """Validate the sub list is within the full list.
 
-        :param storage_group_name: storage group name
-        :param volume_list: sub list
-        :returns: volume_list
+        :param storage_group_name: storage group name -- str
+        :param volume_list: sub list -- list
+        :returns: volume_list -- list
         """
-        create_vol = False
+        create_volume_flag = False
         self.smart_print('Here is the full list of volumes in SG %s: %s',
                          DEBUG, storage_group_name, volume_list)
         txt = ('Which do you want to migrate (comma separated list): ',
@@ -697,7 +736,7 @@ class MigrateUtils(object):
             sub_volume_list = [x.strip(' \'') for x in sub_volume_list]
             if self.validate_list(volume_list, sub_volume_list):
                 if len(volume_list) == len(sub_volume_list):
-                    create_vol = True
+                    create_volume_flag = True
                 volume_list = sub_volume_list
             else:
                 print_str = ('Unable to validate your list, '
@@ -713,15 +752,15 @@ class MigrateUtils(object):
                     storage_group_name, volume_list)
             else:
                 sys.exit()
-        return volume_list, create_vol
+        return volume_list, create_volume_flag
 
     def get_volume_list(self, storage_group_name):
         """Get the list of volumes from the storage group.
 
-        :param storage_group_name: the storage group name
-        :returns: List, Boolean
+        :param storage_group_name: the storage group name -- str
+        :returns: volume list -- list, create volume -- boolean
         """
-        create_vol = False
+        create_volume_flag = False
         volume_list = self.conn.provisioning.get_volumes_from_storage_group(
             storage_group_name)
         print_str = 'There are %d volume in storage group %s.'
@@ -735,54 +774,54 @@ class MigrateUtils(object):
             print_str = ('Moving all volumes between source '
                          'and target storage groups.')
             self.smart_print(print_str, DEBUG)
-            create_vol = True
+            create_volume_flag = True
         else:
-            volume_list, create_vol = self.choose_subset_volumes(
+            volume_list, create_volume_flag = self.choose_subset_volumes(
                 storage_group_name, volume_list)
 
-        return volume_list, create_vol
+        return volume_list, create_volume_flag
 
-    def choose_sg(
-            self, masking_view, child_sg_list, portgroup, initiatorgroup,
-            revert=False):
+    def choose_storage_group(
+            self, masking_view_name, child_storage_group_list, port_group,
+            initiator_group, revert=False):
         """Choose a child storage group from the list.
 
-        :param masking_view: the masking view
-        :param child_sg_list: the storage group list
-        :param portgroup: The port group name
-        :param initiatorgoup: the initiator group name
-        :param revert: revert back
-        :returns: dict, string
+        :param masking_view_name: the masking view name -- str
+        :param child_storage_group_list: the storage group list -- list
+        :param port_group: The port group name -- str
+        :param initiator_group: the initiator group name -- str
+        :param revert: revert back -- boolean
+        :returns: element details -- dict, child storage group name -- str
         """
         element_dict = {}
-        child_sg = None
-        for child_sg in child_sg_list:
+        child_storage_group_name = None
+        for child_storage_group_name in child_storage_group_list:
             txt = ('Which storage group do you want to migrate:\n\t '
-                   '%s. Y/N: ' % child_sg)
+                   '%s. Y/N: ' % child_storage_group_name)
             txt_out = self.input(txt)
             if 'Y' in txt_out:
                 # Compile the new names of the SGs and MV
                 element_dict = self.compile_new_element_names(
-                    masking_view, portgroup, initiatorgroup, child_sg,
-                    revert)
-                return element_dict, child_sg
-        return element_dict, child_sg
+                    masking_view_name, port_group, initiator_group,
+                    child_storage_group_name, revert)
+                return element_dict, child_storage_group_name
+        return element_dict, child_storage_group_name
 
-    def validate_masking_view(self, masking_view, revert=False):
+    def validate_masking_view(self, masking_view_name, revert=False):
         """Validate the masking view string.
 
-        :param masking_view: masking view name
-        :param revert: revert back
-        :returns: boolean
+        :param masking_view_name: masking view name -- str
+        :param revert: revert back -- boolean
+        :returns: validate flag -- boolean
         """
-        if re.search('^OS-', masking_view):
+        if re.search('^OS-', masking_view_name):
             try:
                 if revert:
-                    return True if self.get_mv_component_dict(
-                        masking_view, sys.argv[1]) else False
+                    return True if self.get_masking_view_component_dict(
+                        masking_view_name, sys.argv[1]) else False
                 else:
-                    return True if self.get_mv_component_dict(
-                        masking_view) else False
+                    return True if self.get_masking_view_component_dict(
+                        masking_view_name) else False
             except Exception:
                 return False
         else:
@@ -791,8 +830,8 @@ class MigrateUtils(object):
     def input(self, txt):
         """Handle input.
 
-        :param txt: text in
-        :returns: txt_out
+        :param txt: text in -- str
+        :returns: txt_out -- str
         """
         txt_out = ''
         try:
@@ -801,41 +840,47 @@ class MigrateUtils(object):
             self.smart_print('Problem with input stream', ERROR)
         return txt_out
 
-    def get_sg_qos_details(self, sg_details):
+    def get_storage_group_qos_details(self, storage_group_details):
         """Get the storage group QoS details.
 
-        :param sg_details:
-        :returns: dict
+        :param: storage_group_details -- dict
+        :returns: QoS details -- dict
         """
         qos_dict = {}
         try:
-            sg_qos_details = sg_details['hostIOLimit']
-            qos_dict['sg_maxiops'] = sg_qos_details['host_io_limit_io_sec']
-            qos_dict['sg_maxmbps'] = sg_qos_details['host_io_limit_mb_sec']
+            storage_group_qos_details = storage_group_details['hostIOLimit']
+            qos_dict['sg_maxiops'] = (
+                storage_group_qos_details['host_io_limit_io_sec'])
+            qos_dict['sg_maxmbps'] = (
+                storage_group_qos_details['host_io_limit_mb_sec'])
             qos_dict['sg_distribution_type'] = (
-                sg_qos_details['dynamicDistribution'])
+                storage_group_qos_details['dynamicDistribution'])
         except KeyError:
             self.smart_print(
                 'hostIOLimit(QoS details) not set storage group %s.',
-                DEBUG, sg_details['storageGroupId'])
+                DEBUG, storage_group_details['storageGroupId'])
         return qos_dict
 
-    def set_qos(self, source_sg_name, target_sg_name):
+    def set_qos(self, source_storage_group_name, target_storage_group_name):
         """Check and set QoS.
 
-        :param source sg: source SG name
-        :param target_sg: target SG name
+        :param source_storage_group_name: source SG name -- str
+        :param target_storage_group_name: target SG name -- str
         """
         property_dict = {}
         source_qos_dict = {}
         target_qos_dict = {}
-        source_sg_details = self.get_storage_group(source_sg_name)
-        target_sg_details = self.get_storage_group(target_sg_name)
+        source_storage_group_details = self.get_storage_group(
+            source_storage_group_name)
+        target_storage_group_details = self.get_storage_group(
+            target_storage_group_name)
 
-        if source_sg_details:
-            source_qos_dict = self.get_sg_qos_details(source_sg_details)
-        if target_sg_details:
-            target_qos_dict = self.get_sg_qos_details(target_sg_details)
+        if source_storage_group_details:
+            source_qos_dict = self.get_storage_group_qos_details(
+                source_storage_group_details)
+        if target_storage_group_details:
+            target_qos_dict = self.get_storage_group_qos_details(
+                target_storage_group_details)
         if source_qos_dict and target_qos_dict:
             if source_qos_dict['sg_maxiops'] != target_qos_dict['sg_maxiops']:
                 property_dict['host_io_limit_io_sec'] = (
@@ -860,7 +905,7 @@ class MigrateUtils(object):
             payload = {'editStorageGroupActionParam': {
                 'setHostIOLimitsParam': property_dict}}
             message = self.conn.provisioning.modify_storage_group(
-                target_sg_name, payload)
+                target_storage_group_name, payload)
             print_str = '%s Host IO details have changed:'
-            self.smart_print(print_str, DEBUG, target_sg_name)
+            self.smart_print(print_str, DEBUG, target_storage_group_name)
             self.print_pretty_table(message['hostIOLimit'])
