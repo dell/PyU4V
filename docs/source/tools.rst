@@ -13,33 +13,39 @@ OpenStack
 
 This script facilitates the seamless(live) migration of volumes from the SMIS
 masking view structure to the REST masking view structure introduced in Pike.
-This is only applicable if you have existing volumes created in Ocata or an earlier
-release.
+This is only applicable if you have existing volumes created in Ocata or an
+earlier release.
 
 .. important::
-   - Running this script is not necessary unless you intend 'Live Migrating' from one compute node to another.
+   Running this script is not necessary unless you intend 'Live Migrating'
+   from one compute node to another.
 
 **Pre-requisites**
 
-1. The OpenStack system must first be successfully upgraded to Pike or a post Pike release.
+1. The OpenStack system must first be successfully upgraded to Pike or a post
+   Pike release.
 2. All your existing compute nodes must be online.
 3. Avoid executing any cinder operations when running migrate.py python script.
-4. Avoid Unisphere for PowerMax upgrades or VMAX / PowerMAX OS upgrades when running migrate.py python script.
+4. Avoid Unisphere for PowerMax upgrades or VMAX / PowerMAX OS upgrades when
+   running migrate.py python script.
 
 **Recommendations**
 
-1. It is recommended to create a test instance in OpenStack to force a creation of a masking view
-   on the array. When you run the script it should move the volumes to the child storage group
-   associated with that volume type.  If it does not and it creates a masking view or storage
-   group with a slightly different name then please file a bug on the Github issues page for this
-   project.
-2. It is also recommended to move one volume first and verify it has been moved to the correct
-   storage group within the correct masking view.
-3. If in any doubt, please file an issue on the Github issues page for this project issues_.
+1. It is recommended to create a test instance in OpenStack to force a
+   creation of a masking view on the array. When you run the script it
+   should move the volumes to the child storage group associated with that
+   volume type. If it does not and it creates a masking view or storage
+   group with a slightly different name then please file a bug on the Github
+   issues page for this project.
+2. It is also recommended to move one volume first and verify it has been
+   moved to the correct storage group within the correct masking view.
+3. If in any doubt, please file an issue on the Github issues page for this
+   project issues_.
 
-The script can be run using python 2.7, python3.6 and python 3.7. It is recommended you run from
-the PyU4V base directory, however you can run from the 'openstack' directory so long as you
-copy/create PyU4V.conf in that directory.
+The script can be run using python 2.7, python3.6 and python 3.7. It is
+recommended you run from the PyU4V base directory, however you can run from
+the 'openstack' directory so long as you copy/create PyU4V.conf in that
+directory.
 
 .. code-block:: bash
 

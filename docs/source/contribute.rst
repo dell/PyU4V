@@ -35,7 +35,7 @@ forward on all code in PyU4V.
 
 2. Use ``.format()`` for string concatenation.
 
-.. code-block:: text
+.. code-block:: Python
 
    my_string = '{variable1}, thanks for contributing to {variable2}'.format(
        variable1=’Hello’, variable2=’PyU4V’)
