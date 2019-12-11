@@ -1,8 +1,13 @@
 PyU4V Change Log
 ================
 
-Version 9.1.1.0 - released x/12/19
+Version 9.1.1.0 - released 12/12/19
 ==================================
+
+Fixes
+-----
+- During Provisioning CI tests, only check storage groups for compression
+  related values if compression is present and enabled.
 - OpenStack migrate tool and corresponding documentation
 
 Version 9.1.0.0 - released 4/12/19
@@ -330,4 +335,3 @@ PyU4V/utils/console.py
 ----------------------
 - choose_from_list() has been marked for deprecation, please implement any
   console driven commands from your own scripts and not from PyU4V
-
