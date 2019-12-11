@@ -2670,7 +2670,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn(constants.DEVICE_EMULATION, storage_group_details)
         self.assertIn(constants.TYPE, storage_group_details)
         self.assertIn(constants.UNPROTECTED, storage_group_details)
-        self.assertIn(constants.COMPRESSION, storage_group_details)
         self.assertIsInstance(
             storage_group_details[constants.STORAGE_GROUP_ID_CAMEL], str)
         self.assertIsInstance(storage_group_details[constants.SLO], str)
@@ -2702,6 +2701,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(
             storage_group_id,
             storage_group_details[constants.STORAGE_GROUP_ID_CAMEL])
+        if constants.COMPRESSION in storage_group_details:
+            self.assertIsInstance(
+                storage_group_details[constants.COMPRESSION], bool)
 
     def _validate_volume_details(self, volume_details):
         """Validate the return contents of volume requests.

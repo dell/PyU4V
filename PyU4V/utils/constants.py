@@ -30,7 +30,7 @@ PUT = 'PUT'
 DELETE = 'DELETE'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.1.0.0'
+PYU4V_VERSION = '9.1.0.1'
 UNISPHERE_VERSION = '91'
 VERSION = 'version'
 ITERATOR = 'Iterator'

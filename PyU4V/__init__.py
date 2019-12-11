@@ -23,7 +23,7 @@
 from .univmax_conn import U4VConn  # noqa: F401
 
 __title__ = 'pyu4v'
-__version__ = '9.1.0.0'
+__version__ = '9.1.0.1'
 __author__ = 'Dell EMC or its subsidiaries'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2019 Dell EMC Inc'

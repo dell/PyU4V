@@ -16,7 +16,7 @@ from setuptools import setup
 
 
 setup(name='PyU4V',
-      version='9.1.0.0',
+      version='9.1.0.1',
       url='https://github.com/MichaelMcAleer/PyU4V/',
       author='Dell Inc. or its subsidiaries',
       author_email='Michael.Mcaleer@dell.com',
