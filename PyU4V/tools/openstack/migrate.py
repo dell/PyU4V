@@ -97,11 +97,11 @@ def revert_case(masking_view_name):
                 is_revert))
         # Check if masking view exists and if it does validate it
         if element_dict:
-                utils.get_or_create_masking_view(
-                    element_dict,
-                    masking_view_components['portgroup'],
-                    masking_view_components['initiatorgroup'],
-                    is_revert)
+            utils.get_or_create_masking_view(
+                element_dict,
+                masking_view_components['portgroup'],
+                masking_view_components['initiatorgroup'],
+                is_revert)
         else:
             utils.smart_print(
                 'NO MIGRATION', migrate_utils.WARNING)
@@ -166,6 +166,7 @@ def move_volumes(masking_view_components, element_dict):
             print_str, migrate_utils.DEBUG,
             element_dict['new_sg_name'])
         utils.print_pretty_table(new_storage_group)
+
 
 for masking_view in masking_view_list:
     if utils.validate_masking_view(masking_view, is_revert):

@@ -23,8 +23,8 @@ setup(name='PyU4V',
       description=("A Python library for use with Dell EMC's Unisphere for "
                    "PowerMax REST API."),
       license='Apache 2.0',
-      packages=['PyU4V', 'PyU4V.utils'],
-      install_requires=['requests', 'six', 'urllib3'],
+      packages=['PyU4V', 'PyU4V.utils', 'PyU4V.tools.openstack'],
+      install_requires=['requests', 'six', 'urllib3', 'prettytable', 'future'],
       include_package_data=True,
       classifiers=[
           'Development Status :: 2 - Pre-Alpha',

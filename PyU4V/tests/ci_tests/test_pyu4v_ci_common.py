@@ -204,8 +204,8 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         for i in range(len(headroom_list)):
             self.assertTrue(
                 set({'emulation': 'CKD'}.items()).issubset(
-                    set(headroom_list[i].items())) or
-                set({'emulation': 'FBA'}.items()).issubset(
+                    set(headroom_list[i].items()))
+                or set({'emulation': 'FBA'}.items()).issubset(
                     set(headroom_list[i].items())))
 
     def test_get_iterator_results(self):

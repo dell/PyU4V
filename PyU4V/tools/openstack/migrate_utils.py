@@ -53,7 +53,8 @@ class MigrateUtils(object):
         """
         self.conn = conn
 
-    def check_input(self, txt_str, option):
+    @staticmethod
+    def check_input(txt_str, option):
         """Check the input against the expected option.
 
         :param txt_str: text string -- str
@@ -245,7 +246,7 @@ class MigrateUtils(object):
         """Check if the masking view can be migrated.
 
         :param masking_view_name: the masking view name -- str
-        :param test: is it a test case -- boolean
+        :param revert: is it a revert case -- boolean
         :returns: flag -- boolean
         """
         if revert:
@@ -279,7 +280,6 @@ class MigrateUtils(object):
         """Parse the storage group string.
 
         :param storage_group_name: the storage group name -- str
-        :param test: is it a test case -- boolean
         :returns: object components -- dict
         """
         regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)'
@@ -402,7 +402,7 @@ class MigrateUtils(object):
         :param port_group_name: port group name -- str
         :param host_name: host name -- str
         :param storage_group_name: storage group name -- str
-        :param test: is it a test case -- boolean
+        :param revert: is it a revert case -- boolean
         :returns: element details -- dict
         """
         element_dict = {}
@@ -653,7 +653,7 @@ class MigrateUtils(object):
         :param element_dict: element details -- dict
         :param port_group: port group name -- str
         :param host: host name -- str
-        :param test: is it a test case -- boolean
+        :param revert: is it a revert case -- boolean
         :returns: masking view -- dict
         """
         new_masking_view_details = self.get_masking_view(
@@ -760,7 +760,6 @@ class MigrateUtils(object):
         :param storage_group_name: the storage group name -- str
         :returns: volume list -- list, create volume -- boolean
         """
-        create_volume_flag = False
         volume_list = self.conn.provisioning.get_volumes_from_storage_group(
             storage_group_name)
         print_str = 'There are %d volume in storage group %s.'
@@ -818,7 +817,7 @@ class MigrateUtils(object):
             try:
                 if revert:
                     return True if self.get_masking_view_component_dict(
-                        masking_view_name, sys.argv[1]) else False
+                        masking_view_name, True) else False
                 else:
                     return True if self.get_masking_view_component_dict(
                         masking_view_name) else False

@@ -146,8 +146,8 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
         # Compile regex search pattern for matching the current time (to the
         # minute)
         time_re_search = re.compile(
-            r"\A" + time.strftime("%Y-%m-%d") + r"\s" +
-            time.strftime("%H:%M") + r":\d{2},\d{3}")
+            r"\A" + time.strftime("%Y-%m-%d")
+            + r"\s" + time.strftime("%H:%M") + r":\d{2},\d{3}")
         # Open PyU4V.log file and read the lines withing
         with open(log_path, newline='') as log_file:
             log_lines = log_file.readlines()
@@ -315,8 +315,8 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
         # Create regex search patterns
         reg_time = r'\A' + c_date + r'\s' + c_time + r':\d{2},\d{3}\s-\s'
         reg_lvl = r'PyU4V\.action\_required\s-\sWARNING\s-\s'
-        reg_msg = (c_name + r'\.' + f_name + r'[\w\s]{31}' + str(end_ver) +
-                   r'\.[\w\s]{46}' + str(start_ver) + r'[\w\s]{14}\.$')
+        reg_msg = (c_name + r'\.' + f_name + r'[\w\s]{31}' + str(end_ver)
+                   + r'\.[\w\s]{46}' + str(start_ver) + r'[\w\s]{14}\.$')
         # Compile regex search query
         time_re_search = re.compile((reg_time + reg_lvl + reg_msg))
         # Run the dummy function to output notice to log file
@@ -359,9 +359,9 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
         # Create regex search patterns
         reg_time = r'\A' + c_date + r'\s' + c_time + r':\d{2},\d{3}\s-\s'
         reg_lvl = r'PyU4V\.action\_required\s-\sWARNING\s-\s'
-        reg_msg = (c_name + r'\.' + f_name + r'[\w\s]{31}' + str(end_ver) +
-                   r'[\w\s]{23}' + f_path + r'\.[\w\s]{46}' +
-                   str(start_ver) + r'[\w\s]{14}\.$')
+        reg_msg = (c_name + r'\.' + f_name + r'[\w\s]{31}' + str(end_ver)
+                   + r'[\w\s]{23}' + f_path + r'\.[\w\s]{46}'
+                   + str(start_ver) + r'[\w\s]{14}\.$')
         # Compile regex search query
         time_re_search = re.compile((reg_time + reg_lvl + reg_msg))
         # Run the dummy function to output notice to log file

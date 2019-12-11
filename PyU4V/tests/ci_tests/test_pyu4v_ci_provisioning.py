@@ -1105,8 +1105,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             if ip_addresses:
                 self.assertIsInstance(ip_addresses, list)
                 for ip in ip_addresses:
-                    valid_ip = (self.provisioning.check_ipv4(ip) or
-                                self.provisioning.check_ipv6(ip))
+                    valid_ip = (
+                        self.provisioning.check_ipv4(
+                            ip) or self.provisioning.check_ipv6(ip))
                     self.assertIsInstance(ip, str)
                     self.assertTrue(valid_ip)
             if iqn:

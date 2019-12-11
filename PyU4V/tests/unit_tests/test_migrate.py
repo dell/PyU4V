@@ -48,7 +48,7 @@ class TestMigrate(testtools.TestCase):
         self.utils = migrate_utils.MigrateUtils(conn)
 
     def test_get_masking_view_component_dict_old(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict, SMIS case."""
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_1)
         self.assertEqual('OS', component_dict['prefix'])
@@ -58,7 +58,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_slo_old(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict, SMIS case with SLO."""
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_2)
         self.assertEqual('OS', component_dict['prefix'])
@@ -69,7 +69,10 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_slo_workload_old(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        SMIS, SLO and workload.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_3)
         self.assertEqual('OS', component_dict['prefix'])
@@ -80,7 +83,10 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_slo_old_2(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        SMIS, SLO, test 2.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_4)
         self.assertEqual('OS', component_dict['prefix'])
@@ -91,7 +97,10 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_compression_disabled_old(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        SMIS and compression disabled.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_5)
         self.assertEqual('OS', component_dict['prefix'])
@@ -102,7 +111,10 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('-CD', component_dict['CD'])
 
     def test_get_masking_view_component_dict_replication_enabled_old(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+         SMIS and compression enabled.
+         """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_6)
         self.assertEqual('OS', component_dict['prefix'])
@@ -114,7 +126,10 @@ class TestMigrate(testtools.TestCase):
 
     def test_get_masking_view_component_dict_host_with_dashes_no_slo_old(
             self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        SMIS and host with dashes.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_7)
         self.assertEqual('OS', component_dict['prefix'])
@@ -124,7 +139,10 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_host_with_dashes_old(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        SMIS and host with dashes.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.smis_mv_8)
         self.assertEqual('OS', component_dict['prefix'])
@@ -135,7 +153,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_new(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict REST."""
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.rest_mv_1, 'test')
         self.assertEqual('OS', component_dict['prefix'])
@@ -145,13 +163,16 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', component_dict['postfix'])
 
     def test_get_masking_view_component_dict_mismatch(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict REST mismatch."""
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.rest_mv_1)
         self.assertIsNone(component_dict)
 
     def test_get_masking_view_component_dict_portgroup_dashes_new(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        REST and portgroup with dashes.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.rest_mv_2, 'test')
         self.assertEqual('OS', component_dict['prefix'])
@@ -160,13 +181,19 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('portgroup-with-dashes', component_dict['portgroup'])
 
     def test_get_masking_view_component_dict_portgroup_dashes_mismatch(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        Port group with dashes mismatch.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.rest_mv_2)
         self.assertIsNone(component_dict)
 
     def test_get_masking_view_component_dict_host_dashes_new(self):
-        """Test for get_masking_view_component_dict."""
+        """Test for get_masking_view_component_dict.
+
+        REST and host with dashes.
+        """
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.rest_mv_3, 'test')
         self.assertEqual('OS', component_dict['prefix'])
@@ -181,7 +208,10 @@ class TestMigrate(testtools.TestCase):
         self.assertIsNone(component_dict)
 
     def test_get_storage_group_component_dict_no_slo_new(self):
-        """Test for get_storage_group_component_dict."""
+        """Test for get_storage_group_component_dict.
+
+        REST and no SLO.
+        """
         component_dict = self.utils.get_storage_group_component_dict(
             self.data.rest_sg_1)
         self.assertEqual('myhost', component_dict['host'])
@@ -192,7 +222,10 @@ class TestMigrate(testtools.TestCase):
         self.assertIsNone(component_dict['srp'])
 
     def test_get_storage_group_component_dict_slo_workload_2(self):
-        """Test for get_storage_group_component_dict."""
+        """Test for get_storage_group_component_dict.
+
+        SLO, workload and test 2.
+        """
         component_dict = self.utils.get_storage_group_component_dict(
             self.data.rest_sg_4)
         self.assertEqual('OS', component_dict['prefix'])
@@ -203,7 +236,10 @@ class TestMigrate(testtools.TestCase):
         self.assertIsNone(component_dict['no_slo'])
 
     def test_get_storage_group_component_dict_compression_disabled(self):
-        """Test for get_storage_group_component_dict."""
+        """Test for get_storage_group_component_dict.
+
+        Compression disabled.
+        """
         component_dict = self.utils.get_storage_group_component_dict(
             self.data.rest_sg_2)
         self.assertEqual('OS', component_dict['prefix'])
@@ -215,7 +251,10 @@ class TestMigrate(testtools.TestCase):
         self.assertIsNone(component_dict['no_slo'])
 
     def test_get_storage_group_component_dict_replication_enabled(self):
-        """Test for get_storage_group_component_dict."""
+        """Test for get_storage_group_component_dict.
+
+        Replication enabled.
+        """
         component_dict = self.utils.get_storage_group_component_dict(
             self.data.rest_sg_4)
         self.assertEqual('OS', component_dict['prefix'])
@@ -227,7 +266,10 @@ class TestMigrate(testtools.TestCase):
         self.assertIsNone(component_dict['no_slo'])
 
     def test_get_storage_group_component_dict_slo_no_workload(self):
-        """Test for get_storage_group_component_dict."""
+        """Test for get_storage_group_component_dict.
+
+        SLO and no workload.
+        """
         component_dict = self.utils.get_storage_group_component_dict(
             self.data.rest_sg_3)
         self.assertEqual('OS', component_dict['prefix'])
@@ -238,7 +280,7 @@ class TestMigrate(testtools.TestCase):
         self.assertIsNone(component_dict['no_slo'])
 
     def test_get_storage_group_component_dict_dashes(self):
-        """Test for get_storage_group_component_dict."""
+        """Test for get_storage_group_component_dict, dashes."""
         component_dict = self.utils.get_storage_group_component_dict(
             self.data.rest_sg_5)
         self.assertEqual('host-with-dashes', component_dict['host'])
@@ -249,7 +291,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('-RE', component_dict['after_pg'])
 
     def test_check_input_yes(self):
-        """Test for check_input."""
+        """Test for check_input, yes"""
         self.assertTrue(self.utils.check_input('Y', 'Y'))
         self.assertTrue(self.utils.check_input('y', 'Y'))
         self.assertTrue(self.utils.check_input('YES', 'Y'))
@@ -260,7 +302,7 @@ class TestMigrate(testtools.TestCase):
         self.assertFalse(self.utils.check_input('oui', 'Y'))
 
     def test_check_input_no(self):
-        """Test for check_input."""
+        """Test for check_input, no."""
         self.assertTrue(self.utils.check_input('N', 'N'))
         self.assertTrue(self.utils.check_input('n', 'N'))
         self.assertTrue(self.utils.check_input('NO', 'N'))
@@ -270,7 +312,7 @@ class TestMigrate(testtools.TestCase):
         self.assertFalse(self.utils.check_input('non', 'N'))
 
     def test_check_input_exit(self):
-        """Test for check_input."""
+        """Test for check_input, exit"""
         self.assertTrue(self.utils.check_input('X', 'X'))
         self.assertTrue(self.utils.check_input('x', 'X'))
         self.assertTrue(self.utils.check_input('Exit', 'X'))
@@ -281,10 +323,10 @@ class TestMigrate(testtools.TestCase):
     def test_validate_masking_view_true(self):
         """Test for validate_masking_view."""
         self.assertTrue(self.utils.validate_masking_view(
-            self.data.rest_mv_1, 'test'))
+            self.data.rest_mv_1, 'revert'))
 
     def test_validate_masking_view_false(self):
-        """Test for validate_masking_view."""
+        """Test for validate_masking_view, false."""
         self.assertFalse(self.utils.validate_masking_view(
             self.data.rest_mv_1))
 
@@ -295,7 +337,7 @@ class TestMigrate(testtools.TestCase):
                                platform.python_version())
 
     def test_smart_print_multiple_args(self):
-        """Test for smart_print."""
+        """Test for smart_print, multiple args."""
         arg_1 = 'Hello'
         arg_2 = 'everyone!'
         print_str = "%s %s %s supports multiple args in smart_print."
@@ -304,7 +346,7 @@ class TestMigrate(testtools.TestCase):
             arg_1, arg_2, platform.python_version())
 
     def test_smart_print_multiple_args_exception(self):
-        """Test for smart_print."""
+        """Test for smart_print, multiple args exception."""
         arg_1 = 'Woops!'
         print_str = "%s %s %s problem in smart_print."
         self.assertRaises(TypeError,
@@ -346,7 +388,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('MV', object_dict['postfix'])
 
     def test_get_object_components_invalid(self):
-        """Test for get_object_components."""
+        """Test for get_object_components, invalid."""
         regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
                      r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
                      r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
@@ -367,7 +409,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('myhost', object_dict['host'])
 
     def test_get_object_components_and_correct_host_invalid(self):
-        """Test for get_object_components_and_correct_host."""
+        """Test for get_object_components_and_correct_host, invalid."""
         regex_str = (r'^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
                      r'(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
                      r'(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
@@ -409,7 +451,7 @@ class TestMigrate(testtools.TestCase):
                        'get_storage_group',
                        return_value=pcd.CommonData.m_storagegroup)
     def test_compile_new_element_names_revert(self, mock_sg):
-        """Test for compile_new_element_names."""
+        """Test for compile_new_element_names, revert case."""
         element_dict = self.utils.compile_new_element_names(
             self.data.rest_mv_1, self.data.m_portgroup,
             self.data.m_host_name, self.data.rest_sg_3, 'revert')
@@ -428,7 +470,7 @@ class TestMigrate(testtools.TestCase):
                        side_effect=exception.ResourceNotFoundException(
                            'exception'))
     def test_compile_new_element_names_revert_no_storage_group(self, mock_sg):
-        """Test for compile_new_element_names."""
+        """Test for compile_new_element_names, no storage group."""
         element_dict = self.utils.compile_new_element_names(
             self.data.rest_mv_1, self.data.portgroup,
             self.data.m_host_name, self.data.rest_sg_3, 'revert')
@@ -460,7 +502,7 @@ class TestMigrate(testtools.TestCase):
                            'exception'))
     def test_get_elements_from_masking_view_exception(
             self, mock_details):
-        """Test for get_elements_from_masking_view."""
+        """Test for get_elements_from_masking_view, exception."""
         self.assertRaises(exception.ResourceNotFoundException,
                           self.utils.get_elements_from_masking_view,
                           self.data.smis_mv_1)
@@ -473,7 +515,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('No_SLO', component_dict['no_slo'])
 
     def test_print_component_dict_revert(self):
-        """Test for print_component_dict."""
+        """Test for print_component_dict, revert."""
         component_dict = (
             self.utils.print_component_dict(self.data.rest_mv_2, revert=True))
         self.assertEqual('myhost', component_dict['host'])
@@ -481,7 +523,7 @@ class TestMigrate(testtools.TestCase):
         self.assertEqual('I', component_dict['protocol'])
 
     def test_print_component_dict_mismatch(self):
-        """Test for print_component_dict."""
+        """Test for print_component_dict, mismatch."""
         component_dict = (
             self.utils.print_component_dict(self.data.smis_mv_2, revert=True))
         self.assertIsNone(component_dict)
@@ -510,7 +552,7 @@ class TestMigrate(testtools.TestCase):
                        'get_storage_group',
                        return_value={'slo': 'Diamond'})
     def test_get_element_dict_revert_no_workload(self, mock_sg):
-        """Test for get_element_dict_revert."""
+        """Test for get_element_dict_revert, no workload."""
         component_dict = self.utils.get_masking_view_component_dict(
             self.data.rest_mv_1, revert=True)
 
@@ -572,7 +614,7 @@ class TestMigrate(testtools.TestCase):
                            'maskingViewId': pcd.CommonData.rest_mv_1})
     def test_validate_existing_masking_view_false(
             self, mock_mv):
-        """Test for validate_existing_masking_view."""
+        """Test for validate_existing_masking_view, false."""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.smis_mv_1)
         element_dict = self.utils.compile_new_element_names(
@@ -595,7 +637,7 @@ class TestMigrate(testtools.TestCase):
                            'maskingViewId': pcd.CommonData.smis_mv_1})
     def test_validate_existing_masking_view_revert_true(
             self, mock_mv, mock_sg):
-        """Test for validate_existing_masking_view."""
+        """Test for validate_existing_masking_view, revert true"""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.rest_mv_1)
         self.assertTrue(self.utils.validate_existing_masking_view(
@@ -611,7 +653,7 @@ class TestMigrate(testtools.TestCase):
                            'maskingViewId': pcd.CommonData.rest_mv_1})
     def test_validate_existing_masking_view_revert_false(
             self, mock_mv):
-        """Test for validate_existing_masking_view."""
+        """Test for validate_existing_masking_view, revert false."""
         new_masking_view_details = self.utils.get_masking_view(
             self.data.rest_mv_1)
         self.assertFalse(self.utils.validate_existing_masking_view(
@@ -633,7 +675,7 @@ class TestMigrate(testtools.TestCase):
                        side_effect=exception.ResourceNotFoundException(
                            'exception'))
     def test_get_storage_group_none(self, mock_sg):
-        """Test for get_storage_group."""
+        """Test for get_storage_group, none."""
         self.assertIsNone(self.utils.get_storage_group(
             self.data.smis_sg_1))
 
@@ -695,7 +737,7 @@ class TestMigrate(testtools.TestCase):
                        'get_or_create_cascaded_storage_group',
                        return_value=None)
     def test_get_or_create_elements_except(self, mock_sg):
-        """Test for get_or_create_elements."""
+        """Test for get_or_create_elements, exception."""
         element_dict = self.utils.compile_new_element_names(
             self.data.smis_mv_2, self.data.m_portgroup,
             self.data.m_initiatorgroup,
@@ -712,7 +754,7 @@ class TestMigrate(testtools.TestCase):
                        'create_non_empty_storage_group')
     def test_get_or_create_elements_revert(
             self, mock_create_sg, mock_sg, mock_cc):
-        """Test for get_or_create_elements."""
+        """Test for get_or_create_elements, revert."""
         self.utils.get_or_create_elements(
             self.data.element_dict_revert, revert=True)
         mock_create_sg.assert_called_once()
@@ -765,7 +807,7 @@ class TestMigrate(testtools.TestCase):
                        side_effect=[None, pcd.CommonData.mv_components])
     def test_get_or_create_masking_view_none(
             self, mock_mv, mock_create, mock_sg):
-        """Test for get_or_create_masking_view."""
+        """Test for get_or_create_masking_view, none."""
         masking_view_details = self.utils.get_or_create_masking_view(
             self.data.element_dict, self.data.m_portgroup,
             self.data.m_host_name)
@@ -795,7 +837,7 @@ class TestMigrate(testtools.TestCase):
                            'storageGroupId': pcd.CommonData.smis_sg_1})
     def test_move_volumes_from_source_to_target_new_vol(
             self, mock_mv, mock_create_vol):
-        """Test for move_vols_from_source_to_target."""
+        """Test for move_vols_from_source_to_target, new volume."""
         self.utils.move_volumes_from_source_to_target(
             self.data.device_list, self.data.smis_sg_2,
             self.data.rest_sg_3, True)
@@ -803,13 +845,13 @@ class TestMigrate(testtools.TestCase):
         mock_create_vol.reset_mock()
 
     def test_validate_list_true(self):
-        """Test for validate_list."""
+        """Test for validate_list, true."""
         subset_list = ['0064F', '0088E', '00890']
         self.assertTrue(
             self.utils.validate_list(self.data.device_list, subset_list))
 
     def test_validate_list_false(self):
-        """Test for validate_list."""
+        """Test for validate_list, false."""
         subset_list = ['00000']
         self.assertFalse(
             self.utils.validate_list(self.data.device_list, subset_list))
@@ -826,7 +868,7 @@ class TestMigrate(testtools.TestCase):
         self.assertIn('00890', device_list)
 
     def test_choose_subset_volumes_no_quotes(self):
-        """Test for choose_subset_volumes."""
+        """Test for choose_subset_volumes, no quotes."""
         user_input = "0064F, 0088E, 00890"
         with mock.patch.object(migrate_utils.MigrateUtils,
                                'input', return_value=user_input):
@@ -837,7 +879,7 @@ class TestMigrate(testtools.TestCase):
         self.assertIn('00890', device_list)
 
     def test_choose_subset_volumes_no_quotes_or_spaces(self):
-        """Test for choose_subset_volumes."""
+        """Test for choose_subset_volumes, no quotes or spaces."""
         user_input = "0064F,0088E,00890"
         with mock.patch.object(migrate_utils.MigrateUtils,
                                'input', return_value=user_input):
@@ -848,7 +890,7 @@ class TestMigrate(testtools.TestCase):
         self.assertIn('00890', device_list)
 
     def test_choose_subset_volumes_spaces(self):
-        """Test for choose_subset_volumes."""
+        """Test for choose_subset_volumes, spaces."""
         user_input = "0064F 0088E 00890"
         with mock.patch.object(migrate_utils.MigrateUtils,
                                'input', return_value=user_input):
@@ -862,7 +904,7 @@ class TestMigrate(testtools.TestCase):
                        'get_volumes_from_storage_group',
                        return_value=pcd.CommonData.device_list)
     def test_get_volume_list_full(self, mock_vols, mock_yes):
-        """Test for get_volume_list."""
+        """Test for get_volume_list, full."""
         volume_list, create_vol = (
             self.utils.get_volume_list(self.data.smis_sg_1))
         self.assertEqual(self.data.device_list, volume_list)
@@ -877,7 +919,7 @@ class TestMigrate(testtools.TestCase):
                        'get_volumes_from_storage_group',
                        return_value=pcd.CommonData.device_list)
     def test_get_volume_list_subset(self, mock_vols, mock_no, mock_subset):
-        """Test for get_volume_list."""
+        """Test for get_volume_list, subset."""
         volume_list, create_vol = (
             self.utils.get_volume_list(self.data.smis_sg_1))
         mock_subset.assert_called_once()
@@ -917,7 +959,7 @@ class TestMigrate(testtools.TestCase):
                        side_effect=[pcd.CommonData.source_sg_details,
                                     pcd.CommonData.m_storagegroup])
     def test_set_qos_target_no_host_io(self, mock_sg):
-        """Test for set_qos."""
+        """Test for set_qosm no host IO."""
         with mock.patch.object(provisioning.ProvisioningFunctions,
                                'modify_storage_group') as mock_modify:
             self.utils.set_qos(
@@ -929,7 +971,7 @@ class TestMigrate(testtools.TestCase):
                        side_effect=[pcd.CommonData.source_sg_details,
                                     pcd.CommonData.source_sg_details])
     def test_set_qos_target_qos_same_as_source(self, mock_sg):
-        """Test for set_qos."""
+        """Test for set_qos, same as source."""
         with mock.patch.object(provisioning.ProvisioningFunctions,
                                'modify_storage_group') as mock_modify:
             self.utils.set_qos(
@@ -941,7 +983,7 @@ class TestMigrate(testtools.TestCase):
                        side_effect=[pcd.CommonData.source_sg_details,
                                     pcd.CommonData.target_sg_details])
     def test_set_qos_target_different_host_io(self, mock_sg):
-        """Test for set_qos."""
+        """Test for set_qos, different host IO."""
         with mock.patch.object(provisioning.ProvisioningFunctions,
                                'modify_storage_group') as mock_modify:
             self.utils.set_qos(
@@ -954,6 +996,7 @@ class TestMigrate(testtools.TestCase):
     @mock.patch.object(migrate_utils.MigrateUtils,
                        '_add_child_to_parent')
     def test_existing_child_storage_group_check(self, mock_add, mock_check):
+        """Test for _existing_child_storage_group_check."""
         self.utils._existing_child_storage_group_check(
             self.data.element_dict['new_sg_name'],
             self.data.element_dict['new_sg_parent_name'])

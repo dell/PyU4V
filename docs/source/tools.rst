@@ -1,6 +1,6 @@
 
 Tools Guide
-=================
+===========
 
 First, make sure that PyU4V is `installed <http://pyu4v.readthedocs.io/en/latest/installation.html>`_.
 Then visit the `quick_start <http://pyu4v.readthedocs.io/en/latest/quick_start.html>`_ section to make
