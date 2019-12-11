@@ -1,6 +1,14 @@
 PyU4V Change Log
 ================
 
+Version 9.1.1.0 - released 11/12/19
+==================================
+
+Fixes
+-----
+- During Provisioning CI tests, only check storage groups for compression
+  related values if compression is present and enabled.
+
 Version 9.1.0.0 - released 4/12/19
 ==================================
 
