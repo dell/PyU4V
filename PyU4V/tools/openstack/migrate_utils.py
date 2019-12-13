@@ -24,6 +24,7 @@ from builtins import input
 import logging
 import re
 import sys
+import uuid
 
 from PyU4V.utils import exception
 
@@ -71,7 +72,8 @@ class MigrateUtils(object):
         else:
             return False
 
-    def print_to_log(self, print_str, level=DEBUG):
+    @staticmethod
+    def print_to_log(print_str, level=DEBUG):
         """Print to the logs
 
         :param print_str: string to print -- str
@@ -86,7 +88,8 @@ class MigrateUtils(object):
         else:
             LOG.debug(print_str)
 
-    def print_pretty_table(self, datadict):
+    @staticmethod
+    def print_pretty_table(datadict):
         """Print the data in the dict.
 
         :param datadict: the data dictionary -- dict
@@ -106,7 +109,7 @@ class MigrateUtils(object):
         :param level: the debug level -- str
         :param args: one or more arguments
         """
-        print_str = print_str % (args)
+        print_str = print_str % args
         self.print_to_log(print_str, level)
         print(print_str)
 
@@ -137,7 +140,8 @@ class MigrateUtils(object):
         self.print_pretty_table(masking_view_components)
         return masking_view_components
 
-    def verify_protocol(self, protocol):
+    @staticmethod
+    def verify_protocol(protocol):
         """Verify the protocol.
 
         :param protocol: 'I' or 'F' -- str
@@ -146,7 +150,8 @@ class MigrateUtils(object):
         return (True if len(protocol) == 1 and (
                 'I' in protocol or 'F' in protocol) else False)
 
-    def get_object_components(self, regex_str, input_str):
+    @staticmethod
+    def get_object_components(regex_str, input_str):
         """Get components from input string.
 
         :param regex_str: the regex -- str
@@ -189,7 +194,8 @@ class MigrateUtils(object):
         return self.get_object_components_and_correct_host(
             regex_str, masking_view_name)
 
-    def truncate_string(self, str_to_truncate, max_num):
+    @staticmethod
+    def truncate_string(str_to_truncate, max_num):
         """Truncate a string by taking first and last characters.
 
         :param str_to_truncate: the string to be truncated -- str
@@ -338,7 +344,8 @@ class MigrateUtils(object):
             element_dict['initiator_group'] = host_name
         return element_dict
 
-    def get_workload(self, storage_group):
+    @staticmethod
+    def get_workload(storage_group):
         """Get the workload from the storagegroup object.
 
         :param storage_group: storagegroup -- object
@@ -361,7 +368,7 @@ class MigrateUtils(object):
         :param host_name: host name -- str
         :returns: element details -- dict
         """
-        element_dict = {}
+        element_dict = dict()
         element_dict['new_mv_name'] = (component_dict['prefix'] + '-'
                                        + component_dict['host'] + '-'
                                        + component_dict['protocol'] + '-'
@@ -535,8 +542,8 @@ class MigrateUtils(object):
             self, storage_group_child, storage_group_parent):
         """Check that child is part of parent, if not, add it
 
-        :param child_storage_group: child storage group name -- str
-        :param parent_storage_group: parent storage group name -- str
+        :param storage_group_child: child storage group name -- str
+        :param storage_group_parent: parent storage group name -- str
         """
         prov = self.conn.provisioning
         if not prov.is_child_storage_group_in_parent_storage_group(
@@ -700,8 +707,9 @@ class MigrateUtils(object):
             DEBUG)
         # Create a small volume
         if create_volume_flag:
+            last_volume = 'last_vol' + str(uuid.uuid1())[-10:]
             self.conn.provisioning.create_volume_from_storage_group_return_id(
-                'last_vol', source_storage_group, '1')
+                last_volume, source_storage_group, '1')
         # Move the volume from the old storage group to the
         # new storage group
         message = self.conn.provisioning.move_volumes_between_storage_groups(
@@ -709,7 +717,8 @@ class MigrateUtils(object):
             force=False)
         return message
 
-    def validate_list(self, full_list, sub_list):
+    @staticmethod
+    def validate_list(full_list, sub_list):
         """Validate the sub list is within the full list.
 
         :param full_list: full list -- list
@@ -765,7 +774,7 @@ class MigrateUtils(object):
         print_str = 'There are %d volume in storage group %s.'
         self.smart_print(print_str, DEBUG, len(volume_list),
                          storage_group_name)
-        txt = ('Do you want to migrate all %s volumes: Y/N: '
+        txt = ('Do you want to migrate all %s volumes: Y/N or X(ignore): '
                % len(volume_list))
         txt_out = self.input(txt)
         if self.check_input(txt_out, 'Y'):
@@ -774,9 +783,11 @@ class MigrateUtils(object):
                          'and target storage groups.')
             self.smart_print(print_str, DEBUG)
             create_volume_flag = True
-        else:
+        elif self.check_input(txt_out, 'N'):
             volume_list, create_volume_flag = self.choose_subset_volumes(
                 storage_group_name, volume_list)
+        else:
+            return list(), False
 
         return volume_list, create_volume_flag
 

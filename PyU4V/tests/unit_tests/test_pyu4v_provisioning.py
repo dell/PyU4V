@@ -1995,7 +1995,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
         excep = exception.VolumeBackendAPIException
         with mock.patch.object(
                 self.provisioning, 'delete_resource', side_effect=[
-                    excep, excep, None]
+                    excep('random exception 1'), excep('random exception 2'),
+                    None]
         ) as mock_delete:
             self.provisioning.delete_volume(self.data.device_id)
             call_count = mock_delete.call_count

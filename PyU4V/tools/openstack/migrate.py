@@ -74,39 +74,38 @@ def revert_case(masking_view_name):
               element details -- dict
               no action flag -- boolean
     """
-    masking_view_components, element_dict = {}, {}
-    no_action = True
     if utils.check_masking_view_for_migration(
             masking_view_name, True):
-        no_action = False
         utils.smart_print(
             'NEW MASKING VIEW IS %s',
             migrate_utils.DEBUG, masking_view_name)
-        masking_view_components = (
+        masking_view_details = (
             utils.get_elements_from_masking_view(masking_view_name))
         # The storage group is the parent SG
         # Get the list of child SGs
         child_storage_group_list = (
             conn.provisioning.get_child_storage_groups_from_parent(
-                masking_view_components['storagegroup']))
-        element_dict, masking_view_components['storagegroup'] = (
+                masking_view_details['storagegroup']))
+        element_details, masking_view_details['storagegroup'] = (
             utils.choose_storage_group(
                 masking_view_name, child_storage_group_list,
-                masking_view_components['portgroup'],
-                masking_view_components['initiatorgroup'],
+                masking_view_details['portgroup'],
+                masking_view_details['initiatorgroup'],
                 is_revert))
         # Check if masking view exists and if it does validate it
-        if element_dict:
+        if element_details:
             utils.get_or_create_masking_view(
-                element_dict,
-                masking_view_components['portgroup'],
-                masking_view_components['initiatorgroup'],
+                element_details,
+                masking_view_details['portgroup'],
+                masking_view_details['initiatorgroup'],
                 is_revert)
         else:
             utils.smart_print(
                 'NO MIGRATION', migrate_utils.WARNING)
             sys.exit()
-    return masking_view_components, element_dict, no_action
+        return masking_view_details, element_details, False
+    else:
+        return dict(), dict(), True
 
 
 def migrate_case(masking_view_name):
@@ -117,54 +116,54 @@ def migrate_case(masking_view_name):
               element details -- dict
               no action flag -- boolean
     """
-    masking_view_components, element_dict = {}, {}
-    no_action = True
     if utils.check_masking_view_for_migration(masking_view_name):
-        no_action = False
         utils.smart_print(
             'OLD MASKING VIEW IS %s',
             migrate_utils.DEBUG, masking_view_name)
-        masking_view_components = (
+        masking_view_details = (
             utils.get_elements_from_masking_view(masking_view_name))
         # Compile the new names of the SGs and MV
-        element_dict = utils.compile_new_element_names(
-            masking_view_name, masking_view_components['portgroup'],
-            masking_view_components['initiatorgroup'],
-            masking_view_components['storagegroup'])
+        element_details = utils.compile_new_element_names(
+            masking_view_name, masking_view_details['portgroup'],
+            masking_view_details['initiatorgroup'],
+            masking_view_details['storagegroup'])
         # Check if masking view exists and if it does validate it
         utils.get_or_create_masking_view(
-            element_dict, masking_view_components['portgroup'],
-            masking_view_components['initiatorgroup'])
-    return masking_view_components, element_dict, no_action
+            element_details, masking_view_details['portgroup'],
+            masking_view_details['initiatorgroup'])
+
+        return masking_view_details, element_details, False
+    else:
+        return dict(), dict(), True
 
 
-def move_volumes(masking_view_components, element_dict):
+def move_volumes(masking_view_details, element_details):
     """Move volumes from one masking view to another
 
-    :param masking_view_components: masking view details -- dict
-    :param element_dict: element details -- dict
+    :param masking_view_details: masking view details -- dict
+    :param element_details: element details -- dict
     """
     # Check the qos setting of source and target storage group
     utils.set_qos(
-        masking_view_components['storagegroup'],
-        element_dict['new_sg_name'])
+        masking_view_details['storagegroup'],
+        element_details['new_sg_name'])
     volume_list, create_volume_flag = utils.get_volume_list(
-        masking_view_components['storagegroup'])
+        masking_view_details['storagegroup'])
     if volume_list:
         message = utils.move_volumes_from_source_to_target(
-            volume_list, masking_view_components['storagegroup'],
-            element_dict['new_sg_name'], create_volume_flag)
+            volume_list, masking_view_details['storagegroup'],
+            element_details['new_sg_name'], create_volume_flag)
         print_str = '%s SOURCE STORAGE GROUP REMAINS'
         utils.smart_print(
             print_str, migrate_utils.DEBUG,
-            masking_view_components['storagegroup'])
+            masking_view_details['storagegroup'])
         utils.print_pretty_table(message)
         new_storage_group = utils.get_storage_group(
-            element_dict['new_sg_name'])
+            element_details['new_sg_name'])
         print_str = '%s TARGET STORAGE GROUP DETAILS:'
         utils.smart_print(
             print_str, migrate_utils.DEBUG,
-            element_dict['new_sg_name'])
+            element_details['new_sg_name'])
         utils.print_pretty_table(new_storage_group)
 
 

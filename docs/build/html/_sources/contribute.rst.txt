@@ -38,7 +38,7 @@ forward on all code in PyU4V.
 .. code-block:: Python
 
    my_string = '{variable1}, thanks for contributing to {variable2}'.format(
-       variable1=’Hello’, variable2=’PyU4V’)
+       variable1='Hello', variable2='PyU4V')
 
 3. Use the following format for doc strings, the return description uses
 ``:returns:`` instead of the docstring default ``:return:``.  Pep8 will

@@ -2,9 +2,8 @@
 Tools Guide
 ===========
 
-First, make sure that PyU4V is `installed <http://pyu4v.readthedocs.io/en/latest/installation.html>`_.
-Then visit the `quick_start <http://pyu4v.readthedocs.io/en/latest/quick_start.html>`_ section to make
-sure you have secure connectivity to your array.
+First, make sure that PyU4V is installed_. Then visit the quick_start_
+section to make sure you have secure connectivity to your array.
 
 OpenStack
 ---------
@@ -77,3 +76,5 @@ directory.
 .. URL LINKS
 
 .. _issues: https://github.com/MichaelMcAleer/PyU4V/issues
+.. _installed: http://pyu4v.readthedocs.io/en/latest/installation.html
+.. _quick_start: http://pyu4v.readthedocs.io/en/latest/quick_start.html

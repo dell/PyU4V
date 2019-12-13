@@ -34,23 +34,23 @@ request and response handling.
 Supported PyU4V Versions
 ------------------------
 
-+-----------------------+----------------------------+
-| **PyU4V Version**     | 9.1.1.0                    |
-+-----------------------+----------------------------+
-| **Unisphere Version** | 9.1.0.5                    |
-+-----------------------+----------------------------+
-| **Array Model**       | VMAX-3, VMAX AFA, PowerMax |
-+-----------------------+----------------------------+
-| **Array uCode**       | HyperMax OS, PowerMax OS   |
-+-----------------------+----------------------------+
-| **Platforms**         | Linux, Windows             |
-+-----------------------+----------------------------+
-| **Python**            | 3.6, 3.7                   |
-+-----------------------+----------------------------+
-| **Requirements**      | Requests_, Six_, urllib3_  |
-+-----------------------+----------------------------+
-| **Test Requirements** | TestTools_, Tox_           |
-+-----------------------+----------------------------+
++-----------------------+-----------------------------------------+
+| **PyU4V Version**     | 9.1.1.0                                 |
++-----------------------+-----------------------------------------+
+| **Unisphere Version** | 9.1.0.5                                 |
++-----------------------+-----------------------------------------+
+| **Array Model**       | VMAX-3, VMAX AFA, PowerMax              |
++-----------------------+-----------------------------------------+
+| **Array uCode**       | HyperMax OS, PowerMax OS                |
++-----------------------+-----------------------------------------+
+| **Platforms**         | Linux, Windows                          |
++-----------------------+-----------------------------------------+
+| **Python**            | 3.6, 3.7                                |
++-----------------------+-----------------------------------------+
+| **Requirements**      | Requests_, Six_, urllib3_, prettytable_ |
++-----------------------+-----------------------------------------+
+| **Test Requirements** | TestTools_, Tox_                        |
++-----------------------+-----------------------------------------+
 
 .. note::
     If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
@@ -139,3 +139,4 @@ specific language governing permissions and limitations under the License.
 .. _retired: https://pythonclock.org/
 .. _TestTools: https://pypi.org/project/testtools/
 .. _Tox: https://pypi.org/project/tox/
+.. _prettytable: https://pypi.org/project/PrettyTable/
