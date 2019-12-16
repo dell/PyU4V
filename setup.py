@@ -12,30 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """setup.py."""
-from setuptools import setup
+import setuptools
 
-
-setup(name='PyU4V',
-      version='9.1.1.0',
-      url='https://github.com/MichaelMcAleer/PyU4V/',
-      author='Dell Inc. or its subsidiaries',
-      author_email='Michael.Mcaleer@dell.com',
-      description=("A Python library for use with Dell EMC's Unisphere for "
-                   "PowerMax REST API."),
-      license='Apache 2.0',
-      packages=['PyU4V', 'PyU4V.utils'],
-      install_requires=['requests', 'six', 'urllib3'],
-      include_package_data=True,
-      classifiers=[
-          'Development Status :: 2 - Pre-Alpha',
-          'Intended Audience :: Developers',
-          'Intended Audience :: System Administrators',
-          'License :: OSI Approved :: MIT License',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 3.6',
-          'Programming Language :: Python :: 3.7',
-          'Topic :: Internet :: WWW/HTTP',
-          'Topic :: Software Development :: Libraries :: Python Modules'],
-      tests_require=['mock', 'testtools'],
-      test_suite='tests')
+setuptools.setup(
+    name='PyU4V',
+    version='9.1.1.0',
+    url='https://github.com/MichaelMcAleer/PyU4V/',
+    author='Dell Inc. or its subsidiaries',
+    author_email='Michael.Mcaleer@dell.com',
+    description=("A Python library for use with Dell EMC's Unisphere for "
+                 "PowerMax REST API."),
+    license='Apache 2.0',
+    packages=setuptools.find_packages(),
+    install_requires=['requests', 'six', 'urllib3', 'prettytable'],
+    include_package_data=True,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Software Development :: Libraries :: Python Modules'],
+    tests_require=['mock', 'testtools'],
+    test_suite='tests')

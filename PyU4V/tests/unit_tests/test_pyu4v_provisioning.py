@@ -1885,13 +1885,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test get_any_director_port."""
         return_val = [{constants.PORT_ID: self.data.port_id1}]
         with mock.patch.object(
-                self.provisioning, 'get_director_port_list',
+            self.provisioning, 'get_director_port_list',
                 return_value=return_val) as mck_get_dir_port:
-                port = self.provisioning.get_any_director_port(
-                    self.data.director_id1)
-                self.assertEqual(port, self.data.port_id1)
-                mck_get_dir_port.assert_called_once_with(
-                    self.data.director_id1, filters=None)
+            port = self.provisioning.get_any_director_port(
+                self.data.director_id1)
+            self.assertEqual(port, self.data.port_id1)
+            mck_get_dir_port.assert_called_once_with(
+                self.data.director_id1, filters=None)
 
     def test_format_director_port(self):
         """Test format_director_port."""
@@ -1995,7 +1995,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
         excep = exception.VolumeBackendAPIException
         with mock.patch.object(
                 self.provisioning, 'delete_resource', side_effect=[
-                    excep, excep, None]
+                    excep('random exception 1'), excep('random exception 2'),
+                    None]
         ) as mock_delete:
             self.provisioning.delete_volume(self.data.device_id)
             call_count = mock_delete.call_count

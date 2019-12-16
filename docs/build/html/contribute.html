@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Contribute to PyU4V &mdash; PyU4V 9.1.0.0 documentation</title>
+  <title>Contribute to PyU4V &mdash; PyU4V 9.1.1.0 documentation</title>
   
 
   
@@ -95,6 +95,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Issues &amp; Support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="programmers_guide.html">Programmers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genindex.html">API Index</a></li>
 </ul>
@@ -175,8 +176,8 @@ $ tox -e pylint
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you do not have all the versions of Python installed, just run tox on
+<p class="first admonition-title">Note</p>
+<p class="last">If you do not have all the versions of Python installed, just run tox on
 the versions you have.</p>
 </div>
 <p>Once the above tests all run clean and CI tests are run to ensure there is no
@@ -188,11 +189,11 @@ looks good we will merge it to the PyU4V master branch.</p>
 <p>For neatness and readability we will enforce the following conventions going
 forward on all code in PyU4V.</p>
 <ol class="arabic simple">
-<li><p>Single quotes <code class="docutils literal notranslate"><span class="pre">'</span></code> unless double quotes <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> necessary.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">.format()</span></code> for string concatenation.</p></li>
+<li>Single quotes <code class="docutils literal notranslate"><span class="pre">'</span></code> unless double quotes <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> necessary.</li>
+<li>Use <code class="docutils literal notranslate"><span class="pre">.format()</span></code> for string concatenation.</li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>my_string = &#39;{variable1}, thanks for contributing to {variable2}&#39;.format(
-    variable1=’Hello’, variable2=’PyU4V’)
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">my_string</span> <span class="o">=</span> <span class="s1">&#39;{variable1}, thanks for contributing to {variable2}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">variable1</span><span class="o">=</span><span class="s1">&#39;Hello&#39;</span><span class="p">,</span> <span class="n">variable2</span><span class="o">=</span><span class="s1">&#39;PyU4V&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>3. Use the following format for doc strings, the return description uses
@@ -218,7 +219,7 @@ guide you with all the docstring conventions.</p>
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
-<li><p>Class names are mixed case with no underscores <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p></li>
+<li>Class names are mixed case with no underscores <code class="docutils literal notranslate"><span class="pre">_</span></code>.</li>
 </ol>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClassFunctions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Collection of functions ClassFunctions.&quot;&quot;&quot;</span>
@@ -248,16 +249,16 @@ into smaller functions.</p>
 </pre></div>
 </div>
 <ol class="arabic simple" start="10">
-<li><p>Each new function must be unit tested.</p></li>
-<li><p>Each bug fix must be unit tested.</p></li>
-<li><p>Unix and OS X format only.  If in doubt run</p></li>
+<li>Each new function must be unit tested.</li>
+<li>Each bug fix must be unit tested.</li>
+<li>Unix and OS X format only.  If in doubt run</li>
 </ol>
 <div class="highlight-Bash notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get install dos2unix
 $ dos2unix myfile.txt
 </pre></div>
 </div>
 <p>or in PyCharm:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="o">-&gt;</span> <span class="n">Line</span> <span class="n">Separators</span> <span class="o">-&gt;</span> <span class="n">LF</span><span class="o">-</span> <span class="n">Unix</span> <span class="ow">and</span> <span class="n">OS</span> <span class="n">X</span> <span class="p">(</span>\<span class="n">n</span><span class="p">)</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>File -&gt; Line Separators -&gt; LF- Unix and OS X (\n)
 </pre></div>
 </div>
 </div>

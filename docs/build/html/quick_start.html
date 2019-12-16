@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Start Guide &mdash; PyU4V 9.1.0.0 documentation</title>
+  <title>Quick Start Guide &mdash; PyU4V 9.1.1.0 documentation</title>
   
 
   
@@ -97,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to PyU4V</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Issues &amp; Support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="programmers_guide.html">Programmers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genindex.html">API Index</a></li>
 </ul>
@@ -202,14 +203,14 @@ all other configuration settings from <code class="docutils literal notranslate"
 <p>The functions in PyU4V have been divided into logical categories which reflect
 the various categories provided by the Unisphere REST API:</p>
 <ul class="simple">
-<li><p>Common - REST methods and assistive utilities</p></li>
-<li><p>Migration - all migration related calls</p></li>
-<li><p>Performance - all performance and threshold calls</p></li>
-<li><p>Provisioning - all provisioning and masking related calls</p></li>
-<li><p>Replication - all local and remote replication calls</p></li>
-<li><p>System - all system level calls</p></li>
-<li><p>Workload Planner - all workload planner calls</p></li>
-<li><p>Utils - assistive functions to aid with PyU4V usage</p></li>
+<li>Common - REST methods and assistive utilities</li>
+<li>Migration - all migration related calls</li>
+<li>Performance - all performance and threshold calls</li>
+<li>Provisioning - all provisioning and masking related calls</li>
+<li>Replication - all local and remote replication calls</li>
+<li>System - all system level calls</li>
+<li>Workload Planner - all workload planner calls</li>
+<li>Utils - assistive functions to aid with PyU4V usage</li>
 </ul>
 <p>There are plans to further increase the coverage of Unisphere REST calls in
 version 9.1. All changes are reflected in the PyU4V change log (<a class="reference external" href="https://github.com/MichaelMcAleer/PyU4V/blob/master/ChangeLog">link</a>).</p>
@@ -225,10 +226,10 @@ calls tend to return a status instead of a response payload).</p>
 perform <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code> and other request calls directly with the Unisphere
 REST API to any supported endpoint.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.common.get_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">GET</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.common.create_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">POST</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.common.modify_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">PUT</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.common.delete_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">DELETE</span></code></p></li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.common.get_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">GET</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.common.create_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">POST</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.common.modify_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">PUT</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.common.delete_resource()</span></code> - <code class="docutils literal notranslate"><span class="pre">DELETE</span></code></li>
 </ul>
 <p>If there is any functionality that is provided by the Unisphere REST API that
 is not yet implemented in PyU4V, it is possible to create a custom function

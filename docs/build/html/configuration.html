@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; PyU4V 9.1.0.0 documentation</title>
+  <title>Configuration &mdash; PyU4V 9.1.1.0 documentation</title>
   
 
   
@@ -98,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to PyU4V</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Issues &amp; Support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="programmers_guide.html">Programmers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genindex.html">API Index</a></li>
 </ul>
@@ -179,16 +180,16 @@ $ cp PyU4V/PyU4V.conf.sample ~/.PyU4V/PyU4V.conf
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">\~</span></code> symbol is used here to represent the users home directory
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">\~</span></code> symbol is used here to represent the users home directory
 regardless of operating system, however, <code class="docutils literal notranslate"><span class="pre">\~</span></code> is not a valid shortcut in
 Windows command prompt so direct path to users home directory should be
 used instead <code class="docutils literal notranslate"><span class="pre">C:\&gt;</span> <span class="pre">mkdir</span> <span class="pre">C:\Users\{user}\.PyU4V</span></code> where <code class="docutils literal notranslate"><span class="pre">{user}</span></code> is the
 current user.</p>
 </div>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> is present in both the current working directory and the
+<p class="first admonition-title">Note</p>
+<p class="last">If <code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> is present in both the current working directory and the
 current user’s home directory, the version of <code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> in the current
 working directory will take precedence. See the section below on PyU4V
 settings precedence.</p>
@@ -205,32 +206,32 @@ heading, these setting will need to reflect your environment configuration:</p>
 </pre></div>
 </div>
 <p>Where…</p>
-<table class="docutils align-default">
+<table border="1" class="docutils">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col width="20%" />
+<col width="80%" />
 </colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>Key</strong></p></td>
-<td><p><strong>Description</strong></p></td>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Key</strong></td>
+<td><strong>Description</strong></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">username</span></code></p></td>
-<td><p>Unisphere REST login username</p></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">username</span></code></td>
+<td>Unisphere REST login username</td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
-<td><p>Unisphere REST login password</p></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">password</span></code></td>
+<td>Unisphere REST login password</td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">server_ip</span></code></p></td>
-<td><p>Unisphere server IP address</p></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">server_ip</span></code></td>
+<td>Unisphere server IP address</td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
-<td><p>Unisphere server port number</p></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">port</span></code></td>
+<td>Unisphere server port number</td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
-<td><p>12 digit array serial number</p></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">array</span></code></td>
+<td>12 digit array serial number</td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">verify</span></code></p></td>
-<td><div class="line-block">
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">verify</span></code></td>
+<td><div class="first last line-block">
 <div class="line"><code class="docutils literal notranslate"><span class="pre">True</span></code> - Load SSL cert from CA certificate bundle</div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">/path/to/file</span></code> - Load SSL cert from file location</div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">False</span></code> - Disable SSL verification</div>
@@ -280,12 +281,12 @@ through <code class="docutils literal notranslate"><span class="pre">PyU4V.conf<
 setting PyU4V environment configuration have a load precedence, these are
 listed in order with number 1 being the first load precedent:</p>
 <ol class="arabic simple">
-<li><p>Configuration key/values passed directly to <code class="docutils literal notranslate"><span class="pre">U4VConn()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> as specified in <code class="docutils literal notranslate"><span class="pre">U4VConn.file_path</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> in current working directory</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> in current users home directory</p></li>
-<li><p>If none of the above or missing mandatory options raise
-<code class="docutils literal notranslate"><span class="pre">MissingConfigurationException</span></code></p></li>
+<li>Configuration key/values passed directly to <code class="docutils literal notranslate"><span class="pre">U4VConn()</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> as specified in <code class="docutils literal notranslate"><span class="pre">U4VConn.file_path</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> in current working directory</li>
+<li><code class="docutils literal notranslate"><span class="pre">PyU4V.conf</span></code> in current users home directory</li>
+<li>If none of the above or missing mandatory options raise
+<code class="docutils literal notranslate"><span class="pre">MissingConfigurationException</span></code></li>
 </ol>
 </div>
 <div class="section" id="pyu4v-logger-configuration">
@@ -297,54 +298,54 @@ All logger configuration options in PyU4V.conf can be found under the comment
 <code class="docutils literal notranslate"><span class="pre">[formatters*]</span></code>. There are a number of configuration options which you can
 change to suit your needs, the most relevant of those for the installation
 and configuration process are outlined in the table below.</p>
-<table class="docutils align-default">
+<table border="1" class="docutils">
 <colgroup>
-<col style="width: 31%" />
-<col style="width: 35%" />
-<col style="width: 33%" />
+<col width="31%" />
+<col width="35%" />
+<col width="33%" />
 </colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>Section</strong></p></td>
-<td><p><strong>Config Option</strong></p></td>
-<td><p><strong>Description</strong></p></td>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Section</strong></td>
+<td><strong>Config Option</strong></td>
+<td><strong>Description</strong></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[logger_PyU4V]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">level=INFO</span></code></p></td>
-<td><div class="line-block">
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">[logger_PyU4V]</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">level=INFO</span></code></td>
+<td><div class="first last line-block">
 <div class="line">Sets the PyU4V log level, this</div>
 <div class="line">defaults to INFO but can be</div>
 <div class="line">changed to any logger LOG level</div>
 </div>
 </td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[handler_consoleHandler]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">args=(sys.stdout,)</span></code></p></td>
-<td><div class="line-block">
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">[handler_consoleHandler]</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">args=(sys.stdout,)</span></code></td>
+<td><div class="first last line-block">
 <div class="line">Control how log messages are</div>
 <div class="line">output to console</div>
 </div>
 </td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[handler_fileHandler]</span></code></p></td>
-<td><div class="line-block">
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">[handler_fileHandler]</span></code></td>
+<td><div class="first last line-block">
 <div class="line"><code class="docutils literal notranslate"><span class="pre">args=('PyU4V.log',</span> <span class="pre">'a',</span></code></div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">10485760,</span> <span class="pre">10)</span></code></div>
 </div>
 </td>
-<td><div class="line-block">
+<td><div class="first last line-block">
 <div class="line">Control how log messages are</div>
 <div class="line">written to log files and where</div>
 <div class="line">the log file is located</div>
 </div>
 </td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[formatter_simpleFormatter]</span></code></p></td>
-<td><div class="line-block">
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">[formatter_simpleFormatter]</span></code></td>
+<td><div class="first last line-block">
 <div class="line"><code class="docutils literal notranslate"><span class="pre">format=%(asctime)s</span> <span class="pre">-</span> <span class="pre">%(name)s</span></code></div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">-</span> <span class="pre">%(levelname)s</span> <span class="pre">-</span> <span class="pre">%(message)s</span></code></div>
 </div>
 </td>
-<td><div class="line-block">
+<td><div class="first last line-block">
 <div class="line">Set the format for the log</div>
 <div class="line">prefix output in PyU4V.log</div>
 </div>
@@ -353,8 +354,8 @@ and configuration process are outlined in the table below.</p>
 </tbody>
 </table>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>PyU4V log functionality is run on top of Python’s great inbuilt logger. If
+<p class="first admonition-title">Note</p>
+<p class="last">PyU4V log functionality is run on top of Python’s great inbuilt logger. If
 you require in depth descriptions of the PyU4V logger configuration
 options, the logger sections, or input arguements for the handlers, please
 see the official Python Logger documentation <a class="reference external" href="https://docs.python.org/3.7/howto/logging.html">here</a>.</p>

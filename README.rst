@@ -212,6 +212,12 @@ with the upstream PyU4V repo.
 For a full breakdown of contribution requirements, coding standards, submitting
 and everything else in between please refer to PyU4V ReadTheDocs_.
 
+Tools
+-----
+
+Please refer to the Tools section of ReadTheDocs_ for OpenStack functionality
+to migrate volumes to the new REST masking view structure.
+
 Disclaimer
 ----------
 

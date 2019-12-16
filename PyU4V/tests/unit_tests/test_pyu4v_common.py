@@ -71,7 +71,8 @@ class PyU4VCommonTest(testtools.TestCase):
         self.assertEqual('SUCCEEDED', status)
 
     @mock.patch.object(common.CommonFunctions, '_is_job_finished',
-                       side_effect=[exception.VolumeBackendAPIException])
+                       side_effect=[exception.VolumeBackendAPIException(
+                           'random exception')])
     def test_wait_for_job_complete_exception(self, mock_job):
         """Test wait_for_job_complete exception."""
         self.assertRaises(exception.VolumeBackendAPIException,

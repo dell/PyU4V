@@ -444,3 +444,97 @@ class CommonData(object):
     tag_list = {'tag_name': ['CLBCK', 'Payroll']}
 
     tagged_objects = {'array_ids': ['000297600111']}
+
+    # migrate array info
+    m_array = '000197800123'
+    m_portgroup = 'myportgroup'
+    m_initiatorgroup = 'myinitiatorgroup'
+    m_sg_name = 'mystoragegroup'
+    m_host_name = 'myhost'
+
+    # Old masking views
+    smis_mv_1 = 'OS-myhost-No_SLO-I-MV'
+    smis_mv_2 = 'OS-myhost-SRP_1-Diamond-NONE-I-CD-MV'
+    smis_mv_3 = 'OS-myhost-SRP_1-Diamond-DSS-I-MV'
+    smis_mv_4 = 'OS-myhost-SRP_1-Silver-NONE-I-MV'
+    smis_mv_5 = 'OS-myhost-SRP_1-Bronze-OLTP-I-CD-MV'
+    smis_mv_6 = 'OS-myhost-SRP_1-Diamond-OLTP-I-RE-MV'
+    smis_mv_7 = 'OS-host-with-dashes-No_SLO-I-MV'
+    smis_mv_8 = 'OS-host-with-dashes-SRP_1-Diamond-NONE-I-MV'
+
+    # New masking view
+    rest_mv_1 = 'OS-myhost-I-myportgroup-MV'
+    rest_mv_2 = 'OS-myhost-I-portgroup-with-dashes-MV'
+    rest_mv_3 = 'OS-host-with-dash-I-myportgroup-MV'
+
+    # Old storage groups
+    smis_sg_1 = 'OS-myhost-No_SLO-I-SG'
+    smis_sg_2 = 'OS-myhost-SRP_1-Diamond-NONE-I-SG'
+    smis_sg_3 = 'OS-myhost-SRP_1-Diamond-DSS-I-SG'
+    smis_sg_4 = 'OS-myhost-SRP_1-Silver-NONE-I-CD-SG'
+    smis_sg_5 = 'OS-myhost-SRP_1-Diamond-OLTP-I-CD-SG'
+    smis_sg_6 = 'OS-myhost-SRP_1-Bronze-OLTP-I-RE-SG'
+    smis_sg_7 = 'OS-host-with_dashes-SRP_1-Diamond-OLTP-I-RE-SG'
+    smis_sg_8 = 'OS-myhost-SRP_1-Diamond-NONE-I-CD-SG'
+
+    # New parent storage groups
+    rest_parent_sg = 'OS-myhost-I-myportgroup-SG'
+
+    # New storage groups
+    rest_sg_1 = 'OS-myhost-No_SLO-os-iscsi-pg'
+    rest_sg_2 = 'OS-myhost-SRP_1-DiamodNONE-os-iscsi-pg-CD'
+    rest_sg_3 = 'OS-myhost-SRP_1-DiamodNONE-os-iscsi-pg'
+    rest_sg_4 = 'OS-myhost-SRP_1-DiamodOLTP-os-iscsi-pg-RE'
+    rest_sg_5 = 'OS-host-with-dashes-SRP_1-DiamodOLTP-myportgroup-RE'
+    rest_sg_6 = 'OS-myhost-SRP_1-DiamodOLTP-myportgroup-CD'
+
+    m_storagegroup = {'slo': 'Diamond',
+                      'workload': 'OLTP',
+                      'storageGroupId': 'test'}
+
+    m_maskingview = {'portGroupId': m_portgroup,
+                     'hostId': m_host_name,
+                     'storageGroupId': rest_parent_sg,
+                     'maskingViewId': rest_mv_1}
+
+    element_dict = {'new_mv_name': 'OS-myhost-I-myportgroup-MV',
+                    'workload': 'NONE',
+                    'new_sg_name': 'OS-myhost-SRP_1-DiamodNONE-myportgroup',
+                    'srp': 'SRP_1', 'port_group': 'myportgroup',
+                    'initiator_group': 'myinitiatorgroup',
+                    'new_sg_parent_name': 'OS-myhost-I-myportgroup-SG',
+                    'service_level': 'Diamond'}
+
+    element_dict_revert = {
+        'service_level': 'Diamond',
+        'port_group': 'myportgroup',
+        'initiator_group': 'myinitiatorgroup',
+        'srp': 'SRP_1',
+        'new_mv_name': 'OS-myhost-SRP_1-Diamond-NONE-I-CD-MV',
+        'new_sg_name': 'OS-myhost-SRP_1-Diamond-NONE-I-CD-SG',
+        'workload': 'NONE'}
+
+    mv_components = {'portGroupId': m_portgroup,
+                     'hostId': m_host_name,
+                     'storageGroupId': rest_sg_1,
+                     'maskingViewId': rest_mv_1}
+
+    device_list = ['0064F', '0088E', '00890', '00891', '00DF2', '00DF3']
+
+    host_io_limit_source = {'host_io_limit_mb_sec': '2000',
+                            'host_io_limit_io_sec': '2000',
+                            'dynamicDistribution': 'Always'}
+
+    host_io_limit_target = {'host_io_limit_mb_sec': '4000',
+                            'host_io_limit_io_sec': '4000',
+                            'dynamicDistribution': 'Never'}
+
+    source_sg_details = {'storageGroupId': smis_sg_2,
+                         'slo': 'Diamond',
+                         'srp': 'SRP_1',
+                         'hostIOLimit': host_io_limit_source}
+
+    target_sg_details = {'storageGroupId': rest_sg_3,
+                         'slo': 'Diamond',
+                         'srp': 'SRP_1',
+                         'hostIOLimit': host_io_limit_target}
