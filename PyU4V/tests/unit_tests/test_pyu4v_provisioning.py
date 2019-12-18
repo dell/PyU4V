@@ -1455,6 +1455,39 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
+    def test_add_new_vol_to_storage_group_srdf_multihop_srdf(self):
+        """Test adding new volume to replicated storage group."""
+        remote_array = '000197800124'
+        remote_array2 = '000197800125'
+        num_of_volumes = 1
+        volume_size = 10
+        payload = {'editStorageGroupActionParam': {
+            'expandStorageGroupParam': {
+                'addVolumeParam': {
+                    'emulation': 'FBA',
+                    'create_new_volumes': False,
+                    'volumeAttributes': [{
+                        'num_of_vols': 1,
+                        'volume_size': 10,
+                        'capacityUnit': 'GB'}],
+                    'remoteSymmSGInfoParam': {
+                        'remote_symmetrix_1_id': remote_array,
+                        'remote_symmetrix_1_sgs': ['PU-mystoragegroup-SG'],
+                        'remote_symmetrix_2_id': remote_array2,
+                        'remote_symmetrix_2_sgs': ['PU-mystoragegroup-SG']
+                    }}}}}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            self.provisioning.add_new_volume_to_storage_group(
+                storage_group_id=self.data.storagegroup_name,
+                num_vols=num_of_volumes, vol_size=volume_size, cap_unit='GB',
+                remote_array_1_id=self.data.remote_array,
+                remote_array_1_sgs=self.data.storagegroup_name,
+                remote_array_2_id=self.data.remote_array2,
+                remote_array_2_sgs=self.data.storagegroup_name)
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload)
+
     def test_remove_vol_from_storage_group_volume_string(self):
         """Test remove_vol_from_storage_group single volume."""
         payload = {'editStorageGroupActionParam': {
@@ -1465,6 +1498,31 @@ class PyU4VProvisioningTest(testtools.TestCase):
             # vol id, not list; not _async
             self.provisioning.remove_vol_from_storagegroup(
                 self.data.storagegroup_name, self.data.device_id)
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload)
+
+    def test_remove_vol_from_replicated_storage_group_multihop(self):
+        """Test remove_vol_from_storage_group single volume."""
+        payload = {
+            'editStorageGroupActionParam': {
+                'removeVolumeParam': {
+                    'volumeId': [self.data.device_id],
+                    'remoteSymmSGInfoParam': {
+                        'remote_symmetrix_1_id': self.data.remote_array,
+                        'remote_symmetrix_1_sgs': [
+                            self.data.storagegroup_name],
+                        'remote_symmetrix_2_id': self.data.remote_array2,
+                        'remote_symmetrix_2_sgs': [self.data.storagegroup_name]
+                    }}}}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            self.provisioning.remove_volume_from_storage_group(
+                storage_group_id=self.data.storagegroup_name,
+                vol_id=self.data.device_id,
+                remote_array_1_id=self.data.remote_array,
+                remote_array_1_sgs=self.data.storagegroup_name,
+                remote_array_2_id=self.data.remote_array2,
+                remote_array_2_sgs=self.data.storagegroup_name)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 

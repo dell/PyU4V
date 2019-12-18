@@ -146,6 +146,17 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.data.storagegroup_name, 'snap_name', ttl=2, hours=True)
             self.assertEqual(2, mock_create.call_count)
 
+    def test_create_storage_group_snapshot_secure(self):
+        """Test create_storage_group_snapshot."""
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_storage_group_snapshot(
+                self.data.storagegroup_name, 'snap_name')
+            self.replication.create_storage_group_snapshot(
+                self.data.storagegroup_name, 'snap_name', ttl=2, hours=True,
+                secure=True)
+            self.assertEqual(2, mock_create.call_count)
+
     def test_get_storagegroup_snapshot_generation_list(self):
         """Test get_storagegroup_snapshot_generation_list."""
         gen_list = self.replication.get_storagegroup_snapshot_generation_list(

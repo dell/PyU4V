@@ -1,7 +1,7 @@
 PyU4V Change Log
 ================
 
-Version 9.1.1.0 - released 12/12/19
+Version 9.1.2.0 - released 12/12/19
 ===================================
 
 Fixes
@@ -85,6 +85,18 @@ Provisioning Enhancements
   any masking view
 - format_director_port : Format separate director port into single string
 - get_any_director_port : Get a non-GuestOS port from a director
+- add_new_volume_to_storage_group : added functionality to be able to add
+  volumes creating srdf pairing and placing of volumes in storage groups
+  on the remote Symm/SG when adding vols to a local storage group.
+- remove_volume_from_storage_group enhanced to be able to automatically remove
+  volumes from local and remote storage groups deleting srdf pairs as part of
+  the process, storage group must be local to the unisphere instance and only
+  works with R1 group.
+
+Replication Enhancements
+-------------------------
+- create_storage_group_snapshot added secure option to enable creation of
+  secure snapshot
 
 Fixes
 -----
@@ -330,6 +342,7 @@ PyU4V/replication.py
   please use alternative function failback_storage_group_srdf()
 - delete_storagegroup_srdf() has been refactored and marked for deprecation,
   please use alternative function delete_storage_group_srdf()
+
 
 PyU4V/utils/console.py
 ----------------------

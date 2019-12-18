@@ -215,7 +215,8 @@ class ReplicationFunctions(object):
                                                   hours)
 
     def create_storage_group_snapshot(
-            self, storage_group_id, snap_name, ttl=None, hours=False):
+            self, storage_group_id, snap_name, ttl=None, hours=False,
+            secure=False):
         """Create a snapVx snapshot of a storage group.
 
         To establish a new generation of an existing SnapVX snapshot for a
@@ -226,11 +227,16 @@ class ReplicationFunctions(object):
         :param snap_name: snapshot name -- str
         :param ttl: Time To Live -- str
         :param hours: if TTL is in hours instead of days -- bool
+        :param secure: sets secure snapshot, snapshot created with secure
+        option can not be deleted before ttl expires -- bool
         :returns: snapshot details -- dict
         """
         payload = {'snapshotName': snap_name}
         if ttl:
-            payload.update({'timeToLive': ttl})
+            if secure:
+                payload.update({'secure': ttl})
+            else:
+                payload.update({'timeToLive': ttl})
             if hours:
                 payload.update({'timeInHours': 'True'})
         return self.create_resource(
