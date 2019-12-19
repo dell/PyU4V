@@ -228,7 +228,7 @@ class ReplicationFunctions(object):
         :param ttl: Time To Live -- str
         :param hours: if TTL is in hours instead of days -- bool
         :param secure: sets secure snapshot, snapshot created with secure
-        option can not be deleted before ttl expires -- bool
+               option can not be deleted before ttl expires -- bool
         :returns: snapshot details -- dict
         """
         payload = {'snapshotName': snap_name}
