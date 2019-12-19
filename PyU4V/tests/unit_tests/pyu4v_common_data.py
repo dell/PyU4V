@@ -20,6 +20,7 @@ class CommonData(object):
 
     array = '000197800123'
     remote_array = '000197800124'
+    remote_array2 = '000197800125'
     srp = 'SRP_1'
     slo = 'Diamond'
     workload = 'DSS'

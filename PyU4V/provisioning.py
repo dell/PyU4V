@@ -1773,7 +1773,7 @@ class ProvisioningFunctions(object):
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
         :param _async: if call should be async -- bool
         :param vol_name: name to give to the volume, optional -- str
-        :param create_new_volumes: new volumes only, no ro-use -- bool
+        :param create_new_volumes: new volumes only, no re-use -- bool
         :returns: storage group details -- dict
         """
         return self.add_new_volume_to_storage_group(
@@ -1782,7 +1782,9 @@ class ProvisioningFunctions(object):
 
     def add_new_volume_to_storage_group(
             self, storage_group_id, num_vols, vol_size, cap_unit, _async=False,
-            vol_name=None, create_new_volumes=None):
+            vol_name=None, create_new_volumes=None, remote_array_1_id=None,
+            remote_array_1_sgs=None, remote_array_2_id=None,
+            remote_array_2_sgs=None):
         """Expand an existing storage group by adding new volumes.
 
         :param storage_group_id: storage group id -- str
@@ -1792,6 +1794,17 @@ class ProvisioningFunctions(object):
         :param _async: if call should be async -- bool
         :param vol_name: name to give to the volume, optional -- str
         :param create_new_volumes: new volumes only, no ro-use -- bool
+        :param remote_array_1_id: 12 digit serial number of remote array,
+               optional -- str
+        :param remote_array_1_sgs: list of storage groups on remote array to
+               add Remote device, Unisphere instance must be local to R1
+               storage group otherwise volumes will only be added to the
+               local group -- str or list
+        :param remote_array2_id: optional digit serial number of remote array,
+               only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional
+               -- str
+        :param remote_array2_sgs: storage groups on remote array, optional
+               -- str or list
         :returns: storage group details -- dict
         """
         add_volume_param = {'emulation': 'FBA'}
@@ -1817,7 +1830,18 @@ class ProvisioningFunctions(object):
         expand_sg_data = ({'editStorageGroupActionParam': {
             'expandStorageGroupParam': {
                 'addVolumeParam': add_volume_param}}})
-
+        if remote_array_1_id and remote_array_1_sgs:
+            if not isinstance(remote_array_1_sgs, list):
+                remote_array_1_sgs = [remote_array_1_sgs]
+            add_volume_param.update({'remoteSymmSGInfoParam': {
+                'remote_symmetrix_1_id': remote_array_1_id,
+                'remote_symmetrix_1_sgs': remote_array_1_sgs}})
+            if remote_array_2_id and remote_array_2_sgs:
+                if not isinstance(remote_array_2_sgs, list):
+                    remote_array_2_sgs = [remote_array_2_sgs]
+                add_volume_param['remoteSymmSGInfoParam'].update({
+                    'remote_symmetrix_2_id': remote_array_2_id,
+                    'remote_symmetrix_2_sgs': remote_array_2_sgs})
         if _async:
             expand_sg_data.update(ASYNC_UPDATE)
         return self.modify_storage_group(storage_group_id, expand_sg_data)
@@ -1841,19 +1865,57 @@ class ProvisioningFunctions(object):
         """
         return self.remove_volume_from_storage_group(sg_id, vol_id, _async)
 
-    def remove_volume_from_storage_group(self, storage_group_id, vol_id,
-                                         _async=False):
+    def remove_volume_from_storage_group(
+            self, storage_group_id, vol_id, _async=False,
+            remote_array_1_id=None, remote_array_1_sgs=None,
+            remote_array_2_id=None, remote_array_2_sgs=None):
         """Remove a volume from a given storage group.
 
         :param storage_group_id: storage group id -- str
         :param vol_id: device id -- str
         :param _async: if call should be async -- bool
+        :param remote_array_1_id: 12 digit serial number of remote array,
+               optional -- str
+        :param remote_array_1_sgs: list of storage groups on remote array to
+               add Remote device, Unisphere instance must be local to R1
+               storage group otherwise volumes will only be added to the
+               local group -- str or list
+        :param remote_array2_id: optional digit serial number of remote array,
+               only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional
+               -- str
+        :param remote_array2_sgs: storage groups on remote array, optional
+               -- str or list
         :returns: storage group details -- dict
         """
         if not isinstance(vol_id, list):
             vol_id = [vol_id]
         payload = ({'editStorageGroupActionParam': {
             'removeVolumeParam': {'volumeId': vol_id}}})
+
+        if remote_array_1_id and remote_array_1_sgs:
+            if not isinstance(remote_array_1_sgs, list):
+                remote_array_1_sgs = [remote_array_1_sgs]
+            payload.update(
+                {'editStorageGroupActionParam': {
+                    'removeVolumeParam': {
+                        'volumeId': vol_id,
+                        'remoteSymmSGInfoParam': {
+                            'remote_symmetrix_1_id': remote_array_1_id,
+                            'remote_symmetrix_1_sgs': remote_array_1_sgs}}}
+                 })
+            if remote_array_2_id and remote_array_2_sgs:
+                if not isinstance(remote_array_2_sgs, list):
+                    remote_array_2_sgs = [remote_array_2_sgs]
+                payload.update(
+                    {'editStorageGroupActionParam': {
+                        'removeVolumeParam': {
+                            'volumeId': vol_id,
+                            'remoteSymmSGInfoParam': {
+                                'remote_symmetrix_1_id': remote_array_1_id,
+                                'remote_symmetrix_1_sgs': remote_array_1_sgs,
+                                'remote_symmetrix_2_id': remote_array_2_id,
+                                'remote_symmetrix_2_sgs': remote_array_1_sgs
+                            }}}})
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_storage_group(storage_group_id, payload)

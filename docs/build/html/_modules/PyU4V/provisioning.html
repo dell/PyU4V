@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>PyU4V.provisioning &mdash; PyU4V 9.1.1.0 documentation</title>
+  <title>PyU4V.provisioning &mdash; PyU4V 9.1.2.0 documentation</title>
   
 
   
@@ -1931,7 +1931,7 @@
 <span class="sd">        :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str</span>
 <span class="sd">        :param _async: if call should be async -- bool</span>
 <span class="sd">        :param vol_name: name to give to the volume, optional -- str</span>
-<span class="sd">        :param create_new_volumes: new volumes only, no ro-use -- bool</span>
+<span class="sd">        :param create_new_volumes: new volumes only, no re-use -- bool</span>
 <span class="sd">        :returns: storage group details -- dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_new_volume_to_storage_group</span><span class="p">(</span>
@@ -1940,7 +1940,9 @@
 
 <div class="viewcode-block" id="ProvisioningFunctions.add_new_volume_to_storage_group"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.add_new_volume_to_storage_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_new_volume_to_storage_group</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="p">,</span> <span class="n">num_vols</span><span class="p">,</span> <span class="n">vol_size</span><span class="p">,</span> <span class="n">cap_unit</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">vol_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_new_volumes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">vol_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_new_volumes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remote_array_1_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">remote_array_1_sgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remote_array_2_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">remote_array_2_sgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Expand an existing storage group by adding new volumes.</span>
 
 <span class="sd">        :param storage_group_id: storage group id -- str</span>
@@ -1950,6 +1952,17 @@
 <span class="sd">        :param _async: if call should be async -- bool</span>
 <span class="sd">        :param vol_name: name to give to the volume, optional -- str</span>
 <span class="sd">        :param create_new_volumes: new volumes only, no ro-use -- bool</span>
+<span class="sd">        :param remote_array_1_id: 12 digit serial number of remote array,</span>
+<span class="sd">               optional -- str</span>
+<span class="sd">        :param remote_array_1_sgs: list of storage groups on remote array to</span>
+<span class="sd">               add Remote device, Unisphere instance must be local to R1</span>
+<span class="sd">               storage group otherwise volumes will only be added to the</span>
+<span class="sd">               local group -- str or list</span>
+<span class="sd">        :param remote_array2_id: optional digit serial number of remote array,</span>
+<span class="sd">               only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional</span>
+<span class="sd">               -- str</span>
+<span class="sd">        :param remote_array2_sgs: storage groups on remote array, optional</span>
+<span class="sd">               -- str or list</span>
 <span class="sd">        :returns: storage group details -- dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">add_volume_param</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;emulation&#39;</span><span class="p">:</span> <span class="s1">&#39;FBA&#39;</span><span class="p">}</span>
@@ -1975,7 +1988,18 @@
         <span class="n">expand_sg_data</span> <span class="o">=</span> <span class="p">({</span><span class="s1">&#39;editStorageGroupActionParam&#39;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s1">&#39;expandStorageGroupParam&#39;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s1">&#39;addVolumeParam&#39;</span><span class="p">:</span> <span class="n">add_volume_param</span><span class="p">}}})</span>
-
+        <span class="k">if</span> <span class="n">remote_array_1_id</span> <span class="ow">and</span> <span class="n">remote_array_1_sgs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">remote_array_1_sgs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">remote_array_1_sgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote_array_1_sgs</span><span class="p">]</span>
+            <span class="n">add_volume_param</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;remoteSymmSGInfoParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;remote_symmetrix_1_id&#39;</span><span class="p">:</span> <span class="n">remote_array_1_id</span><span class="p">,</span>
+                <span class="s1">&#39;remote_symmetrix_1_sgs&#39;</span><span class="p">:</span> <span class="n">remote_array_1_sgs</span><span class="p">}})</span>
+            <span class="k">if</span> <span class="n">remote_array_2_id</span> <span class="ow">and</span> <span class="n">remote_array_2_sgs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">remote_array_2_sgs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">remote_array_2_sgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote_array_2_sgs</span><span class="p">]</span>
+                <span class="n">add_volume_param</span><span class="p">[</span><span class="s1">&#39;remoteSymmSGInfoParam&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                    <span class="s1">&#39;remote_symmetrix_2_id&#39;</span><span class="p">:</span> <span class="n">remote_array_2_id</span><span class="p">,</span>
+                    <span class="s1">&#39;remote_symmetrix_2_sgs&#39;</span><span class="p">:</span> <span class="n">remote_array_2_sgs</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
             <span class="n">expand_sg_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ASYNC_UPDATE</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storage_group</span><span class="p">(</span><span class="n">storage_group_id</span><span class="p">,</span> <span class="n">expand_sg_data</span><span class="p">)</span></div>
@@ -1999,19 +2023,57 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_volume_from_storage_group</span><span class="p">(</span><span class="n">sg_id</span><span class="p">,</span> <span class="n">vol_id</span><span class="p">,</span> <span class="n">_async</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProvisioningFunctions.remove_volume_from_storage_group"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.remove_volume_from_storage_group">[docs]</a>    <span class="k">def</span> <span class="nf">remove_volume_from_storage_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="p">,</span> <span class="n">vol_id</span><span class="p">,</span>
-                                         <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ProvisioningFunctions.remove_volume_from_storage_group"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.provisioning.ProvisioningFunctions.remove_volume_from_storage_group">[docs]</a>    <span class="k">def</span> <span class="nf">remove_volume_from_storage_group</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="p">,</span> <span class="n">vol_id</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">remote_array_1_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remote_array_1_sgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">remote_array_2_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remote_array_2_sgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove a volume from a given storage group.</span>
 
 <span class="sd">        :param storage_group_id: storage group id -- str</span>
 <span class="sd">        :param vol_id: device id -- str</span>
 <span class="sd">        :param _async: if call should be async -- bool</span>
+<span class="sd">        :param remote_array_1_id: 12 digit serial number of remote array,</span>
+<span class="sd">               optional -- str</span>
+<span class="sd">        :param remote_array_1_sgs: list of storage groups on remote array to</span>
+<span class="sd">               add Remote device, Unisphere instance must be local to R1</span>
+<span class="sd">               storage group otherwise volumes will only be added to the</span>
+<span class="sd">               local group -- str or list</span>
+<span class="sd">        :param remote_array2_id: optional digit serial number of remote array,</span>
+<span class="sd">               only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional</span>
+<span class="sd">               -- str</span>
+<span class="sd">        :param remote_array2_sgs: storage groups on remote array, optional</span>
+<span class="sd">               -- str or list</span>
 <span class="sd">        :returns: storage group details -- dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vol_id</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">vol_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">vol_id</span><span class="p">]</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="p">({</span><span class="s1">&#39;editStorageGroupActionParam&#39;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s1">&#39;removeVolumeParam&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;volumeId&#39;</span><span class="p">:</span> <span class="n">vol_id</span><span class="p">}}})</span>
+
+        <span class="k">if</span> <span class="n">remote_array_1_id</span> <span class="ow">and</span> <span class="n">remote_array_1_sgs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">remote_array_1_sgs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">remote_array_1_sgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote_array_1_sgs</span><span class="p">]</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;editStorageGroupActionParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;removeVolumeParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;volumeId&#39;</span><span class="p">:</span> <span class="n">vol_id</span><span class="p">,</span>
+                        <span class="s1">&#39;remoteSymmSGInfoParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s1">&#39;remote_symmetrix_1_id&#39;</span><span class="p">:</span> <span class="n">remote_array_1_id</span><span class="p">,</span>
+                            <span class="s1">&#39;remote_symmetrix_1_sgs&#39;</span><span class="p">:</span> <span class="n">remote_array_1_sgs</span><span class="p">}}}</span>
+                 <span class="p">})</span>
+            <span class="k">if</span> <span class="n">remote_array_2_id</span> <span class="ow">and</span> <span class="n">remote_array_2_sgs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">remote_array_2_sgs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">remote_array_2_sgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote_array_2_sgs</span><span class="p">]</span>
+                <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s1">&#39;editStorageGroupActionParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;removeVolumeParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s1">&#39;volumeId&#39;</span><span class="p">:</span> <span class="n">vol_id</span><span class="p">,</span>
+                            <span class="s1">&#39;remoteSymmSGInfoParam&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s1">&#39;remote_symmetrix_1_id&#39;</span><span class="p">:</span> <span class="n">remote_array_1_id</span><span class="p">,</span>
+                                <span class="s1">&#39;remote_symmetrix_1_sgs&#39;</span><span class="p">:</span> <span class="n">remote_array_1_sgs</span><span class="p">,</span>
+                                <span class="s1">&#39;remote_symmetrix_2_id&#39;</span><span class="p">:</span> <span class="n">remote_array_2_id</span><span class="p">,</span>
+                                <span class="s1">&#39;remote_symmetrix_2_sgs&#39;</span><span class="p">:</span> <span class="n">remote_array_1_sgs</span>
+                            <span class="p">}}}})</span>
         <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
             <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ASYNC_UPDATE</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_storage_group</span><span class="p">(</span><span class="n">storage_group_id</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span></div>

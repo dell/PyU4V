@@ -1927,6 +1927,18 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         for volume in volume_list:
             self.addCleanup(self.delete_volume, storage_group_name, volume)
 
+    def test_add_new_vol_to_srdf_storage_group(self):
+        """Tests adding a volume to a storage group that is replicated"""
+        sg_name, srdf_group_number, device_id, remote_volume = (
+            self.create_rdf_sg())
+        self.provisioning.add_new_volume_to_storage_group(
+            storage_group_id=sg_name, vol_size=1, num_vols=1, cap_unit='GB',
+            remote_array_1_id=self.conn.remote_array,
+            remote_array_1_sgs=[sg_name])
+        storage_group_details = self.provisioning.get_storage_group(
+            storage_group_name=sg_name)
+        self.assertEqual(2, storage_group_details[constants.NUM_OF_VOLS])
+
     def test_remove_volume_from_storage_group(self):
         """Test remove_volume_from_storage_group."""
         volume_name = self.generate_name()
@@ -1943,6 +1955,25 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(0, storage_group_details[constants.NUM_OF_VOLS])
         self.provisioning.add_existing_volume_to_storage_group(
             storage_group_name, device_id)
+
+    def test_remove_volume_from_srdf_storage_group(self):
+        """Tests adding a volume to a storage group that is replicated"""
+        sg_name, srdf_group_number, device_id, remote_volume = (
+            self.create_rdf_sg())
+        self.provisioning.add_new_volume_to_storage_group(
+            storage_group_id=sg_name, vol_size=1, num_vols=1, cap_unit='GB',
+            remote_array_1_id=self.conn.remote_array,
+            remote_array_1_sgs=[sg_name])
+        storage_group_details = self.provisioning.get_storage_group(
+            storage_group_name=sg_name)
+        self.assertEqual(2, storage_group_details[constants.NUM_OF_VOLS])
+        self.provisioning.remove_volume_from_storage_group(
+            storage_group_id=sg_name, vol_id=device_id,
+            remote_array_1_id=self.conn.remote_array,
+            remote_array_1_sgs=[sg_name])
+        storage_group_details = self.provisioning.get_storage_group(
+            storage_group_name=sg_name)
+        self.assertEqual(1, storage_group_details[constants.NUM_OF_VOLS])
 
     def test_remove_vol_from_storagegroup(self):
         """Test remove_vol_from_storagegroup."""

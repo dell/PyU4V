@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>PyU4V.replication &mdash; PyU4V 9.1.1.0 documentation</title>
+  <title>PyU4V.replication &mdash; PyU4V 9.1.2.0 documentation</title>
   
 
   
@@ -373,7 +373,8 @@
                                                   <span class="n">hours</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ReplicationFunctions.create_storage_group_snapshot"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.replication.ReplicationFunctions.create_storage_group_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">create_storage_group_snapshot</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_id</span><span class="p">,</span> <span class="n">snap_name</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">secure</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a snapVx snapshot of a storage group.</span>
 
 <span class="sd">        To establish a new generation of an existing SnapVX snapshot for a</span>
@@ -384,11 +385,16 @@
 <span class="sd">        :param snap_name: snapshot name -- str</span>
 <span class="sd">        :param ttl: Time To Live -- str</span>
 <span class="sd">        :param hours: if TTL is in hours instead of days -- bool</span>
+<span class="sd">        :param secure: sets secure snapshot, snapshot created with secure</span>
+<span class="sd">               option can not be deleted before ttl expires -- bool</span>
 <span class="sd">        :returns: snapshot details -- dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;snapshotName&#39;</span><span class="p">:</span> <span class="n">snap_name</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">ttl</span><span class="p">:</span>
-            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;timeToLive&#39;</span><span class="p">:</span> <span class="n">ttl</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">secure</span><span class="p">:</span>
+                <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;secure&#39;</span><span class="p">:</span> <span class="n">ttl</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;timeToLive&#39;</span><span class="p">:</span> <span class="n">ttl</span><span class="p">})</span>
             <span class="k">if</span> <span class="n">hours</span><span class="p">:</span>
                 <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;timeInHours&#39;</span><span class="p">:</span> <span class="s1">&#39;True&#39;</span><span class="p">})</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span>
