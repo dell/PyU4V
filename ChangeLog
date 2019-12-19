@@ -22,6 +22,8 @@ Replication Enhancements
 - create_storage_group_snapshot added secure option to enable creation of
   secure snapshot
 
+Version 9.1.1.0 - released 12/12/19
+===================================
 
 Fixes
 -----

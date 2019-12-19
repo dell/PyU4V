@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>PyU4V Usage Recommendations &mdash; PyU4V 9.1.1.0 documentation</title>
+  <title>PyU4V Usage Recommendations &mdash; PyU4V 9.1.2.0 documentation</title>
   
 
   
@@ -181,26 +181,26 @@ of device ids, of which any could be the device that you just created.</p>
 <p>When using PyU4V for performance metrics collection there are a number of best
 practices that you should follow:</p>
 <ul class="simple">
-<li>After enabling Unisphere for performance metrics collection allow Unisphere
-30 minutes to gather enough data before making any calls.</li>
-<li>The most granular time available with PyU4V performance metrics collection
+<li><p>After enabling Unisphere for performance metrics collection allow Unisphere
+30 minutes to gather enough data before making any calls.</p></li>
+<li><p>The most granular time available with PyU4V performance metrics collection
 is 5 minutes, so querying for data more frequently than 5 minutes is
-a wasteful use of resources.</li>
-<li>If you want to ensure that your performance metric collection is querying
+a wasteful use of resources.</p></li>
+<li><p>If you want to ensure that your performance metric collection is querying
 the most recent performance data available set a recency window value on your
-calls.</li>
-<li>If the performance timestamp is not recent as of 5-10 minutes ago there is a
+calls.</p></li>
+<li><p>If the performance timestamp is not recent as of 5-10 minutes ago there is a
 strong likelihood that your instance of Unisphere has gone into catchup mode
 and is processing a backlog of performance data. It will resume normal
 operations once this backlog processing is complete and be indicated by
-performance timestamps with a window of 5-10 minutes from the current time.</li>
-<li>When querying a single instance of Unisphere for performance metrics across
+performance timestamps with a window of 5-10 minutes from the current time.</p></li>
+<li><p>When querying a single instance of Unisphere for performance metrics across
 a number of arrays be careful on the load placed on Unisphere and try to
 determine if it is possible to query that amount of data in the given
-time frame you have set.</li>
-<li>If querying for data at regular intervals, examine your calls to see if you
+time frame you have set.</p></li>
+<li><p>If querying for data at regular intervals, examine your calls to see if you
 can create the interval time. If information is not likely to change over
-the course of 24 hours then querying once a day would be sufficient.</li>
+the course of 24 hours then querying once a day would be sufficient.</p></li>
 </ul>
 <p>Lastly, and most importantly, with great power comes great responsibility,
 PyU4V provides you with the ability to query every performance metric for every

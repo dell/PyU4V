@@ -1794,16 +1794,16 @@ class ProvisioningFunctions(object):
         :param _async: if call should be async -- bool
         :param vol_name: name to give to the volume, optional -- str
         :param create_new_volumes: new volumes only, no ro-use -- bool
-        :param remote_array_1_id 12 digit serial number of remote array,
+        :param remote_array_1_id: 12 digit serial number of remote array,
                optional -- str
-        :param remote_array_1_sgs list of storage groups on remote array to add
-               Remote device, Unisphere instance must be local to R1 storage
-               group otherwise volumes will only be added to the local group.
-               optional -- str or list
-        :param remote_array2_id optional digit serial number of remote array,
+        :param remote_array_1_sgs: list of storage groups on remote array to
+               add Remote device, Unisphere instance must be local to R1
+               storage group otherwise volumes will only be added to the
+               local group -- str or list
+        :param remote_array2_id: optional digit serial number of remote array,
                only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional
                -- str
-        :param remote_array2_sgs storage groups on remote array, optional
+        :param remote_array2_sgs: storage groups on remote array, optional
                -- str or list
         :returns: storage group details -- dict
         """
@@ -1874,14 +1874,16 @@ class ProvisioningFunctions(object):
         :param storage_group_id: storage group id -- str
         :param vol_id: device id -- str
         :param _async: if call should be async -- bool
-        :param remote_array_1_id 12 digit serial number of remote array,
+        :param remote_array_1_id: 12 digit serial number of remote array,
                optional -- str
-        :param remote_array_1_sgs storage group on remote array,
-               Unisphere instance must be local to R1 array otherwise volumes
-               will only be added to the local group. Optional -- str or list
-        :param remote_array2_id optional digit serial number of remote array,
-               optional -- str
-        :param remote_array2_sgs storage group on remote array, optional
+        :param remote_array_1_sgs: list of storage groups on remote array to
+               add Remote device, Unisphere instance must be local to R1
+               storage group otherwise volumes will only be added to the
+               local group -- str or list
+        :param remote_array2_id: optional digit serial number of remote array,
+               only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional
+               -- str
+        :param remote_array2_sgs: storage groups on remote array, optional
                -- str or list
         :returns: storage group details -- dict
         """
