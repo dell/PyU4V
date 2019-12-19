@@ -6,12 +6,16 @@ Version 9.1.2.0 - released 19/12/19
 Provisioning Enhancements
 -------------------------
 - add_new_volume_to_storage_group : added functionality to be able to add
-  volumes creating srdf pairing and placing of volumes in storage groups
-  on the remote Symm/SG when adding vols to a local storage group.
+  volumes to SRDF protected storage groups, new volumes will automatically be
+  protected with SRDF, volumes are added to the remote storage group to fully
+  automate the provisioning and simplify operations. Storage group must be
+  local to the unisphere instance and only works with storage groups that
+  contain R1 or R11 devices.
 - remove_volume_from_storage_group enhanced to be able to automatically remove
   volumes from local and remote storage groups deleting srdf pairs as part of
-  the process, storage group must be local to the unisphere instance and only
-  works with R1 group.
+  the process, no need to suspend, the automation takes care of everything,
+  storage group must be local to the unisphere instance and only works with
+  storage groups that contain R1 or R11 devices.
 
 Replication Enhancements
 -------------------------
