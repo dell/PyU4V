@@ -152,7 +152,7 @@ class TestBaseTestCase(testtools.TestCase):
             srdf_mode='Synchronous', establish=True,
             _async=True)
         self.conn.common.wait_for_job_complete(job)
-        local_volume = self.provision.get_vols_from_storagegroup(
+        local_volume = self.provision.get_volumes_from_storage_group(
             sg_name)[0]
         srdf_group_number = (
             self.replication.get_storage_group_srdf_group_list(
@@ -177,7 +177,7 @@ class TestBaseTestCase(testtools.TestCase):
         if 'Synchronized' in current_rdf_state_list:
             self.replication.suspend_storage_group_srdf(
                 storage_group_id=sg_name, srdf_group_number=srdf_group_number)
-        local_volume_list = self.provision.get_vols_from_storagegroup(
+        local_volume_list = self.provision.get_volumes_from_storage_group(
             sg_name)
         self.replication.delete_storage_group_srdf(
             storage_group_id=sg_name)
@@ -185,7 +185,7 @@ class TestBaseTestCase(testtools.TestCase):
         for local_volume in local_volume_list:
             self.provision.delete_volume(device_id=local_volume)
         self.conn.set_array_id(array_id=self.conn.remote_array)
-        remote_volume_list = self.provision.get_vols_from_storagegroup(
+        remote_volume_list = self.provision.get_volumes_from_storage_group(
             sg_name)
         self.provision.delete_storage_group(storage_group_id=sg_name)
         for remote_volume in remote_volume_list:
