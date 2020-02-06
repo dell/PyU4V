@@ -1119,7 +1119,7 @@ class ReplicationFunctions(object):
             response.get('portNumber', list()) if response else list())
         return port_list
 
-    def get_rdf_director_port_detail(self, director_id, port_id,
+    def get_rdf_director_port_details(self, director_id, port_id,
                                      array_id=None):
         '''Retrieves details of specified RDF ports.
 

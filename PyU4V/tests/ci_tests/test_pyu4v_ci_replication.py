@@ -509,12 +509,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             self.skipTest('Skip get_rdf_director - there are no RDF directors '
                           'configured on the specified array.')
 
-    def get_rdf_director_port_detail(self):
+    def get_rdf_director_port_details(self):
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_ports = self.replication.get_rdf_director_port_list(
                 director_id=rdf_director_list[0])
-            rdf_port_detail = self.replication.get_rdf_director_port_detail(
+            rdf_port_detail = self.replication.get_rdf_director_port_details(
                 director_id=rdf_director_list[0],
                 port_id=rdf_director_ports[0])
             self.assertIn('wwn', rdf_port_detail)
@@ -588,6 +588,6 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             self.replication.get_rdf_director_list()[0]
         local_dir_port = self.replication.get_rdf_director_port_list(
             director_id=local_rdf_director)[0]
-        port_details = self.replication.get_rdf_director_port_detail(
+        port_details = self.replication.get_rdf_director_port_details(
             director_id=local_rdf_director, port_id=local_dir_port)
         self.assertIn('online', port_details)
