@@ -1120,7 +1120,7 @@ class ReplicationFunctions(object):
         return port_list
 
     def get_rdf_director_port_details(self, director_id, port_id,
-                                     array_id=None):
+                                      array_id=None):
         '''Retrieves details of specified RDF ports.
 
         :param array_id: 12 digit serial number for  PowerMax array -- str
