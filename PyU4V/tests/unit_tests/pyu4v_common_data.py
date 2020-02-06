@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""pyu4v_common_data.py."""
+'''pyu4v_common_data.py.'''
 
 
 class CommonData(object):
-    """Common array data."""
+    '''Common array data.'''
     U4P_VERSION = '91'
 
     array = '000197800123'
@@ -74,6 +74,7 @@ class CommonData(object):
     # SLO provisioning
     compression_info = {'symmetrixId': ['000197800128']}
     director_info = {'directorId': director_id1,
+                     'num_of_cores': 7,
                      'director_slot_number': 1,
                      'availability': 'Online',
                      'num_of_ports': 5}
@@ -148,7 +149,44 @@ class CommonData(object):
                            'num_of_masking_views': 1,
                            'maskingview': [masking_view_name_i],
                            'portgroup': [port_group_name_i]}}]
-
+    port_details = {
+        'symmetrixPort': {
+            'director_status': 'Online',
+            'no_participating': False,
+            'num_of_cores': 7,
+            'aclx': True,
+            'environ_set': False,
+            'num_of_mapped_vols': 0,
+            'iscsi_target': False,
+            'num_of_masking_views': 0,
+            'wwn_node': '5000097398027004',
+            'enable_auto_negotiate': True,
+            'type': 'FibreChannel (563)',
+            'avoid_reset_broadcast': False,
+            'disable_q_reset_on_ua': False,
+            'sunapee': False,
+            'port_status': 'PendOn',
+            'init_point_to_point': True,
+            'volume_set_addressing': False,
+            'vnx_attached': False,
+            'scsi_support1': True,
+            'hp_3000_mode': False,
+            'identifier': '5000097398027005',
+            'symmetrixPortKey': {
+                'directorId': 'FA-1D',
+                'portId': '5'
+            },
+            'max_speed': '16',
+            'negotiate_reset': False,
+            'spc2_protocol_version': True,
+            'unique_wwn': True,
+            'siemens': False,
+            'num_of_port_groups': 0,
+            'common_serial_number': True,
+            'scsi_3': True,
+            'soft_reset': False
+        }
+    }
     sg_details = [{'srp': srp,
                    'num_of_vols': 2,
                    'cap_gb': 2,
@@ -239,15 +277,15 @@ class CommonData(object):
     compr_report = {'storageGroupCompressibility': [
         {'num_of_volumes': 6, 'storageGroupId': storagegroup_name,
          'allocated_cap_gb': 0.0, 'used_cap_gb': 0.0,
-         'compression_enabled': 'false'}, ]}
+         'compression_enabled': 'False'}, ]}
 
     volume_details = [{'cap_gb': 2,
                        'num_of_storage_groups': 1,
                        'volumeId': device_id,
                        'volume_identifier': 'my-vol',
                        'wwn': volume_wwn,
-                       'snapvx_target': 'false',
-                       'snapvx_source': 'false',
+                       'snapvx_target': 'False',
+                       'snapvx_source': 'False',
                        'storageGroupId': [storagegroup_name],
                        'allocated_percent': 5,
                        'rdfGroupId': 1},
@@ -353,6 +391,46 @@ class CommonData(object):
 
     rep_info = {'symmetrixId': array, 'storageGroupCount': 1486,
                 'replicationCacheUsage': 0, 'rdfGroupCount': 7}
+
+    local_rdf_ports = ['RF-1E:8', 'RF-2E:8']
+
+    remote_rdf_ports = ['RF-1E:8', 'RF-2E:8']
+
+    rdf_ports = [4, 5]
+
+    rdf_director_list = ['RF-1F', 'RF-2F']
+
+    rdf_dir_detail = {
+        'gige': False,
+        'symmetrixID': '000197600156',
+        'fiber': True,
+        'directorNumber': 81,
+        'directorId': 'RF-1F',
+        'hwCompressionSupported': True,
+        'online': True
+    }
+
+    rdf_dir_port_detail = {
+        'symmetrixID': '000197600156',
+        'directorNumber': 81,
+        'directorId': 'RF-1F',
+        'online': True,
+        'portNumber': 4,
+        'wwn': '5000097398027004'
+    }
+
+    remote_port_details = {
+        'remotePort': [
+            {
+                'symmetrixID': '000197900111',
+                'directorNumber': 81,
+                'directorId': 'RF-1F',
+                'online': True,
+                'portNumber': 4,
+                'wwn': '50000973B001BC04'
+            }
+        ]
+    }
 
     # migration
     migration_info = {'symmetrixId': array, 'storageGroupCount': 1486,

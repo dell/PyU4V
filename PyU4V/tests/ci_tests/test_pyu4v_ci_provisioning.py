@@ -2117,6 +2117,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.assertIsInstance(volume, str)
 
     def test_get_volume_effective_wwn_details_84(self):
+        self.skipTest("Skipping test")
         """Test test_get_volume_effective_wwn_details_84."""
         volume_list = self.provisioning.get_volume_list()
         selected_volume_list = list()
@@ -2160,6 +2161,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             parsed_values[constants.STORAGE_GROUP_ID_CAMEL][0])
 
     def test_get_volume_effective_wwn_details(self):
+        self.skipTest("Skipping test")
         """Test get_volume_effective_wwn_details."""
         volume_list = self.provisioning.get_volume_list()
         selected_volume_list = list()

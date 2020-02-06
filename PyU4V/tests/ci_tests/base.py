@@ -91,6 +91,8 @@ class TestBaseTestCase(testtools.TestCase):
         if device_id:
             self.provision.delete_volume(device_id)
 
+# Replication Functions
+
     def create_sg_snapshot(self):
         """Create a test storage group snapshot.
 
@@ -190,6 +192,79 @@ class TestBaseTestCase(testtools.TestCase):
         self.provision.delete_storage_group(storage_group_id=sg_name)
         for remote_volume in remote_volume_list:
             self.provision.delete_volume(device_id=remote_volume)
+
+    def get_online_rdf_ports(self):
+        """Gets a list of all RDF ports online for local and remote array.
+
+        :returns: list of online ports rdf ports
+
+        """
+        local_rdf_director_list = self.replication.get_rdf_director_list(
+            filters={'online': True})
+        local_online_rdf_ports = []
+        remote_online_rdf_ports = []
+        for director in local_rdf_director_list:
+            local_rdf_director_port_list = \
+                self.replication.get_rdf_director_port_list(
+                    director_id=director, filters={'online': True})
+            for director_port in local_rdf_director_port_list:
+                online_port = (director + ':' + director_port)
+                local_online_rdf_ports.append(online_port)
+        self.conn.set_array_id(self.conn.remote_array)
+        remote_rdf_director_list = self.replication.get_rdf_director_list(
+            filters={'online': True})
+        for director in remote_rdf_director_list:
+            remote_rdf_director_port_list = \
+                self.replication.get_rdf_director_port_list(
+                    director_id=director, array_id=self.conn.remote_array,
+                    filters={'online': True})
+            for director_port in remote_rdf_director_port_list:
+                online_port = (director + ':' + director_port)
+                remote_online_rdf_ports.append(online_port)
+        return local_online_rdf_ports, remote_online_rdf_ports
+
+    def get_next_free_srdf_group(self):
+        """Helper function to get RDFG on arrays that is free for use
+
+        :returns: next RDF group number on local and remote array
+
+        """
+        local_in_use_rdfg_list = self.replication.get_rdf_group_list()
+        self.conn.set_array_id(self.conn.remote_array)
+        remote_in_use_rdfg_list = self.replication.get_rdf_group_list()
+        new_rdfg = 200
+        local_rdfg_list = []
+        remote_rdfg_list = []
+        rdfg_match = False
+
+        for group in local_in_use_rdfg_list:
+            local_rdfg_list.append(group['rdfgNumber'])
+        for group in remote_in_use_rdfg_list:
+            remote_rdfg_list.append(group['rdfgNumber'])
+        if new_rdfg not in local_rdfg_list and remote_rdfg_list:
+            self.conn.set_array_id(self.conn.array_id)
+            return new_rdfg
+        else:
+            new_rdfg = 200
+            while not rdfg_match and new_rdfg < 250:
+                new_rdfg = new_rdfg + 1
+                if new_rdfg not in local_rdfg_list and remote_rdfg_list:
+                    rdfg_match = True
+                    self.conn.set_array_id(self.conn.array_id)
+                    return new_rdfg
+
+    def setup_srdf_group(self):
+        local_array = self.conn.array_id
+        local_port_list, remote_port_list = self.get_online_rdf_ports()
+        srdf_group = self.get_next_free_srdf_group()
+        self.conn.set_array_id(local_array)
+        self.replication.create_rdf_group(
+            local_director_port_list=local_port_list,
+            remote_array_id=self.conn.remote_array,
+            remote_director_port_list=remote_port_list,
+            array_id=local_array, local_rdfg_number=srdf_group,
+            remote_rdfg_number=srdf_group, label='pyu4v_' + str(srdf_group))
+        return srdf_group, local_port_list, remote_port_list
 
     # noinspection PyMethodMayBeStatic
     def generate_name(self, object_type='v'):

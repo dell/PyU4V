@@ -30,7 +30,7 @@ PUT = 'PUT'
 DELETE = 'DELETE'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.1.2.0'
+PYU4V_VERSION = '9.1.3.0'
 UNISPHERE_VERSION = '91'
 VERSION = 'version'
 ITERATOR = 'Iterator'
@@ -66,7 +66,10 @@ SG_DEMAND_REPORT = 'storage_group_demand_report'
 SNAPSHOT = 'snapshot'
 GENERATION = 'generation'
 RDFG = 'rdf_group'
+RDF_GROUP = 'rdf_group'
 GB_HEADROOM = 'gbHeadroom'
+RDF_DIRECTOR = 'rdf_director'
+REMOTE_PORT = 'remote_port'
 
 # Status Codes
 STATUS_200 = 200

@@ -1,6 +1,26 @@
 PyU4V Change Log
 ================
 
+
+Version 9.1.3.0 - released 19/01/20
+===================================
+Replication Enhancements
+-------------------------
+RDF functions added
+-------------------
+-create_rdf_group
+-modify_rdf_group
+-delete_rdf_group
+-get_rdf_port_connections
+-get_rdf_director_port_details
+-get_rdf_director_ports
+-get_rdf_director
+-get_rdf_director_list
+
+BugFix
+---------
+update to rest_requests header parameter corrected to application-type line 54
+
 Version 9.1.2.0 - released 19/12/19
 ===================================
 Provisioning Enhancements

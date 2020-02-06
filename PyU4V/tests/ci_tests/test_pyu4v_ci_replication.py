@@ -26,6 +26,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         super(CITestReplication, self).setUp()
         self.replication = self.conn.replication
         self.provisioning = self.conn.provisioning
+        self.system = self.conn.system
 
     def test_get_array_replication_capabilities(self):
         """Test get_array_replication_capabilities."""
@@ -482,3 +483,111 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         status = self.replication.get_storage_group_srdf_details(
             storage_group_id=sg_name, rdfg_num=srdf_group_number).get('states')
         self.assertIn('Synchronized', status)
+
+    def test_get_rdf_director_list(self):
+        rdf_director_list = self.replication.get_rdf_director_list()
+        self.assertIsInstance(rdf_director_list, list)
+
+    def test_get_rdf_director_detail(self):
+        rdf_director_list = self.replication.get_rdf_director_list()
+        if len(rdf_director_list) > 0:
+            rdf_director_details = self.replication.get_rdf_director_detail(
+                director_id=rdf_director_list[0])
+            self.assertIsInstance(rdf_director_details, dict)
+            self.assertIn('directorId', rdf_director_details)
+        else:
+            self.skipTest('Skip get_rdf_director - there are no RDF directors '
+                          'configured on the specified array.')
+
+    def test_get_rdf_director_port_list(self):
+        rdf_director_list = self.replication.get_rdf_director_list()
+        if len(rdf_director_list) > 0:
+            rdf_director_ports = self.replication.get_rdf_director_port_list(
+                director_id=rdf_director_list[0])
+            self.assertIsInstance(rdf_director_ports, list)
+        else:
+            self.skipTest('Skip get_rdf_director - there are no RDF directors '
+                          'configured on the specified array.')
+
+    def get_rdf_director_port_detail(self):
+        rdf_director_list = self.replication.get_rdf_director_list()
+        if len(rdf_director_list) > 0:
+            rdf_director_ports = self.replication.get_rdf_director_port_list(
+                director_id=rdf_director_list[0])
+            rdf_port_detail = self.replication.get_rdf_director_port_detail(
+                director_id=rdf_director_list[0],
+                port_id=rdf_director_ports[0])
+            self.assertIn('wwn', rdf_port_detail)
+        else:
+            self.skipTest('Skip get_rdf_director - there are no RDF directors '
+                          'configured on the specified array.')
+
+    def test_create_and_delete_rdf_group(self):
+        local_array = self.conn.array_id
+        local_port_list, remote_port_list = self.get_online_rdf_ports()
+        self.conn.set_array_id(local_array)
+        rdf_group = self.get_next_free_srdf_group()
+        self.replication.create_rdf_group(
+            local_director_port_list=local_port_list,
+            remote_array_id=self.conn.remote_array,
+            remote_director_port_list=remote_port_list,
+            array_id=local_array, local_rdfg_number=rdf_group,
+            remote_rdfg_number=rdf_group, label='pyu4v_' + str(rdf_group))
+        rdf_group_list = self.replication.get_rdf_group_list()
+        rdfg_list = []
+        for group in rdf_group_list:
+            rdfg_list.append(group['rdfgNumber'])
+        self.assertIn(rdf_group, rdfg_list)
+        self.replication.delete_rdf_group(srdf_group_number=rdf_group)
+        rdf_group_list = self.replication.get_rdf_group_list()
+        rdfg_list = []
+        for group in rdf_group_list:
+            rdfg_list.append(group['rdfgNumber'])
+        self.assertNotIn(rdf_group, rdfg_list)
+
+    def test_get_rdf_port_remote_connections(self):
+        local_array = self.conn.array_id
+        local_port_list, remote_port_list = self.get_online_rdf_ports()
+        self.conn.set_array_id(local_array)
+        dir_id = local_port_list[0].split(':')[0]
+        port_no = local_port_list[0].split(':')[1]
+        connections = self.replication.get_rdf_port_remote_connections(
+            director_id=dir_id, port_id=port_no)
+        self.assertIn('remotePort', connections)
+
+    def test_modify_rdf_group_add_remove_port(self):
+        srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
+        port_list = []
+        port_list.append(local_port_list[0])
+        self.replication.modify_rdf_group(
+            action='remove_ports', srdf_group_number=srdf_group,
+            port_list=port_list)
+        modifed_port_list = self.replication.get_rdf_group(
+            rdf_number=srdf_group)['localPorts']
+        self.assertNotIn(local_port_list[0], modifed_port_list)
+        self.replication.modify_rdf_group(
+            action='add_ports', port_list=port_list,
+            srdf_group_number=srdf_group)
+        modifed_port_list = self.replication.get_rdf_group(
+            rdf_number=srdf_group)['localPorts']
+        self.assertIn(local_port_list[0], modifed_port_list)
+        self.replication.delete_rdf_group(srdf_group_number=srdf_group)
+
+    def test_modify_rdf_group_change_label(self):
+        srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
+
+        self.replication.modify_rdf_group(
+            action='set_label', label='pyu4v_chg',
+            srdf_group_number=srdf_group)
+        rdfg_detail = self.replication.get_rdf_group(srdf_group)
+        self.assertIn('pyu4v_chg', rdfg_detail['label'])
+        self.replication.delete_rdf_group(srdf_group_number=srdf_group)
+
+    def test_get_rdf_director_port_details(self):
+        local_rdf_director = \
+            self.replication.get_rdf_director_list()[0]
+        local_dir_port = self.replication.get_rdf_director_port_list(
+            director_id=local_rdf_director)[0]
+        port_details = self.replication.get_rdf_director_port_details(
+            director_id=local_rdf_director, port_id=local_dir_port)
+        self.assertIn('online', port_details)
