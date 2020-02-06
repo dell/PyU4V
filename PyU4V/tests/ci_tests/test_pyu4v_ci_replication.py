@@ -588,6 +588,6 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             self.replication.get_rdf_director_list()[0]
         local_dir_port = self.replication.get_rdf_director_port_list(
             director_id=local_rdf_director)[0]
-        port_details = self.replication.get_rdf_director_port_details(
+        port_details = self.replication.get_rdf_director_port_detail(
             director_id=local_rdf_director, port_id=local_dir_port)
         self.assertIn('online', port_details)
