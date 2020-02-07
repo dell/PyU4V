@@ -539,7 +539,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     @mock.patch.object(common.CommonFunctions, 'get_request',
                        return_value=pcd.CommonData.rdf_dir_port_detail)
     def test_get_rdf_director_port_details(self, mck_get):
-        rdf_dir_port_details = self.replication.get_rdf_director_port_detail(
+        rdf_dir_port_details = self.replication.get_rdf_director_port_details(
             director_id='RF-1', port_id='4')
         self.assertEqual(pcd.CommonData.rdf_dir_port_detail,
                          rdf_dir_port_details)
@@ -559,3 +559,13 @@ class PyU4VReplicationTest(testtools.TestCase):
         rdf_detail = self.replication.get_rdf_director_detail(
             director_id='RF-1F')
         self.assertEqual(self.data.rdf_dir_detail, rdf_detail)
+
+    def test_create_storage_group_from_rdfg(self):
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_storage_group_from_rdfg(
+                storage_group_name=self.data.storagegroup_name,
+                srdf_group_number=1,
+                rdf_type='RDF1',
+                remote_storage_group_name=self.data.storagegroup_name)
+            mock_create.assert_called_once()

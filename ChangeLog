@@ -16,6 +16,7 @@ RDF functions added
 -get_rdf_director_ports
 -get_rdf_director
 -get_rdf_director_list
+-create_storage_group_from_rdfg
 
 BugFix
 ---------

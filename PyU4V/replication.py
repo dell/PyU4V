@@ -1304,3 +1304,43 @@ class ReplicationFunctions(object):
                              resource_type=RDF_GROUP,
                              resource_type_id=srdf_group_number,
                              )
+
+    def create_storage_group_from_rdfg(self, storage_group_name,
+                                       srdf_group_number, array_id=None,
+                                       rdf_type=None,
+                                       remote_storage_group_name=None):
+        """Creates management storage group from all devices in SRDF group.
+
+        :param sg_name: Name of storage group --str
+        :param srdf_group_number: number of RDF group volumes are in -- int
+        :param array_id 12 digit serial of array -- str
+        :param rdf_type: The SRDF type of the volumes in the SRDF group to be
+                         added to the Storage Group. Only needs to be populated
+                         if the SRDF group contains both RDF1 and RDF2 volumes.
+                         valid values RDF1 or RDF2-- str
+        :param remote_storage_group_name: name of remote storage group--str
+        :returns:
+        """
+        if not array_id:
+            array_id = self.array_id
+
+        create_sg_payload = {
+            'rdf_group_number': srdf_group_number,
+        }
+        payload = {
+            'create_sg_from_rdfg': create_sg_payload,
+            'storage_group_name': storage_group_name,
+            'action': 'CreateSgFromRdfg'
+        }
+        if rdf_type:
+            create_sg_payload.update({'rdf_type': rdf_type})
+        if remote_storage_group_name:
+            create_sg_payload.update(
+                {'remote_storage_group_name': remote_storage_group_name})
+
+        self.create_resource(category=REPLICATION,
+                             resource_level=SYMMETRIX,
+                             resource_level_id=array_id,
+                             resource_type=STORAGEGROUP,
+                             payload=payload
+                             )
