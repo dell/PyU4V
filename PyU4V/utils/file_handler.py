@@ -64,7 +64,7 @@ def read_csv_values(file_name, convert=False):
     # open the file in universal line ending mode
     with open(file_name, newline='') as infile:
         # read the file as a dictionary for each row ({header : value})
-        reader = csv.DictReader(infile)
+        reader = csv.DictReader(infile, delimiter=',', quotechar='|')
         data = dict()
         for row in reader:
             for header, value in row.items():
