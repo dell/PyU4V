@@ -575,7 +575,6 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
 
     def test_modify_rdf_group_change_label(self):
         srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
-
         self.replication.modify_rdf_group(
             action='set_label', label='pyu4v_chg',
             srdf_group_number=srdf_group)
@@ -591,3 +590,15 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         port_details = self.replication.get_rdf_director_port_details(
             director_id=local_rdf_director, port_id=local_dir_port)
         self.assertIn('online', port_details)
+
+    def test_create_storage_group_from_rdfg(self):
+        sg_name, srdf_group_number, device_id, remote_volume = (
+            self.create_rdf_sg())
+        self.replication.create_storage_group_from_rdfg(
+            storage_group_name='ci_new_srdf_delete',
+            srdf_group_number=srdf_group_number, rdf_type='RDF1')
+        sg_rdfg_list = self.replication.get_storage_group_srdf_group_list(
+            storage_group_id='ci_new_srdf_delete')
+        self.assertIn(srdf_group_number, sg_rdfg_list)
+        self.provisioning.delete_storage_group(
+            storage_group_id='ci_new_srdf_delete')

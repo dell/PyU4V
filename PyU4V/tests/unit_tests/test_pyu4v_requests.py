@@ -58,7 +58,7 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         self.assertEqual(self.rest.timeout, 120)
         ref_headers = {'content-type': 'application/json',
                        'accept': 'application/json',
-                       'application_type': 'pyu4v',
+                       'application-type': 'pyu4v',
                        'user-agent': self.ua_details}
         self.assertEqual(self.rest.headers, ref_headers)
         self.assertIsInstance(self.rest.session,
@@ -68,7 +68,7 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         """Test establish REST session."""
         ref_headers = {'content-type': 'application/json',
                        'accept': 'application/json',
-                       'application_type': 'pyu4v',
+                       'application-type': 'pyu4v',
                        'user-agent': self.ua_details}
         self.assertEqual(ref_headers, self.rest.session.headers)
         self.assertEqual('smc', self.rest.session.auth.username)
