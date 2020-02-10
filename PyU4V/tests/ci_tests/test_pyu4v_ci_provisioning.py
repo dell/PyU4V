@@ -17,6 +17,7 @@ from PyU4V.tests.ci_tests import base
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
+import random
 import re
 import testtools
 import time
@@ -568,7 +569,20 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_modify_initiator_change_initiator_flags(self):
         """Test modify_initiator change initiator flags."""
-        initiator = self.provisioning.get_in_use_initiator()
+        initiator_name = '1%015x' % random.randrange(16**15)
+        host = self.create_host(initiator_list=[initiator_name])
+        port_group_name, _ = self.create_port_group()
+        masking_view_name = self.generate_name('masking_view')
+        storage_group_name = self.create_empty_storage_group()
+        self.provisioning.add_new_volume_to_storage_group(
+            storage_group_name, 1, 1, 'GB')
+        device_id = self.provisioning.get_volumes_from_storage_group(storage_group_name)[0]
+        self.addCleanup(self.delete_volume, storage_group_name, device_id)
+        self.provisioning.create_masking_view_existing_components(
+            port_group_name, masking_view_name, storage_group_name, host)
+        self.addCleanup(self.delete_masking_view, masking_view_name)
+        initiator_list = self.provisioning.get_initiator_list()
+        initiator = [x for x in initiator_list if initiator_name in x][0]
         flags = constants.HOST_FLAGS
         flags.pop(constants.CONSISTENT_LUN, None)
         flags.pop(constants.VOLUME_SET_ADDRESSING, None)
@@ -2117,7 +2131,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.assertIsInstance(volume, str)
 
     def test_get_volume_effective_wwn_details_84(self):
-        self.skipTest("Skipping test")
         """Test test_get_volume_effective_wwn_details_84."""
         volume_list = self.provisioning.get_volume_list()
         selected_volume_list = list()
@@ -2128,6 +2141,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 selected_volume_list.append(volume)
                 selected_volume_details = volume_details
                 break
+        if selected_volume_details is None:
+            self.skipTest('test_get_volume_effective_wwn_details_84 - could '
+                          'not find a volume with effective wwn flag set to '
+                          'true.')
         csv_file_name = 'test.csv'
         temp_dir = self.create_temp_directory()
         csv_file_path = os.path.join(temp_dir, csv_file_name)
@@ -2161,7 +2178,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             parsed_values[constants.STORAGE_GROUP_ID_CAMEL][0])
 
     def test_get_volume_effective_wwn_details(self):
-        self.skipTest("Skipping test")
         """Test get_volume_effective_wwn_details."""
         volume_list = self.provisioning.get_volume_list()
         selected_volume_list = list()
@@ -2172,6 +2188,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 selected_volume_list.append(volume)
                 selected_volume_details = volume_details
                 break
+        if selected_volume_details is None:
+            self.skipTest('test_get_volume_effective_wwn_details - could not '
+                          'find a volume with effective wwn flag set to '
+                          'true.')
         csv_file_name = 'test.csv'
         temp_dir = self.create_temp_directory()
         csv_file_path = os.path.join(temp_dir, csv_file_name)
@@ -2192,6 +2212,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 selected_volume_list.append(volume)
                 selected_volume_details = volume_details
                 break
+        if selected_volume_details is None:
+            self.skipTest(
+                'test_get_volume_effective_wwn_details_no_output_file - '
+                'could not find a volume with effective wwn flag set '
+                'to true.')
         wwn_details_list = self.provisioning.get_volume_effective_wwn_details(
             selected_volume_list)[0]
         # Return value with output file are different to no output file
@@ -2528,6 +2553,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.skipTest("test_get_available_initiator "
                           "- Unable to get an available initiator.")
 
+
     ##############
     # Validators #
     ##############
@@ -2852,7 +2878,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             storage_group_reference = reference_details[
                 constants.STORAGE_GROUP_ID_CAMEL]
         else:
-            storage_group_reference = None
+            storage_group_reference = ''
         self.assertEqual(
             str(storage_group_reference),
             str(actual_details[constants.STORAGE_GROUP_ID][0]))
