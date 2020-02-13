@@ -197,7 +197,6 @@ class TestBaseTestCase(testtools.TestCase):
         """Gets a list of all RDF ports online for local and remote array.
 
         :returns: list of online ports rdf ports
-
         """
         local_rdf_director_list = self.replication.get_rdf_director_list(
             filters={'online': True})
@@ -214,20 +213,19 @@ class TestBaseTestCase(testtools.TestCase):
         remote_rdf_director_list = self.replication.get_rdf_director_list(
             filters={'online': True})
         for director in remote_rdf_director_list:
-            remote_rdf_director_port_list = \
+            remote_rdf_director_port_list = (
                 self.replication.get_rdf_director_port_list(
                     director_id=director, array_id=self.conn.remote_array,
-                    filters={'online': True})
+                    filters={'online': True}))
             for director_port in remote_rdf_director_port_list:
                 online_port = (director + ':' + director_port)
                 remote_online_rdf_ports.append(online_port)
         return local_online_rdf_ports, remote_online_rdf_ports
 
     def get_next_free_srdf_group(self):
-        """Helper function to get RDFG on arrays that is free for use
+        """Helper function to get RDFG on arrays that is free for use.
 
         :returns: next RDF group number on local and remote array
-
         """
         local_in_use_rdfg_list = self.replication.get_rdf_group_list()
         self.conn.set_array_id(self.conn.remote_array)
@@ -341,7 +339,7 @@ class TestBaseTestCase(testtools.TestCase):
     def create_ci_migration_environment(self):
         """Create a migration environment between two arrays.
 
-        :return: migration environment details -- dict
+        :returns: migration environment details -- dict
         """
         array_list = self.conn.common.get_array_list()
         array_list.remove(self.conn.array_id)

@@ -485,10 +485,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Synchronized', status)
 
     def test_get_rdf_director_list(self):
+        """Test get rdf director list."""
         rdf_director_list = self.replication.get_rdf_director_list()
         self.assertIsInstance(rdf_director_list, list)
 
     def test_get_rdf_director_detail(self):
+        """Test get_rdf_director_detail."""
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_details = self.replication.get_rdf_director_detail(
@@ -500,6 +502,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                           'configured on the specified array.')
 
     def test_get_rdf_director_port_list(self):
+        """Test get_rdf_direector_list."""
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_ports = self.replication.get_rdf_director_port_list(
@@ -509,7 +512,8 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             self.skipTest('Skip get_rdf_director - there are no RDF directors '
                           'configured on the specified array.')
 
-    def get_rdf_director_port_details(self):
+    def test_get_rdf_director_port_details(self):
+        """Test get_rdf_director_port_details."""
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_ports = self.replication.get_rdf_director_port_list(
@@ -523,6 +527,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                           'configured on the specified array.')
 
     def test_create_and_delete_rdf_group(self):
+        """Test create_rdf_group and delete_rdf_group."""
         local_array = self.conn.array_id
         local_port_list, remote_port_list = self.get_online_rdf_ports()
         self.conn.set_array_id(local_array)
@@ -546,6 +551,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertNotIn(rdf_group, rdfg_list)
 
     def test_get_rdf_port_remote_connections(self):
+        """Test get_rdf_port_remote_connections."""
         local_array = self.conn.array_id
         local_port_list, remote_port_list = self.get_online_rdf_ports()
         self.conn.set_array_id(local_array)
@@ -556,6 +562,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('remotePort', connections)
 
     def test_modify_rdf_group_add_remove_port(self):
+        """test adding and removing of port from RDF group."""
         srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
         port_list = []
         port_list.append(local_port_list[0])
@@ -574,6 +581,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.replication.delete_rdf_group(srdf_group_number=srdf_group)
 
     def test_modify_rdf_group_change_label(self):
+        """Test modify_rdf_group_change_label."""
         srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
         self.replication.modify_rdf_group(
             action='set_label', label='pyu4v_chg',
@@ -583,6 +591,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.replication.delete_rdf_group(srdf_group_number=srdf_group)
 
     def test_get_rdf_director_port_details(self):
+        """Test get_rdf_port_details."""
         local_rdf_director = \
             self.replication.get_rdf_director_list()[0]
         local_dir_port = self.replication.get_rdf_director_port_list(
@@ -592,6 +601,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('online', port_details)
 
     def test_create_storage_group_from_rdfg(self):
+        """Test create_storage_group_from_rdfg."""
         sg_name, srdf_group_number, device_id, remote_volume = (
             self.create_rdf_sg())
         self.replication.create_storage_group_from_rdfg(

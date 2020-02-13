@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'''pyu4v_common_data.py.'''
+"""pyu4v_common_data.py."""
 
 
 class CommonData(object):
-    '''Common array data.'''
+    """Common array data."""
     U4P_VERSION = '91'
 
     array = '000197800123'
