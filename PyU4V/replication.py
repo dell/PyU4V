@@ -1104,7 +1104,7 @@ class ReplicationFunctions(object):
 
         :param array_id: 12 digit serial number for PowerMax array -- str
         :param director_id: identifier for director e.g. RF-1F -- str
-        :param filters: optional filters - dict
+        :param filters: optional filters -- dict
         :returns: list of RDF ports -- list
         """
         if not array_id:
@@ -1126,7 +1126,7 @@ class ReplicationFunctions(object):
         :param array_id: 12 digit serial number for  PowerMax array -- str
         :param director_id: identifier for director e.g. RF-1F -- str
         :param port_id: port number -- int
-        :returns: port details --dict
+        :returns: port details -- dict
         """
         if not array_id:
             array_id = self.array_id
