@@ -576,7 +576,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         storage_group_name = self.create_empty_storage_group()
         self.provisioning.add_new_volume_to_storage_group(
             storage_group_name, 1, 1, 'GB')
-        device_id = self.provisioning.get_volumes_from_storage_group(storage_group_name)[0]
+        device_id = (
+            self.provisioning.get_volumes_from_storage_group(
+                storage_group_name)[0])
         self.addCleanup(self.delete_volume, storage_group_name, device_id)
         self.provisioning.create_masking_view_existing_components(
             port_group_name, masking_view_name, storage_group_name, host)
@@ -2552,7 +2554,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         else:
             self.skipTest("test_get_available_initiator "
                           "- Unable to get an available initiator.")
-
 
     ##############
     # Validators #
