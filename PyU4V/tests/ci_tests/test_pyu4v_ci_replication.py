@@ -590,16 +590,6 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('pyu4v_chg', rdfg_detail['label'])
         self.replication.delete_rdf_group(srdf_group_number=srdf_group)
 
-    def test_get_rdf_director_port_details(self):
-        """Test get_rdf_port_details."""
-        local_rdf_director = \
-            self.replication.get_rdf_director_list()[0]
-        local_dir_port = self.replication.get_rdf_director_port_list(
-            director_id=local_rdf_director)[0]
-        port_details = self.replication.get_rdf_director_port_details(
-            director_id=local_rdf_director, port_id=local_dir_port)
-        self.assertIn('online', port_details)
-
     def test_create_storage_group_from_rdfg(self):
         """Test create_storage_group_from_rdfg."""
         sg_name, srdf_group_number, device_id, remote_volume = (
