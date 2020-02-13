@@ -1087,8 +1087,8 @@ class ReplicationFunctions(object):
     def get_rdf_director_detail(self, director_id, array_id=None):
         """Retrieves details for specified RDF_director.
 
-        :param array_id: 12 digit serial number for PowerMax array -- str
         :param director_id: identifier for director e.g. RF-1F -- str
+        :param array_id: 12 digit serial number for PowerMax array -- str
         :returns: director details --dict
         """
         if not array_id:
@@ -1146,7 +1146,6 @@ class ReplicationFunctions(object):
         :param port_id: port number -- int
         :param array_id: 12 digit serial number for Source  -- str
         :returns: remote port details --dict
-
         """
 
         if not array_id:
@@ -1168,17 +1167,17 @@ class ReplicationFunctions(object):
         or more remote ports for the desired target array and feed into this
         function. Additional Ports can be added with modify_rdf_group function.
 
+        :param local_director_Port_list: list of local directors and ports for
+                                        group e.g [RF-1E:1, RF-2E:1] -- list
+        :param remote_array_id: 12 digit serial number of remote array  -- str
+        :param label: Label for group up to 10 characters -- str
+        :param local_rdfg_number: rdfg for the local array-- int
+        :param remote_rdfg_number rdfg for the remote array -- int
+        :param remote_director_port_list: list of remote directors and ports to
+                                          group e.g [RF-1E:1, RF-2E:1] -- list
         :param array_id: array_id: 12 digit serial number of Source (R1) array,
                         if no array is specified the array in config file or
                         api connection will be default -- str
-        :param local_director_Port_list: list of local directors and ports for
-                                        group e.g [RF-1E:1, RF-2E:1] -- list
-        :param local_rdfg_number: rdfg for the local array-- int
-        :param remote_array_id: 12 digit serial number of remote array  -- str
-        :param remote_rdfg_number rdfg for the remote array -- int
-        :param label: Label for group up to 10 characters -- str
-        :param remote_director_port_list: list of remote directors and ports to
-                                          group e.g [RF-1E:1, RF-2E:1] -- list
         """
         if not array_id:
             array_id = self.array_id
@@ -1220,9 +1219,9 @@ class ReplicationFunctions(object):
         :param srdf_group_number: srdf group number
                                   for action on local array: int
         :param array_id: 12 digit serial of array -- str
-        :param label: Label for group up to 10 characters -- str
         :param port_list: list of ports to be added or removed e.g.
                          [RF-1E:10, RF-2E:10] --list
+        :param label: Label for group up to 10 characters -- str
         :param dev_list: list of volumes to be moved between RDF groups -- list
         :param target_srdf_group: rdfg group to move volumes to -- int
         :param consistency_exempt: ignore device for consistency checks--bool
