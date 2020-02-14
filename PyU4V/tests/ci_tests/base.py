@@ -203,9 +203,9 @@ class TestBaseTestCase(testtools.TestCase):
         local_online_rdf_ports = []
         remote_online_rdf_ports = []
         for director in local_rdf_director_list:
-            local_rdf_director_port_list = \
+            local_rdf_director_port_list = (
                 self.replication.get_rdf_director_port_list(
-                    director_id=director, filters={'online': True})
+                    director_id=director, filters={'online': True}))
             for director_port in local_rdf_director_port_list:
                 online_port = (director + ':' + director_port)
                 local_online_rdf_ports.append(online_port)

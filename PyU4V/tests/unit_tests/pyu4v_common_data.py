@@ -277,15 +277,15 @@ class CommonData(object):
     compr_report = {'storageGroupCompressibility': [
         {'num_of_volumes': 6, 'storageGroupId': storagegroup_name,
          'allocated_cap_gb': 0.0, 'used_cap_gb': 0.0,
-         'compression_enabled': 'False'}, ]}
+         'compression_enabled': 'false'}, ]}
 
     volume_details = [{'cap_gb': 2,
                        'num_of_storage_groups': 1,
                        'volumeId': device_id,
                        'volume_identifier': 'my-vol',
                        'wwn': volume_wwn,
-                       'snapvx_target': 'False',
-                       'snapvx_source': 'False',
+                       'snapvx_target': 'false',
+                       'snapvx_source': 'false',
                        'storageGroupId': [storagegroup_name],
                        'allocated_percent': 5,
                        'rdfGroupId': 1},

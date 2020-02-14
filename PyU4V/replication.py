@@ -1145,7 +1145,7 @@ class ReplicationFunctions(object):
         :param director_id: identifier for director e.g. RF-1F -- str
         :param port_id: port number -- int
         :param array_id: 12 digit serial number for Source  -- str
-        :returns: remote port details --dict
+        :returns: remote port details -- dict
         """
 
         if not array_id:
@@ -1167,7 +1167,7 @@ class ReplicationFunctions(object):
         or more remote ports for the desired target array and feed into this
         function. Additional Ports can be added with modify_rdf_group function.
 
-        :param local_director_Port_list: list of local directors and ports for
+        :param local_director_port_list: list of local directors and ports for
                                         group e.g [RF-1E:1, RF-2E:1] -- list
         :param remote_array_id: 12 digit serial number of remote array  -- str
         :param label: Label for group up to 10 characters -- str
@@ -1176,8 +1176,8 @@ class ReplicationFunctions(object):
         :param remote_director_port_list: list of remote directors and ports to
                                           group e.g [RF-1E:1, RF-2E:1] -- list
         :param array_id: array_id: 12 digit serial number of Source (R1) array,
-                        if no array is specified the array in config file or
-                        api connection will be default -- str
+                         if no array is specified the array in config file or
+                         api connection will be default -- str
         """
         if not array_id:
             array_id = self.array_id
@@ -1214,22 +1214,19 @@ class ReplicationFunctions(object):
 
         Function can be used to Add ports, move volumes between rdf groups,
         remove ports or rename RDF group.
-
-        :param action: add_ports, remove_ports, move
+        :param action: add_ports, remove_ports, move -- str
         :param srdf_group_number: srdf group number
                                   for action on local array: int
         :param array_id: 12 digit serial of array -- str
         :param port_list: list of ports to be added or removed e.g.
-                         [RF-1E:10, RF-2E:10] --list
-        :param label: Label for group up to 10 characters -- str
+                          [RF-1E:10, RF-2E:10] --list
+        :param label: label for group up to 10 characters -- str
         :param dev_list: list of volumes to be moved between RDF groups -- list
         :param target_srdf_group: rdfg group to move volumes to -- int
-        :param consistency_exempt: ignore device for consistency checks--bool
+        :param consistency_exempt: ignore device for consistency checks -- bool
         """
-        rdfg_actions = {'MOVE': 'Move', 'ADD_PORTS': 'add_ports',
-                        'REMOVE_PORTS': 'remove_ports',
-                        'SET_LABEL': 'set_label'}
-        rdfg_action = rdfg_actions.get(action.upper())
+
+        rdfg_action = constants.RDFG_ACTIONS.get(action.upper())
 
         if not rdfg_action:
             msg = ('RDFG Action must be one [add_ports, remove_ports, move, '
@@ -1245,22 +1242,19 @@ class ReplicationFunctions(object):
                 'move': {
                     'targetRdfGroup': target_rdf_group,
                     'volumesToMove': dev_list,
-                    'exempt': consistency_exempt
-                },
+                    'exempt': consistency_exempt},
                 'action': 'Move'}
 
         elif rdfg_action == 'set_label':
             payload = {
                 "set_label": {
-                    "label": label
-                },
-                "action": "set_label"
-            }
+                    "label": label},
+                "action": "set_label"}
 
         elif rdfg_action in ['add_ports', 'remove_ports']:
             if not port_list:
-                msg = ('list of ports must be supplied when adding or removing'
-                       'ports from RDFG e.g. [RF-1E:10, RF-2E:10]')
+                msg = ('list of ports must be supplied when adding or '
+                       'removing ports from RDFG e.g. [RF-1E:10, RF-2E:10]')
                 LOG.exception(msg)
                 raise exception.InvalidInputException(data=msg)
             port_payload = []
@@ -1294,10 +1288,9 @@ class ReplicationFunctions(object):
             resource_level_id=array_id, resource_type=RDF_GROUP,
             resource_type_id=srdf_group_number)
 
-    def create_storage_group_from_rdfg(self, storage_group_name,
-                                       srdf_group_number, array_id=None,
-                                       rdf_type=None,
-                                       remote_storage_group_name=None):
+    def create_storage_group_from_rdfg(
+            self, storage_group_name, srdf_group_number, array_id=None,
+            rdf_type=None, remote_storage_group_name=None):
         """Creates management storage group from all devices in SRDF group.
 
         :param storage_group_name: Name of storage group --str
@@ -1313,13 +1306,11 @@ class ReplicationFunctions(object):
             array_id = self.array_id
 
         create_sg_payload = {
-            'rdf_group_number': srdf_group_number,
-        }
+            'rdf_group_number': srdf_group_number}
         payload = {
             'create_sg_from_rdfg': create_sg_payload,
             'storage_group_name': storage_group_name,
-            'action': 'CreateSgFromRdfg'
-        }
+            'action': 'CreateSgFromRdfg'}
         if rdf_type:
             create_sg_payload.update({'rdf_type': rdf_type})
         if remote_storage_group_name:

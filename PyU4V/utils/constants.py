@@ -100,6 +100,11 @@ SPLIT = 'Split'
 SUSPEND = 'Suspend'
 SWAP = 'Swap'
 
+# RDFG Constants
+
+RDFG_ACTIONS = {'MOVE': 'Move', 'ADD_PORTS': 'add_ports',
+                        'REMOVE_PORTS': 'remove_ports',
+                        'SET_LABEL': 'set_label'}
 # Director constants
 DIRECTOR_ID = 'directorId'
 PORT_ID = 'portId'
