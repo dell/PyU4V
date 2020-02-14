@@ -277,11 +277,13 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
             # Create path for temporary CSV file
             pyu4v_path = os.path.join(temp_dir, 'temp_spread.csv')
             # Write to CSV file, assert file exists
-            file_handler.write_dict_to_csv_file(pyu4v_path, data_dict)
+            file_handler.write_dict_to_csv_file(
+                pyu4v_path, data_dict, delimiter='#', quotechar='"')
             self.assertTrue(os.path.isfile(pyu4v_path))
             # Read the CSV file and assert contents are equal to data written
             # in previous step
-            read_data = file_handler.read_csv_values(pyu4v_path, convert=True)
+            read_data = file_handler.read_csv_values(
+                pyu4v_path, convert=True, delimiter='#', quotechar='"')
             self.assertEqual(data_dict, read_data)
             # Cleanup
             self.addCleanup(self.cleanup_files, pyu4v_orig=None,
