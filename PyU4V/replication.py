@@ -1168,14 +1168,15 @@ class ReplicationFunctions(object):
         function. Additional Ports can be added with modify_rdf_group function.
 
         :param local_director_port_list: list of local directors and ports for
-                                        group e.g [RF-1E:1, RF-2E:1] -- list
+                                         group e.g [RF-1E:1, RF-2E:1] -- list
         :param remote_array_id: 12 digit serial number of remote array  -- str
-        :param label: Label for group up to 10 characters -- str
-        :param local_rdfg_number: rdfg for the local array-- int
-        :param remote_rdfg_number rdfg for the remote array -- int
-        :param remote_director_port_list: list of remote directors and ports to
-                                          group e.g [RF-1E:1, RF-2E:1] -- list
-        :param array_id: array_id: 12 digit serial number of Source (R1) array,
+        :param label: label for group up to 10 characters -- str
+        :param local_rdfg_number: rdfg for the local array -- int
+        :param remote_rdfg_number: rdfg for the remote array -- int
+        :param remote_director_port_list: list of remote directors and ports
+                                          to group e.g [RF-1E:1, RF-2E:1]
+                                          -- list
+        :param array_id: 12 digit serial number of Source (R1) array,
                          if no array is specified the array in config file or
                          api connection will be default -- str
         """
@@ -1214,6 +1215,7 @@ class ReplicationFunctions(object):
 
         Function can be used to Add ports, move volumes between rdf groups,
         remove ports or rename RDF group.
+
         :param action: add_ports, remove_ports, move -- str
         :param srdf_group_number: srdf group number
                                   for action on local array: int
@@ -1293,14 +1295,14 @@ class ReplicationFunctions(object):
             rdf_type=None, remote_storage_group_name=None):
         """Creates management storage group from all devices in SRDF group.
 
-        :param storage_group_name: Name of storage group --str
+        :param storage_group_name: Name of storage group -- str
         :param srdf_group_number: number of RDF group volumes are in -- int
-        :param array_id 12 digit serial of array -- str
+        :param array_id: number of RDF group volumes are in -- int
         :param rdf_type: The SRDF type of the volumes in the SRDF group to be
                          added to the Storage Group. Only needs to be populated
-                         if the SRDF group contains both RDF1 and RDF2 volumes.
-                         valid values RDF1 or RDF2-- str
-        :param remote_storage_group_name: name of remote storage group--str
+                         if the SRDF group contains both RDF1 and RDF2 volumes
+                         valid values RDF1 or RDF2 -- str
+        :param remote_storage_group_name: ame of remote storage group -- str
         """
         if not array_id:
             array_id = self.array_id

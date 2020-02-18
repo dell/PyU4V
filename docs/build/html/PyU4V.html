@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>PyU4V API &mdash; PyU4V 9.1.2.0 documentation</title>
+  <title>PyU4V API &mdash; PyU4V 9.1.3.0 documentation</title>
   
 
   
@@ -4719,6 +4719,55 @@ Example qos specs:
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.create_rdf_group">
+<code class="sig-name descname">create_rdf_group</code><span class="sig-paren">(</span><em class="sig-param">local_director_port_list</em>, <em class="sig-param">remote_array_id</em>, <em class="sig-param">label</em>, <em class="sig-param">local_rdfg_number</em>, <em class="sig-param">remote_rdfg_number</em>, <em class="sig-param">remote_director_port_list</em>, <em class="sig-param">array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.create_rdf_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_rdf_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new RDF group between directors and ports on two PowerMax.</p>
+<p>If this is the first connection between 2 arrays please ensure that you
+run get_rdf_remote_port_details and create the initial connection
+group using only the first source port you can extract details for one
+or more remote ports for the desired target array and feed into this
+function. Additional Ports can be added with modify_rdf_group function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_director_port_list</strong> – list of local directors and ports for
+group e.g [RF-1E:1, RF-2E:1] – list</p></li>
+<li><p><strong>remote_array_id</strong> – 12 digit serial number of remote array  – str</p></li>
+<li><p><strong>label</strong> – label for group up to 10 characters – str</p></li>
+<li><p><strong>local_rdfg_number</strong> – rdfg for the local array – int</p></li>
+<li><p><strong>remote_rdfg_number</strong> – rdfg for the remote array – int</p></li>
+<li><p><strong>remote_director_port_list</strong> – list of remote directors and ports
+to group e.g [RF-1E:1, RF-2E:1]
+– list</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial number of Source (R1) array,
+if no array is specified the array in config file or
+api connection will be default – str</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.create_storage_group_from_rdfg">
+<code class="sig-name descname">create_storage_group_from_rdfg</code><span class="sig-paren">(</span><em class="sig-param">storage_group_name</em>, <em class="sig-param">srdf_group_number</em>, <em class="sig-param">array_id=None</em>, <em class="sig-param">rdf_type=None</em>, <em class="sig-param">remote_storage_group_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.create_storage_group_from_rdfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_storage_group_from_rdfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates management storage group from all devices in SRDF group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>storage_group_name</strong> – Name of storage group – str</p></li>
+<li><p><strong>srdf_group_number</strong> – number of RDF group volumes are in – int</p></li>
+<li><p><strong>array_id</strong> – number of RDF group volumes are in – int</p></li>
+<li><p><strong>rdf_type</strong> – The SRDF type of the volumes in the SRDF group to be
+added to the Storage Group. Only needs to be populated
+if the SRDF group contains both RDF1 and RDF2 volumes
+valid values RDF1 or RDF2 – str</p></li>
+<li><p><strong>remote_storage_group_name</strong> – ame of remote storage group – str</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.create_storage_group_snapshot">
 <code class="sig-name descname">create_storage_group_snapshot</code><span class="sig-paren">(</span><em class="sig-param">storage_group_id</em>, <em class="sig-param">snap_name</em>, <em class="sig-param">ttl=None</em>, <em class="sig-param">hours=False</em>, <em class="sig-param">secure=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.create_storage_group_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_storage_group_snapshot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a snapVx snapshot of a storage group.</p>
@@ -4775,6 +4824,20 @@ option can not be deleted before ttl expires – bool</p></li>
 <dt id="PyU4V.replication.ReplicationFunctions.create_storagegroup_srdf_pairings">
 <code class="sig-name descname">create_storagegroup_srdf_pairings</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_storagegroup_srdf_pairings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.delete_rdf_group">
+<code class="sig-name descname">delete_rdf_group</code><span class="sig-paren">(</span><em class="sig-param">srdf_group_number</em>, <em class="sig-param">array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.delete_rdf_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.delete_rdf_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to Delete SRDF groups between VMAX or PowerMax arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>srdf_group_number</strong> – number of RDF group to be deleted – int</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial of array – str</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.delete_storage_group_snapshot">
@@ -4922,6 +4985,76 @@ have not been deleted as they have links.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_director_detail">
+<code class="sig-name descname">get_rdf_director_detail</code><span class="sig-paren">(</span><em class="sig-param">director_id</em>, <em class="sig-param">array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_director_detail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_director_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves details for specified RDF_director.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>director_id</strong> – identifier for director e.g. RF-1F – str</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial number for PowerMax array – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>director details –dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_director_list">
+<code class="sig-name descname">get_rdf_director_list</code><span class="sig-paren">(</span><em class="sig-param">array_id=None</em>, <em class="sig-param">filters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_director_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_director_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds out directors configured for SRDF on the specified array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array_id</strong> – 12 digit serial number for PowerMax array – str</p></li>
+<li><p><strong>filters</strong> – optional filters - dict</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of directors – list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_director_port_details">
+<code class="sig-name descname">get_rdf_director_port_details</code><span class="sig-paren">(</span><em class="sig-param">director_id</em>, <em class="sig-param">port_id</em>, <em class="sig-param">array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_director_port_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_director_port_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves details of specified RDF ports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>director_id</strong> – identifier for director e.g. RF-1F – str</p></li>
+<li><p><strong>port_id</strong> – port number – int</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial number for  PowerMax array – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>port details – dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_director_port_list">
+<code class="sig-name descname">get_rdf_director_port_list</code><span class="sig-paren">(</span><em class="sig-param">director_id</em>, <em class="sig-param">array_id=None</em>, <em class="sig-param">filters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_director_port_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_director_port_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves list of ports available on RDF_director.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>director_id</strong> – identifier for director e.g. RF-1F – str</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial number for PowerMax array – str</p></li>
+<li><p><strong>filters</strong> – optional filters – dict</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of RDF ports – list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="PyU4V.replication.ReplicationFunctions.get_rdf_group">
 <code class="sig-name descname">get_rdf_group</code><span class="sig-paren">(</span><em class="sig-param">rdf_number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get specific rdf group details.</p>
@@ -4987,6 +5120,26 @@ have not been deleted as they have links.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>device ids – list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.get_rdf_port_remote_connections">
+<code class="sig-name descname">get_rdf_port_remote_connections</code><span class="sig-paren">(</span><em class="sig-param">director_id</em>, <em class="sig-param">port_id</em>, <em class="sig-param">array_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.get_rdf_port_remote_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.get_rdf_port_remote_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a scan of the RDF environment via specified port.</p>
+<p>This function should be run on initial SRDF configuration once zoning
+or IP routing is configured, prior to first RDF group being configured.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>director_id</strong> – identifier for director e.g. RF-1F – str</p></li>
+<li><p><strong>port_id</strong> – port number – int</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial number for Source  – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>remote port details – dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -5194,6 +5347,30 @@ of 3).</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>snapshot details – dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyU4V.replication.ReplicationFunctions.modify_rdf_group">
+<code class="sig-name descname">modify_rdf_group</code><span class="sig-paren">(</span><em class="sig-param">action</em>, <em class="sig-param">srdf_group_number</em>, <em class="sig-param">array_id=None</em>, <em class="sig-param">port_list=None</em>, <em class="sig-param">label=None</em>, <em class="sig-param">dev_list=None</em>, <em class="sig-param">target_rdf_group=None</em>, <em class="sig-param">consistency_exempt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.modify_rdf_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.modify_rdf_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to Modify Ports, devices or change label of RDF group.</p>
+<p>Function can be used to Add ports, move volumes between rdf groups,
+remove ports or rename RDF group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>action</strong> – add_ports, remove_ports, move – str</p></li>
+<li><p><strong>srdf_group_number</strong> – srdf group number
+for action on local array: int</p></li>
+<li><p><strong>array_id</strong> – 12 digit serial of array – str</p></li>
+<li><p><strong>port_list</strong> – list of ports to be added or removed e.g.
+[RF-1E:10, RF-2E:10] –list</p></li>
+<li><p><strong>label</strong> – label for group up to 10 characters – str</p></li>
+<li><p><strong>dev_list</strong> – list of volumes to be moved between RDF groups – list</p></li>
+<li><p><strong>target_srdf_group</strong> – rdfg group to move volumes to – int</p></li>
+<li><p><strong>consistency_exempt</strong> – ignore device for consistency checks – bool</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
