@@ -459,7 +459,7 @@ class CommonFunctions(object):
     @staticmethod
     @decorators.refactoring_notice(
         'CommonFunctions', 'utils.file_handler.read_csv_values', 9.1, 9.3)
-    def read_csv_values(file_name):
+    def read_csv_values(file_name, delimiter=',', quotechar='|'):
         """Read any csv file with headers.
 
         DEPRECATION NOTICE: CommonFunctions.read_csv_values() will be
@@ -472,9 +472,12 @@ class CommonFunctions(object):
         then extract the lists to the variables.
 
         :param file_name: path to the file -- str
+        :param delimiter: delimiter kwarg for csv DictReader object -- str
+        :param quotechar: quotechar kwarg for csv DictReader object -- str
         :returns: file contents -- dict
         """
-        return file_handler.read_csv_values(file_name)
+        return file_handler.read_csv_values(
+            file_name, delimiter=delimiter, quotechar=quotechar)
 
     def get_uni_version(self):
         """Get the unisphere version from the server.

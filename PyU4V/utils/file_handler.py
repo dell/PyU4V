@@ -31,7 +31,7 @@ def create_list_from_file(file_name):
     return list(raw_list)
 
 
-def read_csv_values(file_name, convert=False):
+def read_csv_values(file_name, convert=False, delimiter=',', quotechar='|'):
     """Read any csv file with headers.
 
     You can extract the multiple lists from the headers in the CSV file.
@@ -43,6 +43,8 @@ def read_csv_values(file_name, convert=False):
 
     :param file_name: path to CSV file -- str
     :param convert: convert strings to equivalent data type -- bool
+    :param delimiter: delimiter kwarg for csv DictReader object -- str
+    :param quotechar: quotechar kwarg for csv DictReader object -- str
     :returns: CSV parsed data -- dict
     """
 
@@ -64,7 +66,8 @@ def read_csv_values(file_name, convert=False):
     # open the file in universal line ending mode
     with open(file_name, newline='') as infile:
         # read the file as a dictionary for each row ({header : value})
-        reader = csv.DictReader(infile, delimiter=',', quotechar='|')
+        reader = csv.DictReader(
+            infile, delimiter=delimiter, quotechar=quotechar)
         data = dict()
         for row in reader:
             for header, value in row.items():
@@ -75,17 +78,19 @@ def read_csv_values(file_name, convert=False):
     return data
 
 
-def write_to_csv_file(file_name, data):
+def write_to_csv_file(file_name, data, delimiter=',', quotechar='|'):
     """Write list data to CSV spreadsheet.
 
     :param file_name: name of the file to be written to -- str
     :param data: data to be written to file -- list
+    :param delimiter: delimiter kwarg for csv writer object -- str
+    :param quotechar: quotechar kwarg for csv writer object -- str
     """
     if data:
         with open(bytes(file_name, 'UTF-8'), 'wt', newline='') as csv_file:
             event_writer = csv.writer(csv_file,
-                                      delimiter=',',
-                                      quotechar='|',
+                                      delimiter=delimiter,
+                                      quotechar=quotechar,
                                       quoting=csv.QUOTE_MINIMAL)
             event_writer.writerow(data[0])
             remaining_data = data[1:]
@@ -93,8 +98,8 @@ def write_to_csv_file(file_name, data):
         if remaining_data:
             with open(bytes(file_name, 'UTF-8'), 'a', newline='') as csv_file:
                 event_writer = csv.writer(csv_file,
-                                          delimiter=',',
-                                          quotechar='|',
+                                          delimiter=delimiter,
+                                          quotechar=quotechar,
                                           quoting=csv.QUOTE_MINIMAL)
                 for line in remaining_data:
                     event_writer.writerow(line)
@@ -105,11 +110,14 @@ def write_to_csv_file(file_name, data):
         LOG.error('No data was provided to write to CSV file.')
 
 
-def write_dict_to_csv_file(file_path, dictionary):
+def write_dict_to_csv_file(
+        file_path, dictionary, delimiter=',', quotechar='|'):
     """Write dictionary data to CSV spreadsheet.
 
     :param file_path: path including name of the file to be written to -- str
     :param dictionary: data to be written to file -- dict
+    :param delimiter: delimiter kwarg for csv writer object -- str
+    :param quotechar: quotechar kwarg for csv writer object -- str
     """
     columns = list(dictionary.keys())
     num_values = 0
@@ -126,4 +134,4 @@ def write_dict_to_csv_file(file_path, dictionary):
             csv_line.append(dictionary.get(column)[i])
         data_for_file.append(csv_line)
 
-    write_to_csv_file(file_path, data_for_file)
+    write_to_csv_file(file_path, data_for_file, delimiter, quotechar)

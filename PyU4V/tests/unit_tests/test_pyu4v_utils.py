@@ -262,4 +262,5 @@ class PyU4VUtilsTest(testtools.TestCase):
                         [1, 6], [2, 7], [3, 8], [4, 9], [5, 10]]
         with mock.patch.object(self.file, 'write_to_csv_file') as mck_csv:
             self.file.write_dict_to_csv_file('test.csv', data_dict)
-            mck_csv.assert_called_once_with('test.csv', ref_csv_list)
+            mck_csv.assert_called_once_with(
+                'test.csv', ref_csv_list, ',', '|')
