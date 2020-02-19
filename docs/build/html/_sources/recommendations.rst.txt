@@ -10,7 +10,7 @@ Volume Naming Conventions
 -------------------------
 
 It is strongly recommended that you create a volume with a unique volume_name
-or volume_identifier. When you search for a volume device_id based on it's
+or volume_identifier. When you search for a volume device_id based on its
 volume_name, it is preferable to receive a single device id rather than a list
 of device ids, of which any could be the device that you just created.
 

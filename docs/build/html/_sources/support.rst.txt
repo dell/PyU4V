@@ -1,7 +1,7 @@
 Issues & Support
 ================
 
-We greatly value your feedback! Please file bugs and issues on the Github
+We greatly value your feedback! Please file bugs and issues on the GitHub
 issues_ page for this project.
 
 We aim to track and document everything related to this repo via the issues

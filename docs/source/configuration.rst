@@ -149,7 +149,7 @@ and configuration process are outlined in the table below.
 .. note::
     PyU4V log functionality is run on top of Python's great inbuilt logger. If
     you require in depth descriptions of the PyU4V logger configuration
-    options, the logger sections, or input arguements for the handlers, please
+    options, the logger sections, or input arguments for the handlers, please
     see the official Python Logger documentation here_.
 
 .. URL LINKS
