@@ -1453,6 +1453,11 @@
             <span class="n">rdf_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remote_storage_group_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates management storage group from all devices in SRDF group.</span>
 
+<span class="sd">        Note SRDF management storage group will be created without a service</span>
+<span class="sd">        level, it is assumed that this group is created solely for the purpose</span>
+<span class="sd">        of managing SRDF device and replication state, devices in an SRDF</span>
+<span class="sd">        group may span multiple applications and storage groups.</span>
+
 <span class="sd">        :param storage_group_name: Name of storage group -- str</span>
 <span class="sd">        :param srdf_group_number: number of RDF group volumes are in -- int</span>
 <span class="sd">        :param array_id: number of RDF group volumes are in -- int</span>
@@ -1460,7 +1465,7 @@
 <span class="sd">                         added to the Storage Group. Only needs to be populated</span>
 <span class="sd">                         if the SRDF group contains both RDF1 and RDF2 volumes</span>
 <span class="sd">                         valid values RDF1 or RDF2 -- str</span>
-<span class="sd">        :param remote_storage_group_name: ame of remote storage group -- str</span>
+<span class="sd">        :param remote_storage_group_name: Name of remote storage group -- str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">array_id</span><span class="p">:</span>
             <span class="n">array_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span>

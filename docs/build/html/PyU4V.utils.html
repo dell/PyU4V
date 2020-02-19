@@ -377,7 +377,7 @@
 
 <dl class="function">
 <dt id="PyU4V.utils.file_handler.read_csv_values">
-<code class="sig-prename descclassname">PyU4V.utils.file_handler.</code><code class="sig-name descname">read_csv_values</code><span class="sig-paren">(</span><em class="sig-param">file_name</em>, <em class="sig-param">convert=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/utils/file_handler.html#read_csv_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.file_handler.read_csv_values" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">PyU4V.utils.file_handler.</code><code class="sig-name descname">read_csv_values</code><span class="sig-paren">(</span><em class="sig-param">file_name</em>, <em class="sig-param">convert=False</em>, <em class="sig-param">delimiter='</em>, <em class="sig-param">'</em>, <em class="sig-param">quotechar='|'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/utils/file_handler.html#read_csv_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.file_handler.read_csv_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read any csv file with headers.</p>
 <p>You can extract the multiple lists from the headers in the CSV file.
 In your own script, call this function and assign to data variable,
@@ -390,6 +390,8 @@ policy_list = data[‘policy’]</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_name</strong> – path to CSV file – str</p></li>
 <li><p><strong>convert</strong> – convert strings to equivalent data type – bool</p></li>
+<li><p><strong>delimiter</strong> – delimiter kwarg for csv DictReader object – str</p></li>
+<li><p><strong>quotechar</strong> – quotechar kwarg for csv DictReader object – str</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -400,13 +402,15 @@ policy_list = data[‘policy’]</p>
 
 <dl class="function">
 <dt id="PyU4V.utils.file_handler.write_dict_to_csv_file">
-<code class="sig-prename descclassname">PyU4V.utils.file_handler.</code><code class="sig-name descname">write_dict_to_csv_file</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">dictionary</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/utils/file_handler.html#write_dict_to_csv_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.file_handler.write_dict_to_csv_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">PyU4V.utils.file_handler.</code><code class="sig-name descname">write_dict_to_csv_file</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">dictionary</em>, <em class="sig-param">delimiter='</em>, <em class="sig-param">'</em>, <em class="sig-param">quotechar='|'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/utils/file_handler.html#write_dict_to_csv_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.file_handler.write_dict_to_csv_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write dictionary data to CSV spreadsheet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_path</strong> – path including name of the file to be written to – str</p></li>
 <li><p><strong>dictionary</strong> – data to be written to file – dict</p></li>
+<li><p><strong>delimiter</strong> – delimiter kwarg for csv writer object – str</p></li>
+<li><p><strong>quotechar</strong> – quotechar kwarg for csv writer object – str</p></li>
 </ul>
 </dd>
 </dl>
@@ -414,13 +418,15 @@ policy_list = data[‘policy’]</p>
 
 <dl class="function">
 <dt id="PyU4V.utils.file_handler.write_to_csv_file">
-<code class="sig-prename descclassname">PyU4V.utils.file_handler.</code><code class="sig-name descname">write_to_csv_file</code><span class="sig-paren">(</span><em class="sig-param">file_name</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/utils/file_handler.html#write_to_csv_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.file_handler.write_to_csv_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">PyU4V.utils.file_handler.</code><code class="sig-name descname">write_to_csv_file</code><span class="sig-paren">(</span><em class="sig-param">file_name</em>, <em class="sig-param">data</em>, <em class="sig-param">delimiter='</em>, <em class="sig-param">'</em>, <em class="sig-param">quotechar='|'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/utils/file_handler.html#write_to_csv_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.utils.file_handler.write_to_csv_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write list data to CSV spreadsheet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_name</strong> – name of the file to be written to – str</p></li>
 <li><p><strong>data</strong> – data to be written to file – list</p></li>
+<li><p><strong>delimiter</strong> – delimiter kwarg for csv writer object – str</p></li>
+<li><p><strong>quotechar</strong> – quotechar kwarg for csv writer object – str</p></li>
 </ul>
 </dd>
 </dl>

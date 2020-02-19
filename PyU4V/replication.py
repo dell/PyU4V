@@ -1295,6 +1295,11 @@ class ReplicationFunctions(object):
             rdf_type=None, remote_storage_group_name=None):
         """Creates management storage group from all devices in SRDF group.
 
+        Note SRDF management storage group will be created without a service
+        level, it is assumed that this group is created solely for the purpose
+        of managing SRDF device and replication state, devices in an SRDF
+        group may span multiple applications and storage groups.
+
         :param storage_group_name: Name of storage group -- str
         :param srdf_group_number: number of RDF group volumes are in -- int
         :param array_id: number of RDF group volumes are in -- int
@@ -1302,7 +1307,7 @@ class ReplicationFunctions(object):
                          added to the Storage Group. Only needs to be populated
                          if the SRDF group contains both RDF1 and RDF2 volumes
                          valid values RDF1 or RDF2 -- str
-        :param remote_storage_group_name: ame of remote storage group -- str
+        :param remote_storage_group_name: Name of remote storage group -- str
         """
         if not array_id:
             array_id = self.array_id

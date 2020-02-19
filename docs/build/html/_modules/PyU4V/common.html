@@ -617,7 +617,7 @@
     <span class="nd">@staticmethod</span>
     <span class="nd">@decorators</span><span class="o">.</span><span class="n">refactoring_notice</span><span class="p">(</span>
         <span class="s1">&#39;CommonFunctions&#39;</span><span class="p">,</span> <span class="s1">&#39;utils.file_handler.read_csv_values&#39;</span><span class="p">,</span> <span class="mf">9.1</span><span class="p">,</span> <span class="mf">9.3</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Read any csv file with headers.</span>
 
 <span class="sd">        DEPRECATION NOTICE: CommonFunctions.read_csv_values() will be</span>
@@ -630,9 +630,12 @@
 <span class="sd">        then extract the lists to the variables.</span>
 
 <span class="sd">        :param file_name: path to the file -- str</span>
+<span class="sd">        :param delimiter: delimiter kwarg for csv DictReader object -- str</span>
+<span class="sd">        :param quotechar: quotechar kwarg for csv DictReader object -- str</span>
 <span class="sd">        :returns: file contents -- dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">read_csv_values</span><span class="p">(</span>
+            <span class="n">file_name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CommonFunctions.get_uni_version"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.common.CommonFunctions.get_uni_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_uni_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the unisphere version from the server.</span>

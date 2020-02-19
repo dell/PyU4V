@@ -4751,6 +4751,10 @@ api connection will be default – str</p></li>
 <dt id="PyU4V.replication.ReplicationFunctions.create_storage_group_from_rdfg">
 <code class="sig-name descname">create_storage_group_from_rdfg</code><span class="sig-paren">(</span><em class="sig-param">storage_group_name</em>, <em class="sig-param">srdf_group_number</em>, <em class="sig-param">array_id=None</em>, <em class="sig-param">rdf_type=None</em>, <em class="sig-param">remote_storage_group_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyU4V/replication.html#ReplicationFunctions.create_storage_group_from_rdfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyU4V.replication.ReplicationFunctions.create_storage_group_from_rdfg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates management storage group from all devices in SRDF group.</p>
+<p>Note SRDF management storage group will be created without a service
+level, it is assumed that this group is created solely for the purpose
+of managing SRDF device and replication state, devices in an SRDF
+group may span multiple applications and storage groups.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -4761,7 +4765,7 @@ api connection will be default – str</p></li>
 added to the Storage Group. Only needs to be populated
 if the SRDF group contains both RDF1 and RDF2 volumes
 valid values RDF1 or RDF2 – str</p></li>
-<li><p><strong>remote_storage_group_name</strong> – ame of remote storage group – str</p></li>
+<li><p><strong>remote_storage_group_name</strong> – Name of remote storage group – str</p></li>
 </ul>
 </dd>
 </dl>

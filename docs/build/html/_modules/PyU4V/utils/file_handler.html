@@ -189,7 +189,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_list</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="read_csv_values"><a class="viewcode-back" href="../../../PyU4V.utils.html#PyU4V.utils.file_handler.read_csv_values">[docs]</a><span class="k">def</span> <span class="nf">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">convert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="read_csv_values"><a class="viewcode-back" href="../../../PyU4V.utils.html#PyU4V.utils.file_handler.read_csv_values">[docs]</a><span class="k">def</span> <span class="nf">read_csv_values</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">convert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read any csv file with headers.</span>
 
 <span class="sd">    You can extract the multiple lists from the headers in the CSV file.</span>
@@ -201,6 +201,8 @@
 
 <span class="sd">    :param file_name: path to CSV file -- str</span>
 <span class="sd">    :param convert: convert strings to equivalent data type -- bool</span>
+<span class="sd">    :param delimiter: delimiter kwarg for csv DictReader object -- str</span>
+<span class="sd">    :param quotechar: quotechar kwarg for csv DictReader object -- str</span>
 <span class="sd">    :returns: CSV parsed data -- dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -222,7 +224,8 @@
     <span class="c1"># open the file in universal line ending mode</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
         <span class="c1"># read the file as a dictionary for each row ({header : value})</span>
-        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span>
+            <span class="n">infile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -233,17 +236,19 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="write_to_csv_file"><a class="viewcode-back" href="../../../PyU4V.utils.html#PyU4V.utils.file_handler.write_to_csv_file">[docs]</a><span class="k">def</span> <span class="nf">write_to_csv_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="write_to_csv_file"><a class="viewcode-back" href="../../../PyU4V.utils.html#PyU4V.utils.file_handler.write_to_csv_file">[docs]</a><span class="k">def</span> <span class="nf">write_to_csv_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write list data to CSV spreadsheet.</span>
 
 <span class="sd">    :param file_name: name of the file to be written to -- str</span>
 <span class="sd">    :param data: data to be written to file -- list</span>
+<span class="sd">    :param delimiter: delimiter kwarg for csv writer object -- str</span>
+<span class="sd">    :param quotechar: quotechar kwarg for csv writer object -- str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;UTF-8&#39;</span><span class="p">),</span> <span class="s1">&#39;wt&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
             <span class="n">event_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span>
-                                      <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span>
-                                      <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span>
+                                      <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
+                                      <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">,</span>
                                       <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_MINIMAL</span><span class="p">)</span>
             <span class="n">event_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">remaining_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -251,8 +256,8 @@
         <span class="k">if</span> <span class="n">remaining_data</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;UTF-8&#39;</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
                 <span class="n">event_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span>
-                                          <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span>
-                                          <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span>
+                                          <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
+                                          <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">,</span>
                                           <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_MINIMAL</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">remaining_data</span><span class="p">:</span>
                     <span class="n">event_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -263,11 +268,14 @@
         <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No data was provided to write to CSV file.&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_dict_to_csv_file"><a class="viewcode-back" href="../../../PyU4V.utils.html#PyU4V.utils.file_handler.write_dict_to_csv_file">[docs]</a><span class="k">def</span> <span class="nf">write_dict_to_csv_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
+<div class="viewcode-block" id="write_dict_to_csv_file"><a class="viewcode-back" href="../../../PyU4V.utils.html#PyU4V.utils.file_handler.write_dict_to_csv_file">[docs]</a><span class="k">def</span> <span class="nf">write_dict_to_csv_file</span><span class="p">(</span>
+        <span class="n">file_path</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write dictionary data to CSV spreadsheet.</span>
 
 <span class="sd">    :param file_path: path including name of the file to be written to -- str</span>
 <span class="sd">    :param dictionary: data to be written to file -- dict</span>
+<span class="sd">    :param delimiter: delimiter kwarg for csv writer object -- str</span>
+<span class="sd">    :param quotechar: quotechar kwarg for csv writer object -- str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">num_values</span> <span class="o">=</span> <span class="mi">0</span>
@@ -284,7 +292,7 @@
             <span class="n">csv_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dictionary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">column</span><span class="p">)[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">data_for_file</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">csv_line</span><span class="p">)</span>
 
-    <span class="n">write_to_csv_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data_for_file</span><span class="p">)</span></div>
+    <span class="n">write_to_csv_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data_for_file</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">,</span> <span class="n">quotechar</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
