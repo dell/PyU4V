@@ -46,6 +46,10 @@ SNAPSHOT = constants.SNAPSHOT
 GENERATION = constants.GENERATION
 RDFG = constants.RDFG
 VOLUME = constants.VOLUME
+RDF_DIRECTOR = constants.RDF_DIRECTOR
+PORT = constants.PORT
+REMOTE_PORT = constants.REMOTE_PORT
+RDF_GROUP = constants.RDF_GROUP
 
 
 class ReplicationFunctions(object):
@@ -1062,3 +1066,265 @@ class ReplicationFunctions(object):
                 resource_level=SYMMETRIX, resource_level_id=self.array_id,
                 resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
                 resource=RDFG, resource_id=srdfg)
+
+    def get_rdf_director_list(self, array_id=None, filters=None):
+        """Finds out directors configured for SRDF on the specified array.
+
+        :param array_id: 12 digit serial number for PowerMax array -- str
+        :param filters: optional filters - dict
+        :returns: list of directors -- list
+        """
+        if not array_id:
+            array_id = self.array_id
+        response = self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=RDF_DIRECTOR, params=filters)
+        director_list = (
+            response.get('directorId', list()) if response else list())
+        return director_list
+
+    def get_rdf_director_detail(self, director_id, array_id=None):
+        """Retrieves details for specified RDF_director.
+
+        :param director_id: identifier for director e.g. RF-1F -- str
+        :param array_id: 12 digit serial number for PowerMax array -- str
+        :returns: director details --dict
+        """
+        if not array_id:
+            array_id = self.array_id
+        return self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=RDF_DIRECTOR, resource_type_id=director_id)
+
+    def get_rdf_director_port_list(self, director_id, array_id=None,
+                                   filters=None):
+        """Retrieves list of ports available on RDF_director.
+
+        :param director_id: identifier for director e.g. RF-1F -- str
+        :param array_id: 12 digit serial number for PowerMax array -- str
+        :param filters: optional filters -- dict
+        :returns: list of RDF ports -- list
+        """
+        if not array_id:
+            array_id = self.array_id
+        response = self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=RDF_DIRECTOR, resource_type_id=director_id,
+            resource=PORT, params=filters)
+        port_list = (
+            response.get('portNumber', list()) if response else list())
+        return port_list
+
+    def get_rdf_director_port_details(self, director_id, port_id,
+                                      array_id=None):
+        """Retrieves details of specified RDF ports.
+
+        :param director_id: identifier for director e.g. RF-1F -- str
+        :param port_id: port number -- int
+        :param array_id: 12 digit serial number for  PowerMax array -- str
+        :returns: port details -- dict
+        """
+        if not array_id:
+            array_id = self.array_id
+        return self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=RDF_DIRECTOR, resource_type_id=director_id,
+            resource=PORT, resource_id=port_id)
+
+    def get_rdf_port_remote_connections(self, director_id, port_id,
+                                        array_id=None):
+        """Performs a scan of the RDF environment via specified port.
+
+        This function should be run on initial SRDF configuration once zoning
+        or IP routing is configured, prior to first RDF group being configured.
+
+        :param director_id: identifier for director e.g. RF-1F -- str
+        :param port_id: port number -- int
+        :param array_id: 12 digit serial number for Source  -- str
+        :returns: remote port details -- dict
+        """
+
+        if not array_id:
+            array_id = self.array_id
+        return self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=RDF_DIRECTOR, resource_type_id=director_id,
+            resource=PORT, resource_id=port_id, object_type=REMOTE_PORT)
+
+    def create_rdf_group(self, local_director_port_list, remote_array_id,
+                         label, local_rdfg_number, remote_rdfg_number,
+                         remote_director_port_list, array_id=None):
+        """Create a new RDF group between directors and ports on two PowerMax.
+
+        If this is the first connection between 2 arrays please ensure that you
+        run get_rdf_remote_port_details and create the initial connection
+        group using only the first source port you can extract details for one
+        or more remote ports for the desired target array and feed into this
+        function. Additional Ports can be added with modify_rdf_group function.
+
+        :param local_director_port_list: list of local directors and ports for
+                                         group e.g [RF-1E:1, RF-2E:1] -- list
+        :param remote_array_id: 12 digit serial number of remote array  -- str
+        :param label: label for group up to 10 characters -- str
+        :param local_rdfg_number: rdfg for the local array -- int
+        :param remote_rdfg_number: rdfg for the remote array -- int
+        :param remote_director_port_list: list of remote directors and ports
+                                          to group e.g [RF-1E:1, RF-2E:1]
+                                          -- list
+        :param array_id: 12 digit serial number of Source (R1) array,
+                         if no array is specified the array in config file or
+                         api connection will be default -- str
+        """
+        if not array_id:
+            array_id = self.array_id
+        local_ports = []
+        remote_ports = []
+        for port in local_director_port_list:
+            dir_id = port.split(':')[0]
+            port_no = port.split(':')[1]
+            local_ports.append({'symmetrixID': array_id,
+                                'directorId': dir_id,
+                                'portNumber': port_no})
+        for port in remote_director_port_list:
+            dir_id = port.split(':')[0]
+            port_no = port.split(':')[1]
+            remote_ports.append({'symmetrixID': remote_array_id,
+                                 'directorId': dir_id, 'portNumber': port_no})
+
+        payload = {
+            'local_ports': local_ports,
+            'remote_rdfg_number': remote_rdfg_number,
+            'remote_ports': remote_ports,
+            'label': label,
+            'local_rdfg_number': local_rdfg_number}
+
+        self.create_resource(category=REPLICATION,
+                             resource_level=SYMMETRIX,
+                             resource_level_id=array_id,
+                             resource_type=RDF_GROUP, payload=payload)
+
+    def modify_rdf_group(self, action, srdf_group_number, array_id=None,
+                         port_list=None, label=None, dev_list=None,
+                         target_rdf_group=None, consistency_exempt=None):
+        """Function to Modify Ports, devices or change label of RDF group.
+
+        Function can be used to Add ports, move volumes between rdf groups,
+        remove ports or rename RDF group.
+
+        :param action: add_ports, remove_ports, move -- str
+        :param srdf_group_number: srdf group number
+                                  for action on local array: int
+        :param array_id: 12 digit serial of array -- str
+        :param port_list: list of ports to be added or removed e.g.
+                          [RF-1E:10, RF-2E:10] --list
+        :param label: label for group up to 10 characters -- str
+        :param dev_list: list of volumes to be moved between RDF groups -- list
+        :param target_srdf_group: rdfg group to move volumes to -- int
+        :param consistency_exempt: ignore device for consistency checks -- bool
+        """
+
+        rdfg_action = constants.RDFG_ACTIONS.get(action.upper())
+
+        if not rdfg_action:
+            msg = ('RDFG Action must be one [add_ports, remove_ports, move, '
+                   'set_label]')
+            LOG.exception(msg)
+            raise exception.VolumeBackendAPIException(data=msg)
+        if not array_id:
+            array_id = self.array_id
+        if rdfg_action == 'Move':
+            if not consistency_exempt:
+                consistency_exempt = False
+            payload = {
+                'move': {
+                    'targetRdfGroup': target_rdf_group,
+                    'volumesToMove': dev_list,
+                    'exempt': consistency_exempt},
+                'action': 'Move'}
+
+        elif rdfg_action == 'set_label':
+            payload = {
+                "set_label": {
+                    "label": label},
+                "action": "set_label"}
+
+        elif rdfg_action in ['add_ports', 'remove_ports']:
+            if not port_list:
+                msg = ('list of ports must be supplied when adding or '
+                       'removing ports from RDFG e.g. [RF-1E:10, RF-2E:10]')
+                LOG.exception(msg)
+                raise exception.InvalidInputException(data=msg)
+            port_payload = []
+            for port in port_list:
+                dir_id, port_no = port.split(':')
+                port_payload.append(
+                    {'symmetrixID': array_id,
+                     'directorId': dir_id,
+                     'portNumber': port_no})
+                payload = {'action': rdfg_action,
+                           rdfg_action: {
+                               'ports': port_payload}}
+
+        self.modify_resource(
+            category=REPLICATION, resource_level=SYMMETRIX,
+            resource_level_id=array_id, resource_type=RDF_GROUP,
+            resource_type_id=srdf_group_number, payload=payload)
+
+    def delete_rdf_group(self, srdf_group_number, array_id=None):
+        """Function to Delete SRDF groups between VMAX or PowerMax arrays.
+
+        :param srdf_group_number: number of RDF group to be deleted -- int
+        :param array_id: 12 digit serial of array -- str
+        """
+
+        if not array_id:
+            array_id = self.array_id
+
+        self.delete_resource(
+            category=REPLICATION, resource_level=SYMMETRIX,
+            resource_level_id=array_id, resource_type=RDF_GROUP,
+            resource_type_id=srdf_group_number)
+
+    def create_storage_group_from_rdfg(
+            self, storage_group_name, srdf_group_number, array_id=None,
+            rdf_type=None, remote_storage_group_name=None):
+        """Creates management storage group from all devices in SRDF group.
+
+        Note SRDF management storage group will be created without a service
+        level, it is assumed that this group is created solely for the purpose
+        of managing SRDF device and replication state, devices in an SRDF
+        group may span multiple applications and storage groups.
+
+        :param storage_group_name: Name of storage group -- str
+        :param srdf_group_number: number of RDF group volumes are in -- int
+        :param array_id: number of RDF group volumes are in -- int
+        :param rdf_type: The SRDF type of the volumes in the SRDF group to be
+                         added to the Storage Group. Only needs to be populated
+                         if the SRDF group contains both RDF1 and RDF2 volumes
+                         valid values RDF1 or RDF2 -- str
+        :param remote_storage_group_name: Name of remote storage group -- str
+        """
+        if not array_id:
+            array_id = self.array_id
+
+        create_sg_payload = {
+            'rdf_group_number': srdf_group_number}
+        payload = {
+            'create_sg_from_rdfg': create_sg_payload,
+            'storage_group_name': storage_group_name,
+            'action': 'CreateSgFromRdfg'}
+        if rdf_type:
+            create_sg_payload.update({'rdf_type': rdf_type})
+        if remote_storage_group_name:
+            create_sg_payload.update(
+                {'remote_storage_group_name': remote_storage_group_name})
+
+        self.create_resource(
+            category=REPLICATION, resource_level=SYMMETRIX,
+            resource_level_id=array_id, resource_type=STORAGEGROUP,
+            payload=payload)

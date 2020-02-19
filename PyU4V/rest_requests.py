@@ -51,7 +51,7 @@ class RestRequests(object):
         self.headers = {'content-type': 'application/json',
                         'accept': 'application/json',
                         'user-agent': ua_details,
-                        'application_type': application_type}
+                        'application-type': application_type}
         self.timeout = 120
         self.interval = interval
         self.retries = retries

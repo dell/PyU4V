@@ -486,3 +486,97 @@ class PyU4VReplicationTest(testtools.TestCase):
                 resource_type='storagegroup',
                 resource_type_id=self.data.storagegroup_name,
                 resource='rdf_group', resource_id=self.data.rdf_group_no)
+
+    def test_create_rdf_group(self):
+        """Test create_rdf_group."""
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_rdf_group(
+                local_director_port_list=self.data.local_rdf_ports,
+                local_rdfg_number=1,
+                remote_array_id=self.data.remote_array, remote_rdfg_number=1,
+                remote_director_port_list=self.data.remote_rdf_ports,
+                label='test')
+            mock_create.assert_called_once()
+
+    def test_modify_rdf_group_remove_port(self):
+        """Test modify_rdf_group removing an RDF port."""
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.modify_rdf_group(
+                action='remove_ports', srdf_group_number=1,
+                port_list=['RF-1E:1'])
+            mock_mod.assert_called_once()
+
+    def test_modify_rdf_group_add_port(self):
+        """Test modify_rdf_group adding an RDF port."""
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.modify_rdf_group(
+                action='remove_ports', srdf_group_number=1,
+                port_list=['RF-1E:1'])
+            mock_mod.assert_called_once()
+
+    def test_modify_rdf_group_set_label(self):
+        """Test modify_rdf_group changing label."""
+        with mock.patch.object(
+                self.replication, 'modify_resource') as mock_mod:
+            self.replication.modify_rdf_group(
+                action='set_label', srdf_group_number=1,
+                label='new_label')
+            mock_mod.assert_called_once()
+
+    def test_delete_rdf_group(self):
+        """Test delete_rdf_group."""
+        with mock.patch.object(
+                self.replication, 'delete_resource') as mock_delete:
+            self.replication.delete_rdf_group(srdf_group_number=1)
+            mock_delete.assert_called_once()
+
+    @mock.patch.object(common.CommonFunctions, 'get_request',
+                       return_value=pcd.CommonData.remote_port_details)
+    def test_get_rdf_port_remote_connections(self, mck_get):
+        """Test get_rdf_port_remote_connections."""
+        remote_port_details = self.replication.get_rdf_port_remote_connections(
+            director_id='RF-1D', port_id=4)
+        self.assertEqual(pcd.CommonData.remote_port_details,
+                         remote_port_details)
+
+    @mock.patch.object(common.CommonFunctions, 'get_request',
+                       return_value=pcd.CommonData.rdf_dir_port_detail)
+    def test_get_rdf_director_port_details(self, mck_get):
+        """Test get_rdf_director_port_details."""
+        rdf_dir_port_details = self.replication.get_rdf_director_port_details(
+            director_id='RF-1', port_id='4')
+        self.assertEqual(pcd.CommonData.rdf_dir_port_detail,
+                         rdf_dir_port_details)
+
+    def test_get_rdf_director_port_list(self):
+        """Test get_rdf_director_port_list."""
+        rdf_dir_ports = self.replication.get_rdf_director_port_list(
+            director_id="RF-1F")
+        self.assertIsInstance(rdf_dir_ports, list)
+
+    def test_get_rdf_director_list(self):
+        """Test get_rdf_director_list."""
+        rdf_dir_list = self.replication.get_rdf_director_list()
+        self.assertIsInstance(rdf_dir_list, list)
+
+    @mock.patch.object(common.CommonFunctions, 'get_request',
+                       return_value=pcd.CommonData.rdf_dir_detail)
+    def test_get_rdf_director_detail(self, mck_get):
+        """Test get_rdf_director_detail."""
+        rdf_detail = self.replication.get_rdf_director_detail(
+            director_id='RF-1F')
+        self.assertEqual(self.data.rdf_dir_detail, rdf_detail)
+
+    def test_create_storage_group_from_rdfg(self):
+        """Test create_storage_group_from_rdfg."""
+        with mock.patch.object(
+                self.replication, 'create_resource') as mock_create:
+            self.replication.create_storage_group_from_rdfg(
+                storage_group_name=self.data.storagegroup_name,
+                srdf_group_number=1,
+                rdf_type='RDF1',
+                remote_storage_group_name=self.data.storagegroup_name)
+            mock_create.assert_called_once()
