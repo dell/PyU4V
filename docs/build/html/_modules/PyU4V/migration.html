@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyU4V.migration &mdash; PyU4V 9.1.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> PyU4V
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recommendations.html">PyU4V Usage Recommendations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute to PyU4V</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../support.html">Issues &amp; Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../programmers_guide.html">Programmers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Tools Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">API Index</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyU4V</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PyU4V.migration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for PyU4V.migration</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2019 Dell Inc. or its subsidiaries.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#        http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="sd">&quot;&quot;&quot;migration.py.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">PyU4V.common</span> <span class="kn">import</span> <span class="n">CommonFunctions</span>
+<span class="kn">from</span> <span class="nn">PyU4V.utils</span> <span class="kn">import</span> <span class="n">constants</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Resource constants</span>
+<span class="n">ASYNC_UPDATE</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">ASYNC_UPDATE</span>
+<span class="n">MIGRATION</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">MIGRATION</span>
+<span class="n">SYMMETRIX</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SYMMETRIX</span>
+<span class="n">ENVIRONMENT</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">ENVIRONMENT</span>
+<span class="n">CAPABILITIES</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAPABILITIES</span>
+<span class="n">STORAGEGROUP</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">STORAGEGROUP</span>
+
+
+<div class="viewcode-block" id="MigrationFunctions"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions">[docs]</a><span class="k">class</span> <span class="nc">MigrationFunctions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MigrationFunctions.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_id</span><span class="p">,</span> <span class="n">rest_client</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;__init__.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">=</span> <span class="n">CommonFunctions</span><span class="p">(</span><span class="n">rest_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span> <span class="o">=</span> <span class="n">array_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">get_resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">create_resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modify_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">modify_resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">delete_resource</span>
+
+<div class="viewcode-block" id="MigrationFunctions.get_migration_info"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_migration_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_migration_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return migration information for an array.</span>
+
+<span class="sd">        :returns: migration info -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.create_migration_environment"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.create_migration_environment">[docs]</a>    <span class="k">def</span> <span class="nf">create_migration_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_array_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new migration environment between two arrays.</span>
+
+<span class="sd">        Creates a new migration environment between two arrays for use</span>
+<span class="sd">        with non disruptive migrations</span>
+
+<span class="sd">        :param target_array_id: target array id -- str</span>
+<span class="sd">        :returns: migration environment info -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;otherArrayId&#39;</span><span class="p">:</span> <span class="n">target_array_id</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.delete_migration_environment"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.delete_migration_environment">[docs]</a>    <span class="k">def</span> <span class="nf">delete_migration_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_array_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete migration environment.</span>
+
+<span class="sd">        Given a target array will delete migration environment, used once</span>
+<span class="sd">        all migrations are complete</span>
+
+<span class="sd">        :param target_array_id: target array id -- str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">ENVIRONMENT</span><span class="p">,</span> <span class="n">resource_type_id</span><span class="o">=</span><span class="n">target_array_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.get_array_migration_capabilities"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_array_migration_capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">get_array_migration_capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check what migration facilities are available.</span>
+
+<span class="sd">        :returns: array capabilities -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span> <span class="n">resource_level</span><span class="o">=</span><span class="n">CAPABILITIES</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">)</span>
+        <span class="n">symm_list</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">capabilities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;storageArrayCapability&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">())</span> <span class="k">if</span> <span class="n">capabilities</span> <span class="k">else</span> <span class="nb">list</span><span class="p">())</span>
+        <span class="n">array_capabilities</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">symm</span> <span class="ow">in</span> <span class="n">symm_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">symm</span><span class="p">[</span><span class="s1">&#39;arrayId&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">:</span>
+                <span class="n">array_capabilities</span> <span class="o">=</span> <span class="n">symm</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">array_capabilities</span></div>
+
+    <span class="c1"># Environment endpoints</span>
+<div class="viewcode-block" id="MigrationFunctions.get_environment_list"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_environment_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_environment_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get list of all migration environments.</span>
+
+<span class="sd">        :returns: environments -- list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">ENVIRONMENT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;arrayId&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">())</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="nb">list</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.get_environment"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_environment">[docs]</a>    <span class="k">def</span> <span class="nf">get_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_array_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a name, return migration environment details.</span>
+
+<span class="sd">        :param target_array_id: target array id -- str</span>
+<span class="sd">        :returns: environment details -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">ENVIRONMENT</span><span class="p">,</span> <span class="n">resource_type_id</span><span class="o">=</span><span class="n">target_array_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.get_storage_group_list"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_storage_group_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_group_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_migrations</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get list of all storage groups or migrating storage groups.</span>
+
+<span class="sd">        :param include_migrations: return only SGs with migration</span>
+<span class="sd">                                   sessions -- bool</span>
+<span class="sd">        :returns: storage groups or migrating storage groups -- list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">STORAGEGROUP</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;migratingName&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">include_migrations</span> <span class="k">else</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.get_storage_groups"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_storage_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all storage groups and migrating storage groups.</span>
+
+<span class="sd">        :returns: storage groups and migrating storage groups -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">STORAGEGROUP</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.get_storage_group"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.get_storage_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a name, return storage group migrations details.</span>
+
+<span class="sd">        :param storage_group_name: storage group id -- str</span>
+<span class="sd">        :returns: storage group details -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">STORAGEGROUP</span><span class="p">,</span> <span class="n">resource_type_id</span><span class="o">=</span><span class="n">storage_group_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.create_storage_group_migration"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.create_storage_group_migration">[docs]</a>    <span class="k">def</span> <span class="nf">create_storage_group_migration</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">,</span> <span class="n">target_array_id</span><span class="p">,</span> <span class="n">srp_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">port_group_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pre_copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a migration session for a storage group.</span>
+
+<span class="sd">        :param storage_group_name: storage group id -- str</span>
+<span class="sd">        :param target_array_id: target array id -- str</span>
+<span class="sd">        :param srp_id: storage resource pool id -- str</span>
+<span class="sd">        :param port_group_id: port group id -- str</span>
+<span class="sd">        :param no_compression: dont use compression -- bool</span>
+<span class="sd">        :param pre_copy: use pre copy -- bool</span>
+<span class="sd">        :param validate: validate -- bool</span>
+<span class="sd">        :returns: new storage group -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;otherArrayId&#39;</span><span class="p">:</span> <span class="n">target_array_id</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">srp_id</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;srpId&#39;</span><span class="p">:</span> <span class="n">srp_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">port_group_id</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;portGroupId&#39;</span><span class="p">:</span> <span class="n">port_group_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">no_compression</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;noCompression&#39;</span><span class="p">:</span> <span class="n">no_compression</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">pre_copy</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;preCopy&#39;</span><span class="p">:</span> <span class="n">pre_copy</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;validate&#39;</span><span class="p">:</span> <span class="n">validate</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">STORAGEGROUP</span><span class="p">,</span> <span class="n">resource_type_id</span><span class="o">=</span><span class="n">storage_group_name</span><span class="p">,</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.modify_storage_group_migration"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.modify_storage_group_migration">[docs]</a>    <span class="k">def</span> <span class="nf">modify_storage_group_migration</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Modify the state of a storage group&#39;s migration session.</span>
+
+<span class="sd">        Valid migrations options are &#39;Cutover&#39;, &#39;Sync&#39;, &#39;Commit&#39;, &#39;Recover&#39;,</span>
+<span class="sd">        and &#39;ReadyTgt&#39;.</span>
+
+<span class="sd">        :param storage_group_name: storage group id -- str</span>
+<span class="sd">        :param action: migration action -- str</span>
+<span class="sd">        :param options: migration options, example:</span>
+<span class="sd">                        {cutover&#39;: {&#39;force&#39;: True}} -- dict</span>
+<span class="sd">        :param _async: if call should be async -- bool</span>
+<span class="sd">        :returns: modified storage group info -- dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ASYNC_UPDATE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modify_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">STORAGEGROUP</span><span class="p">,</span> <span class="n">resource_type_id</span><span class="o">=</span><span class="n">storage_group_name</span><span class="p">,</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MigrationFunctions.delete_storage_group_migration"><a class="viewcode-back" href="../../PyU4V.html#PyU4V.migration.MigrationFunctions.delete_storage_group_migration">[docs]</a>    <span class="k">def</span> <span class="nf">delete_storage_group_migration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_group_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a name, delete the storage group migration session.</span>
+
+<span class="sd">        :param storage_group_name: storage group id -- str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_resource</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">MIGRATION</span><span class="p">,</span>
+            <span class="n">resource_level</span><span class="o">=</span><span class="n">SYMMETRIX</span><span class="p">,</span> <span class="n">resource_level_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_id</span><span class="p">,</span>
+            <span class="n">resource_type</span><span class="o">=</span><span class="n">STORAGEGROUP</span><span class="p">,</span> <span class="n">resource_type_id</span><span class="o">=</span><span class="n">storage_group_name</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019 Dell Inc. or its subsidiaries.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
