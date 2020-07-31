@@ -66,14 +66,14 @@ Alternative PyU4V.conf Load Using U4VConn().file_path
 -----------------------------------------------------
 
 It is also possible to override ``PyU4V.conf`` in both the working directory
-and home directory by specifying ``U4VConn.file_path='/path/to/PyU4V.conf'``
-before initialising PyU4V.
+and home directory by specifying
+``univmax_conn.file_path='/path/to/PyU4V.conf'`` before initialising PyU4V.
 
 .. code-block:: Python
 
     import PyU4V
 
-    PyU4V.U4VConn.file_path = '~/path/to/PyU4V.conf'
+    PyU4V.univmax_conn.file_path = '~/path/to/PyU4V.conf'
     # Instantiate U4VConn() using the PyU4V config file specified in file_path
     conn = U4VConn()
 
@@ -111,7 +111,7 @@ setting PyU4V environment configuration have a load precedence, these are
 listed in order with number 1 being the first load precedent:
 
 1. Configuration key/values passed directly to ``U4VConn()``
-2. ``PyU4V.conf`` as specified in ``U4VConn.file_path``
+2. ``PyU4V.conf`` as specified in ``univmax_conn.file_path``
 3. ``PyU4V.conf`` in current working directory
 4. ``PyU4V.conf`` in current users home directory
 5. If none of the above or missing mandatory options raise

@@ -19,15 +19,16 @@ Test file for migrate.py and migrate_utils.py
 """
 import platform
 
-from . import pyu4v_common_data as pcd  # noqa: H304
-from . import pyu4v_fakes as pf  # noqa: H304
+from unittest import mock
+
 from PyU4V import provisioning
 from PyU4V import rest_requests
+from PyU4V.tests.unit_tests import pyu4v_common_data as pcd  # noqa: H304
+from PyU4V.tests.unit_tests import pyu4v_fakes as pf  # noqa: H304
 from PyU4V.tools.openstack import migrate_utils
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
 
-import mock
 import testtools
 
 

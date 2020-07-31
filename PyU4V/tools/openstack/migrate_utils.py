@@ -63,12 +63,12 @@ class MigrateUtils(object):
         :returns: boolean
         """
         if option == 'Y':
-            return True if txt_str.lower() in YES_CONSTANTS else False
+            return txt_str.lower() in YES_CONSTANTS
         elif option == 'N':
-            return True if txt_str.lower() in NO_CONSTANTS else False
+            return txt_str.lower() in NO_CONSTANTS
         elif option == 'X':
             LOG.debug('I am exiting')
-            return True if txt_str.lower() in EXIT_CONSTANTS else False
+            return txt_str.lower() in EXIT_CONSTANTS
         else:
             return False
 
@@ -147,8 +147,8 @@ class MigrateUtils(object):
         :param protocol: 'I' or 'F' -- str
         :returns: boolean
         """
-        return (True if len(protocol) == 1 and (
-                'I' in protocol or 'F' in protocol) else False)
+        return bool(
+            len(protocol) == 1 and ('I' in protocol or 'F' in protocol))
 
     @staticmethod
     def get_object_components(regex_str, input_str):
@@ -725,7 +725,7 @@ class MigrateUtils(object):
         :param sub_list: sub list -- list
         :returns: flag -- boolean
         """
-        return True if all(elem in full_list for elem in sub_list) else False
+        return bool(all(elem in full_list for elem in sub_list))
 
     def choose_subset_volumes(self, storage_group_name, volume_list):
         """Validate the sub list is within the full list.
@@ -827,11 +827,11 @@ class MigrateUtils(object):
         if re.search('^OS-', masking_view_name):
             try:
                 if revert:
-                    return True if self.get_masking_view_component_dict(
-                        masking_view_name, True) else False
+                    return bool(self.get_masking_view_component_dict(
+                        masking_view_name, True))
                 else:
-                    return True if self.get_masking_view_component_dict(
-                        masking_view_name) else False
+                    return bool(self.get_masking_view_component_dict(
+                        masking_view_name))
             except Exception:
                 return False
         else:

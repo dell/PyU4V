@@ -177,9 +177,9 @@ class CommonFunctions(object):
                     data=exception_message)
             if status_code == STATUS_401:
                 raise exception.UnauthorizedRequestException()
-            else:
-                raise exception.VolumeBackendAPIException(
-                    data=exception_message)
+
+            raise exception.VolumeBackendAPIException(
+                data=exception_message)
 
     def wait_for_job(self, operation, status_code, job):
         """Check if call is async, wait for it to complete.
