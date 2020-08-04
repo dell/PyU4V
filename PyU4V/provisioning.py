@@ -1539,7 +1539,7 @@ class ProvisioningFunctions(object):
 
     def create_storage_group(self, srp_id, sg_id, slo=None, workload=None,
                              do_disable_compression=False,
-                             num_vols=0, vol_size='0', cap_unit='GB',
+                             num_vols=0, vol_size=0, cap_unit='GB',
                              allocate_full=False, _async=False, vol_name=None):
         """Create the volume in the specified storage group.
 
