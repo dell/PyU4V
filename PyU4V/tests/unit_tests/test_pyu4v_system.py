@@ -13,9 +13,9 @@
 # limitations under the License.
 """test_pyu4v_system.py."""
 
-import mock
 import testtools
 
+from unittest import mock
 from unittest.mock import MagicMock
 
 from PyU4V import common

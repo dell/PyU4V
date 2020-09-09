@@ -13,10 +13,11 @@
 # limitations under the License.
 """test_pyu4v_provisioning.py."""
 import csv
-import mock
 import os
 import tempfile
 import testtools
+
+from unittest import mock
 
 from PyU4V import provisioning
 from PyU4V import rest_requests
@@ -1062,11 +1063,16 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
-                self.data.srp, 'new-sg', None, None)
+                srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None)
+
             payload = {
-                'srpId': 'None',
-                'storageGroupId': 'new-sg',
-                'emulation': 'FBA'}
+                'srpId': 'SRP_1', 'storageGroupId': 'new-sg',
+                'emulation': 'FBA', 'sloBasedStorageGroupParam': [
+                    {'sloId': 'None', 'workloadSelection': 'None',
+                     'volumeAttributes': [
+                         {'volume_size': '0', 'capacityUnit': 'GB',
+                          'num_of_vols': 0}]}]}
+
             mock_create.assert_called_once_with(
                 category='sloprovisioning',
                 resource_level='symmetrix', resource_level_id=self.data.array,
@@ -1085,7 +1091,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 'sloBasedStorageGroupParam': [
                     {'sloId': self.data.slo,
                      'workloadSelection': 'None',
-                     'noCompression': 'false',
                      'volumeAttributes': [{'num_of_vols': 0,
                                            'volume_size': '0',
                                            'capacityUnit': 'GB'}]}],
@@ -1241,14 +1246,26 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_create_storage_group_full_allocated_no_slo(self):
         """Test create_storage_group no slo set."""
+        ppctroc = 'persist_preallocated_capacity_through_reclaim_or_copy'
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
-                self.data.srp, 'new-sg', None, None)
+                self.data.srp, 'new-sg', None, None, allocate_full=True)
+
             payload = {
-                'srpId': 'None',
+                'srpId': self.data.srp,
                 'storageGroupId': 'new-sg',
-                'emulation': 'FBA'}
+                'emulation': 'FBA',
+                'sloBasedStorageGroupParam': [
+                    {'sloId': 'None',
+                     'workloadSelection': 'None',
+                     'noCompression': 'true',
+                     'allocate_capacity_for_each_vol': 'true',
+                     ppctroc: 'true',
+                     'volumeAttributes': [{'volume_size': '0',
+                                           'capacityUnit': 'GB',
+                                           'num_of_vols': 0}]}]}
+
             mock_create.assert_called_once_with(
                 category='sloprovisioning', resource_level='symmetrix',
                 resource_level_id=self.data.array,
@@ -1299,8 +1316,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 'emulation': 'FBA',
                 'sloBasedStorageGroupParam': [
                     {'sloId': 'Diamond',
-                     'workloadSelection': None,
-                     'noCompression': 'false',
+                     'workloadSelection': 'None',
                      'volumeAttributes': [{
                          'volume_size': '1',
                          'capacityUnit': 'GB',

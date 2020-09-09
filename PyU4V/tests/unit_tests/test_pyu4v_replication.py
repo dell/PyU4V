@@ -13,8 +13,9 @@
 # limitations under the License.
 """test_pyu4v_replication.py."""
 
-import mock
 import testtools
+
+from unittest import mock
 
 from PyU4V import common
 from PyU4V import replication

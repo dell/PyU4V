@@ -13,8 +13,9 @@
 # limitations under the License.
 """test_pyu4v_conn.py."""
 
-import mock
 import testtools
+
+from unittest import mock
 
 from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd

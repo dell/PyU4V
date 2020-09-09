@@ -14,8 +14,9 @@
 """test_pyu4v_common.py."""
 
 import csv
-import mock
 import testtools
+
+from unittest import mock
 
 from PyU4V import common
 from PyU4V import rest_requests

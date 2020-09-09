@@ -119,11 +119,9 @@ class PerformanceFunctions(object):
         :param minutes: timestamp recency in minutes -- int
         :returns: if timestamp is less than recency value -- bool
         """
-        recency = minutes if isinstance(minutes, int) else self.recency
+        r = minutes if isinstance(minutes, int) else self.recency
 
-        return True if (
-            ((int(time.time()) * 1000) - timestamp) < (
-                recency * pc.ONE_MINUTE)) else False
+        return (int(time.time()) * 1000) - timestamp < r * pc.ONE_MINUTE
 
     @staticmethod
     def get_timestamp_by_hour(
@@ -447,11 +445,11 @@ class PerformanceFunctions(object):
             raise exception.InvalidInputException(
                 'Invalid data format "{f}" specified, please use one of '
                 'Average or Maximum'.format(f=data_format))
+
+        if pc.MAXIMUM.upper() in data_format.upper():
+            data_format = pc.MAXIMUM
         else:
-            if pc.MAXIMUM.upper() in data_format.upper():
-                data_format = pc.MAXIMUM
-            else:
-                data_format = pc.AVERAGE
+            data_format = pc.AVERAGE
 
         # Add asset IDs to the return dict before additional key/values added
         if request_body:
@@ -688,7 +686,7 @@ class PerformanceFunctions(object):
         :param kpi_only: set only KPI thresholds -- bool
         """
         def _str_to_bool(str_in):
-            return True if str_in == 'True' else False
+            return str_in == 'True'
 
         data = file_handler.read_csv_values(csv_file_path)
 

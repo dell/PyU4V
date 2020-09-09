@@ -14,10 +14,11 @@
 """test_pyu4v_requests.py."""
 
 import json
-import mock
 import platform
 import requests
 import testtools
+
+from unittest import mock
 
 from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd

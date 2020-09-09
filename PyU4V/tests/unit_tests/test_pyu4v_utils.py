@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """test_pyu4v_utils.py."""
+
 import configparser
 import csv
-import mock
 import os
 import six
 import testtools
+
+from unittest import mock
 
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf

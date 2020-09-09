@@ -1387,7 +1387,7 @@ class ProvisioningFunctions(object):
         """
         array_list = self.common.get_v3_or_newer_array_list(
             filters={'compressionCapable': 'true'})
-        return True if self.array_id in array_list else False
+        return self.array_id in array_list
 
     def get_storage_group(self, storage_group_name):
         """Given a name, return storage group details.
@@ -1537,9 +1537,9 @@ class ProvisioningFunctions(object):
         sg = self.get_storage_group(parent_name)
         return sg.get('child_storage_group', list()) if sg else list()
 
-    def create_storage_group(self, srp_id, sg_id, slo, workload=None,
+    def create_storage_group(self, srp_id, sg_id, slo=None, workload=None,
                              do_disable_compression=False,
-                             num_vols=0, vol_size='0', cap_unit='GB',
+                             num_vols=0, vol_size=0, cap_unit='GB',
                              allocate_full=False, _async=False, vol_name=None):
         """Create the volume in the specified storage group.
 
@@ -1549,18 +1549,22 @@ class ProvisioningFunctions(object):
         :param workload: workload id -- str
         :param do_disable_compression: disable compression -- bool
         :param num_vols: number of volumes to be created -- int
-        :param vol_size: the volume size -- str
+        :param vol_size: the volume size -- int
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
         :param allocate_full: allocate full capacity -- bool
         :param _async: if call should be async -- bool
         :param vol_name: name to give to the volume, optional -- str
         :returns: storage group details -- dict
         """
-        srp_id = srp_id if slo else 'None'
+        srp_id = srp_id if srp_id else 'None'
+        slo = slo if slo else 'None'
+        workload = workload if workload else 'None'
+
         payload = ({'srpId': srp_id,
                     'storageGroupId': sg_id,
                     'emulation': 'FBA'})
-        volume_attributes = {'volume_size': vol_size,
+
+        volume_attributes = {'volume_size': str(vol_size),
                              'capacityUnit': cap_unit,
                              'num_of_vols': num_vols}
         if vol_name:
@@ -1568,25 +1572,23 @@ class ProvisioningFunctions(object):
                                  'volumeIdentifierChoice': 'identifier_name'}
             volume_attributes.update({'volumeIdentifier': volume_identifier})
 
-        if slo:
-            slo_param = {'sloId': slo,
-                         'workloadSelection': workload,
-                         'volumeAttributes': [volume_attributes]}
-            if do_disable_compression:
-                slo_param.update({'noCompression': 'true'})
-            elif self.is_compression_capable():
-                slo_param.update({'noCompression': 'false'})
+        slo_param = {'sloId': slo,
+                     'workloadSelection': workload,
+                     'volumeAttributes': [volume_attributes]}
 
-            if allocate_full:
-                # If case of full volume allocation, we must set the
-                # noCompression parameter at true because fully
-                # allocations and compression are exclusive parameters
-                slo_param.update({'noCompression': 'true'})
-                slo_param.update({'allocate_capacity_for_each_vol': 'true'})
-                slo_param.update({'persist_preallocated_capacity_through_'
-                                  'reclaim_or_copy': 'true'})
+        if do_disable_compression:
+            slo_param.update({'noCompression': 'true'})
 
-            payload.update({'sloBasedStorageGroupParam': [slo_param]})
+        if allocate_full:
+            # If case of full volume allocation, we must set the
+            # noCompression parameter at true because fully
+            # allocations and compression are exclusive parameters
+            slo_param.update({'noCompression': 'true'})
+            slo_param.update({'allocate_capacity_for_each_vol': 'true'})
+            slo_param.update({'persist_preallocated_capacity_through_'
+                              'reclaim_or_copy': 'true'})
+
+        payload.update({'sloBasedStorageGroupParam': [slo_param]})
 
         if _async:
             payload.update(ASYNC_UPDATE)
@@ -2161,10 +2163,10 @@ class ProvisioningFunctions(object):
                 LOG.error(exception_message)
                 raise exception.InvalidInputException(
                     data=exception_message)
-            else:
-                distribution_type = qos_specs['DistributionType']
-                if distribution_type != sg_distribution_type:
-                    property_list.append(distribution_type)
+
+            distribution_type = qos_specs['DistributionType']
+            if distribution_type != sg_distribution_type:
+                property_list.append(distribution_type)
         if property_list:
             payload = {'editStorageGroupActionParam': {
                 'setHostIOLimitsParam': {

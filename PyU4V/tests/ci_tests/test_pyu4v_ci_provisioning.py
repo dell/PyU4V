@@ -1122,8 +1122,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 self.assertIsInstance(ip_addresses, list)
                 for ip in ip_addresses:
                     valid_ip = (
-                        self.provisioning.check_ipv4(
-                            ip) or self.provisioning.check_ipv6(ip))
+                        self.common.check_ipv4(
+                            ip) or self.common.check_ipv6(ip))
                     self.assertIsInstance(ip, str)
                     self.assertTrue(valid_ip)
             if iqn:
@@ -1819,6 +1819,18 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(1, len(volumes))
         for volume in volumes:
             self.addCleanup(self.delete_volume, storage_group_name, volume)
+
+    def test_create_no_slo_storage_group_with_volumes(self):
+        """Test create_empty_storage_group with no service level and vols."""
+        storage_group_name = self.generate_name('sg')
+        storage_group_details = self.provisioning.create_storage_group(
+            self.SRP, storage_group_name, slo=None, workload=None,
+            num_vols=3, vol_size=1)
+        self.addCleanup(self.delete_storage_group, storage_group_name)
+        volume_count = storage_group_details[constants.NUM_OF_VOLS]
+        self.assertEqual(3, volume_count)
+        self.assertEqual('NONE', storage_group_details[constants.SLO])
+        self.assertTrue(storage_group_details[constants.COMPRESSION])
 
     def test_create_empty_storage_group(self):
         """Test create_empty_storage_group."""

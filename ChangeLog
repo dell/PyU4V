@@ -1,6 +1,36 @@
 PyU4V Change Log
 ================
 
+Version 9.1.4.0 - released 31/07/20
+===================================
+Bug Fixes
+---------
+- GitHub Issue #93 (https://github.com/dell/PyU4V/issues/93) has been resolved.
+  Users can now create storage groups with volumes in the same request where no
+  service level has been specified as an input parmaeter or service level is
+  set to None. In addition, another bug found whilst fixing #93 whereby storage
+  groups with no service level set were created with no storage resource pool
+  regardless of user input parameter value.
+- GitHub Issue #92 (https://github.com/dell/PyU4V/issues/92) has been resolved.
+  User documentation has been updated to correct the error in the path to
+  set a custom PyU4V.conf location.
+
+
+Version Control
+---------------
+- Pep8 test suite flake8 package version has been upgraded to 3.8.3
+- Pylint test suite package version has been upgraded to 2.5.3
+
+Quality Control
+---------------
+- The change to Pylint version resulted in more stringent code analysis, as
+  such a number of changes were made in the following files to bring the code
+  rating back up to 10.0/10.0:
+    - PyU4V/common.py
+    - PyU4V/performance.py
+    - PyU4V/provisioning.py
+    - PyU4V/tools/openstack/migrate_utils.py
+
 
 Version 9.1.3.0 - released 19/01/20
 ===================================

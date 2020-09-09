@@ -13,9 +13,10 @@
 # limitations under the License.
 """test_pyu4v_performance.py."""
 
-import mock
 import testtools
 import time
+
+from unittest import mock
 
 from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
