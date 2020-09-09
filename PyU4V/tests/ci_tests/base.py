@@ -619,10 +619,14 @@ class TestBaseTestCase(testtools.TestCase):
         :param inner_key_func: method for obtaining port keys -- func
         :param inner_metrics_func: method for obtaining port metrics -- func
         """
-        outer_keys = outer_keys_func()
-        outer_id = outer_keys[0].get(outer_tag)
-        inner_keys = inner_key_func(outer_id)
-        inner_id = inner_keys[0].get(inner_tag)
+        try:
+            outer_keys = outer_keys_func()
+            outer_id = outer_keys[0].get(outer_tag)
+            inner_keys = inner_key_func(outer_id)
+            inner_id = inner_keys[0].get(inner_tag)
+        except (exception.VolumeBackendAPIException,
+                exception.ResourceNotFoundException) as e:
+            self.skipTest(e.msg)
 
         self.assertTrue(inner_keys)
         for time_key in inner_keys:

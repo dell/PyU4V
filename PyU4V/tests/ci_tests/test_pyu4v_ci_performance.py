@@ -484,10 +484,9 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_performance_stats_recency_format(self):
         """Test performance stats recency function."""
-        end_time = (
-            self.perf.get_last_available_timestamp(self.conn.array_id))
+        current_time = int(time.time()) * 1000
         # Set end_time as 20 mins ago, failing recency check
-        end_time = end_time - (20 * pc.ONE_MINUTE)
+        end_time = current_time - (20 * pc.ONE_MINUTE)
         start_time = end_time
 
         self.assertRaises(

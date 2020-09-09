@@ -184,7 +184,7 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         try:
             tag_list = self.system.get_tags()
             tag_id = tag_list.get(TAG_NAME)[0]
-        except exception.ResourceNotFoundException:
+        except (exception.ResourceNotFoundException, IndexError):
             self.skipTest('Skip get_tagged_objects - there are no tagged '
                           'objects available.')
         tag_info = self.system.get_tagged_objects(tag_name=tag_id)
