@@ -3,6 +3,15 @@ PyU4V Change Log
 
 Version 9.1.4.0 - released 31/07/20
 ===================================
+Bug fixes
+---------
+- Fixed a bug in performance CI tests where tests would fail if there was no
+  provisioned assets in certain performance categories. The tests will skip now
+  instead of failing.
+
+
+Version 9.1.4.0 - released 31/07/20
+===================================
 Bug Fixes
 ---------
 - GitHub Issue #93 (https://github.com/dell/PyU4V/issues/93) has been resolved.
