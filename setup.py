@@ -16,8 +16,8 @@ import setuptools
 
 setuptools.setup(
     name='PyU4V',
-    version='9.1.4.0',
-    url='https://github.com/MichaelMcAleer/PyU4V/',
+    version='9.1.5.0',
+    url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
     author_email='Michael.Mcaleer@dell.com',
     description=("A Python library for use with Dell EMC's Unisphere for "

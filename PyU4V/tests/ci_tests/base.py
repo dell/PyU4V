@@ -577,6 +577,8 @@ class TestBaseTestCase(testtools.TestCase):
         keys = None
         try:
             keys = key_func()
+            if not keys:
+                raise exception.VolumeBackendAPIException()
         except exception.VolumeBackendAPIException:
             self.skipTest(
                 '{cat} is not enabled or there are no provisioned assets of '
