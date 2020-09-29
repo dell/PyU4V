@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -137,14 +137,22 @@ class PyU4VCommonTest(testtools.TestCase):
     def test_wait_for_job(self, mock_complete):
         """Test wait_for_job."""
         # Not an async job
-        self.common.wait_for_job('sync-job', 200, {})
+        self.common.wait_for_job('sync-job', 200, dict())
         mock_complete.assert_not_called()
         # Async, completes successfully
-        self.common.wait_for_job('sync-job', 202, {})
+        self.common.wait_for_job('sync-job', 202, dict())
         mock_complete.assert_called_once()
         # Async, job fails
         self.assertRaises(exception.VolumeBackendAPIException,
-                          self.common.wait_for_job, 'sync-job', 202, {})
+                          self.common.wait_for_job, 'sync-job', 202, dict())
+
+    def test_build_uri_unhidden(self):
+        """Test build_target_uri."""
+        with mock.patch.object(self.common, '_build_uri') as mck_build:
+            self.common.build_target_uri(
+                'test_arg', test_kwarg_in='test_kwarg')
+            mck_build.assert_called_once_with(
+                'test_arg', test_kwarg_in='test_kwarg')
 
     def test_build_uri_version_control(self):
         """Test _build_uri."""
@@ -341,7 +349,7 @@ class PyU4VCommonTest(testtools.TestCase):
         """Test create_resource."""
         # Traditional Method
         message = self.common.create_resource(
-            self.data.array, 'sloprovisioning', 'storagegroup', {})
+            self.data.array, 'sloprovisioning', 'storagegroup', dict())
         self.assertEqual(self.data.job_list[0], message)
 
         # New Method
@@ -355,7 +363,7 @@ class PyU4VCommonTest(testtools.TestCase):
         """Test modify_resource."""
         # Traditional Method
         message = self.common.modify_resource(
-            self.data.array, 'sloprovisioning', 'storagegroup', {})
+            self.data.array, 'sloprovisioning', 'storagegroup', dict())
         self.assertEqual(self.data.job_list[0], message)
 
         # New Method
@@ -510,3 +518,75 @@ class PyU4VCommonTest(testtools.TestCase):
                          'camel_case')
         self.assertEqual(self.common.convert_to_snake_case(string_4),
                          'snake_case')
+
+    def test_download_file_success(self):
+        """Test download_file success scenario."""
+        with mock.patch.object(
+                self.conn.rest_client, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()):
+            request_body = {'test_req': True}
+            response = self.common.download_file(
+                category=constants.SYSTEM, resource_level=constants.SETTINGS,
+                resource_type=constants.EXPORT_FILE, payload=request_body)
+            self.assertIsInstance(response, pf.FakeResponse)
+
+    def test_download_file_value_no_response_exception_catch(self):
+        """Test download_file with no response, exception caught."""
+        with mock.patch.object(
+                self.conn.rest_client, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()):
+            with mock.patch.object(
+                    self.common, 'check_status_code_success',
+                    side_effect=ValueError):
+                request_body = {'test_req': True}
+                response = self.common.download_file(
+                    category=constants.SYSTEM,
+                    resource_level=constants.SETTINGS,
+                    resource_type=constants.EXPORT_FILE, payload=request_body)
+                self.assertIsInstance(response, pf.FakeResponse)
+
+    def test_upload_file_success(self):
+        """Test upload_file success scenario."""
+        with mock.patch.object(
+                self.conn.rest_client, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()):
+            ref_response = {'success': True, 'message': 'OK'}
+            response = self.common.upload_file(
+                category=constants.SYSTEM, resource_level=constants.SETTINGS,
+                resource_type=constants.IMPORT_FILE,
+                form_data={'test_req': True})
+            self.assertEqual(ref_response, response)
+
+    def test_upload_file_fail_backend_exception(self):
+        """Test upload_file fail with volume backend API exception."""
+        with mock.patch.object(
+                self.conn.rest_client, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()):
+            with mock.patch.object(
+                    self.conn.rest_client, 'file_transfer_request',
+                    return_value=(pf.FakeResponse(
+                        200, return_object=dict(),
+                        text=self.data.response_string_dict_fail), 200)):
+                self.assertRaises(
+                    exception.VolumeBackendAPIException,
+                    self.common.upload_file,
+                    category=constants.SYSTEM,
+                    resource_level=constants.SETTINGS,
+                    resource_type=constants.IMPORT_FILE,
+                    form_data={'test_req': True})
+
+    def test_upload_file_value_error_exception(self):
+        """Test upload_file value error, real call may have been successful."""
+        with mock.patch.object(
+                self.conn.rest_client, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()):
+            with mock.patch.object(
+                    self.common, 'check_status_code_success',
+                    side_effect=ValueError):
+                ref_response = {'success': True, 'message': 'OK'}
+                response = self.common.upload_file(
+                    category=constants.SYSTEM,
+                    resource_level=constants.SETTINGS,
+                    resource_type=constants.IMPORT_FILE,
+                    form_data={'test_req': True})
+                self.assertEqual(ref_response, response)

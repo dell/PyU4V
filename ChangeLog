@@ -1,7 +1,117 @@
 PyU4V Change Log
 ================
 
-Version 9.1.4.0 - released 31/07/20
+Version 9.2.0.0 - released 29/09/20
+===================================
+
+Snap id Support
+---------------
+Functions added:
+    - get_storage_group_snapshot_snap_id_list
+    - get_snapshot_snap_id_details
+    - find_expired_snapvx_snapshots_by_snap_ids
+    - modify_storage_group_snapshot_by_snap_id
+    - restore_snapshot_by_snap_id
+    - rename_snapshot_by_snap_id
+    - link_snapshot_by_snap_id
+    - unlink_snapshot_by_snap_id
+    - delete_storage_group_snapshot_by_snap_id
+
+Snapshot Policy Functions
+-------------------------
+Functions added:
+    - get_snapshot_policy_list
+    - get_snapshot_policy
+    - create_snapshot_policy
+    - modify_snapshot_policy
+    - delete_snapshot_policy
+Functions modified:
+    - create_storage_group
+
+System Enhancements
+-------------------
+- Users can now export (download) and import (upload) both Unisphere and array
+  system settings combined or individually using system calls.  Settings can
+  be written to a zip file or returned to the caller function as binary data
+  so file writing can be handled outside of PyU4V or uploaded directly to
+  Unisphere without the need for file handling. Users can call the following
+  system functions for settings download/upload:
+    - download_all_settings()
+    - download_unisphere_settings()
+    - download_system_settings()
+    - upload_settings()
+- Users can retrieve array audit logs from PyU4V for specified time ranges,
+  obtain information about specific audit logs, or export an audit log to
+  .pdf document locally.
+- Support for alerts has now been included, users can get alert summary,
+  detailed info, acknowledge and delete alerts.
+
+Replication
+-----------
+Functions modified:
+    - get_rdf_group() now has the ability to take array_id as an input param
+
+Metro DR
+--------
+Functions added:
+    - create_metrodr_environment
+    - delete_metrodr_environment
+    - modify_metrodr_environment
+    - convert_to_metrodr_environment
+
+Performance (Diagnostic)
+------------------------
+Functions added:
+    - is_array_diagnostic_performance_registered
+    - is_array_real_time_performance_registered
+    - get_array_registration_details
+    - enable_diagnostic_data_collection
+    - disable_diagnostic_data_collection
+    - enable_real_time_data_collection
+    - disable_real_time_data_collection
+    - backup_performance_database
+
+Functions marked for deprecation:
+    - is_array_performance_registered in favour of
+      is_array_diagnostic_performance_registered
+
+Removed Categories:
+    - Core
+    - Disk
+    - Disk Technology Pool
+    - External Director
+    - External Disk Group
+    - Initiator by Port
+    - Storage Group by Pool
+    - Storage Resource by Pool
+
+Performance (Real-time)
+-----------------------
+- Users now have access to Unisphere real-time performance functions. These
+  calls are accessed through PyU4V.performance.real_time. All Unisphere for
+  PowerMax real-time categories and metrics are supported.
+
+Documentation
+-------------
+- Code examples have been moved to docs/source/programmers_guide_src/code
+  for ease of reference in main documentation
+- Programmers Guide Examples section has been re-structured for ease of
+  navigation.
+
+Miscellaneous
+-------------
+- PyLint has been updated to 2.6.0 in test suite
+- Deprecation/refactoring notices have been updated from 9.3 to 10.0 where
+  applicable
+- Add long description to setup.py for PyPi
+- Fix short description in setup.py for PyPi
+- Change url to reflect move to dell GitHub repo in setup.py for PyPi
+- Add supported Python versions 3.8 & 3.9
+- Docstring kwargs have been updated with ":key [param]:" where applicable
+- Minimum Unisphere version has been updated to v9.2.0.0
+
+
+Version 9.1.5.0 - released 21/09/20
 ===================================
 Bug fixes
 ---------
@@ -10,7 +120,7 @@ Bug fixes
   instead of failing.
 
 
-Version 9.1.4.0 - released 31/07/20
+Version 9.1.4.0 - released 09/09/20
 ===================================
 Bug Fixes
 ---------

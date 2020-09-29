@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class PyU4VException(Exception):
             message = six.text_type(message)
 
         self.msg = message
-        super(PyU4VException, self).__init__(message)
+        super().__init__(message)
 
     def _should_format(self):
         return self.kwargs['message'] is None or '%(message)' in self.message

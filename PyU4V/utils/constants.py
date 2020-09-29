@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 SETUP = 'setup'
 ARRAY = 'array'
 R_ARRAY = 'remote_array'
+R_ARRAY_2 = 'remote_array_2'
 USERNAME = 'username'
 PASSWORD = 'password'
 SERVER_IP = 'server_ip'
@@ -28,10 +29,18 @@ GET = 'GET'
 POST = 'POST'
 PUT = 'PUT'
 DELETE = 'DELETE'
+CONTENT_TYPE = 'content-type'
+ACCEPT = 'accept'
+ACCEPT_ENC = 'Accept-Encoding'
+USER_AGENT = 'user-agent'
+APP_TYPE = 'application-type'
+APP_JSON = 'application/json'
+APP_OCT = 'application/octet-stream'
+APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.1.3.0'
-UNISPHERE_VERSION = '91'
+PYU4V_VERSION = '9.2.0.0'
+UNISPHERE_VERSION = '92'
 VERSION = 'version'
 ITERATOR = 'Iterator'
 PAGE = 'page'
@@ -41,6 +50,7 @@ SLOPROVISIONING = 'sloprovisioning'
 PROVISIONING = 'provisioning'
 STORAGEGROUP = 'storagegroup'
 REPLICATION = 'replication'
+METRO_DR = 'metrodr'
 WLP = 'wlp'
 MIGRATION = 'migration'
 DSA = 'dsa'
@@ -65,11 +75,14 @@ COMPRESSIBILITY_REPORT = 'compressibility_report'
 SG_DEMAND_REPORT = 'storage_group_demand_report'
 SNAPSHOT = 'snapshot'
 GENERATION = 'generation'
+SNAP_ID = 'snapid'
 RDFG = 'rdf_group'
 RDF_GROUP = 'rdf_group'
 GB_HEADROOM = 'gbHeadroom'
 RDF_DIRECTOR = 'rdf_director'
 REMOTE_PORT = 'remote_port'
+ALERT = 'alert'
+ALERT_SUMMARY = 'alert_summary'
 
 # Status Codes
 STATUS_200 = 200
@@ -89,6 +102,8 @@ ASYNC_UPDATE = {'executionOption': ASYNCHRONOUS}
 CREATE_VOL_STRING = 'Creating new Volumes'
 
 # Replication Modes
+ASYNCHRONOUS_CC = 'Asynchronous'
+ADAPTIVE_COPY = 'AdaptiveCopyDisk'
 ESTABLISH = 'Establish'
 FAILBACK = 'Failback'
 FAILOVER = 'Failover'
@@ -99,12 +114,27 @@ SETMODE = 'SetMode'
 SPLIT = 'Split'
 SUSPEND = 'Suspend'
 SWAP = 'Swap'
-
+UPDATE_R1 = 'UpdateR1'
 # RDFG Constants
 
-RDFG_ACTIONS = {'MOVE': 'Move', 'ADD_PORTS': 'add_ports',
-                        'REMOVE_PORTS': 'remove_ports',
-                        'SET_LABEL': 'set_label'}
+RDFG_ACTIONS = {
+    'MOVE': 'Move', 'ADD_PORTS': 'add_ports',
+    'REMOVE_PORTS': 'remove_ports', 'SET_LABEL': 'set_label'}
+METRO_DR_ACTIONS = {
+    'ESTABLISH': ESTABLISH, 'SPLIT': SPLIT, 'SUSPEND': SUSPEND,
+    'RESTORE': RESTORE, 'FAILOVER': FAILOVER, 'FAILBACK': FAILBACK,
+    'SETMODE': SETMODE, 'UPDATER1': UPDATE_R1
+}
+
+METRO_DR_ACTION_PARAMS = {
+    'ESTABLISH': 'establish', 'SPLIT': 'split', 'SUSPEND': 'suspend',
+    'RESTORE': 'restore', 'FAILOVER': 'failover',
+    'FAILBACK': 'failback', 'SETMODE': 'set_mode', 'UPDATER1': 'update_r1'
+}
+
+METRO_DR_REPLICATION_MODE = {'ADAPTIVECOPYDISK': 'AdaptiveCopyDisk',
+                             'ASYNCHRONOUS': 'Asynchronous'}
+
 # Director constants
 DIRECTOR_ID = 'directorId'
 PORT_ID = 'portId'
@@ -272,3 +302,83 @@ DISK_IDS = 'disk_ids'
 SPINDLE_ID = 'spindle_id'
 VENDOR = 'vendor'
 CAPACITY = 'capacity'
+ALERT_SUMMARY_KEYS = ['alert_count', 'all_unacknowledged_count',
+                      'fatal_unacknowledged_count',
+                      'critical_unacknowledged_count',
+                      'warning_unacknowledged_count',
+                      'info_unacknowledged_count',
+                      'minor_unacknowledged_count',
+                      'normal_unacknowledged_count',
+                      'all_acknowledged_count', 'fatal_acknowledged_count',
+                      'critical_acknowledged_count',
+                      'warning_acknowledged_count',
+                      'info_acknowledged_count', 'minor_acknowledged_count',
+                      'normal_acknowledged_count']
+SNAPSHOT_POLICY_INTERVALS = ['10 Minutes', '12 Minutes', '15 Minutes',
+                             '20 Minutes', '30 Minutes', '1 Hour',
+                             '2 Hours', '3 Hours', '4 Hours', '6 Hours',
+                             '8 Hours', '12 Hours', '1 Day', '7 Days']
+ASSOCIATE_TO_STORAGE_GROUPS = 'AssociateToStorageGroups'
+DISASSOCIATE_FROM_STORAGE_GROUPS = 'DisassociateFromStorageGroups'
+SNAPSHOT_POLICY = 'snapshot_policy'
+MODIFY_POLICY = 'Modify'
+SUSPEND_POLICY = 'Suspend'
+RESUME_POLICY = 'Resume'
+SNAPSHOT_POLICY_ACTIONS = [MODIFY_POLICY, SUSPEND_POLICY, RESUME_POLICY,
+                           ASSOCIATE_TO_STORAGE_GROUPS,
+                           DISASSOCIATE_FROM_STORAGE_GROUPS]
+
+# Import/Export Settings
+SETTINGS_FILENAME_TEMPLATE = 'PyU4V-SettingsExport'
+SETTINGS = 'settings'
+EXPORT_FILE = 'exportfile'
+IMPORT_FILE = 'importfile'
+SRC_ARRAY = 'source_array'
+TGT_ARRAYS = 'target_arrays'
+FILE_PASSWORD = 'file_password'
+ZIP_FILE = 'zip_file'
+ZIP_SUFFIX = '.zip'
+PDF_SUFFIX = '.pdf'
+FILE_READ_MODE = 'rb'
+FILE_WRITE_MODE = 'wb'
+ALL_SETTINGS = 'all'
+EXCLUDE_UNI_SETTINGS = 'exclude_unisphere_setting_options'
+EXCLUDE_SYS_SETTINGS = 'exclude_system_setting_options'
+UNI_ALERT_SETTINGS = 'alert_notification_settings'
+UNI_PERF_PREF_SETTINGS = 'performance_preference_settings'
+UNI_PERF_USER_SETTINGS = 'performance_user_templates'
+UNI_PERF_METRIC_SETTINGS = 'performance_metric_settings'
+SYS_ALERT_SETTINGS = 'alert_policy_settings'
+SYS_ALERT_NOTIFI_SETTINGS = 'alert_level_notification_settings'
+SYS_THRESH_SETTINGS = 'system_threshold_settings'
+SYS_PERF_THRESH_SETTINGS = 'performance_threshold_settings'
+
+# Audit Log Constants
+AUDIT_LOG_FILENAME_TEMPLATE = 'PyU4V-AuditLogRecord'
+AUDIT_LOG_FILENAME = 'auditlogfilename'
+AUDIT_RECORD_PATH = 'audit_record_path'
+AUDIT_LOG_RECORD = 'audit_log_record'
+AUDIT_RECORD_TIME = 'audit_record_time'
+BINARY_DATA = 'binary_data'
+RECORD_ID = 'record_id'
+HOST_NAME = 'hostname'
+CLIENT_HOST = 'client_host'
+MESSAGE = 'message'
+ACTIVITY_ID = 'activity_id'
+APP_ID = 'application_id'
+APP_VERSION = 'application_version'
+TASK_ID = 'task_id'
+PROCESS_ID = 'process_id'
+VENDOR_ID = 'vendor_id'
+OS_TYPE = 'os_type'
+OS_REV = 'os_revision'
+API_LIB = 'api_library'
+API_VER = 'api_version'
+AUDIT_CLASS = 'audit_class'
+ACTION_CODE = 'action_code'
+FUNC_CLASS = 'function_class'
+SUCCESS = 'success'
+COUNT = 'count'
+
+# Date/Time
+STR_TIME_FORMAT = '%Y%m%d%H%M%S'

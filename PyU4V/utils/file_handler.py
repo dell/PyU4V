@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,14 @@
 import csv
 import logging
 
+from pathlib import Path
+
+from PyU4V.utils import constants
+from PyU4V.utils import exception
+
 LOG = logging.getLogger(__name__)
+
+FILE_WRITE_MODE = constants.FILE_WRITE_MODE
 
 
 def create_list_from_file(file_name):
@@ -135,3 +142,42 @@ def write_dict_to_csv_file(
         data_for_file.append(csv_line)
 
     write_to_csv_file(file_path, data_for_file, delimiter, quotechar)
+
+
+def write_binary_data_to_file(data, file_extension, file_name, dir_path=None):
+    """Write Unisphere binary data to file.
+
+    :param data: Unisphere REST response with data for writing -- json response
+    :param file_extension: file extension used for writing to file -- str
+    :param file_name: file name -- str
+    :param dir_path: file write directory path -- str
+    :returns: file name and write directory -- str
+    """
+    # Set file write directory
+    if dir_path:
+        try:
+            path = Path(dir_path)
+            assert path.is_dir() is True
+        except (TypeError, AssertionError) as error:
+            msg = ('Invalid file path supplied for download '
+                   'location: {f}'.format(f=dir_path))
+            LOG.error(msg)
+            raise exception.InvalidInputException(msg) from error
+    else:
+        # No path set, use current working directory
+        path = Path.cwd()
+
+    # Set download file name with .zip extension
+    f_name = Path(file_name)
+    pdf_name = f_name.with_suffix(file_extension)
+    # Join directory & OS idempotent path
+    file_write_path = Path.joinpath(path, pdf_name)
+
+    # Write binary file data to zip file
+    with open(file_write_path, FILE_WRITE_MODE) as fd:
+        LOG.info('Writing settings to: {p}'.format(p=file_write_path))
+        for chunk in data.iter_content(chunk_size=128):
+            fd.write(chunk)
+
+    LOG.info('File writing complete.')
+    return file_write_path

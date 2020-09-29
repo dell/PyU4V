@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,12 +31,16 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
     def test_get_array_replication_capabilities(self):
         """Test get_array_replication_capabilities."""
         rep_info = self.conn.replication.get_array_replication_capabilities()
-        self.assertEqual(5, len(rep_info.keys()))
+        self.assertEqual(9, len(rep_info.keys()))
         assert 'symmetrixId' in rep_info
         assert 'snapVxCapable' in rep_info
         assert 'rdfCapable' in rep_info
         assert 'witness_capable' in rep_info
         assert 'virtual_witness_capable' in rep_info
+        assert 'snapshot_policy_capable' in rep_info
+        assert 'metro_dr_capable' in rep_info
+        assert 'vasa_async_remote_rep_capable' in rep_info
+        assert 'metro_capable' in rep_info
 
     def test_is_snapvx_licensed(self):
         """Test is_snapvx_licensed."""
@@ -50,24 +54,55 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             storage_group_name=sg_name)
         self.assertEqual(1, rep_info.get('numSnapVXSnapshots'))
 
-    def create_storagegroup_snap(self):
-        """Test get_storagegroup_snapshot_list."""
-        snapshot_info, sg_name = self.create_sg_snapshot()
-        self.replication.create_storagegroup_snap(sg_name, 'ci_snap', ttl=1,
-                                                  hours=True)
-        snapshot_info = self.replication.get_storagegroup_snapshot_list(
-            sg_name)
-        self.assertIn('ci_snap', snapshot_info)
-        self.replication.delete_storagegroup_snapshot(sg_name,
-                                                      snap_name='ci_snap',
-                                                      gen_num=0)
-
     def test_get_storage_group_replication_details(self):
-        """Test get_storage_group_replication_details."""
+        """Test get_storage_group_rep."""
         snapshot_info, sg_name = self.create_sg_snapshot()
         rep_info = self.replication.get_storage_group_replication_details(
             storage_group_id=sg_name)
         self.assertEqual(1, rep_info.get('numSnapVXSnapshots'))
+
+    def test_create_storagegroup_snap(self):
+        """Test get_storagegroup_snapshot_list."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        self.replication.create_storagegroup_snap(sg_name, 'ci_snap', ttl=1,
+                                                  hours=True)
+        snapshot_info = self.replication.get_storage_group_snapshot_list(
+            sg_name)
+        snapshot_details = (
+            self.replication.get_storage_group_snapshot_generation_list(
+                sg_name, snap_name='ci_snap'))
+        self.replication.delete_storage_group_snapshot(
+            sg_name, snap_name='ci_snap', gen=(snapshot_details[0]))
+        self.assertIn('ci_snap', snapshot_info)
+
+    def test_create_storage_group_snapshot(self):
+        """Test get_storagegroup_snapshot_list."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        self.replication.create_storage_group_snapshot(
+            sg_name, 'ci_snap', ttl=1, hours=True)
+        snapshot_info = self.replication.get_storage_group_snapshot_list(
+            sg_name)
+        snapshot_details = (
+            self.replication.get_storage_group_snapshot_generation_list(
+                sg_name, snap_name='ci_snap'))
+        self.replication.delete_storage_group_snapshot(
+            sg_name, snap_name='ci_snap', gen=(snapshot_details[0]))
+        self.assertIn('ci_snap', snapshot_info)
+
+    def test_create_storage_group_snapshot_by_snap_id(self):
+        """Test create_storage_group_snapshot by snap_id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        ss_name = self.generate_name(object_type='ss')
+        self.replication.create_storage_group_snapshot(
+            sg_name, ss_name, ttl=1, hours=True)
+        snapshot_info = self.replication.get_storage_group_snapshot_list(
+            sg_name)
+        snapshot_details = (
+            self.replication.get_storage_group_snapshot_snap_id_list(
+                sg_name, ss_name))
+        self.replication.delete_storage_group_snapshot_by_snap_id(
+            sg_name, ss_name, snapshot_details[0])
+        self.assertIn(ss_name, snapshot_info)
 
     def test_get_storage_group_rep_list(self):
         """Test get_storage_group_rep_list."""
@@ -101,16 +136,40 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         """Test modify_storage_group_snapshot."""
         snapshot_info, sg_name = self.create_sg_snapshot()
         old_name = snapshot_info.get('name')
+        snapshot_details = (
+            self.replication.get_storage_group_snapshot_generation_list(
+                sg_name, snap_name=old_name))
         self.replication.modify_storage_group_snapshot(
             src_storage_grp_id=sg_name, tgt_storage_grp_id=None,
-            snap_name=old_name, new_name='newname', gen_num=0)
-        snap_list = self.replication.get_storagegroup_snapshot_list(
-            storagegroup_id=sg_name)
-        self.assertEqual('newname', snap_list[0])
+            snap_name=old_name, new_name='newname',
+            gen_num=snapshot_details[0])
+        snap_list = self.replication.get_storage_group_snapshot_list(
+            storage_group_id=sg_name)
         # change name back so clean up will work automatically
         self.replication.modify_storage_group_snapshot(
             src_storage_grp_id=sg_name, tgt_storage_grp_id=None,
-            snap_name='newname', new_name=old_name, gen_num=0)
+            snap_name='newname', new_name=old_name,
+            gen_num=snapshot_details[0])
+        self.assertEqual('newname', snap_list[0])
+
+    def test_modify_storage_group_snap_rename_by_snap_id(self):
+        """Test modify_storage_group_snapshot_by_snap_id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        old_name = snapshot_info.get('name')
+        new_name = self.generate_name(object_type='ss')
+        snapshot_details = (
+            self.replication.get_storage_group_snapshot_snap_id_list(
+                sg_name, old_name))
+        snap_id = snapshot_details[0]
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, None, old_name, snap_id,
+            new_name=new_name)
+        snap_list = self.replication.get_storage_group_snapshot_list(
+            sg_name)
+        # change name back so clean up will work automatically
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, None, new_name, snap_id, new_name=old_name)
+        self.assertEqual(new_name, snap_list[0])
 
     def test_get_replication_info(self):
         """Test get_replication_info."""
@@ -136,6 +195,21 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             snap_name=snap_name, gen_num=0, unlink=True)
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
+    def test_modify_storage_group_snap_link_by_snap_id(self):
+        """Test to cover link snapshot by snap id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        target_sg = "{sg}_lnk".format(sg=sg_name)
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id, link=True)
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertTrue(snap_details.get('linked'))
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id, unlink=True)
+        self.provisioning.delete_storage_group(target_sg)
+
     def test_modify_storagegroup_snap_unlink(self):
         """Test to cover unlink snapshot."""
         snapshot_info, sg_name = self.create_sg_snapshot()
@@ -146,19 +220,35 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             snap_name=snap_name, gen_num=0, link=True)
         linked_snap_details = self.replication.get_snapshot_generation_details(
             sg_id=sg_name, snap_name=snap_name, gen_num=0)
-        self.assertEqual(True, linked_snap_details.get('isLinked'))
+        self.assertTrue(linked_snap_details.get('isLinked'))
         self.replication.modify_storage_group_snapshot(
             src_storage_grp_id=sg_name, tgt_storage_grp_id=target_sg,
             snap_name=snap_name, gen_num=0, unlink=True)
         snap_details = self.replication.get_snapshot_generation_details(
             sg_id=sg_name, snap_name=snap_name, gen_num=0)
-        self.assertEqual(False, snap_details.get('isLinked'))
+        self.assertFalse(snap_details.get('isLinked'))
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
+
+    def test_modify_storagegroup_snap_unlink_by_snap_id(self):
+        """Test to cover unlink snapshot by snap id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        target_sg = "{sg}_lnk".format(sg=sg_name)
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id, link=True)
+        linked_snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertTrue(linked_snap_details.get('linked'))
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id, unlink=True)
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertFalse(snap_details.get('linked'))
+        self.provisioning.delete_storage_group(target_sg)
 
     def test_modify_storagegroup_snap_restore(self):
         """Test to cover restore snapshot."""
-        self.skipTest("Skipping test_modify_storagegroup_snap_restore "
-                      "due to OPT 564297")
         snapshot_info, sg_name = self.create_sg_snapshot()
         snap_name = snapshot_info.get('name')
         self.replication.modify_storage_group_snapshot(
@@ -166,24 +256,39 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             snap_name=snap_name, gen_num=0, restore=True)
         snap_details = self.replication.get_snapshot_generation_details(
             sg_id=sg_name, snap_name=snap_name, gen_num=0)
-        restored = False
-        if 'Restored' in snap_details.get('state'):
-            restored = True
-        self.assertEqual(True, restored)
+        self.assertTrue('Restored' in snap_details.get('state'))
+
+    def test_modify_storage_group_snap_restore_by_snap_id(self):
+        """Test to cover restore snapshot by snap id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, None, snap_name, snap_id, restore=True)
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertTrue('Restored' in snap_details.get('state'))
 
     def test_restore_snapshot(self):
         """Test to cover restore snapshot."""
-        self.skipTest("Skipping test_restore_snapshot due to OPT 564297")
         snapshot_info, sg_name = self.create_sg_snapshot()
         snap_name = snapshot_info.get('name')
         self.replication.restore_snapshot(sg_id=sg_name,
                                           snap_name=snap_name, gen_num=0)
         snap_details = self.replication.get_snapshot_generation_details(
             sg_id=sg_name, snap_name=snap_name, gen_num=0)
-        restored = False
-        if 'Restored' in snap_details.get('state'):
-            restored = True
-        self.assertEqual(True, restored)
+        self.assertTrue('Restored' in snap_details.get('state'))
+
+    def test_restore_snapshot_by_snap_id(self):
+        """Test to cover restore snapshot."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        self.replication.restore_snapshot_by_snap_id(
+            sg_name, snap_name, snap_id)
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertTrue('Restored' in snap_details.get('state'))
 
     def test_rename_snapshot(self):
         """Test to cover rename snapshot."""
@@ -198,6 +303,21 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.replication.rename_snapshot(
             sg_id=sg_name, snap_name='newname', new_name=old_name,
             gen_num=0)
+
+    def test_rename_snapshot_by_snap_id(self):
+        """Test to cover rename snapshot by snap_id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        old_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        new_name = self.generate_name(object_type='ss')
+        self.replication.rename_snapshot_by_snap_id(
+            sg_name, old_name, new_name, snap_id)
+        snap_list = self.replication.get_storagegroup_snapshot_list(
+            sg_name)
+        self.assertEqual(new_name, snap_list[0])
+        # change name back so clean up will work automatically
+        self.replication.rename_snapshot_by_snap_id(
+            sg_name, new_name, old_name, snap_id)
 
     def test_link_gen_snapshot(self):
         """Test to cover link snapshot."""
@@ -214,6 +334,21 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             src_storage_grp_id=sg_name, tgt_storage_grp_id=target_sg,
             snap_name=snap_name, gen_num=0, unlink=True)
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
+
+    def test_link_snapshot_by_snap_id(self):
+        """Test to cover link snapshot by snap id."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        target_sg = "{sg}_lnk".format(sg=sg_name)
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        self.replication.link_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id)
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertTrue(snap_details.get('linked'))
+        self.replication.modify_storage_group_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id, unlink=True)
+        self.provisioning.delete_storage_group(target_sg)
 
     def test_unlink_gen_snapshot(self):
         """Test to cover unlink snapshot."""
@@ -234,10 +369,28 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(False, snap_details.get('isLinked'))
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
+    def test_unlink_snapshot_by_snap_id(self):
+        """Test to cover unlink snapshot."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        target_sg = "{sg}_lnk".format(sg=sg_name)
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        self.replication.link_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id)
+        linked_snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertTrue(linked_snap_details.get('linked'))
+        self.replication.unlink_snapshot_by_snap_id(
+            sg_name, target_sg, snap_name, snap_id)
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertFalse(snap_details.get('linked'))
+        self.provisioning.delete_storage_group(target_sg)
+
     def test_is_vol_in_rep_session(self):
         """Test is_vol_in_rep_session."""
         snapshot_info, sg_name = self.create_sg_snapshot()
-        volume = snapshot_info.get('sourceVolume')
+        volume = snapshot_info.get('source_volume')
         vol_name = volume[0].get('name')
         snapxv_tgt, snapxv_src, rdf_group = (
             self.replication.is_vol_in_rep_session(device_id=vol_name))
@@ -246,7 +399,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
     def test_is_volume_in_replication_session(self):
         """Test is_volume_in_replication_session."""
         snapshot_info, sg_name = self.create_sg_snapshot()
-        volume = snapshot_info.get('sourceVolume')
+        volume = snapshot_info.get('source_volume')
         vol_name = volume[0].get('name')
         snapxv_tgt, snapxv_src, rdf_group = (
             self.replication.is_volume_in_replication_session(
@@ -261,6 +414,15 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             sg_id=sg_name, snap_name=snap_name, gen_num=0)
         self.assertEqual(['Established'], snap_gen_details.get('state'))
 
+    def test_get_snapshot_snap_id_details(self):
+        """Test get_snapshot_snap_id_details."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        self.assertEqual(['Established'], snap_details.get('state'))
+
     def test_get_storage_group_snapshot_generation_list(self):
         """Test get_storagegroup_snapshot_generation_list."""
         snapshot_info, sg_name = self.create_sg_snapshot()
@@ -269,6 +431,16 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             self.replication.get_storagegroup_snapshot_generation_list(
                 storagegroup_id=sg_name, snap_name=snap_name))
         self.assertEqual([0], gen_list)
+
+    def test_get_storage_group_snapshot_snap_id_list(self):
+        """Test get_storage_group_snapshot_snap_id_list."""
+        snapshot_info, sg_name = self.create_sg_snapshot()
+        snap_name = snapshot_info.get('name')
+        snap_id = snapshot_info.get('snapid')
+        snap_id_list = (
+            self.replication.get_storage_group_snapshot_snap_id_list(
+                sg_name, snap_name))
+        self.assertEqual([snap_id], snap_id_list)
 
     def test_get_rdf_group(self):
         """Test get_rdf_group."""
@@ -321,6 +493,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         expired_snap_list = self.replication.find_expired_snapvx_snapshots()
         self.assertIsInstance(expired_snap_list, list)
 
+    def test_find_expired_snapvx_snapshots_by_snap_id(self):
+        """Test find_expired_snapvx_snapshots_by_snap_ids."""
+        expired_snap_list = (
+            self.replication.find_expired_snapvx_snapshots_by_snap_ids())
+        self.assertIsInstance(expired_snap_list, list)
+
     def test_are_volumes_rdf_paired(self):
         """Test are_volumes_rdf_paired."""
         sg_name, srdf_group_number, local_volume, remote_volume = (
@@ -370,7 +548,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             'CI_TEST_VOL')
         self.replication.create_storagegroup_srdf_pairings(
             storagegroup_id=sg_name, remote_sid=self.conn.remote_array,
-            srdfmode='Synchronous', establish=True)
+            srdfmode='Synchronous', establish=True, forceNewRdfGroup=True)
         srdf_group_number = (
             self.conn.replication.get_storage_group_srdf_group_list(
                 sg_name))[0]
@@ -539,13 +717,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             array_id=local_array, local_rdfg_number=rdf_group,
             remote_rdfg_number=rdf_group, label='pyu4v_' + str(rdf_group))
         rdf_group_list = self.replication.get_rdf_group_list()
-        rdfg_list = []
+        rdfg_list = list()
         for group in rdf_group_list:
             rdfg_list.append(group['rdfgNumber'])
         self.assertIn(rdf_group, rdfg_list)
         self.replication.delete_rdf_group(srdf_group_number=rdf_group)
         rdf_group_list = self.replication.get_rdf_group_list()
-        rdfg_list = []
+        rdfg_list = list()
         for group in rdf_group_list:
             rdfg_list.append(group['rdfgNumber'])
         self.assertNotIn(rdf_group, rdfg_list)
@@ -564,7 +742,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
     def test_modify_rdf_group_add_remove_port(self):
         """test adding and removing of port from RDF group."""
         srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
-        port_list = []
+        port_list = list()
         port_list.append(local_port_list[0])
         self.replication.modify_rdf_group(
             action='remove_ports', srdf_group_number=srdf_group,

@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,6 +37,15 @@ ua_details = (
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 LOG = logging.getLogger(__name__)
 
+CONTENT_TYPE = constants.CONTENT_TYPE
+ACCEPT = constants.ACCEPT
+ACCEPT_ENC = constants.ACCEPT_ENC
+USER_AGENT = constants.USER_AGENT
+APP_TYPE = constants.APP_TYPE
+APP_JSON = constants.APP_JSON
+APP_OCT = constants.APP_OCT
+APP_MPART = constants.APP_MPART
+
 
 class RestRequests(object):
     """RestRequests."""
@@ -48,22 +57,22 @@ class RestRequests(object):
         self.password = password
         self.verify_ssl = verify
         self.base_url = base_url
-        self.headers = {'content-type': 'application/json',
-                        'accept': 'application/json',
-                        'user-agent': ua_details,
-                        'application-type': application_type}
+        self.headers = {CONTENT_TYPE: APP_JSON,
+                        ACCEPT: APP_JSON,
+                        USER_AGENT: ua_details,
+                        APP_TYPE: application_type}
         self.timeout = 120
         self.interval = interval
         self.retries = retries
         self.session = self.establish_rest_session()
 
-    def establish_rest_session(self):
+    def establish_rest_session(self, headers=None):
         """Establish a REST session.
 
         :returns: session -- object
         """
         session = requests.session()
-        session.headers = self.headers
+        session.headers = self.headers if not headers else headers
         session.auth = HTTPBasicAuth(self.username, self.password)
         session.verify = self.verify_ssl
         return session
@@ -130,7 +139,7 @@ class RestRequests(object):
                 'Please check your SSL config or supplied SSL cert in Cinder '
                 'configuration. SSL Exception message: {m}'.format(
                     base=self.base_url, m=error))
-            raise r_exc.SSLError(msg)
+            raise r_exc.SSLError(msg) from error
 
         except (r_exc.ConnectionError, r_exc.HTTPError) as error:
             exc_class, __, __ = sys.exc_info()
@@ -140,7 +149,89 @@ class RestRequests(object):
                 'availability. Exception message: {msg}'.format(
                     met=method, base=self.base_url,
                     exc=error.__class__.__name__, msg=error))
-            raise exc_class(msg)
+            raise exc_class(msg) from error
+
+        except Exception as error:
+            exp_message = (
+                'The {method} request to URL {url} failed with exception: '
+                '{e}.'.format(method=method, url=url, e=error))
+            raise exception.VolumeBackendAPIException(
+                data=exp_message) from error
+
+    def file_transfer_request(self, method, uri, timeout=None, download=False,
+                              r_obj=None, upload=False, form_data=None):
+        """Send a file transfer request via REST to the target API.
+
+        Valid methods are 'POST' and 'PUT'.
+
+        :param method: request method -- str
+        :param uri: target uri -- str
+        :param timeout: optional timeout override -- int
+        :param download: if download request -- bool
+        :param r_obj: download request payload -- dict
+        :param upload: if upload request -- bool
+        :param form_data: upload multipart form data -- dict
+        :returns: server response, status code -- dict, int
+        :raises: InvalidInputException, VolumeBackendAPIException,
+                 Timeout, SSLError, ConnectionError, HTTPError
+        """
+        if download and not upload:
+            headers = {
+                CONTENT_TYPE: APP_JSON,
+                ACCEPT: APP_OCT,
+                USER_AGENT: ua_details,
+                APP_TYPE: self.headers.get('application-type')}
+        elif upload and not download:
+            headers = {
+                ACCEPT_ENC: APP_MPART,
+                USER_AGENT: ua_details,
+                APP_TYPE: self.headers.get('application-type')}
+        else:
+            msg = ('You must select one of upload/download for '
+                   'file_transfer_request method.')
+            LOG.error(msg)
+            raise exception.InvalidInputException(msg)
+
+        timeout_val = self.timeout if not timeout else timeout
+        data = json.dumps(r_obj, sort_keys=True, indent=4) if r_obj else None
+        url = '{base_url}{uri}'.format(base_url=self.base_url, uri=uri)
+
+        try:
+            ft_session = self.establish_rest_session(headers=headers)
+            response = ft_session.request(
+                method=method, url=url, timeout=timeout_val,
+                stream=download, data=data, files=form_data)
+            ft_session.close()
+            status_code = response.status_code
+            LOG.debug('{method} request to {url} has returned with a status '
+                      'code of: {sc}.'.format(method=method, url=url,
+                                              sc=status_code))
+            return response, status_code
+
+        except requests.Timeout as error:
+            LOG.error(
+                'The {method} request to URL {url} timed-out, but may have '
+                'been successful. Please check the array. Exception received: '
+                '{exc}.'.format(method=method, url=url, exc=error))
+            return None, None
+
+        except r_exc.SSLError as error:
+            msg = (
+                'The connection to {base} has encountered an SSL error. '
+                'Please check your SSL config or supplied SSL cert in Cinder '
+                'configuration. SSL Exception message: {m}'.format(
+                    base=self.base_url, m=error))
+            raise r_exc.SSLError(msg) from error
+
+        except (r_exc.ConnectionError, r_exc.HTTPError) as error:
+            exc_class, __, __ = sys.exc_info()
+            msg = (
+                'The {met} to Unisphere server {base} has experienced a {exc} '
+                'error. Please check your Unisphere server connection and '
+                'availability. Exception message: {msg}'.format(
+                    met=method, base=self.base_url,
+                    exc=error.__class__.__name__, msg=error))
+            raise exc_class(msg) from error
 
         except Exception as error:
             exp_message = (

@@ -235,12 +235,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_masking_views_from_host', 91, 93)
+        'ProvisioningFunctions.get_masking_views_from_host', 9.1, 10.0)
     def get_mvs_from_host(self, host_id):
         """Retrieve masking view information for a specified host.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_mvs_from_host() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_masking_views_from_host(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -269,12 +269,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_host_group', 91, 93)
+        'ProvisioningFunctions.get_host_group', 9.1, 10.0)
     def get_hostgroup(self, hostgroup_id):
         """Get details on a host group on the array.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_hostgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_host_group(). For further information please
         consult PyU4V 9.1 release notes.
 
@@ -296,12 +296,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_host_group_list', 91, 93)
+        'ProvisioningFunctions.get_host_group_list', 9.1, 10.0)
     def get_hostgroup_list(self, filters=None):
         """Get list of host group(s) on the array.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_hostgroup_list() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_host_group_list(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -328,13 +328,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.create_host_group', 91, 93)
+        'ProvisioningFunctions.create_host_group', 9.1, 10.0)
     def create_hostgroup(self, hostgroup_id, host_list,
                          host_flags=None, _async=False):
         """Create a host group containing the given hosts.
 
         DEPRECATION NOTICE: ProvisioningFunctions.create_hostgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_host_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -369,14 +369,14 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.modify_host_group', 91, 93)
+        'ProvisioningFunctions.modify_host_group', 9.1, 10.0)
     def modify_hostgroup(self, hostgroup_id, host_flag_dict=None,
                          remove_host_list=None, add_host_list=None,
                          new_name=None):
         """Modify an existing host group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.modify_hostgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.modify_host_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -432,12 +432,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.delete_host_group', 91, 93)
+        'ProvisioningFunctions.delete_host_group', 9.1, 10.0)
     def delete_hostgroup(self, hostgroup_id):
         """Delete a given host group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.delete_hostgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.delete_host_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -635,12 +635,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_masking_views_by_initiator_group', 91, 93)
+        'ProvisioningFunctions.get_masking_views_by_initiator_group',
+        9.1, 10.0)
     def get_masking_views_by_host(self, initiatorgroup_name):
         """Given a host (initiator group), retrieve the masking view name.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_masking_views_by_host()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_masking_views_by_host(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -696,12 +697,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_port_group_common_masking_views', 91, 93)
+        'ProvisioningFunctions.get_port_group_common_masking_views', 9.1, 10.0)
     def get_common_masking_views(self, portgroup_name, ig_name):
         """Get common masking views for a given port group and initiator group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_common_masking_views()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_port_group_common_masking_views(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -754,12 +755,12 @@ class ProvisioningFunctions(object):
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
         'ProvisioningFunctions.get_host_from_masking_view',
-        91, 93)
+        9.1, 10.0)
     def get_host_from_maskingview(self, masking_view_id):
         """Given a masking view, get the associated host or host group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_host_from_maskingview()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_host_from_masking_view(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -779,13 +780,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_storage_group_from_masking_view', 91, 93)
+        'ProvisioningFunctions.get_storage_group_from_masking_view', 9.1, 10.0)
     def get_storagegroup_from_maskingview(self, masking_view_id):
         """Given a masking view, get the associated storage group.
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.get_storagegroup_from_maskingview() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_storage_group_from_masking_view(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -805,13 +806,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_port_group_from_masking_view', 91, 93)
+        'ProvisioningFunctions.get_port_group_from_masking_view', 9.1, 10.0)
     def get_portgroup_from_maskingview(self, masking_view_id):
         """Given a masking view, get the associated port group.
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.get_portgroup_from_maskingview() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_port_group_from_masking_view(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -831,12 +832,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_masking_view_connections', 91, 93)
+        'ProvisioningFunctions.get_masking_view_connections', 9.1, 10.0)
     def get_maskingview_connections(self, mv_name, filters=None):
         """Get all connection information for a given masking view.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_maskingview_connections()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_masking_view_connections(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -863,12 +864,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.find_host_lun_id_for_volume', 91, 93)
+        'ProvisioningFunctions.find_host_lun_id_for_volume', 9.1, 10.0)
     def find_host_lun_id_for_vol(self, maskingview, device_id):
         """Find the host_lun_id for a volume in a masking view.
 
         DEPRECATION NOTICE: ProvisioningFunctions.find_host_lun_id_for_vol()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.find_host_lun_id_for_volume(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -921,12 +922,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions', 'ProvisioningFunctions.get_port_group',
-        91, 93)
+        9.1, 10.0)
     def get_portgroup(self, portgroup_id):
         """Get port group details.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_portgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_port_group(). For further information please
         consult PyU4V 9.1 release notes.
 
@@ -948,12 +949,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions', 'ProvisioningFunctions.get_port_group_list',
-        91, 93)
+        9.1, 10.0)
     def get_portgroup_list(self, filters=None):
         """Get port group details.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_portgroup_list() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_port_group_list(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -976,12 +977,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_ports_from_port_group', 91, 93)
+        'ProvisioningFunctions.get_ports_from_port_group', 9.1, 10.0)
     def get_ports_from_pg(self, portgroup):
         """Get a list of port identifiers from a port group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_ports_from_pg() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_ports_from_port_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1007,12 +1008,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_target_wwns_from_port_group', 91, 93)
+        'ProvisioningFunctions.get_target_wwns_from_port_group', 9.1, 10.0)
     def get_target_wwns_from_pg(self, portgroup_id):
         """Get the director ports' WWNs.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_target_wwns_from_pg()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_target_wwns_from_port_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1057,12 +1058,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.create_port_group', 91, 93)
+        'ProvisioningFunctions.create_port_group', 9.1, 10.0)
     def create_portgroup(self, portgroup_id, director_id, port_id):
         """Create a new port group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.create_portgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_port_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -1093,12 +1094,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.create_multiport_port_group', 91, 93)
+        'ProvisioningFunctions.create_multiport_port_group', 9.1, 10.0)
     def create_multiport_portgroup(self, portgroup_id, ports):
         """Create a new port group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.create_multiport_portgroup()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_multiport_port_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1128,12 +1129,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.create_port_group_from_file', 91, 93)
+        'ProvisioningFunctions.create_port_group_from_file', 9.1, 10.0)
     def create_portgroup_from_file(self, file_name, portgroup_id):
         """Given a file with director:port pairs, create a port group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.create_portgroup_from_file()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_port_group_from_file(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1168,13 +1169,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.modify_port_group', 91, 93)
+        'ProvisioningFunctions.modify_port_group', 9.1, 10.0)
     def modify_portgroup(self, portgroup_id, remove_port=None, add_port=None,
                          rename_portgroup=None):
         """Modify an existing port group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.modify_portgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.modify_port_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -1229,12 +1230,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.delete_port_group', 91, 93)
+        'ProvisioningFunctions.delete_port_group', 9.1, 10.0)
     def delete_portgroup(self, portgroup_id):
         """Delete a port group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.delete_portgroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.delete_port_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -1254,12 +1255,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_service_level_list', 91, 93)
+        'ProvisioningFunctions.get_service_level_list', 9.1, 10.0)
     def get_slo_list(self, filters=None):
         """Retrieve the list of service levels from the array.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_slo_list() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_service_level_list(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -1282,12 +1283,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_service_level', 91, 93)
+        'ProvisioningFunctions.get_service_level', 9.1, 10.0)
     def get_slo(self, slo_id):
         """Get details on a specific service level.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_slo() will be refactored
-        in PyU4V version 9.3 in favour of
+        in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_service_level(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -1309,12 +1310,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.modify_service_level', 91, 93)
+        'ProvisioningFunctions.modify_service_level', 9.1, 10.0)
     def modify_slo(self, slo_id, new_name):
         """Modify an SLO.
 
         DEPRECATION NOTICE: ProvisioningFunctions.modify_slo() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.modify_service_level(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -1430,12 +1431,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_masking_view_from_storage_group', 91, 93)
+        'ProvisioningFunctions.get_masking_view_from_storage_group', 9.1, 10.0)
     def get_mv_from_sg(self, storage_group):
         """Get the associated masking views from a given storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_mv_from_sg() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_masking_view_from_storage_group(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -1455,12 +1456,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_num_vols_in_storage_group', 91, 93)
+        'ProvisioningFunctions.get_num_vols_in_storage_group', 9.1, 10.0)
     def get_num_vols_in_sg(self, storage_group_name):
         """Get the number of volumes in a storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_num_vols_in_sg() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_num_vols_in_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1481,12 +1482,12 @@ class ProvisioningFunctions(object):
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
         'ProvisioningFunctions.is_child_storage_group_in_parent_storage_group',
-        91, 93)
+        9.1, 10.0)
     def is_child_sg_in_parent_sg(self, child_name, parent_name):
         """Check if a child storage group is a member of a parent group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.is_child_sg_in_parent_sg()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.is_child_storage_group_in_parent_storage_group().
         For further information please consult PyU4V 9.1 release notes.
 
@@ -1514,12 +1515,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_child_storage_groups_from_parent', 91, 93)
+        'ProvisioningFunctions.get_child_storage_groups_from_parent',
+        9.1, 10.0)
     def get_child_sg_from_parent(self, parent_name):
         """Get child storage group list from parent storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_child_sg_from_parent()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_child_storage_groups_from_parent(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -1537,11 +1539,12 @@ class ProvisioningFunctions(object):
         sg = self.get_storage_group(parent_name)
         return sg.get('child_storage_group', list()) if sg else list()
 
-    def create_storage_group(self, srp_id, sg_id, slo=None, workload=None,
-                             do_disable_compression=False,
-                             num_vols=0, vol_size=0, cap_unit='GB',
-                             allocate_full=False, _async=False, vol_name=None):
-        """Create the volume in the specified storage group.
+    def create_storage_group(
+            self, srp_id, sg_id, slo=None, workload=None,
+            do_disable_compression=False, num_vols=0, vol_size=0,
+            cap_unit='GB', allocate_full=False, _async=False, vol_name=None,
+            snapshot_policy_ids=None):
+        """Create a storage group with optional volumes on create operation.
 
         :param srp_id: SRP id -- str
         :param sg_id: storage group id -- str
@@ -1554,6 +1557,8 @@ class ProvisioningFunctions(object):
         :param allocate_full: allocate full capacity -- bool
         :param _async: if call should be async -- bool
         :param vol_name: name to give to the volume, optional -- str
+        :param snapshot_policy_ids: list of one or more snapshot policies
+                                    to associate with storage group -- list
         :returns: storage group details -- dict
         """
         srp_id = srp_id if srp_id else 'None'
@@ -1588,6 +1593,8 @@ class ProvisioningFunctions(object):
             slo_param.update({'persist_preallocated_capacity_through_'
                               'reclaim_or_copy': 'true'})
 
+        if snapshot_policy_ids:
+            payload.update({'snapshot_policies': snapshot_policy_ids})
         payload.update({'sloBasedStorageGroupParam': [slo_param]})
 
         if _async:
@@ -1600,7 +1607,7 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.create_non_empty_storage_group', 91, 93)
+        'ProvisioningFunctions.create_non_empty_storage_group', 9.1, 10.0)
     def create_non_empty_storagegroup(
             self, srp_id, sg_id, slo, workload, num_vols, vol_size,
             cap_unit, disable_compression=False, _async=False):
@@ -1608,7 +1615,7 @@ class ProvisioningFunctions(object):
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.create_non_empty_storagegroup() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_non_empty_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1661,13 +1668,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.create_empty_storage_group', 91, 93)
+        'ProvisioningFunctions.create_empty_storage_group', 9.1, 10.0)
     def create_empty_sg(self, srp_id, sg_id, slo, workload,
                         disable_compression=False, _async=False):
         """Create an empty storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.create_empty_sg() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_empty_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1720,12 +1727,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.add_existing_volume_to_storage_group', 91, 93)
+        'ProvisioningFunctions.add_existing_volume_to_storage_group',
+        9.1, 10.0)
     def add_existing_vol_to_sg(self, sg_id, vol_ids, _async=False):
         """Expand an existing storage group by adding existing volumes.
 
         DEPRECATION NOTICE: ProvisioningFunctions.add_existing_vol_to_sg() will
-        be refactored in PyU4V version 9.3 in favour of
+        be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.add_existing_volume_to_storage_group(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -1758,14 +1766,14 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.add_new_volume_to_storage_group', 91, 93)
+        'ProvisioningFunctions.add_new_volume_to_storage_group', 9.1, 10.0)
     def add_new_vol_to_storagegroup(self, sg_id, num_vols, vol_size,
                                     cap_unit, _async=False, vol_name=None,
                                     create_new_volumes=None):
         """Expand an existing storage group by adding new volumes.
 
         DEPRECATION NOTICE: ProvisioningFunctions.add_new_vol_to_storagegroup()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.add_new_volume_to_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1797,16 +1805,17 @@ class ProvisioningFunctions(object):
         :param vol_name: name to give to the volume, optional -- str
         :param create_new_volumes: new volumes only, no ro-use -- bool
         :param remote_array_1_id: 12 digit serial number of remote array,
-               optional -- str
+                                  optional -- str
         :param remote_array_1_sgs: list of storage groups on remote array to
-               add Remote device, Unisphere instance must be local to R1
-               storage group otherwise volumes will only be added to the
-               local group -- str or list
-        :param remote_array2_id: optional digit serial number of remote array,
-               only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional
-               -- str
-        :param remote_array2_sgs: storage groups on remote array, optional
-               -- str or list
+                                   add Remote device, Unisphere instance must
+                                   be local to R1 storage group otherwise
+                                   volumes will only be added to the local
+                                   group -- str or list
+        :param remote_array_2_id: optional digit serial number of remote array,
+                                  only used in multihop SRDF, e.g. R11, or
+                                  R1 - R21 - R2 optional -- str
+        :param remote_array_2_sgs: storage groups on remote array, optional
+                                   -- str or list
         :returns: storage group details -- dict
         """
         add_volume_param = {'emulation': 'FBA'}
@@ -1850,13 +1859,13 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.remove_volume_from_storage_group', 91, 93)
+        'ProvisioningFunctions.remove_volume_from_storage_group', 9.1, 10.0)
     def remove_vol_from_storagegroup(self, sg_id, vol_id, _async=False):
         """Remove a volume from a given storage group.
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.remove_vol_from_storagegroup() will be refactored
-        in PyU4V version 9.3 in favour of
+        in PyU4V version 10.0 in favour of
         ProvisioningFunctions.remove_volume_from_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -1882,10 +1891,10 @@ class ProvisioningFunctions(object):
                add Remote device, Unisphere instance must be local to R1
                storage group otherwise volumes will only be added to the
                local group -- str or list
-        :param remote_array2_id: optional digit serial number of remote array,
+        :param remote_array_2_id: optional digit serial number of remote array,
                only used in multihop SRDF, e.g. R11, or R1 - R21 - R2 optional
                -- str
-        :param remote_array2_sgs: storage groups on remote array, optional
+        :param remote_array_2_sgs: storage groups on remote array, optional
                -- str or list
         :returns: storage group details -- dict
         """
@@ -1903,21 +1912,18 @@ class ProvisioningFunctions(object):
                         'volumeId': vol_id,
                         'remoteSymmSGInfoParam': {
                             'remote_symmetrix_1_id': remote_array_1_id,
-                            'remote_symmetrix_1_sgs': remote_array_1_sgs}}}
-                 })
+                            'remote_symmetrix_1_sgs': remote_array_1_sgs}}}})
             if remote_array_2_id and remote_array_2_sgs:
                 if not isinstance(remote_array_2_sgs, list):
                     remote_array_2_sgs = [remote_array_2_sgs]
-                payload.update(
-                    {'editStorageGroupActionParam': {
-                        'removeVolumeParam': {
-                            'volumeId': vol_id,
-                            'remoteSymmSGInfoParam': {
-                                'remote_symmetrix_1_id': remote_array_1_id,
-                                'remote_symmetrix_1_sgs': remote_array_1_sgs,
-                                'remote_symmetrix_2_id': remote_array_2_id,
-                                'remote_symmetrix_2_sgs': remote_array_1_sgs
-                            }}}})
+                payload.update({'editStorageGroupActionParam': {
+                    'removeVolumeParam': {
+                        'volumeId': vol_id,
+                        'remoteSymmSGInfoParam': {
+                            'remote_symmetrix_1_id': remote_array_1_id,
+                            'remote_symmetrix_1_sgs': remote_array_1_sgs,
+                            'remote_symmetrix_2_id': remote_array_2_id,
+                            'remote_symmetrix_2_sgs': remote_array_2_sgs}}}})
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_storage_group(storage_group_id, payload)
@@ -1952,14 +1958,14 @@ class ProvisioningFunctions(object):
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
         'ProvisioningFunctions.create_volume_from_storage_group_return_id',
-        91, 93)
+        9.1, 10.0)
     def create_volume_from_sg_return_dev_id(
             self, volume_name, storagegroup_name, vol_size, cap_unit='GB'):
         """Create a new volume in the given storage group.
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.create_volume_from_sg_return_dev_id() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.create_volume_from_storage_group_return_id(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -2014,12 +2020,12 @@ class ProvisioningFunctions(object):
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
         'ProvisioningFunctions.add_child_storage_group_to_parent_group',
-        91, 93)
+        9.1, 10.0)
     def add_child_sg_to_parent_sg(self, child_sg, parent_sg):
         """Add a storage group to a parent storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.add_child_sg_to_parent_sg()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.add_child_storage_group_to_parent_group(). For
         further information please consult PyU4V 9.1 release notes.
 
@@ -2053,13 +2059,13 @@ class ProvisioningFunctions(object):
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
         'ProvisioningFunctions.remove_child_storage_group_from_parent_group',
-        91, 93)
+        9.1, 10.0)
     def remove_child_sg_from_parent_sg(self, child_sg, parent_sg):
         """Remove a storage group from its parent storage group.
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.remove_child_sg_from_parent_sg()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.remove_child_storage_group_from_parent_group().
         For further information please consult PyU4V 9.1 release notes.
 
@@ -2089,12 +2095,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.update_storage_group_qos', 91, 93)
+        'ProvisioningFunctions.update_storage_group_qos', 9.1, 10.0)
     def update_storagegroup_qos(self, storage_group_name, qos_specs):
         """Update the storage group instance with QoS details.
 
         DEPRECATION NOTICE: ProvisioningFunctions.update_storagegroup_qos()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.update_storage_group_qos(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -2197,12 +2203,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.delete_storage_group', 91, 93)
+        'ProvisioningFunctions.delete_storage_group', 9.1, 10.0)
     def delete_storagegroup(self, storagegroup_id):
         """Delete a given storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.delete_storagegroup()  will
-        be refactored in PyU4V version 9.3 in favour of
+        be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.delete_storage_group(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -2271,14 +2277,14 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_volume_effective_wwn_details', 91, 93)
+        'ProvisioningFunctions.get_volume_effective_wwn_details', 9.1, 10.0)
     def get_vol_effective_wwn_details_84(self, vol_list,
                                          output_file_name='wwn_data.csv'):
         """Get the effective wwn for a list of vols.
 
         DEPRECATION NOTICE:
         ProvisioningFunctions.get_vol_effective_wwn_details_84() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_volume_effective_wwn_details(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -2330,12 +2336,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_volumes_from_storage_group', 91, 93)
+        'ProvisioningFunctions.get_volumes_from_storage_group', 9.1, 10.0)
     def get_vols_from_storagegroup(self, storagegroup_id):
         """Retrieve volume information associated with a given storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_vols_from_storagegroup()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_volumes_from_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -2359,12 +2365,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.get_storage_group_from_volume', 91, 93)
+        'ProvisioningFunctions.get_storage_group_from_volume', 9.1, 10.0)
     def get_storagegroup_from_vol(self, vol_id):
         """Retrieve storage group information for a specified volume.
 
         DEPRECATION NOTICE: ProvisioningFunctions.get_storagegroup_from_vol()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.get_storage_group_from_volume(). For further
         information please consult PyU4V 9.1 release notes.
 
@@ -2384,12 +2390,12 @@ class ProvisioningFunctions(object):
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
-        'ProvisioningFunctions.is_volume_in_storage_group', 91, 93)
+        'ProvisioningFunctions.is_volume_in_storage_group', 9.1, 10.0)
     def is_volume_in_storagegroup(self, device_id, storagegroup):
         """See if a volume is a member of the given storage group.
 
         DEPRECATION NOTICE: ProvisioningFunctions.is_volume_in_storagegroup()
-        will be refactored in PyU4V version 9.3 in favour of
+        will be refactored in PyU4V version 10.0 in favour of
         ProvisioningFunctions.is_volume_in_storage_group(). For further
         information please consult PyU4V 9.1 release notes.
 

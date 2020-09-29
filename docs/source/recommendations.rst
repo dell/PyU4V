@@ -40,6 +40,15 @@ practices that you should follow:
 - If querying for data at regular intervals, examine your calls to see if you
   can create the interval time. If information is not likely to change over
   the course of 24 hours then querying once a day would be sufficient.
+- If querying for real-time performance data it not possible to query for less
+  than one minute of data at a time, this is to try negate the possibility of
+  users querying for real-time data every 5 seconds and overloading Unisphere.
+  With one minute intervals users can query for 12 deltas of data at 5 second
+  intervals for a specified minute range.
+- It is not possible to query for more than one hour of real-time performance
+  data at a time. This is a hard restriction enforced by Unisphere. If you need
+  more than one hour of data then consider if diagnostic performance data is
+  more suitable.
 
 Lastly, and most importantly, with great power comes great responsibility,
 PyU4V provides you with the ability to query every performance metric for every

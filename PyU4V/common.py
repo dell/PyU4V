@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """common.py."""
 
+import json
 import logging
 import math
 import re
@@ -100,11 +101,11 @@ class CommonFunctions(object):
                         kwargs['result'], kwargs['task'] = result, task
                     else:
                         kwargs['status'], kwargs['task'] = status, task
-            except Exception:
+            except Exception as error:
                 exception_message = 'Issue encountered waiting for job.'
                 LOG.exception(exception_message)
                 raise exception.VolumeBackendAPIException(
-                    data=exception_message)
+                    data=exception_message) from error
 
             return kwargs
 
@@ -204,11 +205,42 @@ class CommonFunctions(object):
                     data=exception_message)
         return task
 
+    def build_target_uri(self, *args, **kwargs):
+        """Build the target URI.
+
+        This function calls into _build_uri() for access outside this class.
+
+        :param args: arguments passed in to form URI -- str
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :returns: target URI -- str
+        """
+        return self._build_uri(*args, **kwargs)
+
     def _build_uri(self, *args, **kwargs):
         """Build the target URI.
 
         :param args: arguments passed in to form URI -- str
-        :param kwargs: key word arguments passed in to form URI -- str
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
         :returns: target URI -- str
         """
         target_uri, version = str(), None
@@ -257,12 +289,12 @@ class CommonFunctions(object):
 
         return target_uri
 
-    @decorators.deprecation_notice('CommonFunctions', 9.1, 9.3)
+    @decorators.deprecation_notice('CommonFunctions', 9.1, 10.0)
     def _build_uri_args(self, *args, **kwargs):
         """Legacy method for building target URI.
 
         DEPRECATION NOTICE: CommonFunctions._build_uri_args() will be
-        deprecated in PyU4V version 9.3 in favour of
+        deprecated in PyU4V version 10.0 in favour of
         CommonFunctions._build_uri() with kwargs only. For further information
         please consult PyU4V 9.1 release notes.
 
@@ -320,20 +352,18 @@ class CommonFunctions(object):
     def get_resource(self, *args, **kwargs):
         """Get resource details from the array.
 
-        :param kwargs:
-            param version: Unisphere version -- int
-            param no_version: if versionless uri -- bool
-            param category: resource category e.g. sloprovisioning -- str
-            param resource_level: resource level e.g. storagegroup -- str
-            param resource_level_id: resource level id -- str
-            param resource_type: optional name of resource -- str
-            param resource_type_id: optional name of resource -- str
-            param resource: optional name of resource -- str
-            param resource_id: optional name of resource -- str
-            param object_type: optional name of resource -- str
-            param object_type_id: optional name of resource -- str
-            param params: query parameters -- dict
-
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :key params: query parameters -- dict
         :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
@@ -348,20 +378,18 @@ class CommonFunctions(object):
     def create_resource(self, *args, **kwargs):
         """Create a resource.
 
-        :param kwargs:
-            param version: Unisphere version -- int
-            param no_version: if versionless uri -- bool
-            param category: resource category e.g. sloprovisioning -- str
-            param resource_level: resource level e.g. storagegroup -- str
-            param resource_level_id: resource level id -- str
-            param resource_type: optional name of resource -- str
-            param resource_type_id: optional name of resource -- str
-            param resource: optional name of resource -- str
-            param resource_id: optional name of resource -- str
-            param object_type: optional name of resource -- str
-            param object_type_id: optional name of resource -- str
-            param payload: query parameters -- dict
-
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :key payload: query parameters -- dict
         :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
@@ -380,20 +408,18 @@ class CommonFunctions(object):
     def modify_resource(self, *args, **kwargs):
         """Modify a resource.
 
-        :param kwargs:
-            param version: Unisphere version -- int
-            param no_version: if versionless uri -- bool
-            param category: resource category e.g. sloprovisioning -- str
-            param resource_level: resource level e.g. storagegroup -- str
-            param resource_level_id: resource level id -- str
-            param resource_type: optional name of resource -- str
-            param resource_type_id: optional name of resource -- str
-            param resource: optional name of resource -- str
-            param resource_id: optional name of resource -- str
-            param object_type: optional name of resource -- str
-            param object_type_id: optional name of resource -- str
-            param payload: query parameters
-
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :key payload: query parameters
         :returns: resource object -- dict
         """
         target_uri = self._build_uri(*args, **kwargs)
@@ -412,19 +438,18 @@ class CommonFunctions(object):
     def delete_resource(self, *args, **kwargs):
         """Delete a resource.
 
-        :param kwargs:
-            param version: Unisphere version -- int
-            param no_version: if versionless uri -- bool
-            param category: resource category e.g. sloprovisioning -- str
-            param resource_level: resource level e.g. storagegroup -- str
-            param resource_level_id: resource level id -- str
-            param resource_type: optional name of resource -- str
-            param resource_type_id: optional name of resource -- str
-            param resource: optional name of resource -- str
-            param resource_id: optional name of resource -- str
-            param object_type: optional name of resource -- str
-            param object_type_id: optional name of resource -- str
-            param payload: query parameters
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :key payload: query parameters
         """
         target_uri = self._build_uri(*args, **kwargs)
         message, status_code = self.request(
@@ -439,15 +464,91 @@ class CommonFunctions(object):
             resource_type=resource_type))
         self.check_status_code_success(operation, status_code, message)
 
+    def download_file(self, **kwargs):
+        """Download a file.
+
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :key payload: query parameters -- dict
+        :returns: file info including binary data -- dict
+        :raises: ValueError
+        """
+        target_uri = self._build_uri(**kwargs)
+        response, status_code = self.rest_client.file_transfer_request(
+            method=POST, download=True, uri=target_uri,
+            r_obj=kwargs.get('payload'))
+        try:
+            message = response.raw.reason
+            operation = ('download {resource_type} resource'.format(
+                resource_type=kwargs.get('resource_level')))
+            self.check_status_code_success(operation, status_code, message)
+        except ValueError:
+            LOG.error(
+                'There request to download from {uri} has failed and no '
+                'message has been returned from Unisphere. Please check '
+                'Unisphere REST logs for further details.'.format(
+                    uri=target_uri))
+        return response
+
+    def upload_file(self, **kwargs):
+        """Upload a file.
+
+        :key version: Unisphere version -- int
+        :key no_version: if versionless uri -- bool
+        :key category: resource category e.g. sloprovisioning -- str
+        :key resource_level: resource level e.g. storagegroup -- str
+        :key resource_level_id: resource level id -- str
+        :key resource_type: optional name of resource -- str
+        :key resource_type_id: optional name of resource -- str
+        :key resource: optional name of resource -- str
+        :key resource_id: optional name of resource -- str
+        :key object_type: optional name of resource -- str
+        :key object_type_id: optional name of resource -- str
+        :key form_data: multipart form data -- dict
+        :returns: response success details -- dict
+        """
+        response_content = dict()
+        target_uri = self._build_uri(**kwargs)
+        response, status_code = self.rest_client.file_transfer_request(
+            method=POST, upload=True, uri=target_uri,
+            form_data=kwargs.get('form_data'))
+        try:
+            response_content = json.loads(response.text)
+            msg = response_content.get('message')
+            operation = ('upload {resource_type} resource'.format(
+                resource_type=kwargs.get('resource_level')))
+            self.check_status_code_success(operation, status_code, msg)
+            # Workaround until failed responses do not return 200
+            if not response_content.get('success', False):
+                LOG.error(msg)
+                raise exception.VolumeBackendAPIException(msg)
+            LOG.info('The settings upload request was successful.')
+        except ValueError:
+            LOG.error(
+                'There request to upload to {uri} has failed and no '
+                'message has been returned from Unisphere. Please check '
+                'Unisphere REST logs for further details.'.format(
+                    uri=target_uri))
+        return response_content
+
     @staticmethod
     @decorators.refactoring_notice(
         'CommonFunctions', 'utils.file_handler.create_list_from_file',
-        9.1, 9.3)
+        9.1, 10.0)
     def create_list_from_file(file_name):
         """Given a file, create a list from its contents.
 
         DEPRECATION NOTICE: CommonFunctions.create_list_from_file() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         utils.file_handler.create_list_from_file(). For further information
         please consult PyU4V 9.1 release notes.
 
@@ -458,12 +559,12 @@ class CommonFunctions(object):
 
     @staticmethod
     @decorators.refactoring_notice(
-        'CommonFunctions', 'utils.file_handler.read_csv_values', 9.1, 9.3)
+        'CommonFunctions', 'utils.file_handler.read_csv_values', 9.1, 10.0)
     def read_csv_values(file_name, delimiter=',', quotechar='|'):
         """Read any csv file with headers.
 
         DEPRECATION NOTICE: CommonFunctions.read_csv_values() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         utils.file_handler.read_csv_values(). For further information please
         consult PyU4V 9.1 release notes.
 
@@ -482,7 +583,7 @@ class CommonFunctions(object):
     def get_uni_version(self):
         """Get the unisphere version from the server.
 
-        :returns: version and major_version e.g. "V9.1.0.2", "91" -- str, str
+        :returns: version and major_version e.g. "V9.2.0.0", "92" -- str, str
         """
         version, major_version = None, None
         response = self.get_resource(category=VERSION, no_version=True)
@@ -562,12 +663,12 @@ class CommonFunctions(object):
         return full_response
 
     @decorators.refactoring_notice(
-        'CommonFunctions', 'WLPFunctions.get_wlp_information', 9.1, 9.3)
+        'CommonFunctions', 'WLPFunctions.get_wlp_information', 9.1, 10.0)
     def get_wlp_information(self, array_id):
         """Get the latest timestamp from WLP for processing new Workloads.
 
         DEPRECATION NOTICE: CommonFunctions.get_wlp_information() will be
-        refactored in PyU4V version 9.3 in favour of
+        refactored in PyU4V version 10.0 in favour of
         WLPFunctions.get_wlp_information(). For further information please
         consult PyU4V 9.1 release notes.
 
@@ -579,12 +680,12 @@ class CommonFunctions(object):
         return response if response else dict()
 
     @decorators.refactoring_notice(
-        'CommonFunctions', 'WLPFunctions.get_headroom', 9.1, 9.3)
+        'CommonFunctions', 'WLPFunctions.get_headroom', 9.1, 10.0)
     def get_headroom(self, array_id, workload=None, srp=None, slo=None):
         """Get the Remaining Headroom Capacity.
 
         DEPRECATION NOTICE: CommonFunctions.get_headroom() will be refactored
-        in PyU4V version 9.3 in favour of WLPFunctions.get_headroom(). For
+        in PyU4V version 10.0 in favour of WLPFunctions.get_headroom(). For
         further information please consult PyU4V 9.1 release notes.
 
         Get the headroom capacity for a given srp/ slo/ workload combination.

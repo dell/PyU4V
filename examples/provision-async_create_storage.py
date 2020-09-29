@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,15 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""async_provision.py"""
+"""docs/source/programmers_guide_src/code/provision-async_create_storage.py"""
 
 import PyU4V
 
 # Initialise PyU4V connection to Unisphere
-conn = PyU4V.U4VConn(
-    u4v_version='90', server_ip='10.0.0.75', port=8443,
-    verify='~/.PyU4V/Unisphere91.pem', username='pyu4v-user',
-    password='secret-pass')
+conn = PyU4V.U4VConn()
 
 # Before provisioning storage we are going to check that there is enough
 # headroom left on the array for our provisioning operations
@@ -59,7 +56,7 @@ if REQUESTED_CAPACITY <= int(headroom_capacity):
 
     # Create a Host using supplied initiator IDs, these can be also be
     # retrieved via the call conn.provisioning.get_available_initiator()
-    initiator_list = ['iqn:2019-test1', 'iqn:2019-test1']
+    initiator_list = ['iqn:2020-test1', 'iqn:2020-test1']
     host_info = conn.provisioning.create_host(
         host_name='Example-Host', initiator_list=initiator_list)
     print('Host created successfully...')

@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,10 +20,15 @@ import tempfile
 import testtools
 import time
 
+from pathlib import Path
+
 from PyU4V.tests.ci_tests import base
 from PyU4V import univmax_conn
+from PyU4V.utils import constants
 from PyU4V.utils import decorators
+from PyU4V.utils import exception
 from PyU4V.utils import file_handler
+from PyU4V.utils import time_handler
 
 
 class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
@@ -227,6 +232,79 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
                             temp_file=file_path, temp_dir=temp_dir)
             raise Exception('Test failed with exception: {msg}'.format(msg=e))
 
+    def test_write_binary_data_to_file(self):
+        """Test write_binary_data_to_file provide directory path."""
+        response, temp_dir_path = str(), str()
+        try:
+            temp_u4v_conn = univmax_conn.U4VConn()
+            dummy_data = temp_u4v_conn.common.download_file(
+                category=constants.SYSTEM, resource_level=constants.SYMMETRIX,
+                resource_level_id=temp_u4v_conn.array_id,
+                resource_type=constants.AUDIT_LOG_RECORD,
+                resource=constants.EXPORT_FILE,
+                payload={constants.AUDIT_LOG_FILENAME: 'ci_test'})
+            self.assertTrue(dummy_data)
+
+            temp_dir_path = Path(self.create_temp_directory())
+            temp_filename = Path('ci_test_dummy_data')
+            temp_suffix = constants.PDF_SUFFIX
+            temp_pdf_filename = temp_filename.with_suffix(temp_suffix)
+            temp_full_path = Path.joinpath(temp_dir_path, temp_pdf_filename)
+
+            response = file_handler.write_binary_data_to_file(
+                data=dummy_data, file_extension=temp_suffix,
+                file_name=str(temp_filename), dir_path=str(temp_dir_path))
+            self.assertTrue(dummy_data)
+            self.assertEqual(str(temp_full_path), str(response))
+            self.addCleanup(self.cleanup_files, temp_file=str(response),
+                            temp_dir=temp_dir_path)
+
+        # If there are any exceptions raised ensure cleanup is carried out on
+        # changes to PyU4V.conf
+        except Exception as e:
+            self.addCleanup(self.cleanup_files, temp_file=str(response),
+                            temp_dir=temp_dir_path)
+            raise Exception('Test failed with exception: {msg}'.format(msg=e))
+
+    def test_write_binary_data_to_file_no_dir(self):
+        """Test write_binary_data_to_file no directory path."""
+        response, temp_dir_path = str(), str()
+        try:
+            temp_u4v_conn = univmax_conn.U4VConn()
+            dummy_data = temp_u4v_conn.common.download_file(
+                category=constants.SYSTEM, resource_level=constants.SYMMETRIX,
+                resource_level_id=temp_u4v_conn.array_id,
+                resource_type=constants.AUDIT_LOG_RECORD,
+                resource=constants.EXPORT_FILE,
+                payload={constants.AUDIT_LOG_FILENAME: 'ci_test'})
+            self.assertTrue(dummy_data)
+
+            temp_dir_path = Path.cwd()
+            temp_filename = Path('ci_test_dummy_data')
+            temp_suffix = constants.PDF_SUFFIX
+            temp_pdf_filename = temp_filename.with_suffix(temp_suffix)
+            temp_full_path = Path.joinpath(temp_dir_path, temp_pdf_filename)
+
+            response = file_handler.write_binary_data_to_file(
+                data=dummy_data, file_extension=temp_suffix,
+                file_name=str(temp_filename))
+            self.assertTrue(dummy_data)
+            self.assertEqual(str(temp_full_path), str(response))
+            self.addCleanup(self.cleanup_files, temp_file=str(response))
+
+        # If there are any exceptions raised ensure cleanup is carried out on
+        # changes to PyU4V.conf
+        except Exception as e:
+            self.addCleanup(self.cleanup_files, temp_file=str(response))
+            raise Exception('Test failed with exception: {msg}'.format(msg=e))
+
+    def test_write_binary_data_to_file_dir_exception(self):
+        """Test invalid directory exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            file_handler.write_binary_data_to_file,
+            data=None, file_extension=None, file_name=None, dir_path='fake')
+
     def test_write_to_csv_file(self):
         """Test write_to_csv_file."""
         # Initialise path strings for temporary file and directory
@@ -383,3 +461,51 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
                     match = True
             # Assert the regex pattern matched the expected log file contents
             self.assertTrue(match)
+
+    # utils.time_handler
+
+    def test_format_time_input_return_seconds_from_seconds(self):
+        """Test format_time_input input seconds return seconds."""
+        time_now = time.time()
+        return_time = time_handler.format_time_input(
+            time_in=time_now, return_seconds=True)
+        self.assertEqual(int(time_now), return_time)
+
+    def test_format_time_input_return_milliseconds_from_seconds(self):
+        """Test format_time_input input seconds return milliseconds."""
+        time_now = time.time()
+        return_time = time_handler.format_time_input(
+            time_in=time_now, return_milliseconds=True)
+        self.assertEqual(int(time_now) * 1000, return_time)
+
+    def test_format_time_input_return_seconds_from_milliseconds(self):
+        """Test format_time_input input milliseconds return seconds."""
+        time_now = int(time.time()) * 1000
+        return_time = time_handler.format_time_input(
+            time_in=time_now, return_seconds=True)
+        self.assertEqual(int(time_now) // 1000, return_time)
+
+    def test_format_time_input_return_milliseconds_from_milliseconds(self):
+        """Test format_time_input input milliseconds return milliseconds."""
+        time_now = int(time.time()) * 1000
+        return_time = time_handler.format_time_input(
+            time_in=time_now, return_milliseconds=True)
+        self.assertEqual(time_now, return_time)
+
+    def test_format_time_input_type_exception(self):
+        """Test format_time_input invalid time type exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            time_handler.format_time_input, 'time', True)
+
+    def test_format_time_input_input_exception_all_false(self):
+        """Test format_time_input invalid false input type exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            time_handler.format_time_input, 123, False, False)
+
+    def test_format_time_input_input_exception_all_true(self):
+        """Test format_time_input invalid true input type exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            time_handler.format_time_input, 123, True, True)

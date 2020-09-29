@@ -124,3 +124,6 @@ dmypy.json
 
 # Sphinx Docs Build
 !docs/build/html
+
+# IDE
+.idea/

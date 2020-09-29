@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -542,7 +542,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         old_alias = (initiator_id, initiator_id)
         if constants.ALIAS in initiator_details:
             old_alias = tuple(initiator_details[constants.ALIAS].split('/'))
-        new_alias = ('pyu4v_ci_test', 'pyu4v_ci_alias')
+        new_alias = (
+            'pyu4v_ci', 'pyu4v_alias-{}'.format(round(time.time())))
         new_alias_str = new_alias[0] + '/' + new_alias[1]
         self.provisioning.modify_initiator(initiator, rename_alias=new_alias)
         initiator_details = self.provisioning.get_initiator(initiator)
@@ -2182,14 +2183,15 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(
             selected_volume_details[constants.EFFECTIVE_WWN],
             parsed_values[constants.EFFECTIVE_WWN][0])
-        if constants.STORAGE_GROUP_ID_CAMEL in selected_volume_details:
-            storage_group_reference = selected_volume_details[
-                constants.STORAGE_GROUP_ID_CAMEL]
-        else:
-            storage_group_reference = None
-        self.assertEqual(
-            str(storage_group_reference),
-            parsed_values[constants.STORAGE_GROUP_ID_CAMEL][0])
+        if selected_volume_details.get('num_of_storage_groups', 0) > 0:
+            if constants.STORAGE_GROUP_ID_CAMEL in selected_volume_details:
+                storage_group_reference = selected_volume_details[
+                    constants.STORAGE_GROUP_ID_CAMEL]
+            else:
+                storage_group_reference = None
+            self.assertEqual(
+                str(storage_group_reference),
+                parsed_values[constants.STORAGE_GROUP_ID_CAMEL][0])
 
     def test_get_volume_effective_wwn_details(self):
         """Test get_volume_effective_wwn_details."""
@@ -2887,14 +2889,15 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(
             reference_details[constants.EFFECTIVE_WWN],
             str(actual_details[constants.EFFECTIVE_WWN][0]))
-        if constants.STORAGE_GROUP_ID_CAMEL in reference_details:
-            storage_group_reference = reference_details[
-                constants.STORAGE_GROUP_ID_CAMEL]
-        else:
-            storage_group_reference = ''
-        self.assertEqual(
-            str(storage_group_reference),
-            str(actual_details[constants.STORAGE_GROUP_ID][0]))
+        if reference_details.get('num_of_storage_groups', 0) > 0:
+            if constants.STORAGE_GROUP_ID_CAMEL in reference_details:
+                storage_group_reference = reference_details[
+                    constants.STORAGE_GROUP_ID_CAMEL]
+            else:
+                storage_group_reference = ''
+            self.assertEqual(
+                str(storage_group_reference),
+                str(actual_details[constants.STORAGE_GROUP_ID][0]))
 
     def _validate_srp_details(self, srp_details):
         """Helper method for validating srp return details.

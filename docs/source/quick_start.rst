@@ -25,7 +25,7 @@ queries to validate the successful connection.
 .. code-block:: python
 
     conn.common.get_unisphere_version()
-    ('V9.1.0.5', '91')
+    ('V9.2.0.0', '92')
     conn.common.get_array_list()
     ["000197900123", "000197900124", "000197900125", "000197900126"]
 
@@ -51,14 +51,17 @@ the various categories provided by the Unisphere REST API:
 - Common - REST methods and assistive utilities
 - Migration - all migration related calls
 - Performance - all performance and threshold calls
+- Real Time - all performance real-time calls
 - Provisioning - all provisioning and masking related calls
 - Replication - all local and remote replication calls
+- Metro DR - all Metro DR calls
+- Snapshot Policy - all Snapshot Policy calls
 - System - all system level calls
 - Workload Planner - all workload planner calls
 - Utils - assistive functions to aid with PyU4V usage
 
 There are plans to further increase the coverage of Unisphere REST calls in
-version 9.1. All changes are reflected in the PyU4V change log (link_).
+version 10.0. All changes are reflected in the PyU4V change log (link_).
 
 Perform a Custom REST Call in PyU4V
 -----------------------------------
@@ -81,7 +84,13 @@ REST API to any supported endpoint.
 If there is any functionality that is provided by the Unisphere REST API that
 is not yet implemented in PyU4V, it is possible to create a custom function
 which use the above functions to make use of that functionality. For
-information on the Unisphere REST API please its related documentation.
+information on the Unisphere REST API please consult its related documentation.
+You can get the Unisphere for PowerMax REST documentation by navigating to a
+URL in your local instance of Unisphere for PowerMax. Navigate to
+``https://{ip}:{port}/univmax/restapi/docs`` where ``{ip}`` is the IP address
+of your Unisphere server and ``{port}`` is the port it is listening on. A zip
+file will be downloaded to your computer containing complete Unisphere REST
+endpoint documentation.
 
 To find out more information on the any PyU4V calls refer to the supporting
 function documentation in the :doc:`api` , there are also programmers

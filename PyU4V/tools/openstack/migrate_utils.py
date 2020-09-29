@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 OpenStack migrate_utils.py.
 
@@ -119,7 +118,7 @@ class MigrateUtils(object):
         :param masking_view_name: masking view name -- str
         :returns: portgroup -- str, storagegroup -- str, host -- str
         """
-        masking_view_components = {}
+        masking_view_components = dict()
         try:
             masking_view_components['portgroup'] = (
                 self.conn.provisioning.get_element_from_masking_view(
@@ -130,12 +129,12 @@ class MigrateUtils(object):
             masking_view_components['initiatorgroup'] = (
                 self.conn.provisioning.get_element_from_masking_view(
                     masking_view_name, host=True))
-        except exception.ResourceNotFoundException:
+        except exception.ResourceNotFoundException as error:
             exception_message = (
                 'Cannot find one of the components of %s' % masking_view_name)
             self.smart_print(exception_message, ERROR)
             raise exception.ResourceNotFoundException(
-                data=exception_message)
+                data=exception_message) from error
 
         self.print_pretty_table(masking_view_components)
         return masking_view_components
@@ -308,7 +307,7 @@ class MigrateUtils(object):
         :param host_name: host name -- str
         :returns: element details -- dict
         """
-        element_dict = {}
+        element_dict = dict()
 
         sg_component_dict = self.get_storage_group_component_dict(
             storage_group_name)
@@ -412,7 +411,7 @@ class MigrateUtils(object):
         :param revert: is it a revert case -- boolean
         :returns: element details -- dict
         """
-        element_dict = {}
+        element_dict = dict()
         cd_str = ''
         re_str = ''
         regex_all = '\\S+'
@@ -751,7 +750,7 @@ class MigrateUtils(object):
                 print_str = ('Unable to validate your list, '
                              'no volumes will be migrated.')
                 self.smart_print(print_str, WARNING)
-                volume_list = []
+                volume_list = list()
         else:
             self.smart_print('You cannot input an empty list', DEBUG)
             txt = 'Do you want to choose again Y/N or X:'
@@ -803,7 +802,7 @@ class MigrateUtils(object):
         :param revert: revert back -- boolean
         :returns: element details -- dict, child storage group name -- str
         """
-        element_dict = {}
+        element_dict = dict()
         child_storage_group_name = None
         for child_storage_group_name in child_storage_group_list:
             txt = ('Which storage group do you want to migrate:\n\t '
@@ -856,7 +855,7 @@ class MigrateUtils(object):
         :param: storage_group_details -- dict
         :returns: QoS details -- dict
         """
-        qos_dict = {}
+        qos_dict = dict()
         try:
             storage_group_qos_details = storage_group_details['hostIOLimit']
             qos_dict['sg_maxiops'] = (
@@ -877,9 +876,9 @@ class MigrateUtils(object):
         :param source_storage_group_name: source SG name -- str
         :param target_storage_group_name: target SG name -- str
         """
-        property_dict = {}
-        source_qos_dict = {}
-        target_qos_dict = {}
+        property_dict = dict()
+        source_qos_dict = dict()
+        target_qos_dict = dict()
         source_storage_group_details = self.get_storage_group(
             source_storage_group_name)
         target_storage_group_details = self.get_storage_group(

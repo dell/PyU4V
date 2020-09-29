@@ -17,8 +17,8 @@ to become valid for loading by PyU4V:
     $ cp PyU4V/PyU4V.conf.sample ~/.PyU4V/PyU4V.conf
 
 .. note::
-    The ``\~`` symbol is used here to represent the users home directory
-    regardless of operating system, however, ``\~`` is not a valid shortcut in
+    The ``~`` symbol is used here to represent the users home directory
+    regardless of operating system, however, ``~`` is not a valid shortcut in
     Windows command prompt so direct path to users home directory should be
     used instead ``C:\> mkdir C:\Users\{user}\.PyU4V`` where ``{user}`` is the
     current user.

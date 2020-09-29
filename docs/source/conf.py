@@ -20,13 +20,13 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'PyU4V'
-copyright = '2019 Dell Inc. or its subsidiaries.'
+copyright = '2020 Dell Inc. or its subsidiaries.'
 author = 'Dell'
 
 # The short X.Y version.
-version = u'9.1'
+version = u'9.2'
 # The full version, including alpha/beta/rc tags
-release = '9.1.5.0'
+release = '9.2.0.0'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

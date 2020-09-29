@@ -17,6 +17,14 @@ debug:
 - Impacted functions
 - PyU4V logs showing issue
 
+.. note::
+    We will support N-2 releases from the current master release which includes
+    bug and security fixes. If an issue appears in a code base older than N-2
+    we will try to assist as best possible but ultimately upgrading to a newer
+    version of PyU4V will be the ideal outcome. As new releases of PyU4V are
+    made available, anything older than N-2 will be marked as End of Life
+    (EOL).
+
 .. URL LINKS
 
 .. _issues: https://github.com/MichaelMcAleer/PyU4V/issues

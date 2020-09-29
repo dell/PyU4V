@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """test_pyu4v_performance.py."""
 
+import socket
 import testtools
 import time
 
@@ -80,8 +81,288 @@ class PyU4VPerformanceTest(testtools.TestCase):
         """Test is_array_performance_registered False."""
         with mock.patch.object(
                 self.perf, 'get_request',
-                return_value=self.p_data.array_reg_details_disabled):
+                return_value=self.p_data.array_is_registered_false):
             self.assertFalse(self.perf.is_array_performance_registered())
+
+    def test_is_array_diagnostic_performance_registered_true(self):
+        """Test is_array_diagnostic_performance_registered True."""
+        self.assertTrue(self.perf.is_array_diagnostic_performance_registered())
+
+    def testis_array_diagnostic_performance_registered_false(self):
+        """Test is_array_diagnostic_performance_registered False."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_is_registered_false):
+            self.assertFalse(self.perf.is_array_performance_registered())
+
+    def test_is_array_real_time_performance_registered_true(self):
+        """Test is_array_real_time_performance_registered True."""
+        self.assertTrue(self.perf.is_array_real_time_performance_registered())
+
+    def test_is_array_real_time_performance_registered_false(self):
+        """Test is_array_real_time_performance_registered False."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_reg_details_disabled):
+            self.assertFalse(
+                self.perf.is_array_real_time_performance_registered())
+
+    def test_is_array_real_time_performance_registered_exception_catch(self):
+        with mock.patch.object(
+                self.perf, 'get_request',
+                side_effect=exception.VolumeBackendAPIException):
+            self.assertFalse(
+                self.perf.is_array_real_time_performance_registered())
+
+    def test_get_array_registration_details(self):
+        """Test get_array_registration_details."""
+        response = self.perf.get_array_registration_details()
+        self.assertIsNotNone(response)
+        self.assertIsInstance(response, dict)
+
+    def test_get_array_registration_details_empty(self):
+        """Test get_array_registration_details."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value={'registrationDetailsInfo': list()}):
+            response = self.perf.get_array_registration_details()
+            self.assertFalse(response)
+            self.assertIsInstance(response, dict)
+
+    def test_enable_diagnostic_data_collection_success(self):
+        """Test enable_diagnostic_data_collection success scenario."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_is_registered_false):
+            with mock.patch.object(
+                    self.perf, 'post_request',
+                    side_effect=self.perf.post_request) as mck_p:
+                self.perf.enable_diagnostic_data_collection()
+                mck_p.assert_called_once_with(
+                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                    resource_type=pc.REGISTER, payload={
+                        pc.SYMM_ID: self.perf.array_id,
+                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
+
+    def test_enable_diagnostic_data_collection_fail_already_enabled(self):
+        """Test enable_diagnostic_data_collection fail - already enabled."""
+        with mock.patch.object(
+                self.perf, 'post_request',
+                side_effect=self.perf.post_request) as mck_p:
+            self.perf.enable_diagnostic_data_collection()
+            mck_p.assert_not_called()
+
+    def test_enable_diagnostic_data_collection_fail_not_applied(self):
+        """Test enable_diagnostic_data_collection fail - change not applied."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_is_registered_false):
+            with mock.patch.object(
+                    self.perf, 'post_request',
+                    return_value=self.p_data.array_register_fail) as mck_p:
+                self.assertRaises(exception.VolumeBackendAPIException,
+                                  self.perf.enable_diagnostic_data_collection)
+                mck_p.assert_called_once_with(
+                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                    resource_type=pc.REGISTER, payload={
+                        pc.SYMM_ID: self.perf.array_id,
+                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
+
+    def test_enable_diagnostic_data_collection_fail_no_msg(self):
+        """Test enable_diagnostic_data_collection fail - no response msg."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_is_registered_false):
+            with mock.patch.object(
+                    self.perf, 'post_request', return_value=dict()) as mck_p:
+                self.assertRaises(exception.VolumeBackendAPIException,
+                                  self.perf.enable_diagnostic_data_collection)
+                mck_p.assert_called_once_with(
+                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                    resource_type=pc.REGISTER, payload={
+                        pc.SYMM_ID: self.perf.array_id,
+                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
+
+    def test_disable_diagnostic_data_collection_success(self):
+        """Test disable_diagnostic_data_collection success."""
+        with mock.patch.object(
+                self.perf, 'post_request',
+                side_effect=self.perf.post_request) as mck_p:
+            self.perf.disable_diagnostic_data_collection()
+            mck_p.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: self.perf.array_id,
+                    pc.REG_DIAGNOSTIC: False, pc.REAL_TIME: False})
+
+    def test_disable_diagnostic_data_collection_fail_already_disabled(self):
+        """Test disable_diagnostic_data_collection fail - already disabled."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_is_registered_false):
+            with mock.patch.object(
+                    self.perf, 'post_request',
+                    side_effect=self.perf.post_request) as mck_p:
+                self.perf.disable_diagnostic_data_collection()
+                mck_p.assert_not_called()
+
+    def test_disable_diagnostic_data_collection_fail_not_applied(self):
+        """Test disable_diagnostic_data_collection failure - not applied."""
+        with mock.patch.object(
+                self.perf, 'post_request',
+                return_value=self.p_data.array_register_fail) as mck_p:
+            self.assertRaises(exception.VolumeBackendAPIException,
+                              self.perf.disable_diagnostic_data_collection)
+            mck_p.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: self.perf.array_id,
+                    pc.REG_DIAGNOSTIC: False, pc.REAL_TIME: False})
+
+    def test_disable_diagnostic_data_collection_fail_no_msg(self):
+        """Test disable_diagnostic_data_collection failure - no response."""
+        with mock.patch.object(
+                self.perf, 'post_request', return_value=dict()) as mck_p:
+            self.assertRaises(exception.VolumeBackendAPIException,
+                              self.perf.disable_diagnostic_data_collection)
+            mck_p.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: self.perf.array_id,
+                    pc.REG_DIAGNOSTIC: False, pc.REAL_TIME: False})
+
+    def test_enable_real_time_data_collection_success(self):
+        """Test enable_real_time_data_collection success."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_reg_details_disabled):
+            with mock.patch.object(
+                    self.perf, 'post_request',
+                    side_effect=self.perf.post_request) as mck_p:
+                self.perf.enable_real_time_data_collection()
+                mck_p.assert_called_once_with(
+                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                    resource_type=pc.REGISTER, payload={
+                        pc.SYMM_ID: self.perf.array_id,
+                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: True})
+
+    def test_enable_real_time_data_collection_fail_already_enabled(self):
+        """Test enable_real_time_data_collection fail - already enabled."""
+        with mock.patch.object(
+                self.perf, 'post_request',
+                side_effect=self.perf.post_request) as mck_p:
+            self.perf.enable_real_time_data_collection()
+            mck_p.assert_not_called()
+
+    def test_enable_real_time_data_collection_fail_not_applied(self):
+        """Test enable_diagnostic_data_collection fail - change not applied."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_reg_details_disabled):
+            with mock.patch.object(
+                    self.perf, 'post_request',
+                    return_value=self.p_data.array_register_fail) as mck_p:
+                self.assertRaises(exception.VolumeBackendAPIException,
+                                  self.perf.enable_real_time_data_collection)
+                mck_p.assert_called_once_with(
+                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                    resource_type=pc.REGISTER, payload={
+                        pc.SYMM_ID: self.perf.array_id,
+                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: True})
+
+    def test_enable_real_time_data_collection_fail_no_msg(self):
+        """Test enable_diagnostic_data_collection fail - no response msg."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_reg_details_disabled):
+            with mock.patch.object(
+                    self.perf, 'post_request', return_value=dict()) as mck_p:
+                self.assertRaises(exception.VolumeBackendAPIException,
+                                  self.perf.enable_real_time_data_collection)
+                mck_p.assert_called_once_with(
+                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                    resource_type=pc.REGISTER, payload={
+                        pc.SYMM_ID: self.perf.array_id,
+                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: True})
+
+    def test_disable_real_time_data_collection_success(self):
+        """Test disable_real_time_data_collection success.
+
+        Diagnostic registration is left as True here because fake response
+        object returns True by default for array diagnostic perf registration.
+        """
+        with mock.patch.object(
+                self.perf, 'post_request',
+                side_effect=self.perf.post_request) as mck_p:
+            self.perf.disable_real_time_data_collection()
+            mck_p.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: self.perf.array_id,
+                    pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
+
+    def test_disable_real_time_data_collection_fail_already_disabled(self):
+        """Test disable_real_time_data_collection fail - already disabled."""
+        with mock.patch.object(
+                self.perf, 'get_request',
+                return_value=self.p_data.array_reg_details_disabled):
+            with mock.patch.object(
+                    self.perf, 'post_request',
+                    side_effect=self.perf.post_request) as mck_p:
+                self.perf.disable_real_time_data_collection()
+                mck_p.assert_not_called()
+
+    def test_disable_real_time_data_collection_fail_not_applied(self):
+        """Test disable_real_time_data_collection fail - not applied..
+
+        Diagnostic registration is left as True here because fake response
+        object returns True by default for array diagnostic perf registration.
+        """
+        with mock.patch.object(
+                self.perf, 'post_request',
+                return_value=self.p_data.array_register_fail) as mck_p:
+            self.assertRaises(exception.VolumeBackendAPIException,
+                              self.perf.disable_real_time_data_collection)
+            mck_p.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: self.perf.array_id,
+                    pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
+
+    def test_disable_real_time_data_collection_fail_no_msg(self):
+        """Test disable_real_time_data_collection fail - no response msg."""
+        with mock.patch.object(
+                self.perf, 'post_request', return_value=dict()) as mck_p:
+            self.assertRaises(exception.VolumeBackendAPIException,
+                              self.perf.disable_real_time_data_collection)
+            mck_p.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: self.perf.array_id,
+                    pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
+
+    def test_backup_performance_database_success(self):
+        """Test backup_performance_database success."""
+        filename = '{prefix}-{host}'.format(prefix=pc.FILENAME_PREFIX,
+                                            host=socket.gethostname())
+        with mock.patch.object(
+                self.perf, 'post_request') as mck_bu:
+            self.perf.backup_performance_database(last_day_of_diagnostic=True,
+                                                  named_real_time_traces=True)
+            mck_bu.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.BACKUP, payload={
+                    pc.SYMM_ID: self.conn.array_id, pc.FILENAME: filename,
+                    pc.NAMED_RT_TRACES: True, pc.LAST_DAY_DIAG: True})
+
+    def test_backup_performance_database_exception(self):
+        """Test backup_performance_database exception."""
+        with mock.patch.object(
+                self.perf, 'post_request',
+                side_effect=exception.VolumeBackendAPIException,
+                return_value=self.p_data.array_backup_fail):
+            self.assertRaises(exception.VolumeBackendAPIException,
+                              self.perf.backup_performance_database)
 
     def test_get_last_available_timestamp(self):
         """Test get_last_available_timestamp."""
@@ -157,6 +438,17 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
             self.assertEqual(key_response, self.p_data.fe_dir_keys)
 
+    def test_get_performance_key_list_exceptions(self):
+        """Test get_performance_key_list exceptions"""
+        # Invalid category
+        self.assertRaises(exception.InvalidInputException,
+                          self.perf.get_performance_key_list, 'FAKECAT')
+        # No keys returned
+        with mock.patch.object(
+                self.perf, 'get_request', return_value=None):
+            self.assertRaises(exception.ResourceNotFoundException,
+                              self.perf.get_performance_key_list, 'ARRAY')
+
     def test_get_performance_key_list_array_get(self):
         """Test get_performance_key_list get with Array category."""
         with mock.patch.object(
@@ -166,7 +458,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
                 category=pc.ARRAY)
             mck_request.assert_called_once_with(
                 category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.KEYS, payload={})
+                resource_type=pc.KEYS, payload=dict())
             self.assertEqual(key_response, self.p_data.array_keys)
 
     def test_get_performance_key_list_exception(self):
@@ -683,21 +975,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.CACHE_PART))
 
-    def test_get_core_keys(self):
-        """Test get_core_keys."""
-        response = self.perf.get_core_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.CORE_ID))
-
-    def test_get_core_stats(self):
-        """Test get_core_stats."""
-        response = self.perf.get_core_stats(
-            core_id=self.p_data.core_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.CORE))
-
     def test_get_database_keys(self):
         """Test get_database_keys."""
         response = self.perf.get_database_keys()
@@ -728,21 +1005,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.DEV_GRP))
 
-    def test_get_disk_keys(self):
-        """Test get_disk_keys."""
-        response = self.perf.get_disk_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.DISK_ID))
-
-    def test_get_disk_stats(self):
-        """Test get_disk_stats."""
-        response = self.perf.get_disk_stats(
-            disk_id=self.p_data.disk_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.DISK))
-
     def test_get_disk_group_keys(self):
         """Test get_disk_group_keys."""
         response = self.perf.get_disk_group_keys()
@@ -757,21 +1019,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.DISK_GRP))
-
-    def test_get_disk_technology_pool_keys(self):
-        """Test get_disk_technology_pool_keys."""
-        response = self.perf.get_disk_technology_pool_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.DISK_TECH))
-
-    def test_get_disk_technology_pool_stats(self):
-        """Test get_disk_technology_pool_stats."""
-        response = self.perf.get_disk_technology_pool_stats(
-            disk_tech_id=self.p_data.disk_technology, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.DISK_TECH_POOL))
 
     def test_get_eds_director_keys(self):
         """Test get_eds_director_keys."""
@@ -803,21 +1050,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.EDS_EMU))
 
-    def test_get_external_director_keys(self):
-        """Test get_external_director_keys."""
-        response = self.perf.get_external_director_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.DIR_ID))
-
-    def test_get_external_director_stats(self):
-        """Test get_external_director_stats."""
-        response = self.perf.get_external_director_stats(
-            director_id=self.p_data.ext_disk_group_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.EXT_DIR))
-
     def test_get_external_disk_keys(self):
         """Test get_external_disk_keys."""
         response = self.perf.get_external_disk_keys()
@@ -832,21 +1064,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.EXT_DISK))
-
-    def test_get_external_disk_group_keys(self):
-        """Test get_external_disk_group_keys."""
-        response = self.perf.get_external_disk_group_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.DISK_GRP_ID))
-
-    def test_get_external_disk_group_stats(self):
-        """Test get_external_disk_group_stats."""
-        response = self.perf.get_external_disk_group_stats(
-            disk_group_id=self.p_data.ext_disk_group_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.EXT_DISK_GRP))
 
     def test_get_frontend_director_keys(self):
         """Test get_frontend_director_keys."""
@@ -1002,22 +1219,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.INIT))
 
-    def test_get_initiator_by_port_keys(self):
-        """Test get_initiator_by_port_keys."""
-        response = self.perf.get_initiator_by_port_keys(
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.INIT_BY_PORT_ID))
-
-    def test_get_initiator_by_port_stats(self):
-        """Test get_initiator_by_port_stats."""
-        response = self.perf.get_initiator_by_port_stats(
-            initiator_by_port_id=self.p_data.init_by_port_id,
-            metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.INIT_BY_PORT))
-
     def test_get_ip_interface_keys(self):
         """Test get_ip_interface_keys."""
         response = self.perf.get_ip_interface_keys()
@@ -1170,24 +1371,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.SG))
 
-    def test_get_storage_group_by_pool_keys(self):
-        """Test get_storage_group_by_pool_keys."""
-        response = self.perf.get_storage_group_by_pool_keys(
-            storage_group_id=self.p_data.storage_group_id,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.POOL_ID))
-
-    def test_get_storage_group_by_pool_stats(self):
-        """Test get_storage_group_stats."""
-        response = self.perf.get_storage_group_by_pool_stats(
-            storage_group_id=self.p_data.storage_group_id,
-            pool_id=self.p_data.storage_group_by_pool_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.SG_BY_POOL))
-
     def test_get_storage_resource_pool_keys(self):
         """Test get_storage_resource_pool_keys."""
         response = self.perf.get_storage_resource_pool_keys()
@@ -1218,26 +1401,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.STORAGE_RES))
-
-    def test_get_storage_resource_by_pool_keys(self):
-        """Test get_storage_resource_by_pool_keys."""
-        response = self.perf.get_storage_resource_by_pool_keys(
-            storage_resource_id=self.p_data.storage_resource_id,
-            storage_container_id=self.p_data.storage_resource_id,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.POOL_ID))
-
-    def test_get_storage_resource_by_pool_stats(self):
-        """Test get_storage_resource_by_pool_stats."""
-        response = self.perf.get_storage_resource_by_pool_stats(
-            storage_resource_id=self.p_data.storage_resource_id,
-            storage_container_id=self.p_data.storage_resource_id,
-            metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(
-            response.get('reporting_level'),
-            self.common.convert_to_snake_case(pc.STORAGE_RES_BY_POOL))
 
     def test_get_thin_pool_keys(self):
         """Test get_thin_pool_keys."""

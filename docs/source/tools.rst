@@ -2,8 +2,9 @@
 Tools Guide
 ===========
 
-First, make sure that PyU4V is installed_. Then visit the quick_start_
-section to make sure you have secure connectivity to your array.
+First, make sure that PyU4V is installed as directed in the
+:doc:`installation`. Then visit the :doc:`quick_start` to make sure you
+have secure connectivity to your array.
 
 OpenStack
 ---------
@@ -60,7 +61,8 @@ directory.
    $ python3 migrate.py
 
 .. warning::
-   Python 2.7 is nearing EOL and will not be maintained past 2020
+   Python 2.7 has reached EOL however is referenced here due to the existence
+   old environments which may still be running Python 2.7.
 
 .. note::
    - Only masking views that are eligible for migrating will be presented.
@@ -76,5 +78,3 @@ directory.
 .. URL LINKS
 
 .. _issues: https://github.com/MichaelMcAleer/PyU4V/issues
-.. _installed: http://pyu4v.readthedocs.io/en/latest/installation.html
-.. _quick_start: http://pyu4v.readthedocs.io/en/latest/quick_start.html

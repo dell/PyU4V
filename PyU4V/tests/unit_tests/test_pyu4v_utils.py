@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,15 +18,19 @@ import csv
 import os
 import six
 import testtools
+import time
 
+from pathlib import Path
 from unittest import mock
 
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V.utils import config_handler
 from PyU4V.utils import console
+from PyU4V.utils import constants
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
+from PyU4V.utils import time_handler
 
 
 class PyU4VUtilsTest(testtools.TestCase):
@@ -39,6 +43,7 @@ class PyU4VUtilsTest(testtools.TestCase):
         self.conf = config_handler
         self.console = console
         self.file = file_handler
+        self.time = time_handler
         self.conf_file, self.conf_dir = (
             pf.FakeConfigFile.create_fake_config_file(
                 'smc', 'smc', '10.0.0.75', '8443', self.data.array,
@@ -266,3 +271,100 @@ class PyU4VUtilsTest(testtools.TestCase):
             self.file.write_dict_to_csv_file('test.csv', data_dict)
             mck_csv.assert_called_once_with(
                 'test.csv', ref_csv_list, ',', '|')
+
+    @mock.patch('builtins.open', new_callable=mock.mock_open)
+    def test_write_binary_data_to_file_no_dir(self, mck_open):
+        """Test write_binary_data_to_file no directory input param."""
+        test_data = pf.FakeResponse(200, dict(), content=b'test_binary_data')
+
+        test_dir_path = Path.cwd()
+        test_file_name = 'test_file'
+        test_file_extension = constants.PDF_SUFFIX
+
+        ref_name = Path(test_file_name)
+        ref_path = Path(test_dir_path)
+        pdf_name = ref_name.with_suffix(test_file_extension)
+        ref_write_path = Path.joinpath(ref_path, pdf_name)
+
+        response = self.file.write_binary_data_to_file(
+            data=test_data, file_extension=test_file_extension,
+            file_name=test_file_name)
+        mck_open.assert_called_once_with(
+            ref_write_path, constants.FILE_WRITE_MODE)
+        self.assertEqual(ref_write_path, response)
+
+    @mock.patch('builtins.open', new_callable=mock.mock_open)
+    def test_write_binary_data_to_file_with_dir(self, mck_open):
+        """Test write_binary_data_to_file with directory input param."""
+        test_data = pf.FakeResponse(200, dict(), content=b'test_binary_data')
+
+        test_dir_path = Path.home()
+        test_file_name = 'test_file'
+        test_file_extension = constants.PDF_SUFFIX
+
+        ref_name = Path(test_file_name)
+        ref_path = Path(test_dir_path)
+        pdf_name = ref_name.with_suffix(test_file_extension)
+        ref_write_path = Path.joinpath(ref_path, pdf_name)
+
+        response = self.file.write_binary_data_to_file(
+            data=test_data, file_extension=test_file_extension,
+            file_name=test_file_name, dir_path=test_dir_path)
+        mck_open.assert_called_once_with(
+            ref_write_path, constants.FILE_WRITE_MODE)
+        self.assertEqual(ref_write_path, response)
+
+    def test_write_binary_data_to_file_invalid_dir(self):
+        """Test write_binary_data_to_file exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.file.write_binary_data_to_file,
+            data=dict(), file_extension=None, file_name='test',
+            dir_path='fake')
+
+    # utils.time_handler
+    def test_format_time_input_return_seconds_from_seconds(self):
+        """Test format_time_input input seconds return seconds."""
+        time_now = time.time()
+        return_time = self.time.format_time_input(
+            time_in=time_now, return_seconds=True)
+        self.assertEqual(int(time_now), return_time)
+
+    def test_format_time_input_return_milliseconds_from_seconds(self):
+        """Test format_time_input input seconds return milliseconds."""
+        time_now = time.time()
+        return_time = self.time.format_time_input(
+            time_in=time_now, return_milliseconds=True)
+        self.assertEqual(int(time_now) * 1000, return_time)
+
+    def test_format_time_input_return_seconds_from_milliseconds(self):
+        """Test format_time_input input milliseconds return seconds."""
+        time_now = int(time.time()) * 1000
+        return_time = self.time.format_time_input(
+            time_in=time_now, return_seconds=True)
+        self.assertEqual(int(time_now) // 1000, return_time)
+
+    def test_format_time_input_return_milliseconds_from_milliseconds(self):
+        """Test format_time_input input milliseconds return milliseconds."""
+        time_now = int(time.time()) * 1000
+        return_time = self.time.format_time_input(
+            time_in=time_now, return_milliseconds=True)
+        self.assertEqual(time_now, return_time)
+
+    def test_format_time_input_type_exception(self):
+        """Test format_time_input invalid time type exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.time.format_time_input, 'time', True)
+
+    def test_format_time_input_input_exception_all_false(self):
+        """Test format_time_input invalid false input type exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.time.format_time_input, 123, False, False)
+
+    def test_format_time_input_input_exception_all_true(self):
+        """Test format_time_input invalid true input type exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.time.format_time_input, 123, True, True)

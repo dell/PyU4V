@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import tempfile
 import testtools
 import time
 
+from pathlib import Path
+
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
 from PyU4V.utils import performance_constants as pc
@@ -36,6 +38,10 @@ class TestBaseTestCase(testtools.TestCase):
         self.provision = self.conn.provisioning
         self.replication = self.conn.replication
         self.common = self.conn.common
+        self.snapshot_policy = self.conn.snapshot_policy
+        self.metro_dr = self.conn.metro_dr
+        self.migration = self.conn.migration
+        self.perf = self.conn.performance
 
     def setup_credentials(self):
         """Set REST credentials."""
@@ -48,7 +54,7 @@ class TestBaseTestCase(testtools.TestCase):
         :returns: vol -- dict
         """
         sg_id, device_id = None, None
-        vol = {}
+        vol = dict()
         try:
             sg_id = self.generate_name(object_type='sg')
             volume_name = self.generate_name()
@@ -132,8 +138,18 @@ class TestBaseTestCase(testtools.TestCase):
         :param sg_name: storage group name - - str
         :param snap_name: snapvx name - - str
         """
-        self.replication.delete_storage_group_snapshot(
-            sg_name, snap_name)
+        snap_id = self.replication.get_storage_group_snapshot_snap_id_list(
+            sg_name, snap_name)[0]
+        snap_details = self.replication.get_snapshot_snap_id_details(
+            sg_name, snap_name, snap_id)
+        if 'Restored' in snap_details.get('state'):
+            try:
+                self.replication.delete_storage_group_snapshot_by_snap_id(
+                    sg_name, snap_name, snap_id)
+            except Exception:
+                pass
+        self.replication.delete_storage_group_snapshot_by_snap_id(
+            sg_name, snap_name, snap_id)
 
     def create_rdf_sg(self):
         """set up and tear down srdf pairings.
@@ -151,7 +167,7 @@ class TestBaseTestCase(testtools.TestCase):
             'CI_TEST_VOL')
         job = self.replication.create_storage_group_srdf_pairings(
             storage_group_id=sg_name, remote_sid=self.conn.remote_array,
-            srdf_mode='Synchronous', establish=True,
+            srdf_mode='Synchronous', establish=True, force_new_rdf_group=True,
             _async=True)
         self.conn.common.wait_for_job_complete(job)
         local_volume = self.provision.get_volumes_from_storage_group(
@@ -192,6 +208,8 @@ class TestBaseTestCase(testtools.TestCase):
         self.provision.delete_storage_group(storage_group_id=sg_name)
         for remote_volume in remote_volume_list:
             self.provision.delete_volume(device_id=remote_volume)
+        self.replication.delete_rdf_group(
+            srdf_group_number=srdf_group_number)
 
     def get_online_rdf_ports(self):
         """Gets a list of all RDF ports online for local and remote array.
@@ -200,8 +218,8 @@ class TestBaseTestCase(testtools.TestCase):
         """
         local_rdf_director_list = self.replication.get_rdf_director_list(
             filters={'online': True})
-        local_online_rdf_ports = []
-        remote_online_rdf_ports = []
+        local_online_rdf_ports = list()
+        remote_online_rdf_ports = list()
         for director in local_rdf_director_list:
             local_rdf_director_port_list = (
                 self.replication.get_rdf_director_port_list(
@@ -227,29 +245,30 @@ class TestBaseTestCase(testtools.TestCase):
 
         :returns: next RDF group number on local and remote array
         """
-        local_in_use_rdfg_list = self.replication.get_rdf_group_list()
-        self.conn.set_array_id(self.conn.remote_array)
-        remote_in_use_rdfg_list = self.replication.get_rdf_group_list()
-        new_rdfg = 200
-        local_rdfg_list = []
-        remote_rdfg_list = []
+        local_in_use_rdfg_list = self.replication.get_rdf_group_list(
+            array_id=self.conn.array_id)
+        remote_in_use_rdfg_list = self.replication.get_rdf_group_list(
+            array_id=self.conn.remote_array)
+
+        new_rdfg = 100
+        local_list, remote_list = set(), set()
         rdfg_match = False
 
         for group in local_in_use_rdfg_list:
-            local_rdfg_list.append(group['rdfgNumber'])
+            local_list.add(group['rdfgNumber'])
         for group in remote_in_use_rdfg_list:
-            remote_rdfg_list.append(group['rdfgNumber'])
-        if new_rdfg not in local_rdfg_list and remote_rdfg_list:
-            self.conn.set_array_id(self.conn.array_id)
-            return new_rdfg
-        else:
-            new_rdfg = 200
-            while not rdfg_match and new_rdfg < 250:
-                new_rdfg = new_rdfg + 1
-                if new_rdfg not in local_rdfg_list and remote_rdfg_list:
-                    rdfg_match = True
-                    self.conn.set_array_id(self.conn.array_id)
-                    return new_rdfg
+            remote_list.add(group['rdfgNumber'])
+
+        while not rdfg_match and new_rdfg <= 250:
+            if (new_rdfg not in local_list) and (new_rdfg not in remote_list):
+                return new_rdfg
+            new_rdfg += 1
+
+        if not rdfg_match:
+            raise exception.VolumeBackendAPIException(
+                'There are no free RDFGs available on {arr1} and {arr2} from '
+                '100 or higher that can both have the same number.'.format(
+                    arr1=self.conn.array_id, arr2=self.conn.remote_array))
 
     def setup_srdf_group(self):
         local_array = self.conn.array_id
@@ -268,7 +287,7 @@ class TestBaseTestCase(testtools.TestCase):
     def generate_name(self, object_type='v'):
         """Generate a random name of ascii characters or ints.
 
-        :param object_type: v=volume, sg=storage group, ss=snapvx - - str
+        :param object_type: v=volume, sg=storage group, ss=snapvx -- str
         :returns: random name -- str
         """
         vowels = 'aeiou'
@@ -287,6 +306,10 @@ class TestBaseTestCase(testtools.TestCase):
             name = 'PyU4V-pg-'
         elif object_type == 'service_level':
             name = 'PyU4V-slo-'
+        elif object_type == 'sp':
+            name = 'PyU4V-sp-'
+        elif object_type == 'metro_dr':
+            return 'PyU4V_' + str(random.randint(1, 999))
         else:
             name = 'PyU4V-vol-'
         for i in range(10):
@@ -392,7 +415,7 @@ class TestBaseTestCase(testtools.TestCase):
 
         :returns: new host name -- str
         """
-        new_host_name = None
+        new_host_name, host_name = None, None
         try:
             host_name = self.generate_name(object_type='host')
             self.provision.create_host(host_name)
@@ -493,7 +516,7 @@ class TestBaseTestCase(testtools.TestCase):
         selected_director_ports = list()
         for director in fa_directors:
             if len(selected_director_ports) < number_of_ports:
-                ports = self.provisioning.get_director_port_list(
+                ports = self.provision.get_director_port_list(
                     director, filters='aclx=true')
                 # avoid GOS ports
                 ports = [p for p in ports if int(p['portId']) < 30]
@@ -578,8 +601,8 @@ class TestBaseTestCase(testtools.TestCase):
         try:
             keys = key_func()
             if not keys:
-                raise exception.VolumeBackendAPIException()
-        except exception.VolumeBackendAPIException:
+                raise exception.ResourceNotFoundException()
+        except exception.ResourceNotFoundException:
             self.skipTest(
                 '{cat} is not enabled or there are no provisioned assets of '
                 'this kind.'.format(cat=category))
@@ -621,6 +644,8 @@ class TestBaseTestCase(testtools.TestCase):
         :param inner_key_func: method for obtaining port keys -- func
         :param inner_metrics_func: method for obtaining port metrics -- func
         """
+        outer_keys, inner_keys = None, None
+        outer_id, inner_id = None, None
         try:
             outer_keys = outer_keys_func()
             outer_id = outer_keys[0].get(outer_tag)
@@ -657,3 +682,102 @@ class TestBaseTestCase(testtools.TestCase):
             except exception.VolumeBackendAPIException:
                 dead_metrics.append(metric)
         self.assertFalse(dead_metrics)
+
+    def create_snapshot_policy(self):
+        snapshot_policy_name = self.generate_name(object_type='sp')
+        snapshot_policy_interval = '10 Minutes'
+
+        self.snapshot_policy.create_snapshot_policy(
+            snapshot_policy_name, snapshot_policy_interval,
+            local_snapshot_policy_snapshot_count=30)
+
+        snapshot_policy_details = (
+            self.snapshot_policy.get_snapshot_policy(snapshot_policy_name))
+        self.addCleanup(self.delete_snapshot_policy, snapshot_policy_name)
+        return snapshot_policy_details.get(
+            'snapshot_policy_name') if snapshot_policy_details else None
+
+    def delete_snapshot_policy(self, snapshot_policy_name):
+        self.snapshot_policy.delete_snapshot_policy(snapshot_policy_name)
+
+    # Metro DR Functions
+    def setup_metro_dr(self):
+        """Setup a Metro DR Environment.
+
+        :returns: sg_name, environment_name --str
+        """
+        environment_name = self.generate_name(object_type='metro_dr')
+        metro_r1_array_id = self.conn.array_id
+        metro_r2_array_id = self.conn.remote_array
+        dr_array_id = self.conn.remote_array_2
+        sg_name = self.generate_name(object_type='sg')
+        self.provision.create_non_empty_storage_group(
+            storage_group_id=sg_name, service_level='Diamond',
+            num_vols=1, vol_size=1, cap_unit='GB', srp_id='SRP_1',
+            workload=None)
+        job = self.metro_dr.create_metrodr_environment(
+            storage_group_name=sg_name, environment_name=environment_name,
+            metro_r1_array_id=metro_r1_array_id,
+            metro_r2_array_id=metro_r2_array_id, dr_array_id=dr_array_id,
+            dr_replication_mode='adaptivecopydisk')
+        self.common.wait_for_job_complete(job=job)
+        self.addCleanup(self.cleanup_metro_dr, sg_name, environment_name)
+
+        return sg_name, environment_name
+
+    def cleanup_metro_dr(self, sg_name, environment_name):
+        """Cleanup Metro DR created SG and Environments."""
+        # Sleep added to give time to synchronize
+        time.sleep(180)
+
+        # Instantiate array cleanup dict
+        cleanup_details = {self.conn.array_id: list(),
+                           self.conn.remote_array: list(),
+                           self.conn.remote_array_2: list()}
+        # Get the RDFGs associated with the SG on each metro DR array
+        for array in cleanup_details.keys():
+            sg_rdf_list = self.replication.get_storage_group_srdf_group_list(
+                sg_name, array_id=array)
+            cleanup_details[array] = sg_rdf_list
+
+        # Delete metro DR environment
+        self.metro_dr.delete_metrodr_environment(
+            environment_name=environment_name)
+
+        # Suspend RDF and delete RDF pairs
+        for rdfg in cleanup_details.get(self.conn.array_id):
+            self.replication.suspend_storage_group_srdf(
+                storage_group_id=sg_name, srdf_group_number=rdfg)
+            self.replication.delete_storage_group_srdf(
+                storage_group_id=sg_name, srdf_group_number=rdfg)
+
+        # For each array in the metro DR env..
+        for array in cleanup_details.keys():
+            # Set the array ID
+            self.conn.set_array_id(array_id=array)
+            # Get a list of volumes in target SG
+            volume_list = (self.provision.get_volumes_from_storage_group(
+                sg_name))
+            # Delete the SG
+            self.provision.delete_storage_group(storage_group_id=sg_name)
+            # Delete each volume from old SG
+            for volume in volume_list:
+                self.provision.delete_volume(volume)
+            # Delete each RDFGs associated with the source SG
+            for rdfg in cleanup_details.get(array):
+                try:
+                    self.replication.delete_rdf_group(rdfg)
+                except exception.ResourceNotFoundException:
+                    pass
+
+    @staticmethod
+    def cleanup_pyu4v_zip_files_in_directory(directory):
+        """Cleanup PyU4V zip archives in a given directory.
+
+        :param directory: path to directory -- str
+        """
+        assert Path(directory).is_dir() is True
+        p = Path(directory).glob('PyU4V-*.zip')
+        files = [x for x in p if x.is_file()]
+        for file in files:
+            file.unlink()

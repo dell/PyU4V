@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,15 +16,18 @@
 import copy
 import logging
 import re
+import socket
 import time
 
 from PyU4V import common
+from PyU4V import real_time
 from PyU4V.utils import constants
 from PyU4V.utils import decorators
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
 from PyU4V.utils import performance_category_map
 from PyU4V.utils import performance_constants as pc
+
 
 LOG = logging.getLogger(__name__)
 CATEGORY_MAP = performance_category_map.performance_data
@@ -36,6 +39,7 @@ class PerformanceFunctions(object):
     def __init__(self, array_id, rest_client):
         """__init__."""
         self.common = common.CommonFunctions(rest_client)
+        self.real_time = real_time.RealTimeFunctions(array_id, rest_client)
         self.post_request = self.common.create_resource
         self.get_request = self.common.get_resource
         self.put_request = self.common.modify_resource
@@ -64,24 +68,268 @@ class PerformanceFunctions(object):
         """
         self.recency = minutes
 
+    @decorators.refactoring_notice(
+        'PyU4V.performance',
+        'PyU4V.performance.is_array_diagnostic_performance_registered',
+        9.2, 10.1)
     def is_array_performance_registered(self, array_id=None):
         """Check if an array is registered for diagnostic performance data.
 
-        This will return False is an array is registered for real-time data but
-        not for diagnostic performance data.
+        DEPRECATION NOTICE:
+        PerformanceFunctions.is_array_performance_registered() will be
+        refactored in PyU4V version 10.1 in favour of
+        PerformanceFunctions.is_array_diagnostic_performance_registered().
+        For further information please consult PyU4V 9.2 release notes.
 
         :param array_id: array id -- str
-        :returns: bool
+        :returns: is diagnostic registered -- bool
         """
         array_id = self.array_id if not array_id else array_id
-        registration_details = dict()
+        return self.is_array_diagnostic_performance_registered(array_id)
+
+    def is_array_diagnostic_performance_registered(self, array_id=None):
+        """Check if an array is registered for diagnostic performance data.
+
+        :param array_id: array id -- str
+        :returns: is diagnostic registered -- bool
+        """
+        array_id = self.array_id if not array_id else array_id
+        response = self.get_request(
+            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+            resource_type=pc.REG, resource_type_id=array_id)
+        return response.get('isRegistered', False) if response else False
+
+    def is_array_real_time_performance_registered(self, array_id=None):
+        """Check if an array is registered for real-time performance data.
+
+        :param array_id: array id -- str
+        :returns: is real-time registered -- bool
+        """
+        array_id = self.array_id if not array_id else array_id
+        try:
+            response = self.get_array_registration_details(array_id)
+            return response.get('realtime', False) if response else False
+        except exception.VolumeBackendAPIException as e:
+            LOG.error(e)
+            return False
+
+    def get_array_registration_details(self, array_id=None):
+        """Get array performance registration details.
+
+        This call will return information about both diagnostic and real-time
+        performance registration along with the diagnostic collection interval
+        in minutes.
+
+        :param array_id: array id -- str
+        :returns: array performance registration details -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
         response = self.get_request(
             category=pc.PERFORMANCE, resource_level=pc.ARRAY,
             resource_type=pc.REG_DETAILS, resource_type_id=array_id)
-        if response.get(pc.REG_DETAILS_INFO):
-            registration_details = response.get(pc.REG_DETAILS_INFO)[0]
-        return registration_details.get(pc.REG_DIAGNOSTIC, False) if (
-            registration_details) else False
+        reg_details = response.get(pc.REG_DETAILS_INFO)
+        return reg_details[0] if len(reg_details) > 0 else dict()
+
+    def enable_diagnostic_data_collection(self, array_id=None):
+        """Register an array for diagnostic performance data gathering.
+
+        :param array_id: array id -- str
+        :raises: VolumeBackendAPIException
+        """
+        array_id = self.array_id if not array_id else array_id
+
+        if not self.is_array_diagnostic_performance_registered(array_id):
+            response = self.post_request(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
+                                                    pc.REG_DIAGNOSTIC: True,
+                                                    pc.REAL_TIME: False})
+
+            response_message = response.get('message', list())
+            if response_message:
+                msg = response_message[0]
+                if 'Successfully' in msg:
+                    LOG.info(msg)
+                else:
+                    LOG.error(msg)
+                    raise exception.VolumeBackendAPIException(message=msg)
+            else:
+                msg = ('There has been an issue registering array {arr} for '
+                       'diagnostic performance data. It was not possible '
+                       'to retrieve a message from the REST API detailing the '
+                       'error, please check Unisphere Logs.')
+                LOG.error(msg)
+                raise exception.VolumeBackendAPIException(message=msg)
+        else:
+            LOG.info('Array {arr} is already registered for diagnostic '
+                     'performance data.'.format(arr=array_id))
+
+    def disable_diagnostic_data_collection(self, array_id=None):
+        """Disable an array from diagnostic performance data gathering.
+
+        Note: Disabling diagnostic performance data gathering will also
+        disable real-time data gathering.
+
+        :param array_id: array id -- str
+        :raises: VolumeBackendAPIException
+        """
+        array_id = self.array_id if not array_id else array_id
+
+        if self.is_array_diagnostic_performance_registered(array_id):
+            LOG.warning('Disabling diagnostic performance data collection '
+                        'will also disable real-time data collection, if '
+                        'enabled.')
+            response = self.post_request(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
+                                                    pc.REG_DIAGNOSTIC: False,
+                                                    pc.REAL_TIME: False})
+
+            response_message = response.get('message', list())
+            if response_message:
+                msg = response_message[0]
+                if 'Successfully' in msg:
+                    LOG.info(msg)
+                else:
+                    LOG.error(msg)
+                    raise exception.VolumeBackendAPIException(message=msg)
+            else:
+                msg = ('There has been an issue disabled array {arr} '
+                       'diagnostic performance data. It was not possible '
+                       'to retrieve a message from the REST API detailing the '
+                       'error, please check Unisphere Logs.')
+                LOG.error(msg)
+                raise exception.VolumeBackendAPIException(message=msg)
+        else:
+            LOG.info('Array {arr} is already disabled for diagnostic '
+                     'performance data.'.format(arr=array_id))
+
+    def enable_real_time_data_collection(self, array_id=None):
+        """Register an array for real-time performance data gathering.
+
+        Note: Real-time performance data is not supported for arrays
+        running HyperMax OS.
+
+        :param array_id: array id -- str
+        :raises: VolumeBackendAPIException
+        """
+        array_id = self.array_id if not array_id else array_id
+
+        if not self.is_array_real_time_performance_registered(array_id):
+            LOG.info('Enabling real-time performance data will enable '
+                     'diagnostic performance data at the same time, if '
+                     'not already enabled.')
+            response = self.post_request(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
+                                                    pc.REG_DIAGNOSTIC: True,
+                                                    pc.REAL_TIME: True})
+
+            response_message = response.get('message', list())
+            if response_message:
+                msg = response_message[0]
+                if 'Successfully' in msg:
+                    LOG.info(msg)
+                else:
+                    LOG.error(msg)
+                    raise exception.VolumeBackendAPIException(message=msg)
+            else:
+                msg = ('There has been an issue registering array {arr} for '
+                       'real-time performance data. It was not possible '
+                       'to retrieve a message from the REST API detailing the '
+                       'error, please check Unisphere Logs.')
+                LOG.error(msg)
+                raise exception.VolumeBackendAPIException(message=msg)
+        else:
+            LOG.info('Array {arr} is already enabled for real-time '
+                     'performance data.'.format(arr=array_id))
+
+    def disable_real_time_data_collection(self, array_id=None):
+        """Disable an array from real-time performance data gathering.
+
+        :param array_id: array_id -- str
+        :raises: VolumeBackendAPIException
+        """
+        array_id = self.array_id if not array_id else array_id
+
+        if self.is_array_real_time_performance_registered(array_id):
+            # Retain the existing diagnostic performance setting
+            diag_reg = self.is_array_performance_registered(array_id)
+
+            response = self.post_request(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.REGISTER, payload={
+                    pc.SYMM_ID: array_id, pc.REG_DIAGNOSTIC: diag_reg,
+                    pc.REAL_TIME: False})
+
+            response_message = response.get('message', list())
+            if response_message:
+                msg = response_message[0]
+                if 'Successfully' in msg:
+                    LOG.info(msg)
+                else:
+                    LOG.error(msg)
+                    raise exception.VolumeBackendAPIException(message=msg)
+            else:
+                msg = ('There has been an issue disabling array {arr} '
+                       'real-time performance data. It was not possible '
+                       'to retrieve a message from the REST API detailing the '
+                       'error, please check Unisphere Logs.')
+                LOG.error(msg)
+                raise exception.VolumeBackendAPIException(message=msg)
+        else:
+            LOG.info('Array {arr} is already disabled for real-time '
+                     'performance data.'.format(arr=array_id))
+
+    def backup_performance_database(
+            self, array_id=None, filename=str(), last_day_of_diagnostic=False,
+            named_real_time_traces=False):
+        """Backup an array performance database.
+
+        Backup of a performance database is a recommended practice. The backup
+        performance database option is available for one or more storage
+        systems, regardless of their registration status.
+
+        By default, only Trending & Planning (Historical) data is backed up.
+        The performance databases backups should be stored in a safe location.
+        Performance database backups can be restored. For more information on
+        restoring backups please see Unisphere for PowerMax official
+        documentation, for now only performing backups is supported via REST.
+
+        Note: Underscores will be stripped from any filename provided, this is
+        due to Unisphere restricting the length of the filename string when
+        underscores are provided.
+
+        The backup filename format will be as follows when viewed in Unisphere:
+
+            {array_id}_{date}{time}_{TZ}_{filename}_SPABackup.dat
+
+        :param array_id: array id -- str
+        :param filename: performance backup file name -- str
+        :param last_day_of_diagnostic: Last day of Diagnostics, this option is
+                                       not recommended for recurring
+                                       backups -- bool
+        :param named_real_time_traces: Named Real Time Traces, this option is
+                                       not recommended for recurring
+                                       backups -- bool
+        :raises: exception.VolumeBackendAPIException
+        """
+        array_id = self.array_id if not array_id else array_id
+        filename.strip('_')
+        if not filename:
+            filename = '{prefix}-{host}'.format(prefix=pc.FILENAME_PREFIX,
+                                                host=socket.gethostname())
+        try:
+            response = self.post_request(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.BACKUP, payload={
+                    pc.SYMM_ID: array_id, pc.FILENAME: filename,
+                    pc.NAMED_RT_TRACES: last_day_of_diagnostic,
+                    pc.LAST_DAY_DIAG: named_real_time_traces})
+            LOG.info(response.get('message')[0])
+        except exception.VolumeBackendAPIException as e:
+            LOG.error(e)
+            raise exception.VolumeBackendAPIException(e)
 
     def get_last_available_timestamp(self, array_id=None):
         """Get the last recorded performance timestamp.
@@ -120,7 +368,6 @@ class PerformanceFunctions(object):
         :returns: if timestamp is less than recency value -- bool
         """
         r = minutes if isinstance(minutes, int) else self.recency
-
         return (int(time.time()) * 1000) - timestamp < r * pc.ONE_MINUTE
 
     @staticmethod
@@ -188,9 +435,17 @@ class PerformanceFunctions(object):
         if cat:
             request = self.get_request if pc.ARRAY in cat[pc.CATEGORY] else (
                 self.post_request)
-            return request(
+            response = request(
                 category=pc.PERFORMANCE, resource_level=cat[pc.CATEGORY],
                 resource_type=pc.KEYS, payload=request_body)
+
+            if response:
+                return response
+            else:
+                raise exception.ResourceNotFoundException(
+                    'There are no provisioned assets for performance category '
+                    '"{cat}".'.format(cat=category))
+
         else:
             raise exception.InvalidInputException(
                 'Key list extraction failed due to invalid category "{cat}", '
@@ -517,9 +772,15 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_threshold_categories',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_perf_threshold_categories(self):
         """Get a list of performance threshold categories.
+
+        DEPRECATION NOTICE:
+        PerformanceFunctions.get_perf_threshold_categories() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_threshold_categories(). For further
+        information please consult PyU4V 9.1 release notes.
 
         This call is being refactored in favour of
         performance.get_threshold_categories().
@@ -540,12 +801,15 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance',
-        'PyU4V.performance.get_category_threshold_settings', 9.1, 9.3)
+        'PyU4V.performance.get_category_threshold_settings', 9.1, 10.0)
     def get_perf_category_threshold_settings(self, category):
         """Get performance threshold category settings.
 
-        This call is being refactored in favour of
-        performance.get_threshold_category_settings().
+        DEPRECATION NOTICE:
+        PerformanceFunctions.get_perf_category_threshold_settings() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_threshold_category_settings(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :param category: category id -- str
         :returns: category settings --  dict
@@ -563,13 +827,16 @@ class PerformanceFunctions(object):
             resource_type=pc.LIST, resource_type_id=category)
 
     @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.update_threshold', 9.1, 9.3)
+        'PyU4V.performance', 'PyU4V.performance.update_threshold', 9.1, 10.0)
     def set_perf_threshold_and_alert(
             self, category, metric, firstthreshold, secondthreshold, notify):
         """Set performance thresholds and alerts.
 
-        This call is being refactored in favour of
-        performance.update_threshold_settings().
+        DEPRECATION NOTICE:
+        PerformanceFunctions.set_perf_threshold_and_alert() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.update_threshold_settings(). For further
+        information please consult PyU4V 9.1 release notes.
 
         Function to set performance alerts, suggested use with CSV file to
         get parameter settings from user template. Set to check for 3 out of 5
@@ -660,12 +927,14 @@ class PerformanceFunctions(object):
         file_handler.write_to_csv_file(output_csv_path, data_for_csv)
 
     @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.update_threshold', 9.1, 9.3)
+        'PyU4V.performance', 'PyU4V.performance.update_threshold', 9.1, 10.0)
     def set_perfthresholds_csv(self, csvfilename):
         """Set performance thresholds using a CSV file.
 
-        This call is being refactored in favour of
-        performance.set_thresholds_from_csv().
+        DEPRECATION NOTICE: PerformanceFunctions.set_perfthresholds_csv() will
+        be refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.set_thresholds_from_csv(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :param csvfilename: the path to the csv file
         """
@@ -899,38 +1168,6 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_core_keys(self, array_id=None):
-        """List cores for the given array.
-
-        :param array_id: array id -- str
-        :returns: core info with first and last available dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.CORE,
-                                                 array_id=array_id)
-        return key_list.get(pc.CORE_INFO, list()) if key_list else list()
-
-    def get_core_stats(
-            self, core_id, metrics, array_id=None, data_format=pc.AVERAGE,
-            start_time=None, end_time=None, recency=None):
-        """List time range performance data for given core.
-
-        :param core_id: core id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.CORE_ID: core_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.CORE, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
     def get_database_keys(self, array_id=None):
         """List databases for the given array.
 
@@ -996,38 +1233,6 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_disk_keys(self, array_id=None):
-        """List disks for the given array.
-
-        :param array_id: array id -- str
-        :returns: disk info with first and last available dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.DISK,
-                                                 array_id=array_id)
-        return key_list.get(pc.DISK_INFO, list()) if key_list else list()
-
-    def get_disk_stats(
-            self, disk_id, metrics, array_id=None, data_format=pc.AVERAGE,
-            start_time=None, end_time=None, recency=None):
-        """List time range performance data for given disk.
-
-        :param disk_id: disk id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.DISK_ID: disk_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.DISK, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
     def get_disk_group_keys(self, array_id=None):
         """List disk groups for the given array.
 
@@ -1058,41 +1263,6 @@ class PerformanceFunctions(object):
         request_body = {pc.DISK_GRP_ID: disk_group_id}
         return self.get_performance_stats(
             array_id=array_id, category=pc.DISK_GRP, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
-    def get_disk_technology_pool_keys(self, array_id=None):
-        """List disk technology pools for the given array.
-
-        :param array_id: array id -- str
-        :returns: disk technology pool info with first and last available
-                  dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.DISK_TECH_POOL,
-                                                 array_id=array_id)
-        return key_list.get(
-            pc.DISK_TECH_POOL_INFO, list()) if key_list else list()
-
-    def get_disk_technology_pool_stats(
-            self, disk_tech_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given disk technology.
-
-        :param disk_tech_id: disk technology id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.DISK_TECH: disk_tech_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.DISK_TECH_POOL, metrics=metrics,
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
@@ -1163,46 +1333,13 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_external_director_keys(self, array_id=None):
-        """List external directors for the given array.
-
-        :param array_id: array id -- str
-        :returns: external directors with first and last available
-                  dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.EXT_DIR,
-                                                 array_id=array_id)
-        return key_list.get(pc.EXT_DIR_INFO, list()) if key_list else list()
-
-    def get_external_director_stats(
-            self, director_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given external director.
-
-        :param director_id: director id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.DIR_ID: director_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.EXT_DIR, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
     def get_external_disk_keys(self, array_id=None):
         """List external disks for the given array.
 
         :param array_id: array id -- str
         :returns: external disks with first and last available dates -- list
         """
+        array_id = self.array_id if not array_id else array_id
         key_list = self.get_performance_key_list(category=pc.EXT_DISK,
                                                  array_id=array_id)
         return key_list.get(pc.EXT_DISK_INFO, list()) if key_list else list()
@@ -1225,41 +1362,6 @@ class PerformanceFunctions(object):
         request_body = {pc.DISK_ID: disk_id}
         return self.get_performance_stats(
             array_id=array_id, category=pc.EXT_DISK, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
-    def get_external_disk_group_keys(self, array_id=None):
-        """List external disk groups for the given array.
-
-        :param array_id: array id -- str
-        :returns: external disk groups with first and last available
-                  dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.EXT_DISK_GRP,
-                                                 array_id=array_id)
-        return key_list.get(
-            pc.EXT_DISK_GRP_INFO, list()) if key_list else list()
-
-    def get_external_disk_group_stats(
-            self, disk_group_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given external disk group.
-
-        :param disk_group_id: disk group id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.DISK_GRP_ID: disk_group_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.EXT_DISK_GRP, metrics=metrics,
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
@@ -1629,58 +1731,6 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_initiator_by_port_keys(
-            self, array_id=None, start_time=None, end_time=None):
-        """List active initiators by port for the given array by time range
-
-        Only active initiators from within the specified time range are
-        returned. If no time range is provided, start and end times from array
-        level are used.
-
-        :param array_id: array id -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :returns: host info with first and last available dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        start_time, end_time = self.format_time_input(
-            category=pc.ARRAY, array_id=array_id, start_time=start_time,
-            end_time=end_time)
-        key_list = self.get_performance_key_list(
-            category=pc.INIT_BY_PORT, array_id=array_id,
-            start_time=start_time, end_time=end_time)
-        return key_list.get(
-            pc.INIT_BY_PORT_INFO, list()) if key_list else list()
-
-    def get_initiator_by_port_stats(
-            self, initiator_by_port_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given initiator.
-
-        Performance details will only be returned if the initiator was active
-        during the specified time range. If no time range is provided, start
-        and end times from array level are used.
-
-        :param initiator_by_port_id: initiator by port id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        start_time, end_time = self.format_time_input(
-            category=pc.ARRAY, array_id=array_id, start_time=start_time,
-            end_time=end_time)
-        request_body = {pc.INIT_BY_PORT_ID: initiator_by_port_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.INIT_BY_PORT, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
     def get_ip_interface_keys(self, array_id=None):
         """List IP interfaces for the given array.
 
@@ -2020,61 +2070,6 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_storage_group_by_pool_keys(self, storage_group_id, array_id=None,
-                                       start_time=None, end_time=None):
-        """List storage groups by thin pool for the given array by time range.
-
-        Only active pools from within the specified time range are returned. If
-        no time range is provided, start and end times from array level are
-        used.
-
-        :param storage_group_id: storage group id -- str
-        :param array_id: array id -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :returns: pool info with first and last available dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        start_time, end_time = self.format_time_input(
-            category=pc.ARRAY, array_id=array_id, start_time=start_time,
-            end_time=end_time)
-        key_list = self.get_performance_key_list(
-            category=pc.SG_BY_POOL, array_id=array_id,
-            storage_group_id=storage_group_id,
-            start_time=start_time, end_time=end_time)
-        return key_list.get(pc.POOL_INFO, list()) if key_list else list()
-
-    def get_storage_group_by_pool_stats(
-            self, storage_group_id, pool_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given storage group by pool.
-
-        Performance details will only be returned if the storage was active
-        during the specified time range. If no time range is provided, start
-        and end times from array level are used.
-
-        :param storage_group_id: storage group id -- str
-        :param pool_id: pool id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        start_time, end_time = self.format_time_input(
-            category=pc.ARRAY, array_id=array_id, start_time=start_time,
-            end_time=end_time)
-        request_body = {pc.SG_ID: storage_group_id, pc.POOL_ID: pool_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.SG_BY_POOL,
-            metrics=metrics, data_format=data_format,
-            request_body=request_body, start_time=start_time,
-            end_time=end_time, recency=recency)
-
     def get_storage_resource_pool_keys(self, array_id=None):
         """List storage resource pools for the given array.
 
@@ -2145,65 +2140,6 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_storage_resource_by_pool_keys(
-            self, storage_container_id, storage_resource_id, array_id=None,
-            start_time=None, end_time=None):
-        """List storage resource by pool for the given array by time range.
-
-        Only active pools from within the specified time range are returned. If
-        no time range is provided, start and end times from array level are
-        used.
-
-        :param storage_container_id: storage container id -- str
-        :param storage_resource_id: storage resource id -- str
-        :param array_id: array id -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :returns: pool info with first and last available dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        start_time, end_time = self.format_time_input(
-            category=pc.ARRAY, array_id=array_id, start_time=start_time,
-            end_time=end_time)
-        key_list = self.get_performance_key_list(
-            category=pc.STORAGE_RES_BY_POOL, array_id=array_id,
-            storage_container_id=storage_container_id,
-            storage_resource_id=storage_resource_id, start_time=start_time,
-            end_time=end_time)
-        return key_list.get(pc.POOL_INFO, list()) if key_list else list()
-
-    def get_storage_resource_by_pool_stats(
-            self, storage_container_id, storage_resource_id,
-            metrics, array_id=None, data_format=pc.AVERAGE,
-            start_time=None, end_time=None, recency=None):
-        """List time range performance data for given storage resource.
-
-        Performance details will only be returned if the pool was active
-        during the specified time range. If no time range is provided, start
-        and end times from array level are used.
-
-        :param storage_container_id: storage container id -- str
-        :param storage_resource_id: storage resource id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        start_time, end_time = self.format_time_input(
-            category=pc.ARRAY, array_id=array_id, start_time=start_time,
-            end_time=end_time)
-        request_body = {pc.STORAGE_CONT_ID: storage_container_id,
-                        pc.STORAGE_RES_ID: storage_resource_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.STORAGE_RES_BY_POOL,
-            metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
     def get_thin_pool_keys(self, array_id=None):
         """List thin pools for the given array.
 
@@ -2238,9 +2174,14 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_frontend_director_keys',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_fe_director_list(self):
         """Get list of all FE Directors.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_fe_director_list() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_frontend_director_keys(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :returns: all FE directors -- list
         """
@@ -2252,9 +2193,14 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_frontend_port_keys',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_fe_port_list(self):
         """Get a list of all front end ports in the array.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_fe_port_list() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_frontend_port_keys(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :returns: all FE directors and ports -- list
         """
@@ -2269,9 +2215,13 @@ class PerformanceFunctions(object):
             port_list.append(director_ports)
         return port_list
 
-    @decorators.deprecation_notice('PyU4V.performance', 9.1, 9.3)
+    @decorators.deprecation_notice('PyU4V.performance', 9.1, 10.0)
     def get_fe_port_util_last4hrs(self, dir_id, port_id):
         """Get FE port percent busy stats for last 4 hours.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_fe_port_list() will be
+        deprecated in PyU4V version 10.0. For further
+        information please consult PyU4V 9.1 release notes.
 
         :param dir_id: director id -- str
         :param port_id: port id -- str
@@ -2284,10 +2234,15 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_frontend_director_stats',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_fe_director_metrics(self, start_date, end_date,
                                 director, dataformat=pc.AVERAGE):
         """Get one or more metrics for front end directors.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_fe_director_metrics() will
+        be refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_frontend_director_stats(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :param start_date: timestamp in milliseconds since epoch -- str
         :param end_date: timestamp in milliseconds since epoch -- str
@@ -2301,10 +2256,15 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_frontend_port_stats',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_fe_port_metrics(self, start_date, end_date, director_id,
                             port_id, dataformat, metriclist):
         """Get one or more metrics for front end director ports.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_fe_port_metrics() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_frontend_port_stats(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :param start_date: timestamp in milliseconds since epoch -- str
         :param end_date: timestamp in milliseconds since epoch -- str
@@ -2320,9 +2280,14 @@ class PerformanceFunctions(object):
             end_time=end_date)
 
     @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_array_stats', 9.1, 9.3)
+        'PyU4V.performance', 'PyU4V.performance.get_array_stats', 9.1, 10.0)
     def get_array_metrics(self, start_date, end_date, array_id=None):
         """Get array performance information.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_array_metrics() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_array_stats(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :param start_date: timestamp in milliseconds since epoch -- str
         :param end_date: timestamp in milliseconds since epoch -- str
@@ -2336,9 +2301,14 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_storage_group_stats',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_storage_group_metrics(self, sg_id, start_date, end_date):
         """Get storage group performance information.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_storage_group_metrics()
+        will be refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_storage_group_stats(). For further
+        information please consult PyU4V 9.1 release notes.
 
         :param sg_id: storage group id -- str
         :param start_date: timestamp in milliseconds since epoch -- str
@@ -2349,9 +2319,13 @@ class PerformanceFunctions(object):
             array_id=self.array_id, storage_group_id=sg_id, metrics=pc.KPI,
             start_time=start_date, end_time=end_date)
 
-    @decorators.deprecation_notice('PyU4V.performance', 9.1, 9.3)
+    @decorators.deprecation_notice('PyU4V.performance', 9.1, 10.0)
     def get_all_fe_director_metrics(self, start_date, end_date):
         """Get performance information of all front end directors.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_all_fe_director_metrics()
+        will be  deprecated in PyU4V version 10.0. For further information
+        please consult PyU4V 9.1 release notes.
 
         :param start_date: EPOCH Time in Milliseconds -- str
         :param end_date: EPOCH Time in Milliseconds -- str
@@ -2365,9 +2339,13 @@ class PerformanceFunctions(object):
                 metrics=pc.KPI, start_time=start_date, end_time=end_date))
         return all_directors
 
-    @decorators.deprecation_notice('PyU4V.performance', 9.1, 9.3)
+    @decorators.deprecation_notice('PyU4V.performance', 9.1, 10.0)
     def get_director_info(self, director_id, start_date, end_date):
         """Get director performance information.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_director_info()
+        will be  deprecated in PyU4V version 10.0. For further information
+        please consult PyU4V 9.1 release notes.
 
         :param director_id: director id -- str
         :param start_date: timestamp in milliseconds since epoch -- str
@@ -2423,9 +2401,14 @@ class PerformanceFunctions(object):
 
     @decorators.refactoring_notice(
         'PyU4V.performance', 'PyU4V.performance.get_port_group_stats',
-        9.1, 9.3)
+        9.1, 10.0)
     def get_port_group_metrics(self, pg_id, start_date, end_date):
         """Get Port Group performance information.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_port_group_metrics() will
+        be refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_port_group_stats(). For further information
+        please consult PyU4V 9.1 release notes.
 
         :param pg_id: port group id -- str
         :param start_date: timestamp in milliseconds since epoch -- str
@@ -2437,9 +2420,14 @@ class PerformanceFunctions(object):
             start_time=start_date, end_time=end_date)
 
     @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_host_stats', 9.1, 9.3)
+        'PyU4V.performance', 'PyU4V.performance.get_host_stats', 9.1, 10.0)
     def get_host_metrics(self, host, start_date, end_date):
         """Get host performance information.
+
+        DEPRECATION NOTICE: PerformanceFunctions.get_host_metrics() will be
+        refactored in PyU4V version 10.0 in favour of
+        PerformanceFunctions.get_host_stats(). For further information please
+        consult PyU4V 9.1 release notes.
 
         :param host: host name -- str
         :param start_date: timestamp in milliseconds since epoch -- str

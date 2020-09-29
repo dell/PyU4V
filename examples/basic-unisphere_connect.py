@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,15 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""unisphere_connect.py."""
+"""docs/source/programmers_guide_src/code/basic-unisphere_connect.py."""
 
 import PyU4V
 
 # Initialise PyU4V connection to Unisphere
 conn = PyU4V.U4VConn(
-    u4v_version='90', server_ip='10.0.0.75', port=8443,
-    verify='~/.PyU4V/Unisphere91.pem', username='pyu4v-user',
-    password='secret-pass')
+    server_ip='10.0.0.75', port=8443, verify='~/.PyU4V/Unisphere91.pem',
+    username='pyu4v-user', password='secret-pass')
 
 # Get the Unisphere version
 version = conn.common.get_uni_version()

@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,13 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 OpenStack test_migrate.py.
 
 Test file for migrate.py and migrate_utils.py
 """
+
 import platform
+import testtools
 
 from unittest import mock
 
@@ -28,8 +29,6 @@ from PyU4V.tests.unit_tests import pyu4v_fakes as pf  # noqa: H304
 from PyU4V.tools.openstack import migrate_utils
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
-
-import testtools
 
 
 class TestMigrate(testtools.TestCase):
@@ -372,10 +371,10 @@ class TestMigrate(testtools.TestCase):
 
     def test_get_object_components(self):
         """Test for get_object_components."""
-        regex_str = '^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-' \
-                    '(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-' \
-                    '(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-' \
-                    '(?P<postfix>MV)$'
+        regex_str = ('^(?P<prefix>OS)-(?P<host>.+?)((?P<srp>SRP.+?)-'
+                     '(?P<slo>.+?)-(?P<workload>.+?)|(?P<no_slo>No_SLO))-'
+                     '(?P<protocol>I|F)(?P<CD>-CD|s*)(?P<RE>-RE|s*)-'
+                     '(?P<postfix>MV)$')
         input_str = 'OS-myhost-SRP_1-Silver-NONE-I-MV'
         object_dict = self.utils.get_object_components(
             regex_str, input_str)
@@ -475,7 +474,7 @@ class TestMigrate(testtools.TestCase):
         element_dict = self.utils.compile_new_element_names(
             self.data.rest_mv_1, self.data.portgroup,
             self.data.m_host_name, self.data.rest_sg_3, 'revert')
-        self.assertEqual({}, element_dict)
+        self.assertEqual(dict(), element_dict)
 
     @mock.patch.object(provisioning.ProvisioningFunctions,
                        'get_masking_view',

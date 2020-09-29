@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,11 @@
 # limitations under the License.
 """test_pyu4v_ci_wlp.py."""
 
+import random
 import testtools
+import time
+
+from pathlib import Path
 from unittest.mock import MagicMock
 
 from PyU4V import common
@@ -40,6 +44,28 @@ TAG_NAME = constants.TAG_NAME
 TEST_RES = constants.TEST_RES
 TYPE = constants.TYPE
 VENDOR = constants.VENDOR
+ALERT_SUMMARY_KEYS = constants.ALERT_SUMMARY_KEYS
+RECORD_ID = constants.RECORD_ID
+USERNAME = constants.USERNAME
+HOST_NAME = constants.HOST_NAME
+CLIENT_HOST = constants.CLIENT_HOST
+MESSAGE = constants.MESSAGE
+ACTIVITY_ID = constants.ACTIVITY_ID
+APP_ID = constants.APP_ID
+APP_VERSION = constants.APP_VERSION
+TASK_ID = constants.TASK_ID
+PROCESS_ID = constants.PROCESS_ID
+VENDOR_ID = constants.VENDOR_ID
+OS_TYPE = constants.OS_TYPE
+OS_REV = constants.OS_REV
+API_LIB = constants.API_LIB
+API_VER = constants.API_VER
+AUDIT_CLASS = constants.AUDIT_CLASS
+ACTION_CODE = constants.ACTION_CODE
+FUNC_CLASS = constants.FUNC_CLASS
+SUCCESS = constants.SUCCESS
+AUDIT_RECORD_PATH = constants.AUDIT_RECORD_PATH
+BINARY_DATA = constants.BINARY_DATA
 
 
 class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
@@ -180,13 +206,299 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_tagged_objects(self):
         """Test get_tagged_objects."""
-        tag_id = None
         try:
-            tag_list = self.system.get_tags()
-            tag_id = tag_list.get(TAG_NAME)[0]
+            tag_list = self.system.get_tags().get('tag_name')
+            self.assertIsInstance(tag_list, list)
         except (exception.ResourceNotFoundException, IndexError):
             self.skipTest('Skip get_tagged_objects - there are no tagged '
                           'objects available.')
-        tag_info = self.system.get_tagged_objects(tag_name=tag_id)
-        self.assertTrue(tag_info)
-        self.assertIsInstance(tag_info, dict)
+
+    def test_get_alert_summary(self):
+        """Test get_alert_summary."""
+        alert_summary = self.system.get_alert_summary()
+        for key in ALERT_SUMMARY_KEYS:
+            self.assertIn(key, alert_summary['serverAlertSummary'])
+
+    def test_get_alert_ids(self):
+        """Test get_alert_ids."""
+        alert_ids = self.system.get_alert_ids()
+        self.assertIsInstance(alert_ids, list)
+
+    def test_get_alert_details(self):
+        """Test get_alert_details."""
+        alert_ids = self.system.get_alert_ids()
+        if len(alert_ids) == 0:
+            self.skipTest('Skip get alert details - there are no alerts')
+
+        alert_id = alert_ids[0]
+        alert_details = self.system.get_alert_details(alert_id=alert_id)
+        self.assertTrue(alert_details)
+        self.assertIsInstance(alert_details, dict)
+
+    def test_acknowledge_alert(self):
+        """Test acknowledge_alert."""
+        alert_ids = self.system.get_alert_ids(acknowledged=False)
+        if len(alert_ids) == 0:
+            self.skipTest('Skip Acknowledge alert - there are no'
+                          ' unacknowledged alerts')
+
+        alert_id = alert_ids[0]
+        self.system.acknowledge_alert(alert_id=alert_id)
+        acknowledged_alert_ids = self.system.get_alert_ids(acknowledged=True)
+        self.assertIn(alert_id, acknowledged_alert_ids)
+
+    def test_delete_alert(self):
+        """Test delete_alert."""
+        alert_ids = self.system.get_alert_ids(acknowledged=False)
+        if len(alert_ids) == 0:
+            self.skipTest('Skip Acknowledge alert - there are no'
+                          ' unacknowledged alerts')
+
+        alert_id = alert_ids[0]
+        self.system.delete_alert(alert_id=alert_id)
+        alert_ids = self.system.get_alert_ids(acknowledged=True)
+        self.assertNotIn(alert_id, alert_ids)
+
+    def test_download_all_settings(self):
+        """Test download_all_settings default params."""
+        response = self.system.download_all_settings(
+            file_password='ci_test')
+        self.assertTrue(response['success'])
+        self.assertIn(str(Path.cwd()), str(response['settings_path']))
+        self.assertIn(constants.SETTINGS_FILENAME_TEMPLATE,
+                      str(response['settings_path']))
+        self.assertIn('settings_time', response.keys())
+        self.cleanup_pyu4v_zip_files_in_directory(directory=Path.cwd())
+
+    def test_download_all_settings_binary_return(self):
+        """Test download_all_settings default params."""
+        response = self.system.download_all_settings(
+            file_password='ci_test', return_binary=True)
+        self.assertTrue(response['success'])
+        self.assertIn('binary_data', response.keys())
+        self.assertIsInstance(response['binary_data'], bytes)
+        self.assertIn('settings_time', response.keys())
+        self.assertNotIn('settings_path', response.keys())
+
+    def test_download_all_settings_custom_file_path_custom_name(self):
+        """Test download_all_settings with custom path and name."""
+        temp_dir_path = self.create_temp_directory()
+        file_name = 'PyU4V-Settings-CustomFileName'
+        response = self.system.download_all_settings(
+            file_password='ci_test', dir_path=str(temp_dir_path),
+            file_name=file_name)
+        self.assertTrue(response['success'])
+        self.assertIn(temp_dir_path, str(response['settings_path']))
+        self.assertIn(file_name, str(response['settings_path']))
+        self.assertIn('settings_time', response.keys())
+
+    def test_download_all_settings_invalid_path(self):
+        """Test download_all_settings invalid path exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.system.download_all_settings, file_password='ci_test',
+            dir_path='/fake')
+
+    def test_download_unisphere_settings_1_2(self):
+        """Test download_unisphere_settings 1 & 2 exclude settings."""
+        temp_dir_path = self.create_temp_directory()
+        response = self.system.download_unisphere_settings(
+            file_password='ci_test', dir_path=str(temp_dir_path),
+            exclude_alert_notification_settings=True,
+            exclude_performance_preference_settings=True)
+        self.assertTrue(response['success'])
+        self.assertIn(temp_dir_path, str(response['settings_path']))
+        self.assertIn('settings_time', response.keys())
+
+    def test_download_unisphere_settings_3_4(self):
+        """Test download_unisphere_settings 3 & 4 exclude settings."""
+        temp_dir_path = self.create_temp_directory()
+        response = self.system.download_unisphere_settings(
+            file_password='ci_test', dir_path=str(temp_dir_path),
+            exclude_performance_user_templates=True,
+            exclude_performance_metric_settings=True)
+        self.assertTrue(response['success'])
+        self.assertIn(temp_dir_path, str(response['settings_path']))
+        self.assertIn('settings_time', response.keys())
+
+    def test_download_unisphere_settings_exclude_exception(self):
+        """Test download_unisphere_settings exclude all settings exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.system.download_unisphere_settings,
+            file_password='ci_test', exclude_alert_notification_settings=True,
+            exclude_performance_preference_settings=True,
+            exclude_performance_user_templates=True,
+            exclude_performance_metric_settings=True)
+
+    def test_download_system_settings_1_2(self):
+        """Test download_system_settings 1 & 2 exclude settings."""
+        temp_dir_path = self.create_temp_directory()
+        response = self.system.download_system_settings(
+            file_password='ci_test', dir_path=str(temp_dir_path),
+            exclude_alert_policy_settings=True,
+            alert_level_notification_settings=True)
+        self.assertTrue(response['success'])
+        self.assertIn(temp_dir_path, str(response['settings_path']))
+        self.assertIn('settings_time', response.keys())
+
+    def test_download_system_settings_3_4(self):
+        """Test download_system_settings 3 & 4 exclude settings."""
+        temp_dir_path = self.create_temp_directory()
+        response = self.system.download_system_settings(
+            file_password='ci_test', dir_path=str(temp_dir_path),
+            exclude_system_threshold_settings=True,
+            exclude_performance_threshold_settings=True)
+        self.assertTrue(response['success'])
+        self.assertIn(temp_dir_path, str(response['settings_path']))
+        self.assertIn('settings_time', response.keys())
+
+    def test_download_system_settings_exclude_exception(self):
+        """Test download_unisphere_settings exclude all settings exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.system.download_system_settings,
+            file_password='ci_test', exclude_alert_policy_settings=True,
+            alert_level_notification_settings=True,
+            exclude_system_threshold_settings=True,
+            exclude_performance_threshold_settings=True)
+
+    def test_upload_settings(self):
+        """Test upload_settings."""
+        temp_dir_path = self.create_temp_directory()
+        array_short_id = self.conn.array_id[-3:]
+        file_name = 'ci-array-{arr}-settings'.format(arr=array_short_id)
+
+        array_settings = self.system.download_system_settings(
+            file_password='ci_test', dir_path=temp_dir_path,
+            file_name=file_name, array_id=self.conn.array_id)
+        self.assertTrue(array_settings['settings_path'].is_file())
+
+        response = self.system.upload_settings(
+            file_password='ci_test', file_path=array_settings['settings_path'],
+            array_id=self.conn.array_id)
+        self.assertTrue(response['success'])
+
+    def test_upload_binary_settings(self):
+        """Test upload_settings with binary data."""
+        array_settings = self.system.download_system_settings(
+            file_password='ci_test', return_binary=True)
+        time.sleep(5)
+        response = self.system.upload_settings(
+            file_password='ci_test', binary_data=array_settings['binary_data'])
+        self.assertTrue(response['success'])
+
+    def test_upload_settings_fake_path_exception(self):
+        """Test upload_settings invalid path exception."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.system.upload_settings,
+            file_password='ci_test', file_path='/fake')
+
+    def test_upload_settings_invalid_data_type(self):
+        """Test upload_settings invalid data type."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.system.upload_settings,
+            file_password='test', binary_data='/fake')
+
+    def test_get_audit_log_list(self):
+        """Test get_audit_log_list."""
+        end = int(time.time())
+        start = end - ((60 * 60 * 24) + 1)
+        response = self.system.get_audit_log_list(
+            start_time=start, end_time=end)
+        self.assertTrue(response)
+        self.assertIsInstance(response, list)
+        self.assertIsInstance(response[0], dict)
+
+    def test_get_audit_log_list_empty(self):
+        """Test get_audit_log_list no results returned."""
+        # we might get unlucky here and have a log at precisely the same time,
+        # run a few times to mitigate the chance
+        for i in range(5):
+            try:
+                end = int(time.time())
+                response = self.system.get_audit_log_list(
+                    start_time=end, end_time=end)
+                self.assertFalse(response)
+                self.assertIsInstance(response, list)
+                break
+            except AssertionError:
+                if i < 4:
+                    pass
+                else:
+                    self.skipTest('Could not get empty log list returned.')
+
+    def test_get_audit_log_list_input_params(self):
+        """Test get_audit_log_list input params."""
+        end = int(time.time())
+        start = end - (60 * 60 * 24)
+        response = self.system.get_audit_log_list(
+            start_time=start, end_time=end)
+        self.assertTrue(response)
+
+        # Not every record has every field populated, so we run this test a
+        # number of times to increase chances of 100% coverage
+        for i in range(5):
+            record = random.choice(response)
+            record_id = record.get(RECORD_ID)
+
+            record_detail = self.system.get_audit_log_record(record_id)
+            self.assertTrue(response)
+            self.assertIsInstance(record_detail, dict)
+
+            user_name = record_detail.get(USERNAME)
+            host_name = record_detail.get(HOST_NAME)
+            client_host = record_detail.get(CLIENT_HOST)
+            message = record_detail.get(MESSAGE)
+            activity_id = record_detail.get(ACTIVITY_ID)
+            application_id = record_detail.get(APP_ID)
+            application_version = record_detail.get(APP_VERSION)
+            task_id = record_detail.get(TASK_ID)
+            process_id = record_detail.get(PROCESS_ID)
+            vendor_id = record_detail.get(VENDOR_ID)
+            os_type = record_detail.get(OS_TYPE)
+            os_revision = record_detail.get(OS_REV)
+            api_library = record_detail.get(API_LIB)
+            api_version = record_detail.get(API_VER)
+            audit_class = record_detail.get(AUDIT_CLASS)
+            action_code = record_detail.get(ACTION_CODE)
+            function_class = record_detail.get(FUNC_CLASS)
+
+            response = self.system.get_audit_log_list(
+                start_time=start, end_time=end, user_name=user_name,
+                host_name=host_name, client_host=client_host, message=message,
+                record_id=record_id, activity_id=activity_id, task_id=task_id,
+                application_id=application_id, process_id=process_id,
+                application_version=application_version, vendor_id=vendor_id,
+                os_type=os_type, os_revision=os_revision,
+                api_library=api_library, api_version=api_version,
+                audit_class=audit_class, action_code=action_code,
+                function_class=function_class)
+            self.assertTrue(response)
+            self.assertIsInstance(response, list)
+            self.assertEqual(1, len(response))
+            self.assertIsInstance(response[0], dict)
+            self.assertEqual(record_id, response[0].get(RECORD_ID))
+
+    def test_download_audit_log_record(self):
+        """Test download_audit_log_record write to file."""
+        temp_dir_path = Path(self.create_temp_directory())
+        response = self.system.download_audit_log_record(
+            dir_path=str(temp_dir_path))
+        self.assertTrue(response)
+        self.assertIsInstance(response, dict)
+        self.assertTrue(response.get(SUCCESS))
+        self.assertIn(AUDIT_RECORD_PATH, response.keys())
+        self.assertIn(str(temp_dir_path),
+                      str(response.get(AUDIT_RECORD_PATH)))
+
+    def test_download_audit_log_record_return_binary(self):
+        """Test download_audit_log_record return binary data."""
+        response = self.system.download_audit_log_record(return_binary=True)
+        self.assertTrue(response)
+        self.assertIsInstance(response, dict)
+        self.assertTrue(response.get(SUCCESS))
+        self.assertIn(BINARY_DATA, response.keys())
+        self.assertIsInstance(response.get(BINARY_DATA), bytes)

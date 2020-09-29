@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -75,6 +75,12 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         self.assertEqual('smc', self.rest.session.auth.username)
         self.assertEqual('smc', self.rest.session.auth.password)
         self.assertEqual(False, self.rest.session.verify)
+
+    def test_establish_rest_session_with_headers(self):
+        """Test establish_rest_session with headers."""
+        ref_headers = {'test_headers': True}
+        session = self.rest.establish_rest_session(headers=ref_headers)
+        self.assertEqual(ref_headers, session.headers)
 
     def test_rest_request(self):
         """Test REST request success."""
@@ -175,3 +181,90 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         self.rest.session = pf.FakeRequestsSession()
         self.assertRaises(exception.VolumeBackendAPIException,
                           self.rest.rest_request, '/fake_url', 'EXCEPTION')
+
+    def test_file_transfer_request_download(self):
+        """Test file_transfer_request download request."""
+        with mock.patch.object(
+                self.rest, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()) as mck_est:
+
+            response, sc = self.rest.file_transfer_request(
+                method=constants.POST,
+                uri='/system/settings/importfile',
+                download=True,
+                r_obj={'test_req': True})
+
+            mck_est.assert_called_once_with(headers={
+                constants.CONTENT_TYPE: constants.APP_JSON,
+                constants.ACCEPT: constants.APP_OCT,
+                constants.USER_AGENT: rest_requests.ua_details,
+                constants.APP_TYPE: self.rest.headers.get(
+                    'application-type')})
+            self.assertEqual(200, sc)
+            self.assertEqual('OK', response.raw.reason)
+
+    def test_file_transfer_request_upload(self):
+        """Test file_transfer_request download request."""
+        with mock.patch.object(
+                self.rest, 'establish_rest_session',
+                return_value=pf.FakeRequestsSession()) as mck_est:
+
+            response, sc = self.rest.file_transfer_request(
+                method=constants.POST,
+                uri='/system/settings/exportfile',
+                upload=True,
+                form_data={'test_req': True})
+
+            mck_est.assert_called_once_with(headers={
+                constants.ACCEPT_ENC: constants.APP_MPART,
+                constants.USER_AGENT: rest_requests.ua_details,
+                constants.APP_TYPE: self.rest.headers.get(
+                    'application-type')})
+            self.assertEqual(200, sc)
+            self.assertEqual('OK', response.raw.reason)
+
+    def test_file_transfer_request_download_upload_exception(self):
+        """Test file_transfer_request exc download and upload both set."""
+        self.assertRaises(
+            exception.InvalidInputException, self.rest.file_transfer_request,
+            method=constants.POST, uri='/fake', download=True, upload=True)
+
+    def test_file_transfer_request_timeout_exception(self):
+        """Test file_transfer timeout exception scenario."""
+        with mock.patch.object(
+                self.rest, 'establish_rest_session',
+                side_effect=requests.Timeout):
+            resp, sc = self.rest.file_transfer_request(
+                method=constants.POST, uri='/fake', download=True)
+            self.assertIsNone(resp)
+            self.assertIsNone(sc)
+
+    def test_file_transfer_request_ssl_exception(self):
+        """Test file_transfer SSL error exception scenario."""
+        with mock.patch.object(
+                self.rest, 'establish_rest_session',
+                side_effect=requests.exceptions.SSLError):
+            self.assertRaises(
+                requests.exceptions.SSLError,
+                self.rest.file_transfer_request,
+                method=constants.POST, uri='/fake', download=True)
+
+    def test_file_transfer_request_connection_exception(self):
+        """Test file_transfer HTTP error exception scenario."""
+        with mock.patch.object(
+                self.rest, 'establish_rest_session',
+                side_effect=requests.exceptions.HTTPError):
+            self.assertRaises(
+                requests.exceptions.HTTPError,
+                self.rest.file_transfer_request,
+                method=constants.POST, uri='/fake', download=True)
+
+    def test_file_transfer_request_other_exception(self):
+        """Test file_transfer HTTP error exception scenario."""
+        with mock.patch.object(
+                self.rest, 'establish_rest_session',
+                side_effect=exception.VolumeBackendAPIException):
+            self.assertRaises(
+                exception.VolumeBackendAPIException,
+                self.rest.file_transfer_request,
+                method=constants.POST, uri='/fake', download=True)

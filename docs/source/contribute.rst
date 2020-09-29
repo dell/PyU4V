@@ -12,6 +12,8 @@ The following tests must all run cleanly:
     $ cd PyU4V
     $ tox -e py36
     $ tox -e py37
+    $ tox -e py38
+    $ tox -e py39
     $ tox -e pep8
     $ tox -e pylint
 
@@ -20,10 +22,12 @@ The following tests must all run cleanly:
    If you do not have all the versions of Python installed, just run tox on
    the versions you have.
 
-Once the above tests all run clean and CI tests are run to ensure there is no
-impact on existing functionality, PyU4V core reviewers will review the code
-to ensure it conforms to all conventions outlined in the section below. If all
-looks good we will merge it to the PyU4V master branch.
+Once the above tests all run clean and a pull request has been opened, PyU4V
+core reviewers will review the code to ensure it conforms to all conventions
+outlined in the section below. If the code looks good we will run CI on it
+internally to ensure that it does not break any current functionality. If all
+the tests run cleanly and two approvals from core reviewers is achieved we will
+merge it to PyU4V in the target branch.
 
 Conventions
 -----------

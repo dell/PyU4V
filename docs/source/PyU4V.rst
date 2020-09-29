@@ -1,7 +1,3 @@
-PyU4V API
-=========
-
-
 PyU4V\.univmax\_conn
 --------------------
 Creates the connection with the Unisphere for PowerMax instance.
@@ -15,6 +11,14 @@ PyU4V\.common
 -------------
 
 .. automodule:: PyU4V.common
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.metro_dr
+---------------
+
+.. automodule:: PyU4V.metro_dr
     :members:
     :undoc-members:
     :show-inheritance:
@@ -43,6 +47,14 @@ PyU4V\.provisioning
     :undoc-members:
     :show-inheritance:
 
+PyU4V\.real_time
+----------------
+
+.. automodule:: PyU4V.real_time
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PyU4V\.replication
 ------------------
 
@@ -55,6 +67,14 @@ PyU4V\.rest\_requests
 ---------------------
 
 .. automodule:: PyU4V.rest_requests
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.snapshot_policy
+----------------------
+
+.. automodule:: PyU4V.snapshot_policy
     :members:
     :undoc-members:
     :show-inheritance:
@@ -87,10 +107,14 @@ PyU4V\.utils
     :undoc-members:
     :show-inheritance:
 
-PyU4V\.tools\.openstack\.migrate\_utils module
-----------------------------------------------
+PyU4V\.tools
+------------
 
-.. automodule:: PyU4V.tools.openstack.migrate_utils
+.. toctree::
+
+    PyU4V.tools
+
+.. automodule:: PyU4V.tools
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,10 +58,45 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.perf.set_recency(recency)
         self.assertEqual(self.perf.recency, recency)
 
-    def test_is_array_performance_registered_exception(self):
-        """Test is_array_performance_registered exception."""
-        self.assertRaises(exception.VolumeBackendAPIException,
-                          self.perf.is_array_performance_registered, 'FAKE')
+    def test_is_array_performance_registered(self):
+        """Test is_array_performance_registered invalid ID."""
+        self.assertTrue(
+            self.perf.is_array_performance_registered())
+        self.assertFalse(
+            self.perf.is_array_performance_registered('Fake'))
+
+    def test_is_array_diagnostic_performance_registered(self):
+        """Test is_array_diagnostic_performance_registered response format."""
+        self.assertTrue(
+            self.perf.is_array_diagnostic_performance_registered())
+        self.assertFalse(
+            self.perf.is_array_diagnostic_performance_registered('Fake'))
+
+    def test_is_array_real_time_performance_registered(self):
+        """Test is_array_real_time_performance_registered response format."""
+        self.assertTrue(
+            self.perf.is_array_real_time_performance_registered())
+        self.assertFalse(
+            self.perf.is_array_real_time_performance_registered('Fake'))
+
+    def test_get_array_registration_details(self):
+        """Test get_array_registration_details."""
+        response = self.perf.get_array_registration_details()
+        self.assertIsInstance(response, dict)
+        self.assertEqual(self.conn.array_id, response.get(pc.SYMM_ID))
+        self.assertIn(pc.REAL_TIME, response.keys())
+        self.assertIn(pc.REG_DIAGNOSTIC, response.keys())
+        self.assertIn(pc.COLLECTION_INT, response.keys())
+
+    def test_backup_performance_database_success(self):
+        """Test backup_performance_database success."""
+        self.perf.backup_performance_database()
+
+    def test_backup_performance_database_failure(self):
+        """Test backup_performance_database exception."""
+        self.assertRaises(
+            exception.VolumeBackendAPIException,
+            self.perf.backup_performance_database, array_id='FAKE')
 
     def test_get_last_available_timestamp(self):
         """Test get_last_available_timestamp."""
@@ -284,7 +319,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_set_perf_threshold_and_alert(self):
         """Test set_perf_threshold_and_alert."""
-        metric = 'ResponseTime'
+        metric = 'ReadResponseTime'
         alert, f_threshold, s_threshold = None, None, None
 
         cat_thresh_settings = self.perf.get_threshold_category_settings(
@@ -294,6 +329,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
                 alert = threshold.get(pc.ALERT_ERR)
                 f_threshold = threshold.get(pc.FIRST_THRESH)
                 s_threshold = threshold.get(pc.SEC_THRESH)
+                if f_threshold == s_threshold:
+                    s_threshold += 1
                 break
 
         # Update threshold settings
@@ -327,7 +364,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_update_threshold_settings(self):
         """Test set_perf_threshold_and_alert."""
-        metric = 'ResponseTime'
+        metric = 'ReadResponseTime'
         alert, f_threshold, s_threshold = None, None, None
 
         cat_thresh_settings = self.perf.get_threshold_category_settings(
@@ -397,7 +434,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
             if category == pc.ARRAY and metric == metric_set:
                 orig_values = (csv_data.get(pc.FIRST_THRESH)[i],
                                csv_data.get(pc.SEC_THRESH)[i])
-                updated_values = (orig_values[0] + 5, orig_values[1] + 5)
+                updated_values = (int(orig_values[0]) + 5,
+                                  int(orig_values[1]) + 5)
                 csv_data[pc.FIRST_THRESH][i] = updated_values[0]
                 csv_data[pc.SEC_THRESH][i] = updated_values[1]
                 csv_data[pc.KPI][i] = True
@@ -419,8 +457,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         t_settings = self.perf.get_threshold_category_settings(pc.ARRAY)
         for t in t_settings.get(pc.PERF_THRESH):
             if t.get(pc.METRIC) == metric_set:
-                self.assertEqual(t.get(pc.FIRST_THRESH), orig_values[0])
-                self.assertEqual(t.get(pc.SEC_THRESH), orig_values[1])
+                self.assertEqual(t.get(pc.FIRST_THRESH), int(orig_values[0]))
+                self.assertEqual(t.get(pc.SEC_THRESH), int(orig_values[1]))
 
     def test_set_thresholds_from_csv(self):
         """Test set_thresholds_from_csv."""
@@ -443,7 +481,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
             if category == pc.ARRAY and metric == metric_set:
                 orig_values = (csv_data.get(pc.FIRST_THRESH)[i],
                                csv_data.get(pc.SEC_THRESH)[i])
-                updated_values = (orig_values[0] + 5, orig_values[1] + 5)
+                updated_values = (int(orig_values[0]) + 5,
+                                  int(orig_values[1]) + 5)
                 csv_data[pc.FIRST_THRESH][i] = updated_values[0]
                 csv_data[pc.SEC_THRESH][i] = updated_values[1]
                 csv_data[pc.KPI][i] = True
@@ -465,8 +504,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         t_settings = self.perf.get_threshold_category_settings(pc.ARRAY)
         for t in t_settings.get(pc.PERF_THRESH):
             if t.get(pc.METRIC) == metric_set:
-                self.assertEqual(t.get(pc.FIRST_THRESH), orig_values[0])
-                self.assertEqual(t.get(pc.SEC_THRESH), orig_values[1])
+                self.assertEqual(t.get(pc.FIRST_THRESH), int(orig_values[0]))
+                self.assertEqual(t.get(pc.SEC_THRESH), int(orig_values[1]))
 
     def test_performance_stats_max_format(self):
         """Test performance stats max data format."""
@@ -564,15 +603,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_core_performance_function(self):
-        """Test core performance function."""
-        category = pc.CORE
-        id_tag = pc.CORE_ID
-        key_func = self.perf.get_core_keys
-        metrics_func = self.perf.get_core_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
     def test_database_performance_function(self):
         """Test database performance function."""
         category = pc.DB
@@ -591,30 +621,12 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_disk_performance_function(self):
-        """Test disk performance function."""
-        category = pc.DISK
-        id_tag = pc.DISK_ID
-        key_func = self.perf.get_disk_keys
-        metrics_func = self.perf.get_disk_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
     def test_disk_group_performance_function(self):
         """Test device group by pool performance function."""
         category = pc.DISK_GRP
         id_tag = pc.DISK_GRP_ID
         key_func = self.perf.get_disk_group_keys
         metrics_func = self.perf.get_disk_group_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
-    def test_disk_technology_pool_performance_function(self):
-        """Test disk technology pool performance function."""
-        category = pc.DISK_TECH_POOL
-        id_tag = pc.DISK_TECH
-        key_func = self.perf.get_disk_technology_pool_keys
-        metrics_func = self.perf.get_disk_technology_pool_stats
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
@@ -636,30 +648,12 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_external_director_performance_function(self):
-        """Test external director performance function."""
-        category = pc.EXT_DIR
-        id_tag = pc.DIR_ID
-        key_func = self.perf.get_external_director_keys
-        metrics_func = self.perf.get_external_director_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
     def test_external_disk_performance_function(self):
         """Test external disk performance function."""
         category = pc.EXT_DISK
         id_tag = pc.DISK_ID
         key_func = self.perf.get_external_disk_keys
         metrics_func = self.perf.get_external_disk_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
-    def test_external_disk_group_performance_function(self):
-        """Test external disk group performance function."""
-        category = pc.EXT_DISK_GRP
-        id_tag = pc.DISK_GRP_ID
-        key_func = self.perf.get_external_disk_group_keys
-        metrics_func = self.perf.get_external_disk_group_stats
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
@@ -756,15 +750,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_initiator_by_port_performance_function(self):
-        """Test initiator by port performance function."""
-        category = pc.INIT_BY_PORT
-        id_tag = pc.INIT_BY_PORT_ID
-        key_func = self.perf.get_initiator_by_port_keys
-        metrics_func = self.perf.get_initiator_by_port_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
     def test_ip_interface_performance_function(self):
         """Test initiator by port performance function."""
         category = pc.IP_INT
@@ -858,18 +843,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_storage_group_by_pool_performance_function(self):
-        """Test storage group by thin pool performance function."""
-        category = pc.SG_BY_POOL
-        outer_tag = pc.SG_ID
-        inner_tag = pc.POOL_ID
-        outer_keys_func = self.perf.get_storage_group_keys
-        inner_keys_func = self.perf.get_storage_group_by_pool_keys
-        inner_metrics_func = self.perf.get_storage_group_by_pool_stats
-        self.run_extended_input_performance_test_asserts(
-            category, outer_tag, inner_tag, outer_keys_func, inner_keys_func,
-            inner_metrics_func)
-
     def test_storage_resource_pool_performance_function(self):
         """Test storage resource pool performance function."""
         category = pc.SRP
@@ -885,7 +858,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         try:
             sc_keys = self.perf.get_storage_container_keys()
             sr_keys = self.perf.get_storage_resource_keys()
-        except exception.VolumeBackendAPIException:
+        except exception.ResourceNotFoundException:
             if not sc_keys:
                 self.skipTest('There are no storage containers available in '
                               'this environment.')
@@ -905,42 +878,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue(response)
         self.assertIsInstance(response, dict)
         self.assertIsInstance(response.get(pc.RESULT), list)
-
-    def test_storage_resource_by_pool_performance_function(self):
-        """Test storage resource by thin pool performance function."""
-        sc_keys, sr_keys = None, None
-        try:
-            sc_keys = self.perf.get_storage_container_keys()
-            sr_keys = self.perf.get_storage_resource_keys()
-        except exception.VolumeBackendAPIException:
-            if not sc_keys:
-                self.skipTest('There are no storage containers available in '
-                              'this environment.')
-            else:
-                self.skipTest('There are no storage resources available in '
-                              'this environment.')
-        response = None
-        start_time, end_time = self.perf.format_time_input(category=pc.ARRAY)
-        for container_key in sc_keys:
-            sc_id = container_key.get(pc.STORAGE_CONT_ID)
-            for time_key in sr_keys:
-                sr_id = time_key.get(pc.STORAGE_RES_ID)
-                try:
-                    self.perf.get_storage_resource_by_pool_keys(
-                        sc_id, sr_id, start_time, end_time)
-                    response = self.perf.get_storage_resource_by_pool_stats(
-                        sc_id, sr_id, pc.KPI, start_time, end_time)
-                    break
-                except exception.VolumeBackendAPIException:
-                    pass
-        if not response:
-            self.skipTest('There is no storage resource by pool data '
-                          'available using all storage container and storage '
-                          'resource combinations.')
-        else:
-            self.assertTrue(response)
-            self.assertIsInstance(response, dict)
-            self.assertIsInstance(response.get(pc.RESULT), list)
 
     def test_thin_pool_performance_function(self):
         """Test thin pool performance function."""
@@ -978,10 +915,10 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
             self.assertTrue(response)
             self.assertIsInstance(response, dict)
             self.assertIsInstance(response.get(pc.RESULT), list)
-            # We allow a ±1 tolerance here because on occasion  we can poll for
-            # results just as new interval generated and get back 48hrs + 5 min
+            # We allow a ±2 tolerance here because on occasion we can poll for
+            # results just as new interval generated and get back 4hrs + 10min
             self.assertTrue(
-                (-1 <= (len(response.get(pc.RESULT)) - interval_count) <= 1))
+                (-2 <= (len(response.get(pc.RESULT)) - interval_count) <= 2))
 
     def test_get_fe_director_metrics(self):
         """Test get_fe_director_metrics."""

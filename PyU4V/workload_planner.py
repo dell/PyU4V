@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ from PyU4V.utils import constants
 
 LOG = logging.getLogger(__name__)
 
+# Resource constants
 # Resource constants
 SYMMETRIX = constants.SYMMETRIX
 WLP = constants.WLP

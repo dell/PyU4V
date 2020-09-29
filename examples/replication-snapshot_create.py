@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,22 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""snapshot_link.py"""
+"""docs/source/programmers_guide_src/code/replication-snapshot_create.py"""
 
 import PyU4V
 import time
 
-# Set up connection to Unisphere for PowerMax Server, details collected
-# from configuration file in working directory where script is stored.
+# Initialise PyU4V connection to Unisphere
 conn = PyU4V.U4VConn()
 
-# Create storage Group with one volume
+# Create storage Group with one volume using settings specified for
+# service level and capacity
 storage_group = conn.provisioning.create_non_empty_storage_group(
     srp_id='SRP_1', storage_group_id='PyU4V_SG', service_level='Diamond',
     workload=None, num_vols=1, vol_size=1, cap_unit='GB')
 
-# Define a Name for the Snapshot, in this case the name auto appends the
-# host time for when it was taken for ease of identification
+# Define a Name for the Snapshot, in this case the name auto appends
+# the host
+# time for when it was taken for ease of identification
 snap_name = 'PyU4V_Snap_' + time.strftime('%d%m%Y%H%M%S')
 
 # Create the snapshot of the storage group containing the volume and
@@ -34,13 +35,13 @@ snap_name = 'PyU4V_Snap_' + time.strftime('%d%m%Y%H%M%S')
 snapshot = conn.replication.create_storage_group_snapshot(
     storage_group_id=storage_group['storageGroupId'], snap_name=snap_name)
 
-# Link The Snapshot to a new storage group, the API will automatically
-# create the link storage group with the right number of volumes if one
-# with that name doesn't already exist
-conn.replication.modify_storage_group_snapshot(
-    src_storage_grp_id=storage_group['storageGroupId'],
-    tgt_storage_grp_id='PyU4V_LNK_SG', link=True,
-    snap_name=snap_name, gen_num=0)
+# Confirm the snapshot was created successfully, get a list of storage
+# group snapshots
+snap_list = conn.replication.get_storage_group_snapshot_list(
+    storage_group_id=storage_group['storageGroupId'])
+
+# Assert the snapshot name is in the list of storage group snapshots
+assert snapshot['name'] in snap_list
 
 # Close the session
 conn.close_session()

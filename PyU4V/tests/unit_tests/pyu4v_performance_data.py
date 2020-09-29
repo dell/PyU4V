@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class PerformanceData(object):
 
     array = '000197800123'
     remote_array = '000197800124'
-    array_keys_empty = {'arrayInfo': []}
+    array_keys_empty = {'arrayInfo': list()}
     array_keys = {'arrayInfo': [{'symmetrixId': array,
                                  'firstAvailableDate': first_date,
                                  'lastAvailableDate': last_date}]}
@@ -40,6 +40,19 @@ class PerformanceData(object):
     array_reg_details_disabled = {'registrationDetailsInfo': [{
         'symmetrixId': array, 'realtime': False, 'collectionintervalmins': 0,
         'diagnostic': False, 'message': 'Success'}]}
+    array_is_registered_true = {'isRegistered': True}
+    array_is_registered_false = {'isRegistered': False}
+
+    array_register_success = {"message": [
+        "Successfully applied registration changes for "
+        "{arr} array(s).".format(arr=array)]}
+    array_register_fail = {"message": [
+        "Could not apply registration changes for {arr} array(s).".format(
+            arr=array)]}
+
+    array_backup_success = {'message': [
+        'Backup of {arr} array is now in progress.'.format(arr=array)]}
+    array_backup_fail = {'message': ['SymmetrixId [fake] not found.']}
 
     be_dir_id = 'DF-1C'
     be_dir_keys = {'beDirectorInfo': [{'directorId': be_dir_id,
@@ -270,3 +283,27 @@ class PerformanceData(object):
     days_to_full_resp = {'daysToFullObjectResultType': [{
         'ProjectionDaysToFull': 181.0, 'PercentUsedCapacity': 0.17,
         'TotalPoolCapacityGB': 62590.0, 'instanceId': array}]}
+
+    # Real-time
+    rt_categories = {"categoryName": [
+        "Array", "BEDirector", "BEPort", "ExternalDirector", "FEDirector",
+        "FEPort", "RDFDirector", "RDFPort", "StorageGroups"]}
+
+    rt_metrics = {"metricName": ["IOs", "PercentBusy", "ReadReqs", "Reqs",
+                                 "WriteReqs"]}
+
+    rt_times = {"arrayInfo": [
+        {"symmetrixId": array, "firstAvailableDate": 1599739566984,
+         "lastAvailableDate": 1599743600991},
+        {"symmetrixId": remote_array, "firstAvailableDate": 1599739572983,
+         "lastAvailableDate": 1599743600984}]}
+
+    rt_keys = {"keys": [array, remote_array]}
+
+    rt_perf_metrics = {
+        "expirationTime": 1599744006249, "count": 13,
+        "maxPageSize": 1000, "id": "b6807ec4-3ef3-4b7c-818f-5eda2311910a_0",
+        "resultList": {"from": 1, "to": 13, "result": [
+            {"FEReadReqs": 12.0, "HostMBs": 0.30714843},
+            {"FEReadReqs": 12.333333, "HostMBs": 0.30714843},
+            {"FEReadReqs": 14.0, "HostMBs": 0.38320404}]}}

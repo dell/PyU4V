@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,16 +18,19 @@ import sys
 import time
 
 from PyU4V.common import CommonFunctions
+from PyU4V.metro_dr import MetroDRFunctions
 from PyU4V.migration import MigrationFunctions
 from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
 from PyU4V.rest_requests import RestRequests
+from PyU4V.snapshot_policy import SnapshotPolicyFunctions
 from PyU4V.system import SystemFunctions
 from PyU4V.utils import config_handler
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 from PyU4V.workload_planner import WLPFunctions
+
 
 file_path = None
 LOG = logging.getLogger(__name__)
@@ -35,6 +38,7 @@ LOG = logging.getLogger(__name__)
 SETUP = constants.SETUP
 ARRAY = constants.ARRAY
 R_ARRAY = constants.R_ARRAY
+R_ARRAY_2 = constants.R_ARRAY_2
 USERNAME = constants.USERNAME
 PASSWORD = constants.PASSWORD
 SERVER_IP = constants.SERVER_IP
@@ -49,7 +53,8 @@ class U4VConn(object):
                  port=None, verify=None,
                  u4v_version=constants.UNISPHERE_VERSION,
                  interval=5, retries=200, array_id=None,
-                 application_type=None, remote_array=None):
+                 application_type=None, remote_array=None,
+                 remote_array_2=None):
         """__init__."""
         config = config_handler.set_logger_and_config(file_path)
         self.end_date = int(round(time.time() * 1000))
@@ -79,6 +84,11 @@ class U4VConn(object):
                     self.remote_array = config.get(SETUP, R_ARRAY)
             else:
                 self.remote_array = None
+            if config.has_option(SETUP, R_ARRAY_2):
+                if not remote_array_2:
+                    self.remote_array_2 = config.get(SETUP, R_ARRAY_2)
+            else:
+                self.remote_array_2 = None
 
         # Set verification
         if verify is None:
@@ -107,10 +117,13 @@ class U4VConn(object):
                                                 self.rest_client)
         self.replication = ReplicationFunctions(self.array_id,
                                                 self.rest_client)
+        self.metro_dr = MetroDRFunctions(self.array_id, self.rest_client)
         self.migration = MigrationFunctions(self.array_id,
                                             self.rest_client)
         self.wlp = WLPFunctions(self.array_id,
                                 self.rest_client)
+        self.snapshot_policy = SnapshotPolicyFunctions(self.array_id,
+                                                       self.rest_client)
         self.system = SystemFunctions(self.array_id, self.rest_client)
         self.validate_unisphere()
 
@@ -149,9 +162,9 @@ class U4VConn(object):
         uni_ver, major_ver = self.common.get_uni_version()
         if int(major_ver) < int(constants.UNISPHERE_VERSION):
             msg = ('Unisphere version {uv} does not meet the minimum '
-                   'requirement of v9.1.0.x. Please upgrade your version of '
+                   'requirement of v9.2.0.x Please upgrade your version of '
                    'Unisphere to use this SDK. Exiting...'.format(uv=uni_ver))
             sys.exit(msg)
         else:
-            LOG.debug('Unisphere version {uv} passes minimum requirement'
+            LOG.debug('Unisphere version {uv} passes minimum requirement '
                       'check.'.format(uv=uni_ver))

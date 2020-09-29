@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2020 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,12 @@
 """pyu4v_fakes.py."""
 
 import ast
+import json
 import os
 import requests
 import tempfile
+
+from unittest import mock
 
 from PyU4V.tests.unit_tests.pyu4v_common_data import CommonData
 from PyU4V.tests.unit_tests.pyu4v_performance_data import PerformanceData
@@ -26,10 +29,15 @@ from PyU4V.utils import performance_constants as pc
 class FakeResponse(object):
     """Fake response."""
 
-    def __init__(self, status_code, return_object):
+    def __init__(self, status_code, return_object, raw_reason=None, text=None,
+                 content=None):
         """__init__."""
         self.status_code = status_code
         self.return_object = return_object
+        self.raw = mock.MagicMock()
+        self.raw.reason = raw_reason
+        self.text = json.dumps(text, sort_keys=True, indent=4)
+        self.content = content
 
     def json(self):
         """json."""
@@ -37,6 +45,12 @@ class FakeResponse(object):
             return self.return_object
         else:
             raise ValueError
+
+    def iter_content(self, chunk_size):
+        if self.content:
+            return [self.content]
+        else:
+            return [self.return_object]
 
 
 class FakeRequestsSession(object):
@@ -47,10 +61,14 @@ class FakeRequestsSession(object):
         self.data = CommonData()
         self.p_data = PerformanceData()
 
-    def request(self, method, url, params=None, data=None, timeout=None):
+    def request(self, method, url, params=None, data=None, timeout=None,
+                stream=None, files=None):
         """request."""
         return_object = ''
         status_code = 200
+        raw_reason = None
+        text = None
+
         if 'performance' in url:
             status_code, return_object = self._performance_call(url)
 
@@ -61,6 +79,13 @@ class FakeRequestsSession(object):
             if 'system' in url and 'health' in url:
                 status_code = 200
                 return_object = self.data.perform_health_check_response
+            elif 'system' in url and 'importfile' in url:
+                return_object = {'success': True}
+                raw_reason = "OK"
+                text = self.data.response_string_dict_success
+            elif 'system' in url and 'exportfile' in url:
+                return_object = {'success': True}
+                raw_reason = "OK"
             else:
                 status_code, return_object = self._post_or_put(url, data)
 
@@ -79,7 +104,7 @@ class FakeRequestsSession(object):
         elif method == 'EXCEPTION':
             raise Exception
 
-        return FakeResponse(status_code, return_object)
+        return FakeResponse(status_code, return_object, raw_reason, text)
 
     def _get_request(self, url, params):
         status_code = 200
@@ -126,6 +151,15 @@ class FakeRequestsSession(object):
         elif 'migration' in url:
             return_object = self._migration(url)
 
+        if 'alert' in url:
+            url_components = url.split('/')
+            if 'alert_summary' in url_components[-1]:
+                return_object = self._system_alert_summary()
+            if 'alert' == url_components[-2]:
+                return_object = self._system_alert_details()
+            elif 'alert' == url_components[-1]:
+                return_object = self._system_alert_list()
+
         elif 'system' in url:
             if 'director' in url:
                 return_object = self._system_port(url)
@@ -135,6 +169,14 @@ class FakeRequestsSession(object):
                 return_object = self._system_disk(url)
             elif 'tag' in url:
                 return_object = self._system_tag(url)
+            elif 'audit_log_record' in url:
+                if 'exportfile' in url:
+                    return_object = dict()
+                else:
+                    if all(x in url for x in ['?', 'entry_date']):
+                        return_object = self.data.audit_log_list
+                    else:
+                        return_object = self.data.audit_record
             else:
                 return_object = self._system(url)
 
@@ -258,6 +300,14 @@ class FakeRequestsSession(object):
                 return_object = self.data.rdf_group_list
         elif 'capabilities' in url:
             return_object = self.data.capabilities
+        elif 'snapshot_policy' in url:
+            return_object = self._snapshot_policy(url)
+        return return_object
+
+    def _snapshot_policy(self, url):
+        return_object = self.data.snapshot_policy_list
+        if self.data.snapshot_policy_name in url:
+            return_object = self.data.snapshot_policy_info
         return return_object
 
     def _replication_sg(self, url):
@@ -267,6 +317,11 @@ class FakeRequestsSession(object):
                 return_object = self.data.group_snap_vx
             else:
                 return_object = self.data.sg_snap_gen_list
+        elif 'snapid' in url:
+            if self.data.group_snapshot_name in url:
+                return_object = self.data.group_snap_vx
+            else:
+                return_object = self.data.sg_snap_id_list
         elif 'snapshot' in url:
             return_object = self.data.sg_snap_list
         elif 'rdf_group' in url:
@@ -365,106 +420,139 @@ class FakeRequestsSession(object):
 
         return return_object
 
+    def _system_alert_summary(self):
+        return_object = self.data.alert_summary
+        return return_object
+
+    def _system_alert_list(self):
+        return_object = self.data.alert_list
+        return return_object
+
+    def _system_alert_details(self):
+        return_object = self.data.alert_details
+        return return_object
+
     def _performance_call(self, url):
-        uri_components = list(filter(None, url.split('/')))
-        performance_section = uri_components[-1]
-        category = uri_components[-2]
         return_object = list()
         status_code = 200
+        uri_components = list(filter(None, url.split('/')))
+        perf_idx = uri_components.index(pc.PERFORMANCE)
+        performance_section = uri_components[perf_idx + 1]
+        try:
+            category = uri_components[perf_idx + 2]
+        except IndexError:
+            # Days to Full scenario
+            category = None
 
-        if pc.METRICS == performance_section:
+        if performance_section == pc.REAL_TIME:
+            if category == pc.HELP:
+                if uri_components[-1] == pc.CATEGORIES:
+                    return_object = self.p_data.rt_categories
+                elif uri_components[-1] == pc.METRICS:
+                    return_object = self.p_data.rt_metrics
+                elif uri_components[-1] == pc.TIMES:
+                    return_object = self.p_data.rt_times
+            elif category == pc.KEYS:
+                return_object = self.p_data.rt_keys
+            elif category == pc.METRICS:
+                return_object = self.p_data.rt_perf_metrics
+
+        elif category == pc.METRICS:
             return_object = self.p_data.perf_metrics_resp
-        elif pc.KEYS == performance_section:
-            if pc.ARRAY == category:
+
+        elif category == pc.KEYS:
+            if performance_section == pc.ARRAY:
                 return_object = self.p_data.array_keys
-            elif pc.BE_DIR == category:
+            elif performance_section == pc.BE_DIR:
                 return_object = self.p_data.be_dir_keys
-            elif pc.BE_EMU == category:
+            elif performance_section == pc.BE_EMU:
                 return_object = self.p_data.be_emu_keys
-            elif pc.BE_PORT == category:
+            elif performance_section == pc.BE_PORT:
                 return_object = self.p_data.be_port_keys
-            elif pc.BOARD == category:
+            elif performance_section == pc.BOARD:
                 return_object = self.p_data.board_keys
-            elif pc.CACHE_PART == category:
+            elif performance_section == pc.CACHE_PART:
                 return_object = self.p_data.cache_partition_keys
-            elif pc.CORE == category:
+            elif performance_section == pc.CORE:
                 return_object = self.p_data.core_keys
-            elif pc.DB == category:
+            elif performance_section == pc.DB:
                 return_object = self.p_data.database_keys
-            elif pc.DEV_GRP == category:
+            elif performance_section == pc.DEV_GRP:
                 return_object = self.p_data.device_group_keys
-            elif pc.DISK == category:
+            elif performance_section == pc.DISK:
                 return_object = self.p_data.disk_keys
-            elif pc.DISK_GRP == category:
+            elif performance_section == pc.DISK_GRP:
                 return_object = self.p_data.disk_group_keys
-            elif pc.DISK_TECH_POOL == category:
+            elif performance_section == pc.DISK_TECH_POOL:
                 return_object = self.p_data.disk_tech_pool_keys
-            elif pc.EDS_DIR == category:
+            elif performance_section == pc.EDS_DIR:
                 return_object = self.p_data.eds_dir_keys
-            elif pc.EDS_EMU == category:
+            elif performance_section == pc.EDS_EMU:
                 return_object = self.p_data.eds_emu_keys
-            elif pc.EXT_DIR == category:
+            elif performance_section == pc.EXT_DIR:
                 return_object = self.p_data.ext_dir_keys
-            elif pc.EXT_DISK == category:
+            elif performance_section == pc.EXT_DISK:
                 return_object = self.p_data.external_disk_id
-            elif pc.EXT_DISK_GRP == category:
+            elif performance_section == pc.EXT_DISK_GRP:
                 return_object = self.p_data.ext_disk_group_keys
-            elif pc.FE_DIR == category:
+            elif performance_section == pc.FE_DIR:
                 return_object = self.p_data.fe_dir_keys
-            elif pc.FE_EMU == category:
+            elif performance_section == pc.FE_EMU:
                 return_object = self.p_data.fe_emu_keys
-            elif pc.FE_PORT == category:
+            elif performance_section == pc.FE_PORT:
                 return_object = self.p_data.fe_port_keys
-            elif pc.FICON_EMU == category:
+            elif performance_section == pc.FICON_EMU:
                 return_object = self.p_data.ficon_emu_keys
-            elif pc.FICON_EMU_THR == category:
+            elif performance_section == pc.FICON_EMU_THR:
                 return_object = self.p_data.ficon_emu_thread_keys
-            elif pc.FICON_PORT_THR == category:
+            elif performance_section == pc.FICON_PORT_THR:
                 return_object = self.p_data.ficon_port_thread_keys
-            elif pc.HOST == category:
+            elif performance_section == pc.HOST:
                 return_object = self.p_data.host_keys
-            elif pc.IM_DIR == category:
+            elif performance_section == pc.IM_DIR:
                 return_object = self.p_data.im_dir_keys
-            elif pc.IM_EMU == category:
+            elif performance_section == pc.IM_EMU:
                 return_object = self.p_data.im_emu_keys
-            elif pc.INIT == category:
+            elif performance_section == pc.INIT:
                 return_object = self.p_data.init_keys
-            elif pc.INIT_BY_PORT == category:
+            elif performance_section == pc.INIT_BY_PORT:
                 return_object = self.p_data.init_by_port_keys
-            elif pc.IP_INT == category:
+            elif performance_section == pc.IP_INT:
                 return_object = self.p_data.ip_interface_keys
-            elif pc.ISCSI_TGT == category:
+            elif performance_section == pc.ISCSI_TGT:
                 return_object = self.p_data.iscsi_target_keys
-            elif pc.PG == category:
+            elif performance_section == pc.PG:
                 return_object = self.p_data.port_group_keys
-            elif pc.RDFA == category:
+            elif performance_section == pc.RDFA:
                 return_object = self.p_data.rdfa_keys
-            elif pc.RDFS == category:
+            elif performance_section == pc.RDFS:
                 return_object = self.p_data.rdfs_keys
-            elif pc.RDF_DIR == category:
+            elif performance_section == pc.RDF_DIR:
                 return_object = self.p_data.rdf_dir_keys
-            elif pc.RDF_EMU == category:
+            elif performance_section == pc.RDF_EMU:
                 return_object = self.p_data.rdf_emu_keys
-            elif pc.RDF_PORT == category:
+            elif performance_section == pc.RDF_PORT:
                 return_object = self.p_data.rdf_port_keys
-            elif pc.STORAGE_CONT == category:
+            elif performance_section == pc.STORAGE_CONT:
                 return_object = self.p_data.storage_container_keys
-            elif pc.SG == category:
+            elif performance_section == pc.SG:
                 return_object = self.p_data.storage_group_keys
-            elif pc.SG_BY_POOL == category:
+            elif performance_section == pc.SG_BY_POOL:
                 return_object = self.p_data.storage_group_by_pool_keys
-            elif pc.SRP == category:
+            elif performance_section == pc.SRP:
                 return_object = self.p_data.srp_keys
-            elif pc.STORAGE_RES == category:
+            elif performance_section == pc.STORAGE_RES:
                 return_object = self.p_data.storage_resource_keys
-            elif pc.STORAGE_RES_BY_POOL == category:
+            elif performance_section == pc.STORAGE_RES_BY_POOL:
                 return_object = self.p_data.storage_resource_by_pool_keys
-            elif pc.THIN_POOL == category:
+            elif performance_section == pc.THIN_POOL:
                 return_object = self.p_data.thin_pool_keys
+
         else:
             # Days to full settings
             if pc.DAYS_TO_FULL in uri_components:
                 return_object = self.p_data.days_to_full_resp
+
             # Threshold Settings
             elif pc.THRESHOLD in uri_components:
                 if pc.CATEGORIES in uri_components:
@@ -472,8 +560,17 @@ class FakeRequestsSession(object):
                 elif pc.LIST in uri_components:
                     return_object = self.p_data.threshold_settings_resp
                     return_object[pc.CATEGORY] = uri_components[-1]
-            elif pc.REG_DETAILS in uri_components:
-                return_object = self.p_data.array_reg_details_enabled
+
+            # Array registration details
+            elif pc.ARRAY in uri_components:
+                if pc.REG in uri_components:
+                    return_object = self.p_data.array_is_registered_true
+                elif pc.REG_DETAILS in uri_components:
+                    return_object = self.p_data.array_reg_details_enabled
+                elif pc.REGISTER in uri_components:
+                    return_object = self.p_data.array_register_success
+                elif pc.BACKUP in uri_components:
+                    return_object = self.p_data.array_backup_success
 
         return status_code, return_object
 
@@ -505,6 +602,11 @@ class FakeRequestsSession(object):
     def session():
         """session."""
         return FakeRequestsSession()
+
+    @staticmethod
+    def close():
+        """close session."""
+        pass
 
 
 class FakeConfigFile(object):
