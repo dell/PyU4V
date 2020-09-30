@@ -46,22 +46,6 @@ PyU4V\.utils\.file\_handler
     :undoc-members:
     :show-inheritance:
 
-PyU4V\.utils\.performance\_category\_map
-----------------------------------------
-
-.. automodule:: PyU4V.utils.performance_category_map
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PyU4V\.utils\.performance\_constants
-------------------------------------
-
-.. automodule:: PyU4V.utils.performance_constants
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 PyU4V\.utils\.time\_handler
 ---------------------------
 
