@@ -106,15 +106,3 @@ PyU4V\.utils
     :members:
     :undoc-members:
     :show-inheritance:
-
-PyU4V\.tools
-------------
-
-.. toctree::
-
-    PyU4V.tools
-
-.. automodule:: PyU4V.tools
-    :members:
-    :undoc-members:
-    :show-inheritance:
