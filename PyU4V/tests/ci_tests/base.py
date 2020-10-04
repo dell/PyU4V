@@ -159,28 +159,78 @@ class TestBaseTestCase(testtools.TestCase):
                   srdf_group_number -- int
                   remote_volume -- int
         """
-        sg_name = self.generate_name(object_type='sg')
+        # Check remote array exists
         self.check_for_remote_array()
 
-        self.provision.create_storage_group(
-            self.SRP, sg_name, self.SLO, None, False, 1, 1, 'GB', False, False,
-            'CI_TEST_VOL')
-        job = self.replication.create_storage_group_srdf_pairings(
-            storage_group_id=sg_name, remote_sid=self.conn.remote_array,
-            srdf_mode='Synchronous', establish=True, force_new_rdf_group=True,
-            _async=True)
-        self.conn.common.wait_for_job_complete(job)
-        local_volume = self.provision.get_volumes_from_storage_group(
-            sg_name)[0]
-        srdf_group_number = (
-            self.replication.get_storage_group_srdf_group_list(
-                sg_name))[0]
-        remote_volume = self.replication.get_rdf_group_volume(
-            rdf_number=srdf_group_number, device_id=local_volume).get(
-            'remoteVolumeName')
-        self.addCleanup(self.cleanup_rdfg, sg_name, srdf_group_number)
+        # Generate SG name and create SG with one 1GB volume
+        sg_name = self.generate_name(object_type='sg')
+        vol_name = self.generate_name()
+        srdf_group_number = None
 
-        return sg_name, srdf_group_number, local_volume, remote_volume
+        try:
+            sg_create_success, sg_create_cnt = False, 0
+            while not sg_create_success and sg_create_cnt <= 3:
+                try:
+                    sg_create_cnt += 1
+                    storage_group = self.provision.create_storage_group(
+                        self.SRP, sg_name, self.SLO, None, False, 1, 1, 'GB',
+                        False, False, vol_name)
+                    assert storage_group.get('storageGroupId') == sg_name
+                    assert storage_group.get('num_of_vols') == 1
+                    sg_create_success = True
+                except (exception.VolumeBackendAPIException,
+                        AssertionError) as error:
+                    if sg_create_cnt == 3:
+                        raise exception.VolumeBackendAPIException from error
+                    else:
+                        time.sleep(10)
+
+            # Create SRDF pairing for SG and single volume
+            srdf_pair_create_success, srdf_pair_create_cnt = False, 0
+            while not srdf_pair_create_success and srdf_pair_create_cnt <= 3:
+                try:
+                    job = self.replication.create_storage_group_srdf_pairings(
+                        storage_group_id=sg_name,
+                        remote_sid=self.conn.remote_array,
+                        srdf_mode='Synchronous', establish=True,
+                        force_new_rdf_group=True, _async=True)
+                    self.conn.common.wait_for_job_complete(job)
+                    srdf_pair_info = (
+                        self.replication.get_storage_group_replication_details(
+                            storage_group_id=sg_name))
+                    assert srdf_pair_info.get('rdf') is True
+                    srdf_pair_create_success = True
+                except (exception.VolumeBackendAPIException,
+                        AssertionError) as error:
+                    if srdf_pair_create_cnt == 3:
+                        raise exception.VolumeBackendAPIException from error
+                    else:
+                        time.sleep(10)
+
+            # Get the device ID of the volume in the local SG
+            local_vol_list = self.provision.get_volumes_from_storage_group(
+                sg_name)
+            assert len(local_vol_list) == 1
+            local_volume = local_vol_list[0]
+
+            # Get the SRDF group number associated with our SG
+            srdf_group_list = (
+                self.replication.get_storage_group_srdf_group_list(sg_name))
+            assert len(srdf_group_list) == 1
+            srdf_group_number = srdf_group_list[0]
+
+            # Get details of the remote volume
+            remote_volume_details = self.replication.get_rdf_group_volume(
+                rdf_number=srdf_group_number, device_id=local_volume)
+            assert remote_volume_details
+            remote_vol_id = remote_volume_details.get('remoteVolumeName')
+
+        except Exception as error:
+            raise Exception from error
+        finally:
+            self.addCleanup(self.cleanup_rdfg, sg_name, srdf_group_number)
+
+        return sg_name, srdf_group_number, local_volume, remote_vol_id
 
     def check_for_remote_array(self):
         """Check for remote_array tag in configuration file."""
