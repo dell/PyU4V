@@ -26,9 +26,9 @@ PyU4V Version 9.2
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | 9.2.0.0                    |
+| **PyU4V Version**             | 9.2.0.1                    |
 +-------------------------------+----------------------------+
-| **Minimum Unisphere Version** | 9.2.0.0                    |
+| **Minimum Unisphere Version** | 9.2.0.1                    |
 +-------------------------------+----------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax |
 +-------------------------------+----------------------------+
@@ -80,7 +80,7 @@ specifying ``PyU4V`` as the install package for ``pip``::
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==9.2.0.0
+    $ pip install PyU4V==9.2.0.1
 
 Copy the sample ``PyU4V.conf`` provided with PyU4V to either your working
 directory or within a directory named ``.PyU4V`` in your current users home
@@ -169,7 +169,7 @@ outlined in the previous section).
 
     conn = PyU4V.U4VConn()
     conn.common.get_unisphere_version()
-    >> {'version': 'V9.2.0.0'}
+    >> {'version': 'V9.2.0.1'}
 
 If you wish to query another array without changing the configuration file,
 call the connection ``set_array_id()`` function:

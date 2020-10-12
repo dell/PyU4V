@@ -5,9 +5,9 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 9.2.0.0                                |
+| **PyU4V Version**             | 9.2.0.1                                |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 9.2.0.0                                |
+| **Minimum Unisphere Version** | 9.2.0.1                                |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -66,7 +66,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==9.2.0.0
+    $ pip install PyU4V==9.2.0.1
 
 .. URL LINKS
 
