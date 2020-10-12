@@ -97,7 +97,7 @@ class TestBaseTestCase(testtools.TestCase):
         if device_id:
             self.provision.delete_volume(device_id)
 
-# Replication Functions
+    # Replication Functions
 
     def create_sg_snapshot(self):
         """Create a test storage group snapshot.
