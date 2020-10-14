@@ -543,9 +543,10 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         """Test create_storagegroup_srdf_pairings."""
         self.check_for_remote_array()
         sg_name = self.generate_name(object_type='sg')
+        vol_name = self.generate_name(object_type='v')
         self.conn.provisioning.create_storage_group(
             self.SRP, sg_name, self.SLO, None, False, 1, 1, 'GB', False, False,
-            'CI_TEST_VOL')
+            vol_name)
         self.replication.create_storagegroup_srdf_pairings(
             storagegroup_id=sg_name, remote_sid=self.conn.remote_array,
             srdfmode='Synchronous', establish=True, forceNewRdfGroup=True)

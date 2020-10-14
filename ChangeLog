@@ -1,6 +1,12 @@
 PyU4V Change Log
 ================
 
+Version 9.2.0.1 - released 12/10/20
+===================================
+-Tighten base CI tests around RDF group creation and deletion.
+-Update Unisphere minimum version to reflect 9.2 GA Unisphere version.
+
+
 Version 9.2.0.0 - released 29/09/20
 ===================================
 
