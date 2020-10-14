@@ -213,7 +213,7 @@ performance_data = {
         'metrics_kpi_cnt': 29,
         'metrics_all': [
             'AllocatedCapacity', 'AvgIOSize', 'AvgReadSize',
-            'AvgWritePacedDelay', 'AvgWriteSize', 'BEDisk ReadResponseTime ',
+            'AvgWritePacedDelay', 'AvgWriteSize', 'BEDiskReadResponseTime',
             'BEMBReads', 'BEMBTransferred', 'BEMBWritten', 'BEPercentReads',
             'BEPercentWrites', 'BEPrefetchedMBs', 'BEPrefetchedTrackUsed',
             'BEPrefetchedTrackss', 'BERdfCopy', 'BERdfCopyMB', 'BEReadReqs',
@@ -652,7 +652,7 @@ performance_data = {
             'BEDiskReadResponseTime', 'BEMBReads', 'BEMBTransferred',
             'BEMBWritten', 'BEPercentReads', 'BEPercentWrites',
             'BEPrefetchedMBs', 'BEPrefetchedTrackUsed', 'BEPrefetchedTrackss',
-            'BEReadReqs', 'BEReadRequestTime ', 'BEReadTaskTime', 'BEReqs',
+            'BEReadReqs', 'BEReadRequestTime', 'BEReadTaskTime', 'BEReqs',
             'BEWriteReqs', 'BlockSize', 'CompressedTracks',
             'CriticalAlertCount', 'HostHits', 'HostIOLimitPercentTimeExceeded',
             'HostIOs', 'HostMBReads', 'HostMBWritten', 'HostMBs',

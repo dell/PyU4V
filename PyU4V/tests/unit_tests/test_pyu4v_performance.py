@@ -866,6 +866,32 @@ class PyU4VPerformanceTest(testtools.TestCase):
                 self.perf.set_thresholds_from_csv('fake_csv_path')
                 self.assertEqual(mck_update.call_count, 1)
 
+    def test_set_thresholds_from_csv_invalid_threshold_values(self):
+        """Test set_perfthresholds_csv."""
+        threshold_settings = self.p_data.threshold_settings_resp.get(
+            pc.PERF_THRESH)
+
+        mock_csv_data = {pc.CATEGORY: list(), pc.METRIC: list(),
+                         pc.KPI: list(), pc.ALERT_ERR: list(),
+                         pc.FIRST_THRESH: list(), pc.SEC_THRESH: list()}
+
+        for threshold_setting in threshold_settings:
+            mock_csv_data[pc.CATEGORY].append(
+                self.p_data.threshold_settings_resp.get(pc.CATEGORY))
+            mock_csv_data[pc.METRIC].append(threshold_setting.get(pc.METRIC))
+            mock_csv_data[pc.KPI].append(threshold_setting.get(pc.KPI))
+            mock_csv_data[pc.ALERT_ERR].append(
+                threshold_setting.get(pc.ALERT_ERR))
+            mock_csv_data[pc.FIRST_THRESH].append(10)
+            mock_csv_data[pc.SEC_THRESH].append(10)
+
+        with mock.patch.object(file_handler, 'read_csv_values',
+                               return_value=mock_csv_data):
+            with mock.patch.object(
+                    self.perf, 'update_threshold_settings') as mck_update:
+                self.perf.set_thresholds_from_csv('fake_csv_path')
+                self.assertEqual(mck_update.call_count, 0)
+
     def test_generate_threshold_settings_csv(self):
         """Test generate_threshold_settings_csv."""
         data_for_csv = list()
