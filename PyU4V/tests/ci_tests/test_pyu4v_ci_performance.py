@@ -364,7 +364,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_update_threshold_settings(self):
         """Test set_perf_threshold_and_alert."""
-        metric = 'ReadResponseTime'
+        metric = 'PercentCacheWP'
         alert, f_threshold, s_threshold = None, None, None
 
         cat_thresh_settings = self.perf.get_threshold_category_settings(
@@ -466,7 +466,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         csv_file_name = 'test.csv'
         temp_dir = self.create_temp_directory()
         csv_file_path = os.path.join(temp_dir, csv_file_name)
-        self.perf.generate_threshold_settings_csv(csv_file_path)
+        self.perf.generate_threshold_settings_csv(csv_file_path,
+                                                  category='Array')
         self.assertTrue(os.path.isfile(csv_file_path))
         # Read CSV file
         csv_data = file_handler.read_csv_values(csv_file_path)
@@ -474,15 +475,14 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         num_metrics = len(csv_data.get('metric'))
         orig_values = (0, 0)
         updated_values = (0, 0)
-        metric_set = 'ReadResponseTime'
+        metric_set = 'PercentCacheWP'
         for i in range(0, num_metrics):
-            category = csv_data.get(pc.CATEGORY)[i]
             metric = csv_data.get(pc.METRIC)[i]
-            if category == pc.ARRAY and metric == metric_set:
+            if metric == metric_set:
                 orig_values = (csv_data.get(pc.FIRST_THRESH)[i],
                                csv_data.get(pc.SEC_THRESH)[i])
                 updated_values = (int(orig_values[0]) + 5,
-                                  int(orig_values[1]) + 5)
+                                  int(orig_values[1]) + 10)
                 csv_data[pc.FIRST_THRESH][i] = updated_values[0]
                 csv_data[pc.SEC_THRESH][i] = updated_values[1]
                 csv_data[pc.KPI][i] = True

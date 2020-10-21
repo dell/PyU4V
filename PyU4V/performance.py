@@ -902,7 +902,7 @@ class PerformanceFunctions(object):
             resource_type=pc.UPDATE, resource_type_id=category,
             payload=payload)
 
-    def generate_threshold_settings_csv(self, output_csv_path):
+    def generate_threshold_settings_csv(self, output_csv_path, category=None):
         """Generate a csv file with threshold settings.
 
         Creates a CSV file with current alert configuration for the given
@@ -910,8 +910,10 @@ class PerformanceFunctions(object):
         alert_user, kpi.
 
         :param output_csv_path: filename for CSV to be generated -- str
+        :param category: threshold specific category -- str
         """
-        category_list = self.get_threshold_categories()
+        category_list = (
+            self.get_threshold_categories() if not category else [category])
         data_for_csv = list()
         data_for_csv.append([pc.CATEGORY, pc.METRIC, pc.FIRST_THRESH,
                              pc.SEC_THRESH, pc.ALERT_ERR, pc.KPI])
@@ -968,6 +970,14 @@ class PerformanceFunctions(object):
 
         for i in range(0, len(metric_list)):
             if not _str_to_bool(is_kpi[i]) and kpi_only:
+                continue
+            if int(f_threshold_list[i]) >= int(s_threshold_list[i]):
+                LOG.warning(
+                    'Not setting performance metric {m} threshold, second '
+                    'threshold value {f} must be greater than first threshold '
+                    'value {s}.'.format(
+                        m=metric_list[i], f=f_threshold_list[i],
+                        s=s_threshold_list[i]))
                 continue
             self.update_threshold_settings(
                 category=category_list[i], metric=metric_list[i],

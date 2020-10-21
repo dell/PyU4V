@@ -1,10 +1,25 @@
 PyU4V Change Log
 ================
 
+Version 9.2.0.2 - released 14/10/20
+===================================
+- When generating threshold CSV files from
+  PerformanceFunctions.generate_threshold_settings_csv it is now possible to
+  set category as an input value to limit the CSV threshold file to only that
+  performance category.
+- CI tests for thresholds have been updated to target a default threshold
+  marked as KPI to ensure it has both first and second threshold values
+  populated before the test runs.
+- Removed trailing white space from two performance metrics in the metric map,
+  'BEDisk ReadResponseTime ' is now 'BEDiskReadResponseTime' in diagnostic
+  category 'DeviceGroup', and, 'BEReadRequestTime ' is now 'BEReadRequestTime'
+  in category 'StorageContainer'.
+
+
 Version 9.2.0.1 - released 12/10/20
 ===================================
--Tighten base CI tests around RDF group creation and deletion.
--Update Unisphere minimum version to reflect 9.2 GA Unisphere version.
+- Tighten base CI tests around RDF group creation and deletion.
+- Update Unisphere minimum version to reflect 9.2 GA Unisphere version.
 
 
 Version 9.2.0.0 - released 29/09/20
