@@ -73,3 +73,23 @@ class WLPFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=array_id,
             resource_type=HEADROOM, params=params)
         return response.get(GB_HEADROOM, list()) if response else list()
+
+    def get_capabilities(self, array_id=None):
+        """Generate WLP capability list for each WLP authorized array.
+
+        :param array_id: array id -- str
+        :returns: array WLP capabilities -- list
+        """
+        return_response = list()
+        response = self.common.get_resource(
+            category=WLP, resource_level='capabilities',
+            resource_type=SYMMETRIX)
+        if array_id:
+            for wlp_info in response.get('symmetrixCapability'):
+                if wlp_info.get('symmetrixId') == array_id:
+                    return_response = [wlp_info]
+                    break
+        else:
+            return_response = response.get('symmetrixCapability', list())
+
+        return return_response

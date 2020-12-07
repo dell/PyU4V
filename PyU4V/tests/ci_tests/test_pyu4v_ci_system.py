@@ -502,3 +502,93 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue(response.get(SUCCESS))
         self.assertIn(BINARY_DATA, response.keys())
         self.assertIsInstance(response.get(BINARY_DATA), bytes)
+
+    def test_get_director_list(self):
+        """Test get_iscsi_director_list."""
+        response = self.system.get_director_list()
+        self.assertTrue(response)
+        self.assertIsInstance(response, list)
+
+    def test_get_director_list_iscsi_only(self):
+        """Test get_iscsi_director_list."""
+        response = self.system.get_director_list(iscsi_only=True)
+        self.assertTrue(response)
+        self.assertIsInstance(response, list)
+        for pmax_dir in response:
+            self.assertIn('SE', pmax_dir)
+
+    def test_get_director_port_list(self):
+        """Test get_director_port_list."""
+        director_list = self.system.get_director_list()
+        director_id = random.choice(director_list)
+        response = self.system.get_director_port_list(director_id=director_id)
+        self.assertTrue(response)
+        self.assertIsInstance(response, list)
+
+    def test_get_director_port_list_iscsi_target_set(self):
+        """Test get_director_port_list."""
+        iscsi_dir_list = self.system.get_director_list(iscsi_only=True)
+        if not iscsi_dir_list:
+            self.skipTest('No iSCSI Directors available in CI environment.')
+        director_id = random.choice(iscsi_dir_list)
+
+        all_ports = self.system.get_director_port_list(
+            director_id=director_id)
+        self.assertTrue(all_ports)
+        self.assertIsInstance(all_ports, list)
+
+        tgt_ports = self.system.get_director_port_list(
+            director_id=director_id, iscsi_target=True)
+        self.assertTrue(tgt_ports)
+        self.assertIsInstance(tgt_ports, list)
+
+        not_tgt_ports = self.system.get_director_port_list(
+            director_id=director_id, iscsi_target=False)
+        self.assertTrue(not_tgt_ports)
+        self.assertIsInstance(not_tgt_ports, list)
+
+        self.assertEqual(len(all_ports),
+                         (len(tgt_ports) + len(not_tgt_ports)))
+
+    def test_get_ip_interface_list(self):
+        """Test get_ip_interface_list."""
+        iscsi_dir_list = self.system.get_director_list(iscsi_only=True)
+        if not iscsi_dir_list:
+            self.skipTest('No iSCSI Directors available in CI environment.')
+        director_id = random.choice(iscsi_dir_list)
+
+        iscsi_port_list = self.system.get_director_port_list(
+            director_id=director_id, iscsi_target=False)
+        if not iscsi_port_list:
+            self.skipTest('No IP interface ports available in CI environment.')
+        port = random.choice(iscsi_port_list)
+        port_id = port.get('portId')
+
+        ip_interface_list = self.system.get_ip_interface_list(
+            director_id=director_id, port_id=port_id)
+        self.assertTrue(ip_interface_list)
+        self.assertIsInstance(ip_interface_list, list)
+
+    def test_get_ip_interface(self):
+        """Test get_ip_interface."""
+        iscsi_dir_list = self.system.get_director_list(iscsi_only=True)
+        if not iscsi_dir_list:
+            self.skipTest('No iSCSI Directors available in CI environment.')
+        director_id = random.choice(iscsi_dir_list)
+
+        iscsi_port_list = self.system.get_director_port_list(
+            director_id=director_id, iscsi_target=False)
+        if not iscsi_port_list:
+            self.skipTest('No IP interface ports available in CI environment.')
+        port = random.choice(iscsi_port_list)
+        port_id = port.get('portId')
+
+        ip_interface_list = self.system.get_ip_interface_list(
+            director_id=director_id, port_id=port_id)
+        ip_interface = random.choice(ip_interface_list)
+
+        ip_interface_details = self.system.get_ip_interface(
+            director_id=director_id, port_id=port_id,
+            interface_id=ip_interface)
+        self.assertTrue(ip_interface_details)
+        self.assertIsInstance(ip_interface_details, dict)

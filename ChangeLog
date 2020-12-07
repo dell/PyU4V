@@ -1,6 +1,27 @@
 PyU4V Change Log
 ================
 
+Version 9.2.0.3 - released 7/12/20
+==================================
+- Masking View performance support has been added to performance.py
+    - PyU4V.performance.PerformanceFunctions.get_masking_view_keys
+    - PyU4V.performance.PerformanceFunctions.get_masking_view_stats
+- Director list, Port list, IP interface list, and get IP interface details
+  have been added to system.py
+    - PyU4V.system.SystemFunctions.get_director_list
+    - PyU4V.system.SystemFunctions.get_director_port_list
+    - PyU4V.system.SystemFunctions.get_ip_interface_list
+    - PyU4V.system.SystemFunctions.get_ip_interface
+- Array storage level details are now available via provisioning.py
+    - PyU4V.provisioning.ProvisioningFunctions.get_array
+- Array level WLP capabilities are now accessible in workload_planner.py
+    - PyU4V.workload_planner.WLPFunctions.get_capabilities
+- array_id is now an optional parameter for the following functions:
+    - PyU4V.replication.ReplicationFunctions.get_array_replication_capabilities
+    - PyU4V.migration.MigrationFunctions.get_migration_info
+    - PyU4V.migration.MigrationFunctions.get_array_migration_capabilities
+
+
 Version 9.2.0.2 - released 14/10/20
 ===================================
 - When generating threshold CSV files from

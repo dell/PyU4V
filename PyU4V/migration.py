@@ -41,14 +41,15 @@ class MigrationFunctions(object):
         self.modify_resource = self.common.modify_resource
         self.delete_resource = self.common.delete_resource
 
-    def get_migration_info(self):
+    def get_migration_info(self, array_id=None):
         """Return migration information for an array.
 
         :returns: migration info -- dict
         """
+        array_id = array_id if array_id else self.array_id
         return self.get_resource(
             category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id)
+            resource_level=SYMMETRIX, resource_level_id=array_id)
 
     def create_migration_environment(self, target_array_id):
         """Create a new migration environment between two arrays.
@@ -77,11 +78,12 @@ class MigrationFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=ENVIRONMENT, resource_type_id=target_array_id)
 
-    def get_array_migration_capabilities(self):
+    def get_array_migration_capabilities(self, array_id=None):
         """Check what migration facilities are available.
 
         :returns: array capabilities -- dict
         """
+        array_id = array_id if array_id else self.array_id
         capabilities = self.get_resource(
             category=MIGRATION, resource_level=CAPABILITIES,
             resource_type=SYMMETRIX)
@@ -90,7 +92,7 @@ class MigrationFunctions(object):
                 'storageArrayCapability', list()) if capabilities else list())
         array_capabilities = dict()
         for symm in symm_list:
-            if symm['arrayId'] == self.array_id:
+            if symm['arrayId'] == array_id:
                 array_capabilities = symm
                 break
         return array_capabilities

@@ -52,6 +52,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
         pf.FakeConfigFile.delete_fake_config_file(
             self.conf_file, self.conf_dir)
 
+    def test_get_array(self):
+        """Test get_array."""
+        array_id = self.data.array
+        array_details = self.provisioning.get_array(array_id=array_id)
+        self.assertEqual(self.data.array_slo_details, array_details)
+
     def test_get_director(self):
         """Test get_director."""
         dir_details = self.provisioning.get_director(self.data.director_id1)

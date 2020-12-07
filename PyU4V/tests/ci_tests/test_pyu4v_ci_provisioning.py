@@ -31,6 +31,14 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         super(CITestProvisioning, self).setUp()
         self.provisioning = self.conn.provisioning
 
+    def test_get_array(self):
+        """Test get_array."""
+        response = self.provisioning.get_array(array_id=self.conn.array_id)
+        self.assertTrue(response)
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get('symmetrixId'), self.conn.array_id)
+        self.assertTrue(response.get('local'))
+
     def test_get_director(self):
         """Test get_director."""
         availability = 'availability'

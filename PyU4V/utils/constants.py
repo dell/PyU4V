@@ -39,7 +39,7 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.2.0.2'
+PYU4V_VERSION = '9.2.0.3'
 UNISPHERE_VERSION = '92'
 VERSION = 'version'
 ITERATOR = 'Iterator'
@@ -141,6 +141,8 @@ PORT_ID = 'portId'
 SYMMETRIX_PORT_KEY = 'symmetrixPortKey'
 NUM_OF_PORTS = 'num_of_ports'
 NUM_OF_CORES = 'num_of_cores'
+IP_INTERFACE = 'ipinterface'
+IP_INTERFACE_ID = 'ipInterfaceId'
 
 # Host constants
 HOST_ID = 'hostId'

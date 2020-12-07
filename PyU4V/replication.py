@@ -75,11 +75,12 @@ class ReplicationFunctions(object):
             category=REPLICATION, resource_level=SYMMETRIX,
             resource_level_id=self.array_id)
 
-    def get_array_replication_capabilities(self):
+    def get_array_replication_capabilities(self, array_id=None):
         """Check what replication facilities are available.
 
         :returns: replication capability details -- dict
         """
+        array_id = array_id if array_id else self.array_id
         capabilities = self.get_resource(
             category=REPLICATION, resource_level=CAPABILITIES,
             resource_type=SYMMETRIX)
@@ -87,7 +88,7 @@ class ReplicationFunctions(object):
             'symmetrixCapability', list()) if capabilities else list()
         array_capabilities = dict()
         for symm in symm_list:
-            if symm['symmetrixId'] == self.array_id:
+            if symm['symmetrixId'] == array_id:
                 array_capabilities = symm
                 break
         return array_capabilities

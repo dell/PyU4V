@@ -5,7 +5,7 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 9.2.0.2                                |
+| **PyU4V Version**             | 9.2.0.3                                |
 +-------------------------------+----------------------------------------+
 | **Minimum Unisphere Version** | 9.2.0.1                                |
 +-------------------------------+----------------------------------------+
@@ -66,7 +66,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==9.2.0.2
+    $ pip install PyU4V==9.2.0.3
 
 .. URL LINKS
 
