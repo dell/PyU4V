@@ -504,13 +504,13 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(response.get(BINARY_DATA), bytes)
 
     def test_get_director_list(self):
-        """Test get_iscsi_director_list."""
+        """Test get_director_list."""
         response = self.system.get_director_list()
         self.assertTrue(response)
         self.assertIsInstance(response, list)
 
     def test_get_director_list_iscsi_only(self):
-        """Test get_iscsi_director_list."""
+        """Test get_director_list iscsi_only set as True."""
         response = self.system.get_director_list(iscsi_only=True)
         self.assertTrue(response)
         self.assertIsInstance(response, list)
@@ -526,7 +526,7 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(response, list)
 
     def test_get_director_port_list_iscsi_target_set(self):
-        """Test get_director_port_list."""
+        """Test get_director_port_list with iscsi_only set as True."""
         iscsi_dir_list = self.system.get_director_list(iscsi_only=True)
         if not iscsi_dir_list:
             self.skipTest('No iSCSI Directors available in CI environment.')

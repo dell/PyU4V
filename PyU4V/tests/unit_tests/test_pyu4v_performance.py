@@ -1276,13 +1276,13 @@ class PyU4VPerformanceTest(testtools.TestCase):
                          self.common.convert_to_snake_case(pc.ISCSI_TGT))
 
     def test_get_masking_view_keys(self):
-        """Test get_port_group_keys."""
+        """Test get_masking_view_keys."""
         response = self.perf.get_masking_view_keys()
         self.assertIsInstance(response, list)
         self.assertTrue(response[0].get(pc.MV_ID))
 
     def test_get_masking_view_stats(self):
-        """Test get_port_group_stats."""
+        """Test get_masking_view_stats."""
         response = self.perf.get_masking_view_stats(
             masking_view_id=self.p_data.masking_view_id,
             metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)

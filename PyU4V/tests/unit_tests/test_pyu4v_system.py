@@ -478,7 +478,7 @@ class PyU4VSystemTest(testtools.TestCase):
             self.assertIn('/test/test.pdf', str(response[AUDIT_RECORD_PATH]))
 
     def test_get_director_list(self):
-        """Test get_iscsi_director_list."""
+        """Test get_director_list."""
         array_id = self.data.array
         dir_list = self.system.get_director_list(array_id=array_id)
         self.assertTrue(dir_list)
@@ -487,7 +487,7 @@ class PyU4VSystemTest(testtools.TestCase):
                          dir_list)
 
     def test_get_iscsi_director_list(self):
-        """Test get_iscsi_director_list."""
+        """Test get_director_list iscsi_only set to True."""
         array_id = self.data.array
         iscsi_dir_list = self.system.get_director_list(
             array_id=array_id, iscsi_only=True)
