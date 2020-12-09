@@ -39,7 +39,7 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.2.0.3'
+PYU4V_VERSION = '9.2.0.4'
 UNISPHERE_VERSION = '92'
 VERSION = 'version'
 ITERATOR = 'Iterator'
@@ -107,6 +107,7 @@ ADAPTIVE_COPY = 'AdaptiveCopyDisk'
 ESTABLISH = 'Establish'
 FAILBACK = 'Failback'
 FAILOVER = 'Failover'
+RECOVER = 'Recover'
 RESTORE = 'Restore'
 RESUME = 'Resume'
 SETBIAS = 'SetBias'
@@ -122,10 +123,9 @@ RDFG_ACTIONS = {
     'REMOVE_PORTS': 'remove_ports', 'SET_LABEL': 'set_label'}
 METRO_DR_ACTIONS = {
     'ESTABLISH': ESTABLISH, 'SPLIT': SPLIT, 'SUSPEND': SUSPEND,
-    'RESTORE': RESTORE, 'FAILOVER': FAILOVER, 'FAILBACK': FAILBACK,
-    'SETMODE': SETMODE, 'UPDATER1': UPDATE_R1
+    'RECOVER': RECOVER, 'RESTORE': RESTORE, 'FAILOVER': FAILOVER,
+    'FAILBACK': FAILBACK, 'SETMODE': SETMODE, 'UPDATER1': UPDATE_R1
 }
-
 METRO_DR_ACTION_PARAMS = {
     'ESTABLISH': 'establish', 'SPLIT': 'split', 'SUSPEND': 'suspend',
     'RESTORE': 'restore', 'FAILOVER': 'failover',

@@ -1,6 +1,11 @@
 PyU4V Change Log
 ================
 
+Version 9.2.0.4 - released 9/12/20
+==================================
+- Fix for metro_dr delete function
+- Fix for metro_dr added recover option
+
 Version 9.2.0.3 - released 7/12/20
 ==================================
 - Masking View performance support has been added to performance.py
