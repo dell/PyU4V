@@ -320,6 +320,39 @@ class CommonData(object):
                                       storagegroup_name_1,
                                       storagegroup_name_2]}
 
+    array_slo_details = {
+        'default_fba_srp': srp,
+        'symmetrixId': array,
+        'system_capacity': {
+            'usable_total_tb': 61.12, 'subscribed_total_tb': 149.99,
+            'subscribed_allocated_tb': 3.73, 'snapshot_total_tb': 1492.07,
+            'subscribed_usable_capacity_percent': 246.0,
+            'usable_used_tb': 6.24, 'snapshot_modified_tb': 0.0},
+        'physicalCapacity': {
+            'used_capacity_gb': 76290.38, 'total_capacity_gb': 76290.38},
+        'host_visible_device_count': 6848,
+        'system_efficiency': {
+            'overall_efficiency_ratio_to_one': 445.1,
+            'virtual_provisioning_savings_ratio_to_one': 40.6,
+            'data_reduction_enabled_percent': 0.0,
+            'pattern_detection_savings_tb': 0.0,
+            'drr_on_reducible_only_to_one': 0.0,
+            'snapshot_savings_ratio_to_one': 1.14096688E7,
+            'deduplication_and_compression_savings_tb': 0.0,
+            'unreducible_data_tb': 0.0, 'reducible_data_tb': 0.0},
+        'sloCompliance': {
+            'slo_marginal': 0, 'no_slo': 157, 'slo_stable': 251,
+            'slo_critical': 9},
+        'meta_data_usage': {
+            'backend_meta_data_used_percent': 47.0,
+            'replication_cache_used_percent': 0,
+            'system_meta_data_used_percent': 34.0,
+            'frontend_meta_data_used_percent': 13.0},
+        'model': 'PowerMax_2000',
+        'ucode': '5978.669.669',
+        'device_count': 7168,
+        'local': True}
+
     # replication
     capabilities = {'symmetrixCapability': [{'rdfCapable': True,
                                              'snapVxCapable': True,
@@ -531,11 +564,33 @@ class CommonData(object):
         'minor_acknowledged_count': 0,
         'normal_acknowledged_count': 0},
         'symmAlertSummary': list()}
+
+    ip_interface_address = '192.168.0.3'
+    ip_interface_address_network = '192.168.0.3-9'
+    ip_interface_list = {'ipInterfaceId': [ip_interface_address_network]}
+    ip_interface_details = {
+        'ip_interface_id': ip_interface_address_network, 'network_id': 9,
+        'ip_prefix_length': 24, 'vlan_id': 0, 'mtu': 1500,
+        'iscsi_target_director': director_id2, 'iscsi_target_port': 0,
+        'ip_address': ip_interface_address}
+
     # wlp
     wlp_info = {'symmetrixId': array, 'lastProcessed': 1569417000000,
                 'nextUpdate': 795}
     headroom_array = {'gbHeadroom': [{'srpId': 'SRP_TEST', 'emulation': 'FBA',
                                       'capacity': 58555.9}]}
+    wlp_capabilities = {'symmetrixCapability': [
+        {'symmetrixId': array, 'workloadDetailCapable': True,
+         'componentUtilizationCapable': True, 'characterizationCapable': True,
+         'headroomGbCapable': True, 'suitabilityTestCapable': True,
+         'provisioningTemplateCapable': True, 'slComplianceCapable': True,
+         'headroomIopsCapable': True},
+        {'symmetrixId': remote_array, 'workloadDetailCapable': True,
+         'componentUtilizationCapable': True,
+         'characterizationCapable': True,
+         'headroomGbCapable': True, 'suitabilityTestCapable': True,
+         'provisioningTemplateCapable': True, 'slComplianceCapable': True,
+         'headroomIopsCapable': True}]}
 
     # iterator
     iterator_page = {'result': [{'volumeId': '00002'}], 'from': 2, 'to': 2}

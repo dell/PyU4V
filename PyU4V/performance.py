@@ -1809,11 +1809,44 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    def get_masking_view_keys(self, array_id=None):
+        """List masking views for the given array.
+
+        :param array_id: array id -- str
+        :returns: masking view info with first and last available dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(category=pc.MV,
+                                                 array_id=array_id)
+        return key_list.get(pc.MV_INFO, list()) if key_list else list()
+
+    def get_masking_view_stats(
+            self, masking_view_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given masking view.
+
+        :param masking_view_id: masking view id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.MV_ID: masking_view_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.MV, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
     def get_port_group_keys(self, array_id=None):
         """List port group for the given array.
 
-        :param array_id: array_id: array id -- str
-        :returns: port group info with first and last available
+        :param array_id: array id -- str
+        :returns: port group info with first and last available dates -- list
         """
         array_id = self.array_id if not array_id else array_id
         key_list = self.get_performance_key_list(category=pc.PG,

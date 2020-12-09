@@ -143,7 +143,11 @@ class FakeRequestsSession(object):
                 else:
                     return_object = self.data.slo_list
             else:
-                return_object = self.data.symm_list
+                url_components = url.split('/')
+                if 'symmetrix' == url_components[-2]:
+                    return_object = self.data.array_slo_details
+                else:
+                    return_object = self.data.symm_list
 
         elif 'replication' in url:
             return_object = self._replication(url)
@@ -190,7 +194,13 @@ class FakeRequestsSession(object):
                 return_object = self.data.vol_with_pages
 
         elif 'wlp' in url:
-            return_object = self.data.wlp_info
+            uri_components = url.split('/')
+            if 'symmetrix' == uri_components[-2]:
+                return_object = self.data.wlp_info
+            if 'headroom' == uri_components[-1]:
+                return_object = self.data.headroom_array
+            if 'capabilities' == uri_components[-2]:
+                return_object = self.data.wlp_capabilities
 
         elif 'version' in url:
             return_object = self.data.server_version
@@ -418,6 +428,11 @@ class FakeRequestsSession(object):
                         in url):
                     return_object = port
 
+        if 'ipinterface' in uri_components[-1]:
+            return_object = self.data.ip_interface_list
+        elif 'ipinterface' in uri_components[-2]:
+            return_object = self.data.ip_interface_details
+
         return return_object
 
     def _system_alert_summary(self):
@@ -521,6 +536,8 @@ class FakeRequestsSession(object):
                 return_object = self.p_data.ip_interface_keys
             elif performance_section == pc.ISCSI_TGT:
                 return_object = self.p_data.iscsi_target_keys
+            elif performance_section == pc.MV:
+                return_object = self.p_data.masking_view_keys
             elif performance_section == pc.PG:
                 return_object = self.p_data.port_group_keys
             elif performance_section == pc.RDFA:

@@ -204,6 +204,11 @@ class PerformanceData(object):
                                               'firstAvailableDate': first_date,
                                               'lastAvailableDate': last_date}]}
 
+    masking_view_id = 'test-mv'
+    masking_view_keys = {'maskingViewInfo': [{'maskingViewId': iscsi_target_id,
+                                              'firstAvailableDate': first_date,
+                                              'lastAvailableDate': last_date}]}
+
     port_group_id = 'test-pg'
     port_group_keys = {'portGroupInfo': [{'portGroupId': port_group_id,
                                           'firstAvailableDate': first_date,

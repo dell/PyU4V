@@ -70,3 +70,17 @@ class CITestWLP(base.TestBaseTestCase, testtools.TestCase):
             exception.ResourceNotFoundException,
             self.conn.wlp.get_headroom, self.conn.array_id, srp='SRP_1',
             slo='Diamond', workload='OLTP')
+
+    def test_get_capabilities_no_array_set(self):
+        """Test get_capabilities, no array set all local arrays returned."""
+        response = self.conn.wlp.get_capabilities()
+        self.assertTrue(response)
+        self.assertIsInstance(response, list)
+
+    def test_get_capabilities_array_set(self):
+        """Test get_capabilities, array set only one array returned."""
+        response = self.conn.wlp.get_capabilities(array_id=self.conn.array_id)
+        self.assertTrue(response)
+        self.assertIsInstance(response, list)
+        self.assertEqual(1, len(response))
+        self.assertEqual(self.conn.array_id, response[0].get('symmetrixId'))

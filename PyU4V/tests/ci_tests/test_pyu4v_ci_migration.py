@@ -28,7 +28,8 @@ class CITestMigration(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_migration_info(self):
         """Test get_migration_info."""
-        migration_info = self.migration.get_migration_info()
+        migration_info = self.migration.get_migration_info(
+            array_id=self.conn.array_id)
         self.assertEqual(4, len(migration_info.keys()))
         self.assertEqual(self.conn.array_id, migration_info.get('arrayId'))
         self.assertTrue(migration_info.get('local'))
@@ -37,7 +38,8 @@ class CITestMigration(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_array_migration_capabilities(self):
         """Test get_array_migration_capabilities."""
-        array_capabilities = self.migration.get_array_migration_capabilities()
+        array_capabilities = self.migration.get_array_migration_capabilities(
+            array_id=self.conn.array_id)
         self.assertTrue(array_capabilities)
         self.assertEqual(6, len(array_capabilities.keys()))
         self.assertEqual(self.conn.array_id, array_capabilities.get('arrayId'))

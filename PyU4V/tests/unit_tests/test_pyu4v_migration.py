@@ -49,7 +49,8 @@ class PyU4VMigrationTest(testtools.TestCase):
 
     def test_get_migration_info(self):
         """Test get_migration_info."""
-        migration_info = self.migration.get_migration_info()
+        migration_info = self.migration.get_migration_info(
+            array_id=self.data.array)
         self.assertEqual(self.data.migration_info, migration_info)
 
     def test_create_migration_environment(self):
@@ -75,7 +76,8 @@ class PyU4VMigrationTest(testtools.TestCase):
 
     def test_get_array_migration_capabilities(self):
         """Test get_array_migration_capabilities."""
-        capabilities = self.migration.get_array_migration_capabilities()
+        capabilities = self.migration.get_array_migration_capabilities(
+            array_id=self.data.array)
         capabilities_ref = (
             self.data.migration_capabilities['storageArrayCapability'][0])
         self.assertEqual(capabilities_ref, capabilities)

@@ -30,7 +30,8 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_array_replication_capabilities(self):
         """Test get_array_replication_capabilities."""
-        rep_info = self.conn.replication.get_array_replication_capabilities()
+        rep_info = self.conn.replication.get_array_replication_capabilities(
+            array_id=self.conn.array_id)
         self.assertEqual(9, len(rep_info.keys()))
         assert 'symmetrixId' in rep_info
         assert 'snapVxCapable' in rep_info
@@ -449,7 +450,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('remoteSymmetrix', rdfg_details)
 
     def test_get_rdf_group_list(self):
-        """Test get_migration_info."""
+        """Test get_rdf_group_list."""
         rdf_number = self.replication.get_rdf_group_list()
         self.assertIsInstance(rdf_number, list)
 

@@ -768,6 +768,15 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
+    def test_masking_view_performance_function(self):
+        """Test Masking View performance function."""
+        category = pc.MV
+        id_tag = pc.MV_ID
+        key_func = self.perf.get_masking_view_keys
+        metrics_func = self.perf.get_masking_view_stats
+        self.run_performance_test_asserts(category, id_tag, key_func,
+                                          metrics_func)
+
     def test_port_group_performance_function(self):
         """Test port group performance function."""
         category = pc.PG

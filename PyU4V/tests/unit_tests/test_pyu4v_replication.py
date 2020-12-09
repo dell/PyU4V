@@ -56,7 +56,8 @@ class PyU4VReplicationTest(testtools.TestCase):
 
     def test_check_snap_capabilities(self):
         """Test get_array_replication_capabilities."""
-        capabilities = self.replication.get_array_replication_capabilities()
+        capabilities = self.replication.get_array_replication_capabilities(
+            array_id=self.data.array)
         self.assertEqual(
             self.data.capabilities['symmetrixCapability'][1], capabilities)
 

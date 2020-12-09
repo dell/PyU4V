@@ -87,3 +87,18 @@ class PyU4VUnivmaxWLPTest(testtools.TestCase):
                                              self.data.workload)
             self.assertFalse(headroom)
             self.assertIsInstance(headroom, list)
+
+    def test_get_capabilities_with_array_id(self):
+        """Test get_capabilities with array_id specified."""
+        array_id = self.data.array
+        wlp_cap = self.wlp.get_capabilities(array_id=array_id)
+        self.assertTrue(wlp_cap)
+        self.assertIsInstance(wlp_cap, list)
+        self.assertEqual(1, len(wlp_cap))
+
+    def test_get_capabilities_without_array_id(self):
+        """Test get_capabilities with no array_id specified."""
+        wlp_cap = self.wlp.get_capabilities()
+        self.assertTrue(wlp_cap)
+        self.assertIsInstance(wlp_cap, list)
+        self.assertEqual(2, len(wlp_cap))

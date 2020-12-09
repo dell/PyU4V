@@ -476,3 +476,55 @@ class PyU4VSystemTest(testtools.TestCase):
             mck_write.assert_called_once()
             self.assertTrue(response[SUCCESS])
             self.assertIn('/test/test.pdf', str(response[AUDIT_RECORD_PATH]))
+
+    def test_get_director_list(self):
+        """Test get_director_list."""
+        array_id = self.data.array
+        dir_list = self.system.get_director_list(array_id=array_id)
+        self.assertTrue(dir_list)
+        self.assertIsInstance(dir_list, list)
+        self.assertEqual([self.data.director_id1, self.data.director_id2],
+                         dir_list)
+
+    def test_get_iscsi_director_list(self):
+        """Test get_director_list iscsi_only set to True."""
+        array_id = self.data.array
+        iscsi_dir_list = self.system.get_director_list(
+            array_id=array_id, iscsi_only=True)
+        self.assertTrue(iscsi_dir_list)
+        self.assertIsInstance(iscsi_dir_list, list)
+        self.assertEqual([self.data.director_id2], iscsi_dir_list)
+
+    def test_get_director_port_list(self):
+        """Test get_director_port_list."""
+        director_id = self.data.director_id1
+        dir_port_list = self.system.get_director_port_list(
+            director_id=director_id, iscsi_target=False)
+        self.assertTrue(dir_port_list)
+        self.assertIsInstance(dir_port_list, list)
+        self.assertEqual(self.data.port_key_list.get('symmetrixPortKey'),
+                         dir_port_list)
+
+    def test_get_ip_interface_list(self):
+        """Test get_ip_interface_list"""
+        director_id = self.data.director_id2
+        port_id = 0
+        ip_int_list = self.system.get_ip_interface_list(
+            director_id=director_id, port_id=port_id)
+        self.assertTrue(ip_int_list)
+        self.assertIsInstance(ip_int_list, list)
+        self.assertEqual(self.data.ip_interface_list.get('ipInterfaceId'),
+                         ip_int_list)
+
+    def test_get_ip_interface(self):
+        """Test get_ip_interface."""
+        director_id = self.data.director_id2
+        port_id = 0
+        interface_id = self.data.ip_interface_address_network
+        ip_int_info = self.system.get_ip_interface(
+            director_id=director_id, port_id=port_id,
+            interface_id=interface_id)
+
+        self.assertTrue(ip_int_info)
+        self.assertIsInstance(ip_int_info, dict)
+        self.assertEqual(self.data.ip_interface_details, ip_int_info)

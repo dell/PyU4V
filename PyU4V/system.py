@@ -14,6 +14,7 @@
 """system.py."""
 
 import logging
+import re
 import time
 
 from datetime import datetime
@@ -74,6 +75,11 @@ AUDIT_RECORD_PATH = constants.AUDIT_RECORD_PATH
 SUCCESS = constants.SUCCESS
 AUDIT_RECORD_TIME = constants.AUDIT_RECORD_TIME
 STR_TIME_FORMAT = constants.STR_TIME_FORMAT
+DIRECTOR = constants.DIRECTOR
+DIRECTOR_ID = constants.DIRECTOR_ID
+PORT = constants.PORT
+IP_INTERFACE = constants.IP_INTERFACE
+IP_INTERFACE_ID = constants.IP_INTERFACE_ID
 
 
 class SystemFunctions(object):
@@ -835,3 +841,86 @@ class SystemFunctions(object):
         LOG.info('The audit log download request was successful.')
 
         return return_dict
+
+    def get_director_list(self, array_id=None, iscsi_only=False):
+        """Get a list of directors for a given array.
+
+        :param array_id: array serial number -- str
+        :param iscsi_only: return only iSCSI directors -- bool
+        :returns: iSCSI directors -- list
+        """
+        array_id = array_id if array_id else self.array_id
+        dir_list = self.common.get_resource(
+            category=SYSTEM,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=DIRECTOR)
+        response_dir_list = list()
+        for director in dir_list.get(DIRECTOR_ID, list()):
+            if iscsi_only and re.match(r'^SE-\d[A-Z]$', director):
+                response_dir_list.append(director)
+            elif not iscsi_only:
+                response_dir_list.append(director)
+
+        return response_dir_list
+
+    def get_director_port_list(self, director_id, array_id=None,
+                               iscsi_target=None):
+        """Get a list of director ports for a specified director.
+
+        :param director_id: director id -- str
+        :param array_id: array id -- str
+        :param iscsi_target: if the port is an iSCSI target, applicable to
+                             front-end SE directors only, default to not set
+                             -- bool
+        :returns: director ports -- list
+        """
+        array_id = array_id if array_id else self.array_id
+
+        filters = dict()
+        if isinstance(iscsi_target, bool):
+            filters['iscsi_target'] = iscsi_target
+
+        port_list = self.common.get_resource(
+            category=SYSTEM,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=DIRECTOR, resource_type_id=director_id,
+            resource=PORT, params=filters)
+        return port_list.get(
+            'symmetrixPortKey', list()) if port_list else list()
+
+    def get_ip_interface_list(self, director_id, port_id, array_id=None):
+        """Get a list of IP interfaces for a given array.
+
+        :param director_id: director id -- str
+        :param port_id: port id -- str
+        :param array_id: array id -- str
+        :returns: IP interfaces -- list
+        """
+        array_id = array_id if array_id else self.array_id
+        ip_list = self.common.get_resource(
+            category=SYSTEM,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=DIRECTOR, resource_type_id=director_id,
+            resource=PORT, resource_id=port_id, object_type=IP_INTERFACE)
+
+        return ip_list.get(IP_INTERFACE_ID, list()) if ip_list else list()
+
+    def get_ip_interface(self, director_id, port_id, interface_id,
+                         array_id=None):
+        """Get IP interface details
+
+        :param director_id: director id -- str
+        :param port_id: port id -- str
+        :param interface_id: interface id -- str
+        :param array_id: array id -- str
+        :returns: IP interface details -- dict
+        """
+        array_id = array_id if array_id else self.array_id
+        interface = self.common.get_resource(
+            category=SYSTEM,
+            resource_level=SYMMETRIX, resource_level_id=array_id,
+            resource_type=DIRECTOR, resource_type_id=director_id,
+            resource=PORT, resource_id=port_id,
+            object_type=IP_INTERFACE, object_type_id=interface_id)
+
+        return interface if interface else dict()

@@ -61,6 +61,18 @@ class ProvisioningFunctions(object):
         self.modify_resource = self.common.modify_resource
         self.delete_resource = self.common.delete_resource
 
+    def get_array(self, array_id=None):
+        """Query for details of an array from SLOPROVISIONING endpoint.
+
+        :param array_id: array serial number -- str
+        :returns: array details -- dict
+        """
+        array_id = array_id if array_id else self.array_id
+        response = self.get_resource(
+            category=SLOPROVISIONING, resource_level=SYMMETRIX,
+            resource_level_id=array_id)
+        return response if response else dict()
+
     def get_director(self, director):
         """Query for details of a director for a symmetrix.
 
