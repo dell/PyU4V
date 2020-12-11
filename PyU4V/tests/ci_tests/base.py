@@ -47,6 +47,7 @@ class TestBaseTestCase(testtools.TestCase):
         """Set REST credentials."""
         self.conn = univmax_conn.U4VConn()
         self.assertTrue(self.conn.rest_client.headers.get('user-agent'))
+        self.assertTrue(self.conn.rest_client.headers.get('application-type'))
 
     def create_volume(self):
         """Create a test volume.
