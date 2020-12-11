@@ -42,10 +42,11 @@ class PyU4VRestRequestsTest(testtools.TestCase):
             'PyU4V/{pv} ({plat}; version {rel}) Python {python}'.format(
                 pv=pyu4v_version, plat=sys_platform,
                 rel=sys_platform_release, python=python_version))
+        self.app_type = 'PyU4V-{v}'.format(v=pyu4v_version)
         self.rest = rest_requests.RestRequests(
             username='smc', password='smc', verify=False,
             base_url='http://10.10.10.10:8443/univmax/restapi',
-            interval=1, retries=3, application_type='pyu4v')
+            interval=1, retries=3)
 
     def test_rest_requests_init(self):
         """Test class RestRequests __init__."""
@@ -59,7 +60,7 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         self.assertEqual(self.rest.timeout, 120)
         ref_headers = {'content-type': 'application/json',
                        'accept': 'application/json',
-                       'application-type': 'pyu4v',
+                       'application-type': None,
                        'user-agent': self.ua_details}
         self.assertEqual(self.rest.headers, ref_headers)
         self.assertIsInstance(self.rest.session,
@@ -69,12 +70,17 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         """Test establish REST session."""
         ref_headers = {'content-type': 'application/json',
                        'accept': 'application/json',
-                       'application-type': 'pyu4v',
+                       'application-type': 'test_app',
                        'user-agent': self.ua_details}
-        self.assertEqual(ref_headers, self.rest.session.headers)
-        self.assertEqual('smc', self.rest.session.auth.username)
-        self.assertEqual('smc', self.rest.session.auth.password)
-        self.assertEqual(False, self.rest.session.verify)
+        temp_rest = rest_requests.RestRequests(
+            username='smc', password='smc', verify=False,
+            base_url='http://10.10.10.10:8443/univmax/restapi',
+            interval=1, retries=3, application_type='test_app')
+
+        self.assertEqual(ref_headers, temp_rest.session.headers)
+        self.assertEqual('smc', temp_rest.session.auth.username)
+        self.assertEqual('smc', temp_rest.session.auth.password)
+        self.assertEqual(False, temp_rest.session.verify)
 
     def test_establish_rest_session_with_headers(self):
         """Test establish_rest_session with headers."""

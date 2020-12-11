@@ -9,7 +9,8 @@ Version 9.2.0.4 - released 9/12/20
     - PyU4V.tests.ci_tests.test_pyu4v_ci_system.CITestSystem._test_get_health_check_details
     - PyU4V.tests.ci_tests.test_pyu4v_ci_system.CITestSystem.test_get_ip_interface_list
     - PyU4V.tests.ci_tests.test_pyu4v_ci_system.CITestSystem.test_get_ip_interface
-- Added Force Option to metro dr restore.
+- Added Force Option to metro dr restore
+- Application-Type header is now set by default to 'PyU4V-{version}'
 
 Version 9.2.0.3 - released 7/12/20
 ==================================

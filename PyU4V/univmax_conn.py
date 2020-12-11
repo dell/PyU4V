@@ -33,6 +33,8 @@ from PyU4V.workload_planner import WLPFunctions
 
 
 file_path = None
+app_type = 'PyU4V-{v}'.format(v=constants.PYU4V_VERSION)
+
 LOG = logging.getLogger(__name__)
 
 SETUP = constants.SETUP
@@ -53,7 +55,7 @@ class U4VConn(object):
                  port=None, verify=None,
                  u4v_version=constants.UNISPHERE_VERSION,
                  interval=5, retries=200, array_id=None,
-                 application_type=None, remote_array=None,
+                 application_type=app_type, remote_array=None,
                  remote_array_2=None):
         """__init__."""
         config = config_handler.set_logger_and_config(file_path)
