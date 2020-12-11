@@ -5,6 +5,7 @@ Version 9.2.0.4 - released 9/12/20
 ==================================
 - Fix for metro_dr delete function
 - Fix for metro_dr added recover option
+- Added Force Option to metro dr restore capabibilites.
 
 Version 9.2.0.3 - released 7/12/20
 ==================================
