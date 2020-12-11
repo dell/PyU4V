@@ -171,6 +171,6 @@ class PyU4VMetroDRTest(testtools.TestCase):
         """Test create_metrodr_environment."""
         with mock.patch.object(
                 self.metro_dr, 'modify_resource') as mock_put:
-            self.metro_dr.modify_metrodr_environment(action='recover',
-            environment_name='PyU4V')
+            self.metro_dr.modify_metrodr_environment(
+                action='recover', environment_name='PyU4V')
             mock_put.assert_called_once()
