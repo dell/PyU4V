@@ -166,3 +166,11 @@ class PyU4VMetroDRTest(testtools.TestCase):
             exception.InvalidInputException,
             self.metro_dr.modify_metrodr_environment, action='restore',
             environment_name='PyU4V', metro=True, dr=True)
+
+    def test_modify_metrodr_environment_recover(self):
+        """Test create_metrodr_environment."""
+        with mock.patch.object(
+                self.metro_dr, 'modify_resource') as mock_put:
+            self.metro_dr.modify_metrodr_environment(
+                action='recover', environment_name='PyU4V')
+            mock_put.assert_called_once()

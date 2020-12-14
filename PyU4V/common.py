@@ -454,7 +454,7 @@ class CommonFunctions(object):
         target_uri = self._build_uri(*args, **kwargs)
         message, status_code = self.request(
             target_uri, DELETE, request_object=kwargs.get('payload'),
-            params=kwargs.get('payload'))
+            params=kwargs.get('params'))
         resource_type = None
         if args:
             resource_type = args[2]
