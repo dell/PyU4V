@@ -126,7 +126,7 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         health_check = self.system.get_health_check_details(
             health_check_id=health_check_id)
         self.assertIsInstance(health_check_list, dict)
-        run_checks = health_check.get(TEST_RES)
+        run_checks = health_check.get(TEST_RES, list())
         try:
             self.assertEqual(len(run_checks), 9)
         except AssertionError:
