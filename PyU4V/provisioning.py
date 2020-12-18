@@ -1653,7 +1653,8 @@ class ProvisioningFunctions(object):
 
     def create_non_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload, num_vols,
-            vol_size, cap_unit, disable_compression=False, _async=False):
+            vol_size, cap_unit, disable_compression=False, _async=False,
+            vol_name=None, snapshot_policy_ids=None):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the create_sg
@@ -1670,13 +1671,17 @@ class ProvisioningFunctions(object):
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
         :param disable_compression: disable compression -- bool
         :param _async: if call should be async -- bool
+        :param vol_name: name to give to the volume, optional -- str
+        :param snapshot_policy_ids: list of one or more snapshot policies
+                                    to associate with storage group -- list
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
             srp_id, storage_group_id, service_level, workload,
             do_disable_compression=disable_compression,
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-            _async=_async)
+            _async=_async, vol_name=vol_name,
+            snapshot_policy_ids=snapshot_policy_ids)
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
@@ -1706,7 +1711,8 @@ class ProvisioningFunctions(object):
 
     def create_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload,
-            disable_compression=False, _async=False):
+            disable_compression=False, _async=False,
+            snapshot_policy_ids=None):
         """Create an empty storage group.
 
         Set the disable_compression flag for disabling compression on an All
@@ -1718,11 +1724,14 @@ class ProvisioningFunctions(object):
         :param workload: workload id -- str
         :param disable_compression: disable compression -- bool
         :param _async: if call should be async -- bool
+        :param snapshot_policy_ids: list of one or more snapshot policies
+                                    to associate with storage group -- list
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
             srp_id, storage_group_id, service_level, workload,
-            do_disable_compression=disable_compression, _async=_async)
+            do_disable_compression=disable_compression, _async=_async,
+            snapshot_policy_ids=snapshot_policy_ids)
 
     def modify_storage_group(self, storage_group_id, payload):
         """Modify a storage group.

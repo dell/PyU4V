@@ -140,9 +140,10 @@ class CITestSnapshotPolicy(base.TestBaseTestCase, testtools.TestCase):
         storage_group_name = self.generate_name(object_type='sg')
         volume_name = self.generate_name()
 
-        self.provision.create_storage_group(
-            self.SRP, storage_group_name, self.SLO, None, False, 1, 1, 'GB',
-            False, False, volume_name,
+        self.provision.create_non_empty_storage_group(
+            self.SRP, storage_group_name, self.SLO, None,
+            disable_compression=False, num_vols=1, vol_size=1,
+            cap_unit='GB', vol_name=volume_name,
             snapshot_policy_ids=[snapshot_policy_name])
         storage_group_details = self.provision.get_storage_group(
             storage_group_name)
