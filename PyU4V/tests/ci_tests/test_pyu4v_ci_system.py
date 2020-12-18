@@ -523,7 +523,11 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
     def test_get_director_port_list(self):
         """Test get_director_port_list."""
         director_list = self.system.get_director_list()
-        director_id = random.choice(director_list)
+        director_id = None
+        for director in director_list:
+            if director[:2] in ['FA', 'DF', 'RF', 'SE']:
+                director_id = director
+                break
         response = self.system.get_director_port_list(director_id=director_id)
         self.assertTrue(response)
         self.assertIsInstance(response, list)
