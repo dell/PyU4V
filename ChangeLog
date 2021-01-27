@@ -1,6 +1,14 @@
 PyU4V Change Log
 ================
 
+Version 9.2.0.5 - released 18/12/20
+===================================
+- Fix for system CI test to select only FE/SE/BE/RDF director:
+    - PyU4V.tests.ci_tests.test_pyu4v_ci_system.CITestSystem.test_get_director_port_list
+    - New optional parameter snapshot_policy_ids in create_non_empty_storage_group
+      and create_empty_storage_group
+
+
 Version 9.2.0.4 - released 9/12/20
 ==================================
 - Fix for metro_dr delete function
@@ -11,6 +19,7 @@ Version 9.2.0.4 - released 9/12/20
     - PyU4V.tests.ci_tests.test_pyu4v_ci_system.CITestSystem.test_get_ip_interface
 - Added Force Option to metro dr restore
 - Application-Type header is now set by default to 'PyU4V-{version}'
+
 
 Version 9.2.0.3 - released 7/12/20
 ==================================

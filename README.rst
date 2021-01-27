@@ -26,7 +26,7 @@ PyU4V Version 9.2
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | 9.2.0.4                    |
+| **PyU4V Version**             | 9.2.0.5                    |
 +-------------------------------+----------------------------+
 | **Minimum Unisphere Version** | 9.2.0.1                    |
 +-------------------------------+----------------------------+
@@ -80,7 +80,7 @@ specifying ``PyU4V`` as the install package for ``pip``::
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==9.2.0.4
+    $ pip install PyU4V==9.2.0.5
 
 Copy the sample ``PyU4V.conf`` provided with PyU4V to either your working
 directory or within a directory named ``.PyU4V`` in your current users home

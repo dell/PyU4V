@@ -1352,7 +1352,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 srp_id, storage_group_id, slo, workload,
                 do_disable_compression=False,
                 num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-                _async=False)
+                _async=False, vol_name=None, snapshot_policy_ids=None)
         act_result = self.provisioning.create_non_empty_storagegroup(
             srp_id, storage_group_id, slo, workload, num_vols, vol_size,
             cap_unit)
@@ -1371,7 +1371,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 srp_id, storage_group_id, slo, workload)
             mock_create.assert_called_once_with(
                 srp_id, storage_group_id, slo, workload,
-                do_disable_compression=False, _async=False)
+                do_disable_compression=False, _async=False,
+                snapshot_policy_ids=None)
         act_result = self.provisioning.create_empty_sg(
             srp_id, storage_group_id, slo, workload)
         ref_result = self.data.job_list[0]
