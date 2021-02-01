@@ -189,11 +189,14 @@ class ReplicationFunctions(object):
         :param storage_group_id: storage group id -- str
         :returns: snapshot ids -- list
         """
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=SNAPSHOT)
+        try:
+            response = self.get_resource(
+                category=REPLICATION,
+                resource_level=SYMMETRIX, resource_level_id=self.array_id,
+                resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
+                resource=SNAPSHOT)
+        except exception.ResourceNotFoundException:
+            return list()
         return response.get('name', list()) if response else list()
 
     @decorators.refactoring_notice(
