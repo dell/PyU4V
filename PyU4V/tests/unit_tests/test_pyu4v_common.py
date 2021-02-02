@@ -393,7 +393,7 @@ class PyU4VCommonTest(testtools.TestCase):
         with mock.patch('builtins.open', mock.mock_open(
                 read_data=example_file), create=True):
             list_from_file = self.common.create_list_from_file(example_file)
-            self.assertTrue(isinstance(list_from_file, list))
+            self.assertIsInstance(list_from_file, list)
             self.assertIn('Item1', list_from_file)
 
     @mock.patch('builtins.open', new_callable=mock.mock_open)
@@ -409,7 +409,7 @@ class PyU4VCommonTest(testtools.TestCase):
             reference_csv_response = {
                 'kpi_a': ['perf_data_1', 'perf_data_3', 'perf_data_5'],
                 'kpi_b': ['perf_data_2', 'perf_data_4', 'perf_data_6']}
-            self.assertTrue(isinstance(csv_data, dict))
+            self.assertIsInstance(csv_data, dict)
             self.assertEqual(reference_csv_response, csv_data)
 
     def test_get_uni_version(self):
