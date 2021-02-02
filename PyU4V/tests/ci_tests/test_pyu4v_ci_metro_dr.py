@@ -44,6 +44,13 @@ class CITestMetroDR(base.TestBaseTestCase, testtools.TestCase):
         environment_list = self.metro_dr.get_metrodr_environment_list()
         self.assertIsInstance(environment_list, list)
 
+    def test_get_metrodr_environment_details(self):
+        """Test get_metrodr_environment_list."""
+        sg_name, environment_name = self.setup_metro_dr()
+        environment_details = self.metro_dr.get_metrodr_environment_details(
+            environment_name=environment_name)
+        self.assertIn(environment_name, environment_details.get('name'))
+
     def test_create_metrodr_environment(self):
         """Test create_metrodr_environment.
 
