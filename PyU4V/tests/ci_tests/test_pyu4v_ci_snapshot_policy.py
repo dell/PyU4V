@@ -39,7 +39,7 @@ class CITestSnapshotPolicy(base.TestBaseTestCase, testtools.TestCase):
         """Test get_snapshot_policy_list."""
         snapshot_policy_name = self.create_snapshot_policy()
         snapshot_policy_list = self.snapshot_policy.get_snapshot_policy_list()
-        self.assertTrue(snapshot_policy_name in snapshot_policy_list)
+        self.assertIn(snapshot_policy_name, snapshot_policy_list)
 
     def test_create_snapshot_policy_local_snapshot_policy_details(self):
         """Test create_snapshot_policy with local snapshot policy."""
