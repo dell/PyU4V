@@ -6,8 +6,9 @@ Version 9.2.0.6 - released 02/02/21
 - Fix for Python 3.9.1
 - Fix for exception in get_storage_group_snapshot_list if no snapshot exists.
 - CI fix of test_is_volume_in_replication_session.
-- Upgrade of pep8
-- Addition of .gitattributes for unix LF checkin only
+- Upgrade of pep8.
+- Addition of .gitattributes for unix LF checkin only.
+- New default parameter for get metro DR details.
 
 Version 9.2.0.5 - released 18/12/20
 ===================================
