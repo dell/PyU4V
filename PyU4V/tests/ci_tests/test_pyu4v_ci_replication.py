@@ -90,6 +90,17 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             sg_name, snap_name='ci_snap', gen=(snapshot_details[0]))
         self.assertIn('ci_snap', snapshot_info)
 
+    def test_get_storage_group_no_snapshot(self):
+        """Test get_storagegroup_snapshot_list."""
+        storage_group_name = self.generate_name('sg')
+        volume_name = self.generate_name()
+        self.provisioning.create_storage_group(
+            self.SRP, storage_group_name, self.SLO,
+            vol_name=volume_name)
+        self.addCleanup(self.delete_storage_group, storage_group_name)
+        self.assertFalse(self.replication.get_storage_group_snapshot_list(
+            storage_group_name))
+
     def test_create_storage_group_snapshot_by_snap_id(self):
         """Test create_storage_group_snapshot by snap_id."""
         snapshot_info, sg_name = self.create_sg_snapshot()
@@ -393,8 +404,17 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         snapshot_info, sg_name = self.create_sg_snapshot()
         volume = snapshot_info.get('source_volume')
         vol_name = volume[0].get('name')
-        snapxv_tgt, snapxv_src, rdf_group = (
-            self.replication.is_vol_in_rep_session(device_id=vol_name))
+        snapxv_src = False
+        i = 0
+        while not snapxv_src:
+            time.sleep(1)
+            i += 1
+            snapxv_tgt, snapxv_src, rdf_group = (
+                self.replication.is_vol_in_rep_session(
+                    device_id=vol_name))
+            if i > 10:
+                break
+        self.assertTrue(i <= 10)
         self.assertEqual(snapxv_src, True)
 
     def test_is_volume_in_replication_session(self):
@@ -402,9 +422,17 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         snapshot_info, sg_name = self.create_sg_snapshot()
         volume = snapshot_info.get('source_volume')
         vol_name = volume[0].get('name')
-        snapxv_tgt, snapxv_src, rdf_group = (
-            self.replication.is_volume_in_replication_session(
-                device_id=vol_name))
+        snapxv_src = False
+        i = 0
+        while not snapxv_src:
+            time.sleep(1)
+            i += 1
+            snapxv_tgt, snapxv_src, rdf_group = (
+                self.replication.is_volume_in_replication_session(
+                    device_id=vol_name))
+            if i > 10:
+                break
+        self.assertTrue(i <= 10)
         self.assertEqual(snapxv_src, True)
 
     def test_get_snapshot_generation_details(self):
