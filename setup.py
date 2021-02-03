@@ -44,6 +44,6 @@ setuptools.setup(
         'Programming Language :: Python :: 3.9',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    python_requires='>=3.6',
+    python_requires='>=3.6, <4.0',
     tests_require=['mock', 'testtools'],
     test_suite='tests')
