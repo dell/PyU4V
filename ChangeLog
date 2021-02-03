@@ -1,7 +1,7 @@
 PyU4V Change Log
 ================
 
-Version 9.2.0.6 - released 02/02/21
+Version 9.2.0.7 - released 03/02/21
 ===================================
 - Fix for Python 3.9.1
 - Fix for exception in get_storage_group_snapshot_list if no snapshot exists.
