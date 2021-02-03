@@ -1800,7 +1800,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                return_value=['00001', '00002' '00003']):
             device_ids = self.provisioning.find_volume_device_id(
                 'not-unique-name')
-            self.assertTrue(isinstance(device_ids, list))
+            self.assertIsInstance(device_ids, list)
 
     def test_find_volume_identifier(self):
         """Test find_volume_identifier."""

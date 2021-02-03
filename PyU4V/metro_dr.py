@@ -61,12 +61,15 @@ class MetroDRFunctions(object):
             resource_level_id=array_id, resource_type=METRO_DR)
         return response.get('names', list()) if response else list()
 
-    def get_metrodr_environment_details(self, environment_name, array_id=None):
+    def get_metrodr_environment_details(self, environment_name,
+                                        array_id=None, config=True):
         """Get details for metro DR environment.
 
         :param environment_name: Unique name to identify Metro DR environment
                                  -- str
         :param array_id: 12 Digit Serial Number of Array -- int
+        :param config: return full environment config details or
+                       summary -- bool
         :returns: details of the metro dr environments -- dict
         """
         if not array_id:
@@ -74,7 +77,7 @@ class MetroDRFunctions(object):
         response = self.get_resource(
             category=REPLICATION, resource_level=SYMMETRIX,
             resource_level_id=array_id, resource_type=METRO_DR,
-            resource_type_id=environment_name)
+            resource_type_id=environment_name, params={'config': config})
 
         return response
 

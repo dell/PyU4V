@@ -178,13 +178,13 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
     def test_get_array_list(self):
         """Test get_array_list."""
         array_list = self.common.get_array_list()
-        self.assertTrue(isinstance(array_list, list))
+        self.assertIsInstance(array_list, list)
         self.assertIn(self.conn.array_id, array_list)
 
     def test_get_v3_or_newer_array_list(self):
         """Test get_v3_or_newer_array_list."""
         array_list = self.common.get_v3_or_newer_array_list()
-        self.assertTrue(isinstance(array_list, list))
+        self.assertIsInstance(array_list, list)
         self.assertIn(self.conn.array_id, array_list)
 
     def test_get_array(self):
@@ -200,7 +200,7 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
     def test_get_headroom(self):
         """Test get_headroom."""
         headroom_list = self.common.get_headroom(self.conn.array_id)
-        self.assertTrue(isinstance(headroom_list, list))
+        self.assertIsInstance(headroom_list, list)
         for i in range(len(headroom_list)):
             self.assertTrue(
                 set({'emulation': 'CKD'}.items()).issubset(

@@ -80,7 +80,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         """Test get_categories."""
         response = self.rt.get_categories()
         ref_response = self.p_data.rt_categories.get(pc.CATEGORY_NAME)
-        self.assertTrue(isinstance(response, list))
+        self.assertIsInstance(response, list)
         self.assertEqual(ref_response, response)
 
     def test_get_categories_empty(self):
@@ -88,14 +88,14 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(
                 self.rt, 'get_request', return_value=dict()):
             response = self.rt.get_categories()
-            self.assertTrue(isinstance(response, list))
+            self.assertIsInstance(response, list)
             self.assertEqual(list(), response)
 
     def test_get_category_metrics(self):
         """Test get_category_metrics."""
         response = self.rt.get_category_metrics(category=pc.ARRAY)
         ref_response = self.p_data.rt_metrics.get(pc.METRIC_NAME)
-        self.assertTrue(isinstance(response, list))
+        self.assertIsInstance(response, list)
         self.assertEqual(ref_response, response)
 
     def test_get_category_metrics_empty(self):
@@ -103,19 +103,19 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(
                 self.rt, 'get_request', return_value=dict()):
             response = self.rt.get_categories()
-            self.assertTrue(isinstance(response, list))
+            self.assertIsInstance(response, list)
             self.assertEqual(list(), response)
 
     def test_get_timestamps(self):
         """Test get_timestamps no array_id set."""
         response = self.rt.get_timestamps()
-        self.assertTrue(isinstance(response, list))
+        self.assertIsInstance(response, list)
         self.assertEqual(2, len(response))
 
     def test_get_timestamps_array_id(self):
         """Test get_timestamps array_id set."""
         response = self.rt.get_timestamps(array_id=self.p_data.array)
-        self.assertTrue(isinstance(response, list))
+        self.assertIsInstance(response, list)
         self.assertEqual(1, len(response))
         self.assertEqual(self.p_data.array, response[0].get(pc.SYMM_ID))
 
@@ -123,7 +123,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         """Test get_category_keys."""
         response = self.rt.get_category_keys(category=pc.ARRAY)
         ref_response = self.p_data.rt_keys.get(pc.KEYS)
-        self.assertTrue(isinstance(response, list))
+        self.assertIsInstance(response, list)
         self.assertEqual(ref_response, response)
 
     def test_get_category_keys_empty(self):
@@ -131,7 +131,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(
                 self.rt, 'post_request', return_value=dict()):
             response = self.rt.get_category_keys(category=pc.ARRAY)
-            self.assertTrue(isinstance(response, list))
+            self.assertIsInstance(response, list)
             self.assertEqual(list(), response)
 
     def test_validate_real_time_input_all_valid(self):
