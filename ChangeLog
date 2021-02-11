@@ -2,7 +2,8 @@ PyU4V Change Log
 ================
 
 Version 9.2.0.8 - released 05/02/21
-- update __init--.py to reflect the correct version
+- Update __init__.py to reflect the correct version
+- Update the docs to reflect new version
 
 Version 9.2.0.7 - released 03/02/21
 ===================================
