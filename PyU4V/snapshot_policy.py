@@ -469,8 +469,8 @@ class SnapshotPolicyFunctions(object):
         :param from_time_string: human readable date -- str
                                  e.g 2020-12-01 15:00
         :param to_time_string: human readable date -- str
-                                 e.g 2020-12-01 15:00
-        :returns resource -- dict
+                               e.g 2020-12-01 15:00
+        :returns: resource -- dict
         """
         if not storage_group_name:
             msg = 'Storage group name cannot be None.'
@@ -496,7 +496,7 @@ class SnapshotPolicyFunctions(object):
         """Get compliance attributes on a storage group for the last week.
 
         :param storage_group_name: storage group name
-        :returns resource -- dict
+        :returns: resource -- dict
         """
         return self.get_snapshot_policy_compliance(
             storage_group_name, last_week=True)
@@ -509,7 +509,7 @@ class SnapshotPolicyFunctions(object):
         four weeks
 
         :param storage_group_name: storage group name
-        :returns resource -- dict
+        :returns: resource -- dict
         """
         return self.get_snapshot_policy_compliance(
             storage_group_name, last_four_weeks=True)
@@ -526,7 +526,7 @@ class SnapshotPolicyFunctions(object):
                            e.g 1606820929 (seconds)
         :param to_epoch: timestamp since epoch -- str
                          e.g 1606820929 (seconds)
-        :returns resource -- dict
+        :returns: resource -- dict
         """
         return self.get_snapshot_policy_compliance(
             storage_group_name, from_epoch=from_epoch, to_epoch=to_epoch)
@@ -544,7 +544,7 @@ class SnapshotPolicyFunctions(object):
                                  e.g 2020-12-01 15:00
         :param to_time_string: human readable date -- str
                                  e.g 2020-12-01 15:00
-        :returns resource -- dict
+        :returns: resource -- dict
         """
         return self.get_snapshot_policy_compliance(
             storage_group_name, from_time_string=from_time_string,
