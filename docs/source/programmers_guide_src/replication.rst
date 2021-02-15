@@ -63,7 +63,8 @@ supported.
 For full detailed information on snapshot policies in Unisphere for PowerMax
 please consult the official Unisphere for PowerMax online help guide.
 
-In the example below a new snapshot policy is created, modified, then deleted.
+In the example below, snapshot policy compliance over the last week is
+queried.
 
 .. literalinclude:: code/replication-snapshot-policy-compliance.py
     :linenos:
