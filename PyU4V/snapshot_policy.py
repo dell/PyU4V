@@ -23,6 +23,9 @@ LOG = logging.getLogger(__name__)
 REPLICATION = constants.REPLICATION
 SYMMETRIX = constants.SYMMETRIX
 SNAPSHOT_POLICY = constants.SNAPSHOT_POLICY
+STORAGEGROUP = constants.STORAGEGROUP
+COMPLIANCE = constants.COMPLIANCE
+SNAPSHOT = constants.SNAPSHOT
 policy_interval_enum = {
     '10 Minutes': 10,
     '12 Minutes': 12,
@@ -85,7 +88,7 @@ class SnapshotPolicyFunctions(object):
                          '12 Minutes', '15 Minutes', '20 Minutes',
                          '30 Minutes', '1 Hour',
                          '2 Hours', '3 Hours', '4 Hours', '6 Hours',
-                         '8 Hours', '12 Hours', '1 Day', '7 Days' -- enum
+                         '8 Hours', '12 Hours', '1 Day', '7 Days' -- str
         :param cloud_retention_days: part of cloud_snapshot_policy_details
                                      number of days to retain the policy
                                      -- int
@@ -107,7 +110,8 @@ class SnapshotPolicyFunctions(object):
         :param compliance_count_critical: The Number of snapshots which are
                                           not failed or bad when compliance
                                           changes to critical. -- int
-        :param _async: is the operation asynchronous
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
         """
         payload = dict()
 
@@ -188,6 +192,105 @@ class SnapshotPolicyFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=SNAPSHOT_POLICY, payload=payload)
 
+    def associate_to_storage_groups(
+            self, snapshot_policy_name, storage_group_names, _async=False):
+        """Associate a snapshot policy to storage group(s).
+
+        :param snapshot_policy_name: the snapshot policy name -- str
+        :param storage_group_names: List of storage group names -- list
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
+        """
+        return self.modify_snapshot_policy(
+            snapshot_policy_name, constants.ASSOCIATE_TO_STORAGE_GROUPS,
+            storage_group_names=storage_group_names, _async=_async)
+
+    def disassociate_from_storage_groups(
+            self, snapshot_policy_name, storage_group_names, _async=False):
+        """Disassociate a snapshot policy from storage group(s).
+
+        :param snapshot_policy_name: the snapshot policy name -- str
+        :param storage_group_names: List of storage group names -- list
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
+        """
+        return self.modify_snapshot_policy(
+            snapshot_policy_name, constants.DISASSOCIATE_FROM_STORAGE_GROUPS,
+            storage_group_names=storage_group_names, _async=_async)
+
+    def suspend_snapshot_policy(
+            self, snapshot_policy_name, _async=False):
+        """Suspend a snapshot policy.
+
+        :param snapshot_policy_name: the snapshot policy name -- str
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
+        """
+        return self.modify_snapshot_policy(
+            snapshot_policy_name, constants.SUSPEND_POLICY,
+            _async=_async)
+
+    def resume_snapshot_policy(
+            self, snapshot_policy_name, _async=False):
+        """Suspend a snapshot policy
+
+        :param snapshot_policy_name: the snapshot policy name -- str
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
+        """
+        return self.modify_snapshot_policy(
+            snapshot_policy_name, constants.RESUME_POLICY,
+            _async=_async)
+
+    def modify_snapshot_policy_properties(
+            self, snapshot_policy_name, interval=None,
+            offset_mins=None, snapshot_count=None,
+            compliance_count_warning=None, compliance_count_critical=None,
+            new_snapshot_policy_name=None, _async=False):
+        """Suspend a snapshot policy
+
+        :param snapshot_policy_name: the snapshot policy name -- str
+        :param interval: The value of the interval counter for snapshot
+                         policy execution. Must be one of '10 Minutes',
+                         '12 Minutes', '15 Minutes', '20 Minutes',
+                         '30 Minutes', '1 Hour',
+                         '2 Hours', '3 Hours', '4 Hours', '6 Hours',
+                         '8 Hours', '12 Hours', '1 Day', '7 Days' -- str
+        :param offset_mins: The number of minutes after 00:00 on Monday
+                            to first run the service policy. The offset
+                            must be less than the interval of
+                            the Snapshot Policy. The format must be in minutes
+                            -- int
+        :param snapshot_count: The maximum number of snapshots that should be
+                               maintained for a specified Snapshot Policy.
+                               The maximum count must be between 1 to 1024.
+                               -- int
+        :param compliance_count_warning: The Number of snapshots which are
+                                         not failed or bad when compliance
+                                         changes to warning. The warning
+                                         compliance count cannot be set to 0
+                                         and must be less than or equal to
+                                         the maximum count of the Snapshot
+                                         Policy. -- int
+        :param compliance_count_critical: The Number of snapshots which are
+                                          not failed or bad when compliance
+                                          changes to critical. If the warning
+                                          compliance count is also set, the
+                                          critical compliance count must be
+                                          less than or equal to that. -- int
+        :param new_snapshot_policy_name: change the name if set -- str
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
+        """
+        return self.modify_snapshot_policy(
+            snapshot_policy_name, constants.MODIFY_POLICY,
+            interval=interval, offset_mins=offset_mins,
+            snapshot_count=snapshot_count,
+            compliance_count_warning=compliance_count_warning,
+            compliance_count_critical=compliance_count_critical,
+            new_snapshot_policy_name=new_snapshot_policy_name,
+            _async=_async)
+
     def modify_snapshot_policy(
             self, snapshot_policy_name, action, interval=None,
             offset_mins=None, snapshot_count=None,
@@ -200,17 +303,17 @@ class SnapshotPolicyFunctions(object):
         DisassociateFromStorageGroups]. A modify of the snapshot policy or
         adding or removing storage groups associated with the policy.
 
-        :param snapshot_policy_name: the snapshot policy name-- str
+        :param snapshot_policy_name: the snapshot policy name -- str
         :param action: the modification action, must be one of
                        'AssociateToStorageGroups',
                        'DisassociateFromStorageGroups'
-                       'Modify', 'Suspend', 'Resume'
+                       'Modify', 'Suspend', 'Resume' -- str
         :param interval: The value of the interval counter for snapshot
                          policy execution. Must be one of '10 Minutes',
                          '12 Minutes', '15 Minutes', '20 Minutes',
                          '30 Minutes', '1 Hour',
                          '2 Hours', '3 Hours', '4 Hours', '6 Hours',
-                         '8 Hours', '12 Hours', '1 Day', '7 Days' -- enum
+                         '8 Hours', '12 Hours', '1 Day', '7 Days' -- str
         :param offset_mins: The number of minutes after 00:00 on Monday
                             to first run the service policy. The offset
                             must be less than the interval of
@@ -219,6 +322,7 @@ class SnapshotPolicyFunctions(object):
         :param snapshot_count: The maximum number of snapshots that should be
                                maintained for a specified Snapshot Policy.
                                The maximum count must be between 1 to 1024.
+                               -- int
         :param compliance_count_warning: The Number of snapshots which are
                                          not failed or bad when compliance
                                          changes to warning. The warning
@@ -234,7 +338,8 @@ class SnapshotPolicyFunctions(object):
                                           less than or equal to that. -- int
         :param storage_group_names: List of storage group names -- list
         :param new_snapshot_policy_name: change the name if set -- str
-        :param _async: is the operation asynchronous
+        :param _async: is the operation asynchronous -- bool
+        :returns: resource object -- dict
         """
         payload = dict()
         if not snapshot_policy_name:
@@ -335,7 +440,7 @@ class SnapshotPolicyFunctions(object):
     def delete_snapshot_policy(self, snapshot_policy_name):
         """Delete a snapshot policy
 
-        :param snapshot_policy_name: the snapshot policy name-- str
+        :param snapshot_policy_name: the snapshot policy name -- str
         """
         if not snapshot_policy_name:
             msg = 'Snapshot policy name cannot be None.'
@@ -347,3 +452,240 @@ class SnapshotPolicyFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=SNAPSHOT_POLICY,
             resource_type_id=snapshot_policy_name)
+
+    def get_snapshot_policy_compliance(
+            self, storage_group_name, last_week=False, last_four_weeks=False,
+            from_epoch=None, to_epoch=None, from_time_string=None,
+            to_time_string=None):
+        """Get compliance attributes on a storage group.
+
+        :param storage_group_name: storage group name
+        :param last_week: compliance in last week -- bool
+        :param last_four_weeks: compliance in last four weeks -- bool
+        :param from_epoch: timestamp since epoch -- str
+                           e.g 1606820929 (seconds)
+        :param to_epoch: timestamp since epoch -- str
+                         e.g 1606820929 (seconds)
+        :param from_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :param to_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :returns resource -- dict
+        """
+        if not storage_group_name:
+            msg = 'Storage group name cannot be None.'
+            LOG.exception(msg)
+            raise exception.InvalidInputException(data=msg)
+
+        msg, query_params = self.verify_input_params(
+            last_week, last_four_weeks, from_epoch, to_epoch,
+            from_time_string, to_time_string)
+        if msg:
+            LOG.exception(msg)
+            raise exception.InvalidInputException(data=msg)
+
+        return self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_name,
+            resource=COMPLIANCE, object_type=SNAPSHOT,
+            params=query_params)
+
+    def get_snapshot_policy_compliance_last_week(
+            self, storage_group_name):
+        """Get compliance attributes on a storage group for the last week.
+
+        :param storage_group_name: storage group name
+        :returns resource -- dict
+        """
+        return self.get_snapshot_policy_compliance(
+            storage_group_name, last_week=True)
+
+    def get_snapshot_policy_compliance_last_four_weeks(
+            self, storage_group_name):
+        """Get compliance attributes for the last four weeks.
+
+        Get compliance attributes on a storage group for the last
+        four weeks
+
+        :param storage_group_name: storage group name
+        :returns resource -- dict
+        """
+        return self.get_snapshot_policy_compliance(
+            storage_group_name, last_four_weeks=True)
+
+    def get_snapshot_policy_compliance_epoch(
+            self, storage_group_name, from_epoch=None, to_epoch=None):
+        """Get compliance attributes for the last four weeks.
+
+        Get compliance attributes on a storage group for the last
+        four weeks
+
+        :param storage_group_name: storage group name
+        :param from_epoch: timestamp since epoch -- str
+                           e.g 1606820929 (seconds)
+        :param to_epoch: timestamp since epoch -- str
+                         e.g 1606820929 (seconds)
+        :returns resource -- dict
+        """
+        return self.get_snapshot_policy_compliance(
+            storage_group_name, from_epoch=from_epoch, to_epoch=to_epoch)
+
+    def get_snapshot_policy_compliance_human_readable_time(
+            self, storage_group_name, from_time_string=None,
+            to_time_string=None):
+        """Get compliance attributes for the last four weeks.
+
+        Get compliance attributes on a storage group for the last
+        four weeks
+
+        :param storage_group_name: storage group name
+        :param from_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :param to_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :returns resource -- dict
+        """
+        return self.get_snapshot_policy_compliance(
+            storage_group_name, from_time_string=from_time_string,
+            to_time_string=to_time_string)
+
+    def verify_input_params(
+            self, last_week, last_four_weeks, from_epoch, to_epoch,
+            from_time_string, to_time_string):
+        """Verify the input parameters for compliance.
+
+        :param last_week: compliance in last week -- bool
+        :param last_four_weeks: compliance in last four weeks -- bool
+        :param from_epoch: timestamp since epoch -- str
+                           e.g 1606820929 (seconds)
+        :param to_epoch: timestamp since epoch -- str
+                         e.g 1606820929 (seconds)
+        :param from_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :param to_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :returns: msg or None -- str
+                  query_params -- dict
+
+        """
+        msg = self.verify_combination(
+            last_week, last_four_weeks, from_epoch, from_time_string)
+        if msg:
+            return msg, None
+        msg, query_params = self.verify_from_epoch(
+            from_epoch, to_epoch, to_time_string)
+        if msg:
+            return msg, None
+        if to_epoch:
+            if not from_epoch and not from_time_string:
+                return ('to_epoch must be accompanied with one of from_epoch '
+                        'or from_time_string.', None)
+            if to_time_string:
+                return ('to_epoch and to_time_string should not both '
+                        'be supplied as they are different formats of the '
+                        'same thing.', None)
+        msg, query_params = self.verify_from_time_string(
+            to_epoch, to_time_string, from_time_string)
+        if msg:
+            return msg, None
+        if to_time_string:
+            if not from_time_string and not from_epoch:
+                return ('to_time_string must be accompanied with one of '
+                        'from_time_string or to_epoch.', None)
+
+        return None, query_params
+
+    @staticmethod
+    def verify_combination(
+            last_week, last_four_weeks, from_epoch, from_time_string):
+        """Verify the valid combinations for compliance.
+
+        :param last_week: compliance in last week -- bool
+        :param last_four_weeks: compliance in last four weeks -- bool
+        :param from_epoch: timestamp since epoch -- str
+                           e.g 1606820929 (seconds)
+        :param from_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :returns: msg or None -- str
+        """
+        input_params_list = (
+            [last_week, last_four_weeks, from_epoch, from_time_string])
+        if len([i for i in input_params_list if i]) > 1:
+            return ('Only one of last_week, last_four_weeks, from_epoch, '
+                    'from_time_string can be true or not None.')
+        return None
+
+    def verify_from_epoch(
+            self, from_epoch, to_epoch, to_time_string):
+        """Verify the the from_epoch param for compliance.
+
+        :param from_epoch: timestamp since epoch -- str
+                           e.g 1606820929 (seconds)
+        :param to_epoch: timestamp since epoch -- str
+                         e.g 1606820929 (seconds)
+        :param to_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :returns: msg or None -- str
+                  query_params -- dict
+        """
+        query_params = dict()
+        if from_epoch:
+            if self.common.check_epoch_timestamp(from_epoch):
+                if not to_epoch and not to_time_string:
+                    return ('from_epoch must be accompanied with one of '
+                            'to_epoch or to_time_string.', None)
+                if to_epoch:
+                    if self.common.check_epoch_timestamp(to_epoch):
+                        query_params['from_epoch'] = from_epoch
+                        query_params['to_epoch'] = to_epoch
+                    else:
+                        return ('to_epoch {} is in the wrong format.'.format(
+                            to_epoch), None)
+                elif to_time_string:
+                    if self.common.check_timestamp(to_time_string):
+                        query_params['from_epoch'] = from_epoch
+                        query_params['toTimeString'] = to_time_string
+                    else:
+                        return (
+                            'to_time_string {} is in the wrong format.'.format(
+                                to_time_string), None)
+            else:
+                return ('from_epoch {} is in the wrong format.'.format(
+                    from_epoch), None)
+        return None, query_params
+
+    def verify_from_time_string(
+            self, to_epoch, to_time_string, from_time_string):
+        """Verify the the from_time_string param for compliance.
+
+        :param to_epoch: timestamp since epoch -- str
+                         e.g 1606820929 (seconds)
+        :param from_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :param to_time_string: human readable date -- str
+                                 e.g 2020-12-01 15:00
+        :returns: msg or None -- str
+                  query_params -- dict
+        """
+        query_params = dict()
+        if from_time_string:
+            if self.common.check_timestamp(from_time_string):
+                if not to_time_string and not to_epoch:
+                    return ('from_time_string must be accompanied with one of '
+                            'to_time_string or to_epoch.', None)
+                if to_time_string:
+                    if self.common.check_timestamp(to_time_string):
+                        query_params['fromTimeString'] = from_time_string
+                        query_params['toTimeString'] = to_time_string
+                    else:
+                        return (
+                            'to_time_string {} is in the wrong format.'.format(
+                                to_time_string), None)
+                elif to_epoch:
+                    query_params['fromTimeString'] = from_time_string
+                    query_params['to_epoch'] = to_epoch
+            else:
+                return ('from_time_string {} is in the wrong format.'.format(
+                    from_time_string), None)
+        return None, query_params

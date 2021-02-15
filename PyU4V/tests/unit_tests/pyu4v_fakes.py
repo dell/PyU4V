@@ -332,6 +332,8 @@ class FakeRequestsSession(object):
                 return_object = self.data.group_snap_vx
             else:
                 return_object = self.data.sg_snap_id_list
+        elif 'compliance' in url:
+            return_object = self.data.compliance_details
         elif 'snapshot' in url:
             return_object = self.data.sg_snap_list
         elif 'rdf_group' in url:

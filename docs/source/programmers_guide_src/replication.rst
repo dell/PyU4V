@@ -54,6 +54,23 @@ In the example below a new snapshot policy is created, modified, then deleted.
     :language: python
     :lines: 14-56
 
+Snapshot Policy Compliance
+--------------------------
+This allows the user to query snapshot policy compliance over a period of time.
+Last week, last four weeks, epoch to/from, human readable to/from are
+supported.
+
+For full detailed information on snapshot policies in Unisphere for PowerMax
+please consult the official Unisphere for PowerMax online help guide.
+
+In the example below a new snapshot policy is created, modified, then deleted.
+
+.. literalinclude:: code/replication-snapshot-policy-compliance.py
+    :linenos:
+    :language: python
+    :lines: 14-81
+
+
 
 Remote Replication with SRDF
 ----------------------------

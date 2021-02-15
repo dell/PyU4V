@@ -22,7 +22,7 @@ conn = PyU4V.U4VConn()
 # Create storage Group with one volume
 storage_group = conn.provisioning.create_non_empty_storage_group(
     srp_id='SRP_1', storage_group_id='PyU4V_SG', service_level='Diamond',
-    num_vols=1, vol_size=1, cap_unit='GB')
+    workload=None, num_vols=1, vol_size=1, cap_unit='GB')
 
 # Create a snapshot policy for the new storage group
 policy_name = 'PyU4V-Test_Policy'

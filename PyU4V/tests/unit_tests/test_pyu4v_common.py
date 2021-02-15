@@ -15,6 +15,7 @@
 
 import csv
 import testtools
+import time
 
 from unittest import mock
 
@@ -556,6 +557,28 @@ class PyU4VCommonTest(testtools.TestCase):
                 resource_type=constants.IMPORT_FILE,
                 form_data={'test_req': True})
             self.assertEqual(ref_response, response)
+
+    def test_check_timestamp(self):
+        """Test test_check_timestamp."""
+        self.assertTrue(self.common.check_timestamp('2020-12-01 15:00'))
+        self.assertFalse(self.common.check_timestamp('2020-12-01'))
+        self.assertFalse(self.common.check_timestamp('2020-12-1 15:00'))
+        self.assertFalse(self.common.check_timestamp('2020-12-d1 15:00'))
+        self.assertFalse(self.common.check_timestamp('2020-12-01 3pm'))
+        self.assertFalse(self.common.check_timestamp('1606836037'))
+
+    def test_check_epoch_timestamp(self):
+        """Test check_epoch_timestamp."""
+        seconds = str(int(round(time.time())))
+        self.assertTrue(self.common.check_epoch_timestamp(seconds))
+        self.assertFalse(self.common.check_epoch_timestamp('160683603'))
+        self.assertFalse(self.common.check_epoch_timestamp('160683603d'))
+        self.assertFalse(self.common.check_epoch_timestamp('2020-12-01 15:00'))
+        millis = str(int(round(time.time() * 1000)))
+        self.assertTrue(self.common.check_epoch_timestamp(millis))
+        self.assertFalse(self.common.check_epoch_timestamp(
+            '160683603111111111'))
+
 
     def test_upload_file_fail_backend_exception(self):
         """Test upload_file fail with volume backend API exception."""

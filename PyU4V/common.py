@@ -746,3 +746,26 @@ class CommonFunctions(object):
         s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', camel_case_string)
         s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
         return s2.replace('__', '_')
+
+    @staticmethod
+    def check_timestamp(in_timestamp):
+        """Check that the timestamp is in the correct format
+
+        :param in_timestamp: timestamp e.g. 2020-11-24 15:00 -- str
+        """
+
+        pattern = (r'^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) '
+                   r'(2[0-3]|[01][0-9]):[0-5][0-9]$')
+        return re.match(pattern, in_timestamp)
+
+    @staticmethod
+    def check_epoch_timestamp(in_epoch_timestamp):
+        """Check that the timestamp is in the correct format
+
+        :param in_epoch_timestamp: timestamp e.g. 1554332400 -- str
+        """
+
+        pattern1 = r'^[0-9]{10}$'
+        pattern2 = r'^[0-9]{13}$'
+        return re.match(pattern1, in_epoch_timestamp) or re.match(
+            pattern2, in_epoch_timestamp)
