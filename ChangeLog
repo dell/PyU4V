@@ -1,6 +1,6 @@
 PyU4V Change Log
 ================
-Version 9.2.1.0 - released 15/02/21
+Version 9.2.1.1 - released 15/02/21
 - Support for Snapshot Policy compliance
 - Refactoring of snapshot policy modification by operation.
 
