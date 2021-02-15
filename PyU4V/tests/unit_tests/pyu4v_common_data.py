@@ -845,3 +845,13 @@ class CommonData(object):
             'STARTING on PyU4V-sg(Storage group) "CREATE" '
             'operation. Symm=000111222333, SERVICE_LEVEL_NAME=Diamond '
             'SRP_NAME=SRP_1 ')}
+
+    compliance_details = {
+        'storage_group_name': storagegroup_name,
+        'compliance': 'GREEN', 'sl_count': 1,
+        'sl_compliance': [
+            {'sl_name': 'DailyDefault',
+             'calculation_time': '2020-12-01T12:05',
+             'compliance': 'GREEN'}
+        ]
+    }
