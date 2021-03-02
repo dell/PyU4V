@@ -39,6 +39,7 @@ SG_NUM = constants.SG_NUM
 SPINDLE_ID = constants.SPINDLE_ID
 STATUS = constants.STATUS
 SYSTEM = constants.SYSTEM
+LOCAL_USER = constants.LOCAL_USER
 TAG = constants.TAG
 TAG_NAME = constants.TAG_NAME
 TEST_RES = constants.TEST_RES
@@ -611,3 +612,13 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
         if not found_ip:
             self.skipTest('No IP interfaces available in CI environment.')
+
+    def test_change_local_user_password(self):
+        """Test change_local_user_password, if success return is None"""
+        try:
+            change_password = self.system.change_local_user_password(
+                username='testchange', current_password='manuallyset',
+                new_password='newpassword')
+            self.assertEqual(None, change_password)
+        except exception.VolumeBackendAPIException:
+            self.skipTest('Skip Password Change - please run test manually')
