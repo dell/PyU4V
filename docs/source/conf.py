@@ -20,13 +20,13 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'PyU4V'
-copyright = '2021 Dell Inc. or its subsidiaries.'
+copyright = '2020 Dell Inc. or its subsidiaries.'
 author = 'Dell'
 
 # The short X.Y version.
 version = u'9.2'
 # The full version, including alpha/beta/rc tags
-release = '9.2.1.2'
+release = '9.2.1.1'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -34,7 +34,7 @@ release = '9.2.1.2'
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
-# The master doctree document.
+# The master toctree document.
 master_doc = 'index'
 
 # The name of the Pygments (syntax highlighting) style to use.
