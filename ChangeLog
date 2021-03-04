@@ -2,7 +2,7 @@ PyU4V Change Log
 ================
 Version 9.2.1.2
 - support for changing local users passwords via REST, requires Unipshere 9.2.1
-  changchange_local_user_password
+  change_local_user_password function added.
 
 Version 9.2.1.1 - released 15/02/21
 - Support for Snapshot Policy compliance
