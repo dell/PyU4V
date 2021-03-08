@@ -39,6 +39,7 @@ SG_ID = constants.SG_ID
 SG_NUM = constants.SG_NUM
 SYMMETRIX = constants.SYMMETRIX
 SYSTEM = constants.SYSTEM
+LOCAL_USER = constants.LOCAL_USER
 TAG = constants.TAG
 TAG_NAME = constants.TAG_NAME
 ALERT = constants.ALERT
@@ -924,3 +925,28 @@ class SystemFunctions(object):
             object_type=IP_INTERFACE, object_type_id=interface_id)
 
         return interface if interface else dict()
+
+    def change_local_user_password(
+            self, username, current_password, new_password):
+        """Function to allow users to change password for local user accounts.
+
+        Requires minimum version of Unisphere 9.2.1.x and API account must
+        have security admin role
+
+        Change local user password.
+        :param username: username for local account -- str
+        :param current_password: existing password for local account -- str
+        :param new_password: new password for local account -- str
+
+        """
+        request_body = {
+            'username': username,
+            'action': "SetPassword",
+            'set_password': {
+                'current_password': current_password,
+                'new_password': new_password
+            }
+        }
+
+        return self.common.modify_resource(
+            category=SYSTEM, resource_level=LOCAL_USER, payload=request_body)

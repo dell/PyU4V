@@ -37,6 +37,7 @@ SG_ID = constants.SG_ID
 SG_NUM = constants.SG_NUM
 SYMMETRIX = constants.SYMMETRIX
 SYSTEM = constants.SYSTEM
+LOCAL_USER = constants.LOCAL_USER
 TAG = constants.TAG
 TAG_NAME = constants.TAG_NAME
 ALERT_ID = pcd.CommonData.alert_id
@@ -528,3 +529,21 @@ class PyU4VSystemTest(testtools.TestCase):
         self.assertTrue(ip_int_info)
         self.assertIsInstance(ip_int_info, dict)
         self.assertEqual(self.data.ip_interface_details, ip_int_info)
+
+    @mock.patch.object(common.CommonFunctions, 'modify_resource')
+    def test_change_local_user_password(self, mck_modify):
+        """Test change_local_user_password."""
+
+        self.system.change_local_user_password(
+            username='testchange', current_password='oldpass',
+            new_password='newpassword')
+        payload = {
+            'username': 'testchange',
+            'action': "SetPassword",
+            'set_password': {
+                'current_password': 'oldpass',
+                'new_password': 'newpassword'
+            }
+        }
+        mck_modify.assert_called_once_with(
+            category=SYSTEM, resource_level=LOCAL_USER, payload=payload)
