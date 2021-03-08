@@ -34,7 +34,7 @@ release = '9.2.1.2'
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
-# The master doctree document.
+# The master toctree document.
 master_doc = 'index'
 
 # The name of the Pygments (syntax highlighting) style to use.
