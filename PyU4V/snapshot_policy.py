@@ -74,6 +74,19 @@ class SnapshotPolicyFunctions(object):
             resource_type=SNAPSHOT_POLICY,
             resource_type_id=snapshot_policy_name)
 
+    def get_snapshot_policy_storage_group_list(self, snapshot_policy_name):
+        """Get list of storage groups associated to specified snapshot policy.
+
+        :param snapshot_policy_name: name of the snapshot policy -- str
+        :returns: snapshot policy details -- list
+        """
+        response = self.get_resource(
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=SNAPSHOT_POLICY,
+            resource_type_id=snapshot_policy_name, object_type=STORAGEGROUP)
+        return response.get('name', list()) if response else list()
+
     def create_snapshot_policy(
             self, snapshot_policy_name, interval, cloud_retention_days=None,
             cloud_provider_name=None, local_snapshot_policy_secure=False,
