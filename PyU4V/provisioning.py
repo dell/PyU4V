@@ -1554,8 +1554,8 @@ class ProvisioningFunctions(object):
     def create_storage_group(
             self, srp_id, sg_id, slo=None, workload=None,
             do_disable_compression=False, num_vols=0, vol_size=0,
-            cap_unit='GB', allocate_full=False, _async=False, vol_name=None,
-            snapshot_policy_ids=None):
+            cap_unit='GB', allocate_full=False, _async=False,
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=None):
         """Create a storage group with optional volumes on create operation.
 
         :param srp_id: SRP id -- str
@@ -1571,6 +1571,8 @@ class ProvisioningFunctions(object):
         :param vol_name: name to give to the volume, optional -- str
         :param snapshot_policy_ids: list of one or more snapshot policies
                                     to associate with storage group -- list
+        :param enable_mobility_id: enables unique volume WWN not tied to array
+                                   serial number -- bool
         :returns: storage group details -- dict
         """
         srp_id = srp_id if srp_id else 'None'
@@ -1592,6 +1594,9 @@ class ProvisioningFunctions(object):
         slo_param = {'sloId': slo,
                      'workloadSelection': workload,
                      'volumeAttributes': [volume_attributes]}
+
+        if enable_mobility_id:
+            slo_param.update({'enable_mobility_id': enable_mobility_id})
 
         if do_disable_compression:
             slo_param.update({'noCompression': 'true'})
@@ -1633,7 +1638,7 @@ class ProvisioningFunctions(object):
 
         Generates a dictionary for json formatting and calls the create_sg
         function to create a new storage group with the specified volumes. Set
-        the disable_compression flag for disabling compression on an All Flash
+        the disable_compression flag for disabling comprsession on an All Flash
         array (where compression is on by default).
 
         :param srp_id: SRP id -- str
@@ -1654,7 +1659,7 @@ class ProvisioningFunctions(object):
     def create_non_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload, num_vols,
             vol_size, cap_unit, disable_compression=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=None):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the create_sg
@@ -1674,14 +1679,17 @@ class ProvisioningFunctions(object):
         :param vol_name: name to give to the volume, optional -- str
         :param snapshot_policy_ids: list of one or more snapshot policies
                                     to associate with storage group -- list
+        :param enable_mobility_id: enables unique volume WWN not tied to array
+                                   serial number -- bool
+
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
             srp_id, storage_group_id, service_level, workload,
             do_disable_compression=disable_compression,
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-            _async=_async, vol_name=vol_name,
-            snapshot_policy_ids=snapshot_policy_ids)
+            _async=_async, enable_mobility_id=enable_mobility_id,
+            vol_name=vol_name, snapshot_policy_ids=snapshot_policy_ids)
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
@@ -1813,9 +1821,10 @@ class ProvisioningFunctions(object):
 
     def add_new_volume_to_storage_group(
             self, storage_group_id, num_vols, vol_size, cap_unit, _async=False,
-            vol_name=None, create_new_volumes=None, remote_array_1_id=None,
-            remote_array_1_sgs=None, remote_array_2_id=None,
-            remote_array_2_sgs=None):
+            vol_name=None, create_new_volumes=None,
+            remote_array_1_id=None, remote_array_1_sgs=None,
+            remote_array_2_id=None, remote_array_2_sgs=None,
+            enable_mobility_id=None):
         """Expand an existing storage group by adding new volumes.
 
         :param storage_group_id: storage group id -- str
@@ -1837,6 +1846,8 @@ class ProvisioningFunctions(object):
                                   R1 - R21 - R2 optional -- str
         :param remote_array_2_sgs: storage groups on remote array, optional
                                    -- str or list
+        :param enable_mobility_id: enables unique volume WWN not tied to array
+                                   serial number -- bool
         :returns: storage group details -- dict
         """
         add_volume_param = {'emulation': 'FBA'}
@@ -1859,9 +1870,13 @@ class ProvisioningFunctions(object):
 
         add_volume_param.update({'volumeAttributes': [volume_attributes]})
 
+        if enable_mobility_id:
+            add_volume_param.update({'enable_mobility_id': enable_mobility_id})
+
         expand_sg_data = ({'editStorageGroupActionParam': {
             'expandStorageGroupParam': {
-                'addVolumeParam': add_volume_param}}})
+                'addVolumeParam': add_volume_param
+            }}})
         if remote_array_1_id and remote_array_1_sgs:
             if not isinstance(remote_array_1_sgs, list):
                 remote_array_1_sgs = [remote_array_1_sgs]
@@ -2000,18 +2015,22 @@ class ProvisioningFunctions(object):
             volume_name, storagegroup_name, vol_size, cap_unit)
 
     def create_volume_from_storage_group_return_id(
-            self, volume_name, storage_group_id, vol_size, cap_unit='GB'):
+            self, volume_name, storage_group_id, vol_size, cap_unit='GB',
+            enable_mobility_id=None):
         """Create a new volume in the given storage group.
 
         :param volume_name: volume name -- str
         :param storage_group_id: storage group id -- str
         :param vol_size: volume size -- str
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
+        :param enable_mobility_id: enables unique volume WWN not tied to array
+                                   serial number -- bool
         :returns: device id -- str
         """
         job = self.add_new_volume_to_storage_group(
             storage_group_id, 1, vol_size, cap_unit,
-            _async=True, vol_name=volume_name)
+            _async=True, vol_name=volume_name,
+            enable_mobility_id=enable_mobility_id)
 
         task = self.common.wait_for_job('Create volume from storage group',
                                         202, job)
