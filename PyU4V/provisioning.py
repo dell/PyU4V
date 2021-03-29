@@ -1638,7 +1638,7 @@ class ProvisioningFunctions(object):
 
         Generates a dictionary for json formatting and calls the create_sg
         function to create a new storage group with the specified volumes. Set
-        the disable_compression flag for disabling comprsession on an All Flash
+        the disable_compression flag for disabling compression on an All Flash
         array (where compression is on by default).
 
         :param srp_id: SRP id -- str
