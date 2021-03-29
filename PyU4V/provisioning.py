@@ -1555,7 +1555,7 @@ class ProvisioningFunctions(object):
             self, srp_id, sg_id, slo=None, workload=None,
             do_disable_compression=False, num_vols=0, vol_size=0,
             cap_unit='GB', allocate_full=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=None):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False):
         """Create a storage group with optional volumes on create operation.
 
         :param srp_id: SRP id -- str
@@ -1595,9 +1595,6 @@ class ProvisioningFunctions(object):
                      'workloadSelection': workload,
                      'volumeAttributes': [volume_attributes]}
 
-        if enable_mobility_id:
-            slo_param.update({'enable_mobility_id': enable_mobility_id})
-
         if do_disable_compression:
             slo_param.update({'noCompression': 'true'})
 
@@ -1616,6 +1613,9 @@ class ProvisioningFunctions(object):
 
         if _async:
             payload.update(ASYNC_UPDATE)
+
+        if enable_mobility_id:
+            slo_param.update({'enable_mobility_id': enable_mobility_id})
 
         return self.create_resource(
             category=SLOPROVISIONING,
@@ -1659,7 +1659,7 @@ class ProvisioningFunctions(object):
     def create_non_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload, num_vols,
             vol_size, cap_unit, disable_compression=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=None):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the create_sg
@@ -1681,15 +1681,15 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
-
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
             srp_id, storage_group_id, service_level, workload,
             do_disable_compression=disable_compression,
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-            _async=_async, enable_mobility_id=enable_mobility_id,
-            vol_name=vol_name, snapshot_policy_ids=snapshot_policy_ids)
+            _async=_async,vol_name=vol_name,
+            snapshot_policy_ids=snapshot_policy_ids,
+            enable_mobility_id=enable_mobility_id)
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
@@ -1824,7 +1824,7 @@ class ProvisioningFunctions(object):
             vol_name=None, create_new_volumes=None,
             remote_array_1_id=None, remote_array_1_sgs=None,
             remote_array_2_id=None, remote_array_2_sgs=None,
-            enable_mobility_id=None):
+            enable_mobility_id=False):
         """Expand an existing storage group by adding new volumes.
 
         :param storage_group_id: storage group id -- str
@@ -2016,7 +2016,7 @@ class ProvisioningFunctions(object):
 
     def create_volume_from_storage_group_return_id(
             self, volume_name, storage_group_id, vol_size, cap_unit='GB',
-            enable_mobility_id=None):
+            enable_mobility_id=False):
         """Create a new volume in the given storage group.
 
         :param volume_name: volume name -- str
