@@ -115,8 +115,10 @@ class SnapshotPolicyFunctions(object):
         :param offset_mins: Defines when, within the interval the snapshots
                             will be taken for a specified Snapshot Policy.
                             The offset must be less than the interval of
-                            the Snapshot Policy. The format must be in minutes
-                            -- int
+                            the Snapshot Policy. For daily snapshots the offset
+                            is the number of minutes after midnight UTC,
+                            for weekly the offset is from midnight UTC on
+                            the Sunday. The format must be in minutes -- int
         :param compliance_count_warning: The Number of snapshots which are
                                          not failed or bad when compliance
                                          changes to warning. -- int
