@@ -116,11 +116,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 director, port)
             if port_identifier is not None:
                 self.assertIsInstance(port_identifier, str)
-                search_pattern = '{wwn}|{iqn}'.format(
-                    wwn=constants.WWN_SEARCH_PATTERN_16,
-                    iqn=constants.ISCSI_IQN_SEARCH_PATTERN)
-                self.assertIsNotNone(
-                    re.match(search_pattern, port_identifier))
 
     def test_create_empty_host(self):
         """Test create_host create empty host."""
@@ -296,9 +291,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_initiator_ids_from_host(self):
         """Test get_initiator_ids_from_host."""
-        pattern = '{wwn}|{iscsi}'.format(
-            wwn=constants.WWN_SEARCH_PATTERN_16,
-            iscsi=constants.ISCSI_IQN_SEARCH_PATTERN)
         host_list = self.provisioning.get_host_list()
         host_list = [host for host in host_list if '_CLOUD' not in host]
         for host in host_list:
@@ -310,8 +302,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 initiators = host_details[constants.INITIATOR]
                 for initiator in initiators:
                     self.assertIsInstance(initiator, str)
-                    self.assertIsNotNone(
-                        re.match(pattern, initiator))
 
     def test_create_host_group_host_flags(self):
         """Test create_host_group."""
@@ -1137,8 +1127,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                     self.assertTrue(valid_ip)
             if iqn:
                 self.assertIsInstance(iqn, str)
-                self.assertIsNotNone(
-                    re.match(constants.ISCSI_IQN_SEARCH_PATTERN, iqn))
 
     def test_create_port_group(self):
         """Test create_port_group."""

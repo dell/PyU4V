@@ -1687,7 +1687,7 @@ class ProvisioningFunctions(object):
             srp_id, storage_group_id, service_level, workload,
             do_disable_compression=disable_compression,
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-            _async=_async,vol_name=vol_name,
+            _async=_async, vol_name=vol_name,
             snapshot_policy_ids=snapshot_policy_ids,
             enable_mobility_id=enable_mobility_id)
 
