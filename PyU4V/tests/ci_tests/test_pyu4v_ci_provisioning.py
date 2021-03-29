@@ -1802,7 +1802,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             storage_group_name, storage_group_details)
 
     def test_create_storage_group_mobility_id(self):
-        """Test create_storage_group disable compression allocate full."""
+        """Test create_storage_group with mobility ID enabled."""
         storage_group_name = self.generate_name('sg')
         self.provisioning.create_storage_group(
             self.SRP, storage_group_name, self.SLO,
@@ -1817,7 +1817,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue(vol_details.get('mobility_id_enabled'))
 
     def test_create_storage_group_return_id_mobility_enabled(self):
-        """Test test_create_storage_group_return_id_mobility_enabled."""
+        """Test create_storage_group_return_id with mobility_enabled."""
         storage_group_name = self.create_empty_storage_group()
         volume_name = self.generate_name()
         device = (
@@ -1828,7 +1828,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.addCleanup(self.delete_storage_group, storage_group_name)
 
     def test_create_storage_group_mobility_id_disabled(self):
-        """Test test_create_storage_group_mobility_id_disabled."""
+        """Test test_create_storage_group mobility_id disabled."""
         storage_group_name = self.generate_name('sg')
         self.provisioning.create_storage_group(
             self.SRP, storage_group_name, self.SLO,
