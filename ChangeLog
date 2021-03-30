@@ -7,7 +7,9 @@ version 9.2.1.3
 
 Version 9.2.1.2
 - support for changing local users passwords via REST, requires Unipshere 9.2.1
-  change_local_user_password
+  new function change_local_user_password
+
+=======
 
 Version 9.2.1.1 - released 15/02/21
 - Support for Snapshot Policy compliance
