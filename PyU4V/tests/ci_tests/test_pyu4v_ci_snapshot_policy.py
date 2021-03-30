@@ -27,6 +27,8 @@ class CITestSnapshotPolicy(base.TestBaseTestCase, testtools.TestCase):
         super(CITestSnapshotPolicy, self).setUp()
         self.snapshot_policy = self.conn.snapshot_policy
         self.provision = self.conn.provisioning
+        self.snapshot_policy_name_for_test = (
+            constants.SNAPSHOT_POLICY_NAME_FOR_TEST)
 
     def test_get_snapshot_policy(self):
         """Test get_snapshot_policy."""
@@ -301,3 +303,12 @@ class CITestSnapshotPolicy(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual('NONE', compliance_details.get('compliance'))
         self.cleanup_snapshot_policy_and_storage_group(
             snapshot_policy_name, storage_group_name)
+
+    def test_get_snapshot_policy_storage_group_list(self):
+        """Test get_snapshot_policy_storage_group_list"""
+        sp = self.snapshot_policy
+        snapshot_policy_name = 'DailyDefault'
+        snap_list = (
+            sp.get_snapshot_policy_storage_group_list(
+                snapshot_policy_name=snapshot_policy_name))
+        self.assertIsInstance(snap_list, list)

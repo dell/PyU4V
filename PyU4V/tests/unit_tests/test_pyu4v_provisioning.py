@@ -1084,6 +1084,28 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_level='symmetrix', resource_level_id=self.data.array,
                 resource_type='storagegroup', payload=payload)
 
+    def test_create_storage_group_mobility_id(self):
+        """Test create_storage_group no slo set."""
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            self.provisioning.create_storage_group(
+                srp_id=self.data.srp, sg_id='new-sg', slo=None,
+                workload=None, enable_mobility_id=True)
+
+            payload = {
+                'srpId': 'SRP_1', 'storageGroupId': 'new-sg',
+                'emulation': 'FBA', 'sloBasedStorageGroupParam': [
+                    {'sloId': 'None', 'workloadSelection': 'None',
+                     "enable_mobility_id": True,
+                     'volumeAttributes': [
+                         {'volume_size': '0', 'capacityUnit': 'GB',
+                          'num_of_vols': 0}]}]}
+
+            mock_create.assert_called_once_with(
+                category='sloprovisioning',
+                resource_level='symmetrix', resource_level_id=self.data.array,
+                resource_type='storagegroup', payload=payload)
+
     def test_create_storage_group_slo_async(self):
         """Test create_storage_group no slo set."""
         with mock.patch.object(
@@ -1352,8 +1374,35 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 srp_id, storage_group_id, slo, workload,
                 do_disable_compression=False,
                 num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-                _async=False, vol_name=None, snapshot_policy_ids=None)
+                _async=False, enable_mobility_id=None, vol_name=None,
+                snapshot_policy_ids=None)
         act_result = self.provisioning.create_non_empty_storagegroup(
+            srp_id, storage_group_id, slo, workload, num_vols, vol_size,
+            cap_unit)
+        ref_result = self.data.job_list[0]
+        self.assertEqual(ref_result, act_result)
+
+    def test_create_non_empty_storage_group_mobility_id(self):
+        """Test create_non_empty_storage_group."""
+        srp_id = self.data.srp
+        storage_group_id = self.data.storagegroup_name_2
+        slo = self.data.slo
+        workload = self.data.workload
+        num_vols = 1
+        vol_size = '2'
+        cap_unit = 'GB'
+        with mock.patch.object(
+                self.provisioning, 'create_storage_group') as mock_create:
+            self.provisioning.create_non_empty_storage_group(
+                srp_id, storage_group_id, slo, workload, num_vols, vol_size,
+                cap_unit, enable_mobility_id=True)
+            mock_create.assert_called_once_with(
+                srp_id, storage_group_id, slo, workload,
+                do_disable_compression=False,
+                num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
+                _async=False, enable_mobility_id=True, vol_name=None,
+                snapshot_policy_ids=None)
+        act_result = self.provisioning.create_non_empty_storage_group(
             srp_id, storage_group_id, slo, workload, num_vols, vol_size,
             cap_unit)
         ref_result = self.data.job_list[0]
@@ -1444,6 +1493,31 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.provisioning.add_new_vol_to_storagegroup(
                 self.data.storagegroup_name, num_of_volumes, volume_size,
                 volume_capacity_type)
+            payload = {'editStorageGroupActionParam': {
+                'expandStorageGroupParam': {
+                    'addVolumeParam': add_vol_info}}}
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload)
+
+    def test_add_new_vol_to_storage_group_mobility_id(self):
+        """Test add_new_vol_to_storage_group no vol name, not async."""
+        num_of_volumes = 1
+        volume_size = 10
+        volume_capacity_type = 'GB'
+        add_vol_info = {
+            'emulation': 'FBA',
+            'create_new_volumes': False,
+            "enable_mobility_id": True,
+            'volumeAttributes': [{
+                'num_of_vols': num_of_volumes,
+                'volume_size': volume_size,
+                'capacityUnit': volume_capacity_type}]}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            # no vol name; not _async
+            self.provisioning.add_new_volume_to_storage_group(
+                self.data.storagegroup_name, num_of_volumes, volume_size,
+                volume_capacity_type, enable_mobility_id=True)
             payload = {'editStorageGroupActionParam': {
                 'expandStorageGroupParam': {
                     'addVolumeParam': add_vol_info}}}

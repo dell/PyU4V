@@ -21,6 +21,7 @@ from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
+from PyU4V.utils import constants
 from PyU4V.utils import exception
 
 
@@ -527,3 +528,12 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         msg, query_params = self.snapshot_policy.verify_input_params(
             False, False, '1606836030', '1606846030', None, '2020-12-10 15:00')
         self.assertEqual(exp_msg, msg)
+
+    def test_get_snapshot_policy_storage_group_list(self):
+        """Test get_snapshot_policy_storage_group_list"""
+        sp = self.snapshot_policy
+        snapshot_policy_name = constants.SNAPSHOT_POLICY_NAME_FOR_TEST
+        snap_list = (
+            sp.get_snapshot_policy_storage_group_list(
+                snapshot_policy_name=snapshot_policy_name))
+        self.assertIsInstance(snap_list, list)

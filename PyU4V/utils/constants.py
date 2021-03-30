@@ -39,7 +39,7 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.2.1.2'
+PYU4V_VERSION = '9.2.1.3'
 UNISPHERE_VERSION = '92'
 VERSION = 'version'
 ITERATOR = 'Iterator'
@@ -325,6 +325,7 @@ SNAPSHOT_POLICY_INTERVALS = ['10 Minutes', '12 Minutes', '15 Minutes',
 ASSOCIATE_TO_STORAGE_GROUPS = 'AssociateToStorageGroups'
 DISASSOCIATE_FROM_STORAGE_GROUPS = 'DisassociateFromStorageGroups'
 SNAPSHOT_POLICY = 'snapshot_policy'
+SNAPSHOT_POLICY_NAME_FOR_TEST = 'DailyDefault'
 MODIFY_POLICY = 'Modify'
 SUSPEND_POLICY = 'Suspend'
 RESUME_POLICY = 'Resume'

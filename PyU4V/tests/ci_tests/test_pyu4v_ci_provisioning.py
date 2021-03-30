@@ -116,11 +116,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 director, port)
             if port_identifier is not None:
                 self.assertIsInstance(port_identifier, str)
-                search_pattern = '{wwn}|{iqn}'.format(
-                    wwn=constants.WWN_SEARCH_PATTERN_16,
-                    iqn=constants.ISCSI_IQN_SEARCH_PATTERN)
-                self.assertIsNotNone(
-                    re.match(search_pattern, port_identifier))
 
     def test_create_empty_host(self):
         """Test create_host create empty host."""
@@ -296,9 +291,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_initiator_ids_from_host(self):
         """Test get_initiator_ids_from_host."""
-        pattern = '{wwn}|{iscsi}'.format(
-            wwn=constants.WWN_SEARCH_PATTERN_16,
-            iscsi=constants.ISCSI_IQN_SEARCH_PATTERN)
         host_list = self.provisioning.get_host_list()
         host_list = [host for host in host_list if '_CLOUD' not in host]
         for host in host_list:
@@ -310,8 +302,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 initiators = host_details[constants.INITIATOR]
                 for initiator in initiators:
                     self.assertIsInstance(initiator, str)
-                    self.assertIsNotNone(
-                        re.match(pattern, initiator))
 
     def test_create_host_group_host_flags(self):
         """Test create_host_group."""
@@ -1137,8 +1127,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                     self.assertTrue(valid_ip)
             if iqn:
                 self.assertIsInstance(iqn, str)
-                self.assertIsNotNone(
-                    re.match(constants.ISCSI_IQN_SEARCH_PATTERN, iqn))
 
     def test_create_port_group(self):
         """Test create_port_group."""
@@ -1801,6 +1789,47 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self._validate_storage_group_details(
             storage_group_name, storage_group_details)
 
+    def test_create_storage_group_mobility_id(self):
+        """Test create_storage_group with mobility ID enabled."""
+        storage_group_name = self.generate_name('sg')
+        self.provisioning.create_storage_group(
+            self.SRP, storage_group_name, self.SLO,
+            enable_mobility_id=True, num_vols=1, cap_unit='GB', vol_size=1)
+        storage_group_volumes = (
+            self.provisioning.get_volumes_from_storage_group(
+                storage_group_name))
+        vol_details = self.provisioning.get_volume(storage_group_volumes[0])
+        self.addCleanup(self.delete_storage_group, storage_group_name)
+        for volume in storage_group_volumes:
+            self.addCleanup(self.delete_volume, storage_group_name, volume)
+        self.assertTrue(vol_details.get('mobility_id_enabled'))
+
+    def test_create_storage_group_return_id_mobility_enabled(self):
+        """Test create_storage_group_return_id with mobility_enabled."""
+        storage_group_name = self.create_empty_storage_group()
+        volume_name = self.generate_name()
+        device = (
+            self.conn.provisioning.create_volume_from_storage_group_return_id(
+                volume_name, storage_group_name, 1, enable_mobility_id=True))
+        device_details = self.provisioning.get_volume(device)
+        self.assertTrue(device_details.get('mobility_id_enabled'))
+        self.addCleanup(self.delete_storage_group, storage_group_name)
+
+    def test_create_storage_group_mobility_id_disabled(self):
+        """Test test_create_storage_group mobility_id disabled."""
+        storage_group_name = self.generate_name('sg')
+        self.provisioning.create_storage_group(
+            self.SRP, storage_group_name, self.SLO,
+            enable_mobility_id=False, num_vols=1, cap_unit='GB', vol_size=1)
+        storage_group_volumes = (
+            self.provisioning.get_volumes_from_storage_group(
+                storage_group_name))
+        vol_details = self.provisioning.get_volume(storage_group_volumes[0])
+        self.addCleanup(self.delete_storage_group, storage_group_name)
+        for volume in storage_group_volumes:
+            self.addCleanup(self.delete_volume, storage_group_name, volume)
+        self.assertFalse(vol_details.get('mobility_id_enabled'))
+
     def test_create_non_empty_storage_group(self):
         """Test create_non_empty_storage_group."""
         storage_group_name = self.generate_name('sg')
@@ -1945,6 +1974,26 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(1, storage_group_details[constants.NUM_OF_VOLS])
         volume_list = self.provisioning.get_volumes_from_storage_group(
             storage_group_name)
+        for volume in volume_list:
+            self.addCleanup(self.delete_volume, storage_group_name, volume)
+
+    def test_add_new_volume_to_storage_group_mobility_id_enabled(self):
+        """Test add_new_volume_to_storage_group with mobility id."""
+        storage_group_name = self.create_empty_storage_group()
+        storage_group_details = (
+            self.provisioning.add_new_volume_to_storage_group(
+                storage_group_name, 1, '1', 'GB', create_new_volumes=True,
+                enable_mobility_id=True))
+        time.sleep(10)
+        self._validate_storage_group_details(
+            storage_group_name, storage_group_details)
+        storage_group_details = self.provisioning.get_storage_group(
+            storage_group_name)
+        self.assertEqual(1, storage_group_details[constants.NUM_OF_VOLS])
+        volume_list = self.provisioning.get_volumes_from_storage_group(
+            storage_group_name)
+        volume_details = self.provisioning.get_volume(volume_list[0])
+        self.assertTrue(volume_details.get('mobility_id_enabled'))
         for volume in volume_list:
             self.addCleanup(self.delete_volume, storage_group_name, volume)
 
