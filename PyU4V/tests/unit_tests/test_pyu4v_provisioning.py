@@ -2162,3 +2162,33 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_level_id=self.data.array,
                 resource_type=constants.VOLUME,
                 resource_type_id=device_id)
+
+    @mock.patch.object(
+        provisioning.ProvisioningFunctions, 'modify_storage_group',
+        return_value=dict())
+    def test_add_existing_volume_to_storage_group_multi_hop(
+            self, mck_sg_modify):
+        """Test add_existing_volume_to_storage_group for SRDF protected SG."""
+        self.provisioning.add_existing_volume_to_storage_group(
+            storage_group_id=self.data.storagegroup_name, vol_ids=["00123"],
+            remote_array_1_id=self.data.remote_array,
+            remote_array_1_sgs=[self.data.storagegroup_name],
+            remote_array_2_id=self.data.remote_array2,
+            remote_array_2_sgs=[self.data.storagegroup_name])
+        mck_sg_modify.assert_called_once_with(
+            self.data.storagegroup_name,
+            self.data.sg_expand_payload_multi_site)
+
+    @mock.patch.object(
+        provisioning.ProvisioningFunctions, 'modify_storage_group',
+        return_value=dict())
+    def test_add_existing_volume_to_storage_group_single_hop(
+            self, mck_sg_modify):
+        """Test add_existing_volume_to_storage_group for SRDF protected SG."""
+        self.provisioning.add_existing_volume_to_storage_group(
+            storage_group_id=self.data.storagegroup_name, vol_ids=["00123"],
+            remote_array_1_id=self.data.remote_array,
+            remote_array_1_sgs=[self.data.storagegroup_name])
+        mck_sg_modify.assert_called_once_with(
+            self.data.storagegroup_name,
+            self.data.sg_expand_payload_basic_srdf)
