@@ -190,6 +190,7 @@ class TestBaseTestCase(testtools.TestCase):
             srdf_pair_create_success, srdf_pair_create_cnt = False, 0
             while not srdf_pair_create_success and srdf_pair_create_cnt <= 3:
                 try:
+                    srdf_pair_create_cnt +=1
                     job = self.replication.create_storage_group_srdf_pairings(
                         storage_group_id=sg_name,
                         remote_sid=self.conn.remote_array,
