@@ -478,7 +478,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         initiator_list = self.provisioning.get_initiator_list()
         self.assertIsInstance(initiator_list, list)
         for initiator in initiator_list:
-            print(initiator)
             self.assertIsInstance(initiator, str)
             self.assertIsNotNone(
                 re.match(constants.INITIATOR_SEARCH_PATTERN, initiator))

@@ -244,8 +244,8 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             sg_name, target_sg, snap_name, snap_id, unlink=True)
         self.provisioning.delete_storage_group(target_sg)
 
-    def test_modify_storage_group_snap_link_by_snap_id_relink(self):
-        """Test to cover link snapshot by snap id."""
+    def test_modify_storage_group_snap_relink_by_snap_id(self):
+        """Test to cover relink snapshot by snap id."""
         snapshot_info, sg_name = self.create_sg_snapshot()
         target_sg = "{sg}_lnk".format(sg=sg_name)
         snap_name = snapshot_info.get('name')

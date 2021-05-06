@@ -1108,7 +1108,7 @@ class ReplicationFunctions(object):
         'SetBias', and 'SetMode'.
         :param storage_group_id: storage group id -- str
         :param action: the rdf action, note enable/disable consistency
-                       feature requires Unisphere 9.2.1.6 or higher --str
+                       feature requires Unisphere 9.2.1.6 or higher -- str
         :param srdf_group_number: srdf group number -- int
         :param options: srdf options e.g.
                         {setMode': {'mode': 'Asynchronous'}} -- dict
@@ -1332,7 +1332,7 @@ class ReplicationFunctions(object):
         :param storage_group_id: storage group id -- str
         :param srdf_group_number: srdf group number -- int
         :param filters: optional boolean filters, half_delete,hop2, force,
-                        symforce,star,bypass,keepR1,keepR2,
+                        symforce, star, bypass, keepR1, keepR2,
                         usage example filters={'keepR1': 'true'} -- dict
         :returns: storage group rdf details -- dict
         """
