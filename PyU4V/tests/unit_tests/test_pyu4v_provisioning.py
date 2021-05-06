@@ -1374,7 +1374,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 srp_id, storage_group_id, slo, workload,
                 do_disable_compression=False,
                 num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-                _async=False, enable_mobility_id=None, vol_name=None,
+                _async=False, enable_mobility_id=False, vol_name=None,
                 snapshot_policy_ids=None)
         act_result = self.provisioning.create_non_empty_storagegroup(
             srp_id, storage_group_id, slo, workload, num_vols, vol_size,
