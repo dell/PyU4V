@@ -244,7 +244,8 @@ class TestBaseTestCase(testtools.TestCase):
             self.replication.get_storage_group_srdf_details(
                 storage_group_id=sg_name, rdfg_num=srdf_group_number).get(
                 'states'))
-        if 'Synchronized' or 'Consistent' in current_rdf_state_list:
+        if ('Synchronized' in current_rdf_state_list or
+                'Consistent' in current_rdf_state_list):
             self.replication.suspend_storage_group_srdf(
                 storage_group_id=sg_name, srdf_group_number=srdf_group_number)
         local_volume_list = self.provision.get_volumes_from_storage_group(
