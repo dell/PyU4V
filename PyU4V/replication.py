@@ -1106,6 +1106,7 @@ class ReplicationFunctions(object):
         'Establish', 'EnableConsistency', 'DisableConsistency', 'Split',
         'Suspend', 'Restore', 'Resume', 'Failover', 'Failback', 'Swap',
         'SetBias', and 'SetMode'.
+
         :param storage_group_id: storage group id -- str
         :param action: the rdf action, note enable/disable consistency
                        feature requires Unisphere 9.2.1.6 or higher -- str
