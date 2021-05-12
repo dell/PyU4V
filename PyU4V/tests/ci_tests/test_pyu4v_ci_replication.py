@@ -855,6 +855,10 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
 
     def test_modify_storage_group_srdf_set_consistency_enable(self):
         """Test test_modify_storage_group_srdf to enable consistency."""
+        if not self.run_consistency_enable_check():
+            self.skipTest(
+                'Skip test_modify_storage_group_srdf_set_consistency_enable '
+                'This fix is in V9.2.1.7')
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         self.replication.modify_storage_group_srdf(
@@ -870,3 +874,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             action="DisableConsistency")
         self.assertEqual(
             'Disabled', disable_status.get('consistency_protection'))
+
+    def run_consistency_enable_check(self):
+        version, major = self.conn.common.get_uni_version()
+        if major == '92':
+            version_list = version.split('.')
+            if version_list[2] == '1':
+                if int(version_list[3]) < 7:
+                    return False
+        return True
