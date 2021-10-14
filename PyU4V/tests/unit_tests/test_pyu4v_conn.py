@@ -70,6 +70,18 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
                                return_value=('v9.0.0', '90')):
             self.assertRaises(SystemExit, self.conn.validate_unisphere)
 
+    def test_validate_unisphere_92(self):
+        """Test Unisphere version validation fail scenario."""
+        with mock.patch.object(self.common, 'get_uni_version',
+                               return_value=('v9.2.0', '92')):
+            self.conn.validate_unisphere()
+
+    def test_validate_unisphere_100(self):
+        """Test Unisphere version validation fail scenario."""
+        with mock.patch.object(self.common, 'get_uni_version',
+                               return_value=('t10.0.0', '100')):
+            self.conn.validate_unisphere()
+
 
 class PyU4VUnivmaxConnTestConfigFile(testtools.TestCase):
 
