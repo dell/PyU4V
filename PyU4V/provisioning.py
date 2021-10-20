@@ -2768,7 +2768,8 @@ class ProvisioningFunctions(object):
 
         :returns: single available initiator wwn -- list
         """
-        available_initiator = self.get_available_initiator()
+        available_initiator = self.get_available_initiator(
+            director_type='FA')
         if available_initiator:
             available_initiator_wwn = available_initiator.split(':')[2]
             return [available_initiator_wwn]
