@@ -590,7 +590,7 @@ class CommonFunctions(object):
         if response and response.get('version'):
             version = response['version']
             version_list = version.split('.')
-            major_version = version_list[0][1] + version_list[1]
+            major_version = version_list[0][1:] + version_list[1]
         return version, major_version
 
     def get_array_list(self, filters=None):

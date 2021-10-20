@@ -1,5 +1,8 @@
 PyU4V Change Log
 ================
+version 9.2.1.5
+- Allow for the use of 92 endpoint in the U4V10.0 and greater.
+
 version 9.2.1.4
 - added enable/disable consistency feature to modify_storage_group_srdf
   function in replication
@@ -12,7 +15,6 @@ version 9.2.1.4
     added test to ci_utils.py test_iscsi_regex
 - added relink to modify_storage_group_snapshot and
   modify_storage_group_snapshot_snapsetid
-
 
 version 9.2.1.3
 - added enable_mobility id to provisioning functions create_storage_group,
