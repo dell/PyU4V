@@ -250,8 +250,15 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
 
         inst_req = True if category != pc.ARRAY else False
         instance_id = None
-        start = self.time_now - pc.ONE_MINUTE
-
+        last_available_date = self.time_now
+        start = last_available_date - pc.ONE_MINUTE
+        timestamps = self.rt.get_timestamps(self.rt.array_id)
+        if timestamps:
+            last_available_date = int(timestamps[0].get('lastAvailableDate'))
+            start = last_available_date - pc.ONE_MINUTE
+        else:
+            self.skipTest('Skipping _run_real_time_stats_assertions - '
+                          'Unable to get real time timestamps.')
         # If an instance id is required get a random choice from the available
         # keys for that category
         if inst_req:
@@ -265,11 +272,11 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
         # Test 'All' metrics
         if inst_req:
             response = stats_func(
-                start_date=start, end_date=self.time_now, metrics='All',
+                start_date=start, end_date=last_available_date, metrics='All',
                 instance_id=instance_id)
         else:
             response = stats_func(
-                start_date=start, end_date=self.time_now, metrics='All')
+                start_date=start, end_date=last_available_date, metrics='All')
 
         self.assertEqual(self.rt.array_id, response.get(pc.ARRAY_ID))
         self.assertEqual(self.common.convert_to_snake_case(category),
