@@ -210,6 +210,13 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
     def test_get_performance_data(self):
         """Test get_performance_data."""
         start = self.time_now - pc.ONE_MINUTE
+        timestamps = self.rt.get_timestamps(self.rt.array_id)
+        if timestamps:
+            last_available_date = int(timestamps[0].get('lastAvailableDate'))
+            start = last_available_date - pc.ONE_MINUTE
+        else:
+            self.skipTest('Skipping test_get_performance_data - '
+                          'Unable to get real time timestamps.')
         rt_data = self.rt.get_performance_data(
             start_date=start, end_date=self.time_now,
             category=pc.ARRAY, metrics=pc.All_CAP)
