@@ -491,17 +491,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.assertIsNotNone(
                 re.match(constants.INITIATOR_SEARCH_PATTERN, initiator))
 
-    def test_modify_initiator_remove_masking_entry(self):
-        """Test modify_initiator remove masking entry."""
-        initiator = self.provisioning.get_available_initiator()
-        if not initiator:
-            self.skipTest('test_modify_initiator_remove_masking_entry '
-                          '- Unable to get an available initiator.')
-        self.assertRaises(
-            exception.VolumeBackendAPIException,
-            self.provisioning.modify_initiator,
-            initiator, remove_masking_entry=constants.TRUE)
-
     def test_modify_initiator_replace_initiator(self):
         """Test modify_initiator replace initiator."""
         director_type = 'FA'
