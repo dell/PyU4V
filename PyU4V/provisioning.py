@@ -1555,7 +1555,7 @@ class ProvisioningFunctions(object):
             self, srp_id, sg_id, slo=None, workload=None,
             do_disable_compression=False, num_vols=0, vol_size=0,
             cap_unit='GB', allocate_full=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False, emulation_type='FBA'):
         """Create a storage group with optional volumes on create operation.
 
         :param srp_id: SRP id -- str
@@ -1573,6 +1573,7 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str                           
         :returns: storage group details -- dict
         """
         srp_id = srp_id if srp_id else 'None'
@@ -1581,7 +1582,7 @@ class ProvisioningFunctions(object):
 
         payload = ({'srpId': srp_id,
                     'storageGroupId': sg_id,
-                    'emulation': 'FBA'})
+                    'emulation': emulation_type})
 
         volume_attributes = {'volume_size': str(vol_size),
                              'capacityUnit': cap_unit,
@@ -1659,7 +1660,7 @@ class ProvisioningFunctions(object):
     def create_non_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload, num_vols,
             vol_size, cap_unit, disable_compression=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False, emulation_type='FBA'):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the create_sg
@@ -1681,6 +1682,7 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str                                                      
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
@@ -1689,7 +1691,8 @@ class ProvisioningFunctions(object):
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
             _async=_async, vol_name=vol_name,
             snapshot_policy_ids=snapshot_policy_ids,
-            enable_mobility_id=enable_mobility_id)
+            enable_mobility_id=enable_mobility_id,
+            emulation_type=emulation_type)
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
@@ -1720,7 +1723,7 @@ class ProvisioningFunctions(object):
     def create_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload,
             disable_compression=False, _async=False,
-            snapshot_policy_ids=None):
+            snapshot_policy_ids=None, emulation_type='FBA'):
         """Create an empty storage group.
 
         Set the disable_compression flag for disabling compression on an All
@@ -1734,12 +1737,13 @@ class ProvisioningFunctions(object):
         :param _async: if call should be async -- bool
         :param snapshot_policy_ids: list of one or more snapshot policies
                                     to associate with storage group -- list
+        :param emulation_type: device emulation type (CKD, FBA) -- str                            
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
             srp_id, storage_group_id, service_level, workload,
             do_disable_compression=disable_compression, _async=_async,
-            snapshot_policy_ids=snapshot_policy_ids)
+            snapshot_policy_ids=snapshot_policy_ids, emulation_type=emulation_type)
 
     def modify_storage_group(self, storage_group_id, payload):
         """Modify a storage group.
@@ -1859,7 +1863,7 @@ class ProvisioningFunctions(object):
             vol_name=None, create_new_volumes=None,
             remote_array_1_id=None, remote_array_1_sgs=None,
             remote_array_2_id=None, remote_array_2_sgs=None,
-            enable_mobility_id=False):
+            enable_mobility_id=False, emulation_type='FBA'):
         """Expand an existing storage group by adding new volumes.
 
         :param storage_group_id: storage group id -- str
@@ -1883,9 +1887,10 @@ class ProvisioningFunctions(object):
                                    -- str or list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
-        add_volume_param = {'emulation': 'FBA'}
+        add_volume_param = {'emulation': emulation_type }
 
         if not create_new_volumes:
             add_volume_param.update({'create_new_volumes': False})
@@ -2051,7 +2056,7 @@ class ProvisioningFunctions(object):
 
     def create_volume_from_storage_group_return_id(
             self, volume_name, storage_group_id, vol_size, cap_unit='GB',
-            enable_mobility_id=False):
+            enable_mobility_id=False, emulation_type='FBA'):
         """Create a new volume in the given storage group.
 
         :param volume_name: volume name -- str
@@ -2060,12 +2065,14 @@ class ProvisioningFunctions(object):
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str                                   
         :returns: device id -- str
         """
         job = self.add_new_volume_to_storage_group(
             storage_group_id, 1, vol_size, cap_unit,
             _async=True, vol_name=volume_name,
-            enable_mobility_id=enable_mobility_id)
+            enable_mobility_id=enable_mobility_id,
+            emulation_type=emulation_type)
 
         task = self.common.wait_for_job('Create volume from storage group',
                                         202, job)
