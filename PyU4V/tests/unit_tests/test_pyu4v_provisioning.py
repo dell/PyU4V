@@ -1089,7 +1089,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
-                srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None)
+                srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None, 
+                cap_unit='CYL', emulation_type='CKD-3390')
 
             payload = {
                 'srpId': 'SRP_1', 'storageGroupId': 'new-sg',
@@ -1383,7 +1384,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
                 self.data.srp, 'LCU01', slo='Diamond', workload=None,
-                num_vols=1, vol_size='1', vol_name='CKDTEST')
+                num_vols=1, vol_size='1113', vol_name='CKDTEST', 
+                cap_unit='CYL', emulation_type='CKD-3390')
             volume_identifier = {
                 'identifier_name': 'CKDTEST',
                 'volumeIdentifierChoice': 'identifier_name'}
@@ -1424,7 +1426,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 do_disable_compression=False,
                 num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
                 _async=False, enable_mobility_id=False, vol_name=None,
-                snapshot_policy_ids=None)
+                snapshot_policy_ids=None, emulation_type='FBA')
         act_result = self.provisioning.create_non_empty_storagegroup(
             srp_id, storage_group_id, slo, workload, num_vols, vol_size,
             cap_unit)
@@ -1450,7 +1452,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 do_disable_compression=False,
                 num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
                 _async=False, enable_mobility_id=True, vol_name=None,
-                snapshot_policy_ids=None)
+                snapshot_policy_ids=None, emulation_type='FBA')
         act_result = self.provisioning.create_non_empty_storage_group(
             srp_id, storage_group_id, slo, workload, num_vols, vol_size,
             cap_unit)
@@ -1470,7 +1472,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_create.assert_called_once_with(
                 srp_id, storage_group_id, slo, workload,
                 do_disable_compression=False, _async=False,
-                snapshot_policy_ids=None)
+                snapshot_policy_ids=None, emulation_type='FBA')
         act_result = self.provisioning.create_empty_sg(
             srp_id, storage_group_id, slo, workload)
         ref_result = self.data.job_list[0]
@@ -1563,9 +1565,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # no vol name; not _async
-            self.provisioning.add_new_vol_to_storagegroup(
+            self.provisioning.add_new_volume_to_storage_group(
                 self.data.storagegroup_name, num_of_volumes, volume_size,
-                volume_capacity_type)
+                volume_capacity_type, emulation_type='CKD-3390')
             payload = {'editStorageGroupActionParam': {
                 'expandStorageGroupParam': {
                     'addVolumeParam': add_vol_info}}}
@@ -1625,7 +1627,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_add_new_vol_to_storage_group_name_async(self):
+    def test_add_new_ckd_vol_to_storage_group_name_async(self):
         """Test add_new_vol_to_storage_group vol name, async, CKD emulation."""
         num_of_volumes = 1
         volume_size = 1113 # Model 1 3390
@@ -1647,9 +1649,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'executionOption': 'ASYNCHRONOUS'}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            self.provisioning.add_new_vol_to_storagegroup(
+            self.provisioning.add_new_volume_to_storage_group(
                 self.data.storagegroup_name, num_of_volumes, volume_size,
-                volume_capacity_type, True, volume_name)
+                volume_capacity_type, True, volume_name,
+                emulation_type='CKD-3390')
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)    
 
@@ -1715,7 +1718,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 remote_array_1_id=self.data.remote_array,
                 remote_array_1_sgs=self.data.storagegroup_name,
                 remote_array_2_id=self.data.remote_array2,
-                remote_array_2_sgs=self.data.storagegroup_name)
+                remote_array_2_sgs=self.data.storagegroup_name,
+                emulation_type='CKD-3390')
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
