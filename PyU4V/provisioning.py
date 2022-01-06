@@ -1573,7 +1573,7 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
-        :param emulation_type: device emulation type (CKD, FBA) -- str                           
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
         srp_id = srp_id if srp_id else 'None'
@@ -1682,7 +1682,7 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
-        :param emulation_type: device emulation type (CKD, FBA) -- str                                                      
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
@@ -1737,7 +1737,7 @@ class ProvisioningFunctions(object):
         :param _async: if call should be async -- bool
         :param snapshot_policy_ids: list of one or more snapshot policies
                                     to associate with storage group -- list
-        :param emulation_type: device emulation type (CKD, FBA) -- str                            
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
@@ -2065,7 +2065,7 @@ class ProvisioningFunctions(object):
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
-        :param emulation_type: device emulation type (CKD, FBA) -- str                                   
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: device id -- str
         """
         job = self.add_new_volume_to_storage_group(
