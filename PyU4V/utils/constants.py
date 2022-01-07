@@ -85,6 +85,8 @@ REMOTE_PORT = 'remote_port'
 ALERT = 'alert'
 ALERT_SUMMARY = 'alert_summary'
 COMPLIANCE = 'compliance'
+FICON_SPLIT = 'split'
+CU_IMAGE = 'cuimage'
 
 # Status Codes
 STATUS_200 = 200

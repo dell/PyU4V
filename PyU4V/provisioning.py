@@ -47,6 +47,8 @@ STORAGEGROUP = constants.STORAGEGROUP
 SG_DEMAND_REPORT = constants.SG_DEMAND_REPORT
 VOLUME = constants.VOLUME
 WORKLOADTYPE = constants.WORKLOADTYPE
+FICON_SPLIT = constants.FICON_SPLIT
+CU_IMAGE = constants.CU_IMAGE
 
 
 class ProvisioningFunctions(object):
@@ -2802,3 +2804,203 @@ class ProvisioningFunctions(object):
             port_group_details[
                 constants.SYMMETRIX_PORT_KEY] = symmetrix_port_key
         return port_group_details
+
+    def get_split_list(self):
+        """Get list of FICON splits from array.
+
+        :returns: split ids -- list
+        """
+        split_id_list = list()
+        response = self.conn.common.get_resource(category=SLOPROVISIONING,
+                                                 resource_level=SYMMETRIX,
+                                                 resource_level_id=self.array_id,
+                                                 resource_type=FICON_SPLIT)
+        if (response and response.get('splitId')):
+            split_id_list = response['splitId']
+        return split_id_list
+
+    def get_split(self, split_id: str):
+        """Get details of a specified FICON split.
+
+        :param split_id: split id -- str
+        :returns: split details -- dict
+        """
+        return self.conn.common.get_resource(category=SLOPROVISIONING,
+                                             resource_level=SYMMETRIX,
+                                             resource_level_id=self.array_id,
+                                             resource_type=FICON_SPLIT,
+                                             resource_type_id=split_id)
+
+    def get_cu_image_list(self, split_id: str):
+        """Get list of CU Image SSIDs within a specific FICON Split.
+
+        :param split_id: split id -- str
+        :returns: CU Image ssids -- list
+        """
+        cu_image_ssid_list = list()
+        response = self.conn.common.get_resource(category=SLOPROVISIONING,
+                                                 resource_level=SYMMETRIX,
+                                                 resource_level_id=self.array_id,
+                                                 resource_type=FICON_SPLIT,
+                                                 resource_type_id=split_id,
+                                                 resource=CU_IMAGE)
+        if (response and response.get('cuImageSSID')):
+            cu_image_ssid_list = response['cuImageSSID']
+        return cu_image_ssid_list
+
+    def get_cu_image(self, split_id: str, cu_ssid: str):
+        """Get details of a specified CU Image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :returns: CU Image details -- dict
+        """
+        return self.conn.common.get_resource(category=SLOPROVISIONING,
+                                             resource_level=SYMMETRIX,
+                                             resource_level_id=self.array_id,
+                                             resource_type=FICON_SPLIT,
+                                             resource_type_id=split_id,
+                                             resource=CU_IMAGE,
+                                             resource_id=cu_ssid)
+
+    def create_cu_image(self, split_id: str,
+                        cu_number: str, cu_ssid: str, cu_base_address: str, vol_id: str):
+        """Creates a new CU image under the specified split.
+
+        :param split_id: split id -- str
+        :param cu_number: cu image number -- str
+        :param cu_ssid: cu image ssid -- str
+        :param cu_base_address: cu image ssid -- str
+        :pamam vol_id volume device id be mapped to the cu -- str
+        :param _async: if call should be async -- bool
+
+        :returns: None
+        """
+        new_cu_data = {"cuImageSSID": cu_ssid,
+                       "cuImageNumber": cu_number,
+                       "startBaseAddress": cu_base_address,
+                       "volumeId": [
+                           vol_id
+                       ]
+                       }
+        # FIXME This call takes over 5 minutes on my powermax 8000 - so need to force async call
+        new_cu_data.update(ASYNC_UPDATE)
+
+        create_cu_async_job = (self.conn.common.create_resource(category=SLOPROVISIONING,
+                                                                resource_level=SYMMETRIX,
+                                                                resource_level_id=self.array_id,
+                                                                resource_type=FICON_SPLIT,
+                                                                resource_type_id=split_id,
+                                                                resource=CU_IMAGE,
+                                                                payload=new_cu_data))
+        return self.conn.common.wait_for_job(
+            operation='Create CU Image with volume', status_code=constants.STATUS_202,
+            job=create_cu_async_job)
+
+    def get_cu_image_volumes(self, split_id: str, cu_ssid: str):
+        """Get list of Volumes from a specified CU Image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :returns: Volume ids -- list
+        """
+        volume_id_list = list()
+        response = self.conn.common.get_resource(category=SLOPROVISIONING,
+                                                 resource_level=SYMMETRIX,
+                                                 resource_level_id=self.array_id,
+                                                 resource_type=FICON_SPLIT,
+                                                 resource_type_id=split_id,
+                                                 resource=CU_IMAGE,
+                                                 resource_id=cu_ssid,
+                                                 object_type=VOLUME)
+        if (response and response.get('volumeId')):
+            volume_id_list = response['volumeId']
+        return volume_id_list
+
+    def get_cu_image_volume(self, split_id: str, cu_ssid: str, vol_id: str):
+        """Get details of a volume mapped to a specified CU Image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :pamam vol_id volume device id to be mapped to the cu -- str
+        :returns: volume details -- dict
+        """
+        return self.conn.common.get_resource(category=SLOPROVISIONING,
+                                             resource_level=SYMMETRIX,
+                                             resource_level_id=self.array_id,
+                                             resource_type=FICON_SPLIT,
+                                             resource_type_id=split_id,
+                                             resource=CU_IMAGE,
+                                             resource_id=cu_ssid,
+                                             object_type=VOLUME,
+                                             object_type_id=vol_id)
+
+    def modify_cu_image(self, split_id: str, cu_ssid: str,
+                        assign_alias_dict=None,
+                        remove_alias_dict=None,
+                        map_start_address=None,
+                        map_volume_list=None,
+                        unmap_volume_list=None):
+        """Modify an existing cu image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :param assign_alias_dict: alias range to be assigned -- dict
+        :param remove_alias_dict: alias range to be removed -- dict
+        :param map_volume_list: volumes to be mapped -- list
+        :param unmap_volume_list: volumes to be unmapped -- list
+        """
+        if assign_alias_dict:
+            operation = 'Edit CU Image - Assign Alias'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'assignAliasRangeParam': assign_alias_dict
+                }
+            }
+        elif remove_alias_dict:
+            operation = 'Edit CU Image - Remove Alias'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'removeAliasRangeParam': remove_alias_dict
+                }
+            }
+        elif map_volume_list:
+            operation = 'Edit CU Image - Map Volume(s)'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'mapVolumeParam': {
+                        'startBaseAddress': map_start_address,
+                        'volumeId': map_volume_list
+                    }
+                }
+            }
+        elif unmap_volume_list:
+            operation = 'Edit CU Image - Unmap Volume(s)'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'unmapVolumeParam': {
+                        'volumeId': unmap_volume_list
+                    }
+                }
+            }
+        else:
+            msg = ('No modify cu image parameters chosen - please supply '
+                   'one of the following: assign_alias_dict, '
+                   'remove_alias_dict, map_volume_list, or unmap_volume_list.')
+            raise exception.InvalidInputException(data=msg)
+
+        # FIXME This call takes over 5 minutes on my powermax 8000 - so need to force async call
+        edit_cu_data.update(ASYNC_UPDATE)
+
+        edit_cu_async_job = (self.conn.common.modify_resource(category=SLOPROVISIONING,
+                                                              resource_level=SYMMETRIX,
+                                                              resource_level_id=self.array_id,
+                                                              resource_type=FICON_SPLIT,
+                                                              resource_type_id=split_id,
+                                                              resource=CU_IMAGE,
+                                                              resource_id=cu_ssid,
+                                                              payload=edit_cu_data
+                                                              ))
+        return self.conn.common.wait_for_job(
+            operation=operation, status_code=constants.STATUS_202,
+            job=edit_cu_async_job)
