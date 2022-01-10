@@ -1089,7 +1089,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
-                srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None, 
+                srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None,
                 cap_unit='CYL', emulation_type='CKD-3390')
 
             payload = {
@@ -1103,7 +1103,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_create.assert_called_once_with(
                 category='sloprovisioning',
                 resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)   
+                resource_type='storagegroup', payload=payload)
 
     def test_create_storage_group_mobility_id(self):
         """Test create_storage_group no slo set."""
@@ -1384,7 +1384,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
                 self.data.srp, 'LCU01', slo='Diamond', workload=None,
-                num_vols=1, vol_size='1113', vol_name='CKDTEST', 
+                num_vols=1, vol_size='1113', vol_name='CKDTEST',
                 cap_unit='CYL', emulation_type='CKD-3390')
             volume_identifier = {
                 'identifier_name': 'CKDTEST',
@@ -1405,7 +1405,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_create.assert_called_once_with(
                 category='sloprovisioning', resource_level='symmetrix',
                 resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload1) 
+                resource_type='storagegroup', payload=payload1)
 
     def test_create_non_empty_storage_group(self):
         """Test create_non_empty_storage_group."""
@@ -1549,11 +1549,11 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'addVolumeParam': add_vol_info}}}
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
-    
+
     def test_add_new_vol_to_storage_group_no_name_ckd(self):
         """Test add_new_vol_to_storage_group no vol name, not async, CKD emulation."""
         num_of_volumes = 1
-        volume_size = 1113 
+        volume_size = 1113
         volume_capacity_type = 'CYL'
         add_vol_info = {
             'emulation': 'CKD-3390',
@@ -1572,7 +1572,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 'expandStorageGroupParam': {
                     'addVolumeParam': add_vol_info}}}
             mock_mod.assert_called_once_with(
-                self.data.storagegroup_name, payload)   
+                self.data.storagegroup_name, payload)
 
     def test_add_new_vol_to_storage_group_mobility_id(self):
         """Test add_new_vol_to_storage_group no vol name, not async."""
@@ -1654,7 +1654,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 volume_capacity_type, True, volume_name,
                 emulation_type='CKD-3390')
             mock_mod.assert_called_once_with(
-                self.data.storagegroup_name, payload)    
+                self.data.storagegroup_name, payload)
 
     def test_add_new_vol_to_storage_group_srdf_multihop_srdf(self):
         """Test adding new volume to replicated storage group."""
@@ -2330,3 +2330,143 @@ class PyU4VProvisioningTest(testtools.TestCase):
         mck_sg_modify.assert_called_once_with(
             self.data.storagegroup_name,
             self.data.sg_expand_payload_basic_srdf)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'get_split_list',
+        return_value=list())
+    def test_get_split_list(self, mck_get_split_list):
+        """Test get_split_list."""
+        self.provisioning.get_split_list()
+        mck_get_split_list.assert_called_once()
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'get_split',
+        return_value=dict())
+    def test_get_split(self,mck_get_split):
+        """Test get_split with 'valid' split id."""
+        valid_split_id = 'Dummy'
+        self.provisioning.get_split(valid_split_id)
+        mck_get_split.assert_called_once_with(
+            valid_split_id)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'get_cu_image_list',
+        return_value=list())
+    def test_get_cu_image_list(self,mck_get_cu_image_list):
+        """Test get_cu_image_list with 'valid' split id."""
+        valid_split_id = 'Dummy'
+        self.provisioning.get_cu_image_list(valid_split_id)
+        mck_get_cu_image_list.assert_called_once_with(
+            valid_split_id)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'get_cu_image',
+        return_value=dict())
+    def test_get_cu_image(self,mck_get_cu_image):
+        """Test get_cu_image with 'valid' split id and CU image ssid."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        self.provisioning.get_cu_image(valid_split_id, valid_cu_ssid)
+        mck_get_cu_image.assert_called_once_with(
+            valid_split_id, valid_cu_ssid)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'create_cu_image',
+        return_value=None)
+    def test_create_cu_image(self,mck_create_cu_image):
+        """Test create_cu_image with 'valid' arguments."""
+        valid_split_id = 'Dummy'
+        valid_CU_number = '0x00'
+        valid_cu_ssid = '0xE000'
+        valid_cu_base = '0x00'
+        valid_vol_id ='00024'
+        self.provisioning.create_cu_image(
+            valid_split_id, valid_CU_number, valid_cu_ssid,
+             valid_cu_base, valid_vol_id)
+        mck_create_cu_image.assert_called_once_with(
+            valid_split_id, valid_CU_number, valid_cu_ssid,
+             valid_cu_base, valid_vol_id)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'get_cu_image_volumes',
+        return_value=list())
+    def test_get_cu_image_volumes(self,mck_get_cu_image_volumes):
+        """Test get_cu_image_volumes with 'valid' arguments."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        self.provisioning.get_cu_image_volumes(
+            valid_split_id,  valid_cu_ssid)
+        mck_get_cu_image_volumes.assert_called_once_with(
+            valid_split_id,  valid_cu_ssid)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'get_cu_image_volume',
+        return_value=dict())
+    def test_get_cu_image_volume(self,mck_get_cu_image_volume):
+        """Test get_cu_image_volume with 'valid' arguments."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        valid_vol_id = '00024'
+        self.provisioning.get_cu_image_volume(
+            valid_split_id,  valid_cu_ssid, valid_vol_id)
+        mck_get_cu_image_volume.assert_called_once_with(
+            valid_split_id,  valid_cu_ssid, valid_vol_id)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'modify_cu_image',
+        return_value=dict())
+    def test_modify_cu_image_assign_alias(self,mck_modify_cu_image_assign_alias):
+        """Test modify_cu_image - add an alias."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        modify_dict = {
+            'startAliasAddress': '0x00',
+            'endAliasAddress': '0xFF',
+        }
+        self.provisioning.modify_cu_image(
+            valid_split_id,  valid_cu_ssid, assign_alias_dict=modify_dict)
+        mck_modify_cu_image_assign_alias.assert_called_once_with(
+            valid_split_id,  valid_cu_ssid, assign_alias_dict=modify_dict)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'modify_cu_image',
+        return_value=dict())
+    def test_modify_cu_image_remove_alias(self,mck_modify_cu_image_remove_alias):
+        """Test modify_cu_image - remove an alias."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        modify_dict = {
+            'startAliasAddress': '0x00',
+            'endAliasAddress': '0xFF',
+        }
+        self.provisioning.modify_cu_image(
+            valid_split_id,  valid_cu_ssid, remove_alias_dict=modify_dict)
+        mck_modify_cu_image_remove_alias.assert_called_once_with(
+            valid_split_id,  valid_cu_ssid,remove_alias_dict=modify_dict)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'modify_cu_image',
+        return_value=dict())
+    def test_modify_cu_image_map_volume(self,mck_modify_cu_image_map_volume):
+        """Test modify_cu_image - map a volume."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        start_base_address = '0x00'
+        vol_list = ['00024']
+        self.provisioning.modify_cu_image(
+            valid_split_id,  valid_cu_ssid, map_start_address = start_base_address, map_volume_list=vol_list)
+        mck_modify_cu_image_map_volume.assert_called_once_with(
+            valid_split_id,  valid_cu_ssid,map_volume_list=vol_list)
+
+    @mock.patch.object(
+         provisioning.ProvisioningFunctions, 'modify_cu_image',
+        return_value=dict())
+    def test_modify_cu_image_map_volume(self,mck_modify_cu_image_unmap_volume):
+        """Test modify_cu_image - unmap a volume."""
+        valid_split_id = 'Dummy'
+        valid_cu_ssid = '0xE000'
+        vol_list = ['00024']
+        self.provisioning.modify_cu_image(
+            valid_split_id,  valid_cu_ssid, unmap_volume_list=vol_list)
+        mck_modify_cu_image_unmap_volume.assert_called_once_with(
+            valid_split_id,  valid_cu_ssid,unmap_volume_list=vol_list)
