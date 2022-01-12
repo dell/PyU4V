@@ -2811,7 +2811,7 @@ class ProvisioningFunctions(object):
         :returns: split ids -- list
         """
         split_id_list = list()
-        response = self.conn.common.get_resource(category=SLOPROVISIONING,
+        response = self.common.get_resource(category=SLOPROVISIONING,
                                                  resource_level=SYMMETRIX,
                                                  resource_level_id=self.array_id,
                                                  resource_type=FICON_SPLIT)
@@ -2825,7 +2825,7 @@ class ProvisioningFunctions(object):
         :param split_id: split id -- str
         :returns: split details -- dict
         """
-        return self.conn.common.get_resource(category=SLOPROVISIONING,
+        return self.common.get_resource(category=SLOPROVISIONING,
                                              resource_level=SYMMETRIX,
                                              resource_level_id=self.array_id,
                                              resource_type=FICON_SPLIT,
@@ -2838,7 +2838,7 @@ class ProvisioningFunctions(object):
         :returns: CU Image ssids -- list
         """
         cu_image_ssid_list = list()
-        response = self.conn.common.get_resource(category=SLOPROVISIONING,
+        response = self.common.get_resource(category=SLOPROVISIONING,
                                                  resource_level=SYMMETRIX,
                                                  resource_level_id=self.array_id,
                                                  resource_type=FICON_SPLIT,
@@ -2855,7 +2855,7 @@ class ProvisioningFunctions(object):
         :param cu_ssid: cu image ssid -- str
         :returns: CU Image details -- dict
         """
-        return self.conn.common.get_resource(category=SLOPROVISIONING,
+        return self.common.get_resource(category=SLOPROVISIONING,
                                              resource_level=SYMMETRIX,
                                              resource_level_id=self.array_id,
                                              resource_type=FICON_SPLIT,
@@ -2886,14 +2886,14 @@ class ProvisioningFunctions(object):
         # FIXME This call takes over 5 minutes on my powermax 8000 - so need to force async call
         new_cu_data.update(ASYNC_UPDATE)
 
-        create_cu_async_job = (self.conn.common.create_resource(category=SLOPROVISIONING,
+        create_cu_async_job = (self.common.create_resource(category=SLOPROVISIONING,
                                                                 resource_level=SYMMETRIX,
                                                                 resource_level_id=self.array_id,
                                                                 resource_type=FICON_SPLIT,
                                                                 resource_type_id=split_id,
                                                                 resource=CU_IMAGE,
                                                                 payload=new_cu_data))
-        return self.conn.common.wait_for_job(
+        return self.common.wait_for_job(
             operation='Create CU Image with volume', status_code=constants.STATUS_202,
             job=create_cu_async_job)
 
@@ -2905,7 +2905,7 @@ class ProvisioningFunctions(object):
         :returns: Volume ids -- list
         """
         volume_id_list = list()
-        response = self.conn.common.get_resource(category=SLOPROVISIONING,
+        response = self.common.get_resource(category=SLOPROVISIONING,
                                                  resource_level=SYMMETRIX,
                                                  resource_level_id=self.array_id,
                                                  resource_type=FICON_SPLIT,
@@ -2925,7 +2925,7 @@ class ProvisioningFunctions(object):
         :pamam vol_id volume device id to be mapped to the cu -- str
         :returns: volume details -- dict
         """
-        return self.conn.common.get_resource(category=SLOPROVISIONING,
+        return self.common.get_resource(category=SLOPROVISIONING,
                                              resource_level=SYMMETRIX,
                                              resource_level_id=self.array_id,
                                              resource_type=FICON_SPLIT,
@@ -2992,7 +2992,7 @@ class ProvisioningFunctions(object):
         # FIXME This call takes over 5 minutes on my powermax 8000 - so need to force async call
         edit_cu_data.update(ASYNC_UPDATE)
 
-        edit_cu_async_job = (self.conn.common.modify_resource(category=SLOPROVISIONING,
+        edit_cu_async_job = (self.common.modify_resource(category=SLOPROVISIONING,
                                                               resource_level=SYMMETRIX,
                                                               resource_level_id=self.array_id,
                                                               resource_type=FICON_SPLIT,
@@ -3001,6 +3001,6 @@ class ProvisioningFunctions(object):
                                                               resource_id=cu_ssid,
                                                               payload=edit_cu_data
                                                               ))
-        return self.conn.common.wait_for_job(
+        return self.common.wait_for_job(
             operation=operation, status_code=constants.STATUS_202,
             job=edit_cu_async_job)
