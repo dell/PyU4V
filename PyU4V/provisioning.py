@@ -47,6 +47,8 @@ STORAGEGROUP = constants.STORAGEGROUP
 SG_DEMAND_REPORT = constants.SG_DEMAND_REPORT
 VOLUME = constants.VOLUME
 WORKLOADTYPE = constants.WORKLOADTYPE
+FICON_SPLIT = constants.FICON_SPLIT
+CU_IMAGE = constants.CU_IMAGE
 
 
 class ProvisioningFunctions(object):
@@ -1555,7 +1557,8 @@ class ProvisioningFunctions(object):
             self, srp_id, sg_id, slo=None, workload=None,
             do_disable_compression=False, num_vols=0, vol_size=0,
             cap_unit='GB', allocate_full=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False,
+            emulation_type='FBA'):
         """Create a storage group with optional volumes on create operation.
 
         :param srp_id: SRP id -- str
@@ -1573,6 +1576,7 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
         srp_id = srp_id if srp_id else 'None'
@@ -1581,7 +1585,7 @@ class ProvisioningFunctions(object):
 
         payload = ({'srpId': srp_id,
                     'storageGroupId': sg_id,
-                    'emulation': 'FBA'})
+                    'emulation': emulation_type})
 
         volume_attributes = {'volume_size': str(vol_size),
                              'capacityUnit': cap_unit,
@@ -1659,7 +1663,8 @@ class ProvisioningFunctions(object):
     def create_non_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload, num_vols,
             vol_size, cap_unit, disable_compression=False, _async=False,
-            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False):
+            vol_name=None, snapshot_policy_ids=None, enable_mobility_id=False,
+            emulation_type='FBA'):
         """Create a new storage group with the specified volumes.
 
         Generates a dictionary for json formatting and calls the create_sg
@@ -1681,6 +1686,7 @@ class ProvisioningFunctions(object):
                                     to associate with storage group -- list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
@@ -1689,7 +1695,8 @@ class ProvisioningFunctions(object):
             num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
             _async=_async, vol_name=vol_name,
             snapshot_policy_ids=snapshot_policy_ids,
-            enable_mobility_id=enable_mobility_id)
+            enable_mobility_id=enable_mobility_id,
+            emulation_type=emulation_type)
 
     @decorators.refactoring_notice(
         'ProvisioningFunctions',
@@ -1720,7 +1727,7 @@ class ProvisioningFunctions(object):
     def create_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload,
             disable_compression=False, _async=False,
-            snapshot_policy_ids=None):
+            snapshot_policy_ids=None, emulation_type='FBA'):
         """Create an empty storage group.
 
         Set the disable_compression flag for disabling compression on an All
@@ -1734,12 +1741,14 @@ class ProvisioningFunctions(object):
         :param _async: if call should be async -- bool
         :param snapshot_policy_ids: list of one or more snapshot policies
                                     to associate with storage group -- list
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
         return self.create_storage_group(
             srp_id, storage_group_id, service_level, workload,
             do_disable_compression=disable_compression, _async=_async,
-            snapshot_policy_ids=snapshot_policy_ids)
+            snapshot_policy_ids=snapshot_policy_ids,
+            emulation_type=emulation_type)
 
     def modify_storage_group(self, storage_group_id, payload):
         """Modify a storage group.
@@ -1859,7 +1868,7 @@ class ProvisioningFunctions(object):
             vol_name=None, create_new_volumes=None,
             remote_array_1_id=None, remote_array_1_sgs=None,
             remote_array_2_id=None, remote_array_2_sgs=None,
-            enable_mobility_id=False):
+            enable_mobility_id=False, emulation_type='FBA'):
         """Expand an existing storage group by adding new volumes.
 
         :param storage_group_id: storage group id -- str
@@ -1883,9 +1892,10 @@ class ProvisioningFunctions(object):
                                    -- str or list
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: storage group details -- dict
         """
-        add_volume_param = {'emulation': 'FBA'}
+        add_volume_param = {'emulation': emulation_type}
 
         if not create_new_volumes:
             add_volume_param.update({'create_new_volumes': False})
@@ -2051,7 +2061,7 @@ class ProvisioningFunctions(object):
 
     def create_volume_from_storage_group_return_id(
             self, volume_name, storage_group_id, vol_size, cap_unit='GB',
-            enable_mobility_id=False):
+            enable_mobility_id=False, emulation_type='FBA'):
         """Create a new volume in the given storage group.
 
         :param volume_name: volume name -- str
@@ -2060,12 +2070,14 @@ class ProvisioningFunctions(object):
         :param cap_unit: capacity unit (MB, GB, TB, CYL) -- str
         :param enable_mobility_id: enables unique volume WWN not tied to array
                                    serial number -- bool
+        :param emulation_type: device emulation type (CKD, FBA) -- str
         :returns: device id -- str
         """
         job = self.add_new_volume_to_storage_group(
             storage_group_id, 1, vol_size, cap_unit,
             _async=True, vol_name=volume_name,
-            enable_mobility_id=enable_mobility_id)
+            enable_mobility_id=enable_mobility_id,
+            emulation_type=emulation_type)
 
         task = self.common.wait_for_job('Create volume from storage group',
                                         202, job)
@@ -2795,3 +2807,206 @@ class ProvisioningFunctions(object):
             port_group_details[
                 constants.SYMMETRIX_PORT_KEY] = symmetrix_port_key
         return port_group_details
+
+    def get_split_list(self):
+        """Get list of FICON splits from array.
+
+        :returns: split ids -- list
+        """
+        split_id_list = list()
+        response = self.common.get_resource(category=SLOPROVISIONING,
+                                            resource_level=SYMMETRIX,
+                                            resource_level_id=self.array_id,
+                                            resource_type=FICON_SPLIT)
+        if response and response.get('splitId'):
+            split_id_list = response['splitId']
+        return split_id_list
+
+    def get_split(self, split_id: str):
+        """Get details of a specified FICON split.
+
+        :param split_id: split id -- str
+        :returns: split details -- dict
+        """
+        return self.common.get_resource(category=SLOPROVISIONING,
+                                        resource_level=SYMMETRIX,
+                                        resource_level_id=self.array_id,
+                                        resource_type=FICON_SPLIT,
+                                        resource_type_id=split_id)
+
+    def get_cu_image_list(self, split_id: str):
+        """Get list of CU Image SSIDs within a specific FICON Split.
+
+        :param split_id: split id -- str
+        :returns: CU Image ssids -- list
+        """
+        cu_image_ssid_list = list()
+        response = self.common.get_resource(category=SLOPROVISIONING,
+                                            resource_level=SYMMETRIX,
+                                            resource_level_id=self.array_id,
+                                            resource_type=FICON_SPLIT,
+                                            resource_type_id=split_id,
+                                            resource=CU_IMAGE)
+        if response and response.get('cuImageSSID'):
+            cu_image_ssid_list = response['cuImageSSID']
+        return cu_image_ssid_list
+
+    def get_cu_image(self, split_id: str, cu_ssid: str):
+        """Get details of a specified CU Image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :returns: CU Image details -- dict
+        """
+        return self.common.get_resource(category=SLOPROVISIONING,
+                                        resource_level=SYMMETRIX,
+                                        resource_level_id=self.array_id,
+                                        resource_type=FICON_SPLIT,
+                                        resource_type_id=split_id,
+                                        resource=CU_IMAGE,
+                                        resource_id=cu_ssid)
+
+    def create_cu_image(self, split_id: str,
+                        cu_number: str, cu_ssid: str, cu_base_address: str,
+                        vol_id: str):
+        """Creates a new CU image under the specified split.
+
+        :param split_id: split id -- str
+        :param cu_number: cu image number -- str
+        :param cu_ssid: cu image ssid -- str
+        :param cu_base_address: cu image ssid -- str
+        :param vol_id volume device id be mapped to the cu -- str
+
+        :returns: None
+        """
+        new_cu_data = {"cuImageSSID": cu_ssid,
+                       "cuImageNumber": cu_number,
+                       "startBaseAddress": cu_base_address,
+                       "volumeId": [vol_id]
+                       }
+        # FIXME This call takes over 5 minutes on my powermax 8000 -
+        # so need to force async call
+        new_cu_data.update(ASYNC_UPDATE)
+
+        create_cu_async_job = (
+            self.common.create_resource(category=SLOPROVISIONING,
+                                        resource_level=SYMMETRIX,
+                                        resource_level_id=self.array_id,
+                                        resource_type=FICON_SPLIT,
+                                        resource_type_id=split_id,
+                                        resource=CU_IMAGE,
+                                        payload=new_cu_data))
+        return self.common.wait_for_job(
+            operation='Create CU Image with volume',
+            status_code=constants.STATUS_202,
+            job=create_cu_async_job)
+
+    def get_cu_image_volumes(self, split_id: str, cu_ssid: str):
+        """Get list of Volumes from a specified CU Image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :returns: Volume ids -- list
+        """
+        volume_id_list = list()
+        response = self.common.get_resource(category=SLOPROVISIONING,
+                                            resource_level=SYMMETRIX,
+                                            resource_level_id=self.array_id,
+                                            resource_type=FICON_SPLIT,
+                                            resource_type_id=split_id,
+                                            resource=CU_IMAGE,
+                                            resource_id=cu_ssid,
+                                            object_type=VOLUME)
+        if response and response.get('volumeId'):
+            volume_id_list = response['volumeId']
+        return volume_id_list
+
+    def get_cu_image_volume(self, split_id: str, cu_ssid: str, vol_id: str):
+        """Get details of a volume mapped to a specified CU Image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :pamam vol_id volume device id to be mapped to the cu -- str
+        :returns: volume details -- dict
+        """
+        return self.common.get_resource(category=SLOPROVISIONING,
+                                        resource_level=SYMMETRIX,
+                                        resource_level_id=self.array_id,
+                                        resource_type=FICON_SPLIT,
+                                        resource_type_id=split_id,
+                                        resource=CU_IMAGE,
+                                        resource_id=cu_ssid,
+                                        object_type=VOLUME,
+                                        object_type_id=vol_id)
+
+    def modify_cu_image(self, split_id: str, cu_ssid: str,
+                        assign_alias_dict=None,
+                        remove_alias_dict=None,
+                        map_start_address=None,
+                        map_volume_list=None,
+                        unmap_volume_list=None):
+        """Modify an existing cu image.
+
+        :param split_id: split id -- str
+        :param cu_ssid: cu image ssid -- str
+        :param assign_alias_dict: alias range to be assigned -- dict
+        :param remove_alias_dict: alias range to be removed -- dict
+        :param map_start_address:
+        :param map_volume_list: volumes to be mapped -- list
+        :param unmap_volume_list: volumes to be unmapped -- list
+        """
+        if assign_alias_dict:
+            operation = 'Edit CU Image - Assign Alias'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'assignAliasRangeParam': assign_alias_dict
+                }
+            }
+        elif remove_alias_dict:
+            operation = 'Edit CU Image - Remove Alias'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'removeAliasRangeParam': remove_alias_dict
+                }
+            }
+        elif map_volume_list:
+            operation = 'Edit CU Image - Map Volume(s)'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'mapVolumeParam': {
+                        'startBaseAddress': map_start_address,
+                        'volumeId': map_volume_list
+                    }
+                }
+            }
+        elif unmap_volume_list:
+            operation = 'Edit CU Image - Unmap Volume(s)'
+            edit_cu_data = {
+                'editCUImageActionParam': {
+                    'unmapVolumeParam': {
+                        'volumeId': unmap_volume_list
+                    }
+                }
+            }
+        else:
+            msg = ('No modify cu image parameters chosen - please supply '
+                   'one of the following: assign_alias_dict, '
+                   'remove_alias_dict, map_volume_list, or unmap_volume_list.')
+            raise exception.InvalidInputException(data=msg)
+
+        # FIXME This call takes over 5 minutes on my powermax 8000
+        #  - so need to force async call
+        edit_cu_data.update(ASYNC_UPDATE)
+
+        edit_cu_async_job = (
+            self.common.modify_resource(category=SLOPROVISIONING,
+                                        resource_level=SYMMETRIX,
+                                        resource_level_id=self.array_id,
+                                        resource_type=FICON_SPLIT,
+                                        resource_type_id=split_id,
+                                        resource=CU_IMAGE,
+                                        resource_id=cu_ssid,
+                                        payload=edit_cu_data))
+        return self.common.wait_for_job(
+            operation=operation, status_code=constants.STATUS_202,
+            job=edit_cu_async_job)

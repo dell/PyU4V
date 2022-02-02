@@ -39,7 +39,7 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.2.1.5'
+PYU4V_VERSION = '9.2.1.6'
 UNISPHERE_VERSION = '92'
 VERSION = 'version'
 ITERATOR = 'Iterator'
@@ -85,6 +85,8 @@ REMOTE_PORT = 'remote_port'
 ALERT = 'alert'
 ALERT_SUMMARY = 'alert_summary'
 COMPLIANCE = 'compliance'
+FICON_SPLIT = 'split'
+CU_IMAGE = 'cuimage'
 
 # Status Codes
 STATUS_200 = 200
