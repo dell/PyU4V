@@ -846,14 +846,15 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         """Test create_storage_group_from_rdfg."""
         sg_name, srdf_group_number, device_id, remote_volume = (
             self.create_rdf_sg())
+        storage_group_name = self.generate_name('sg')
         self.replication.create_storage_group_from_rdfg(
-            storage_group_name='ci_new_srdf_delete',
+            storage_group_name=storage_group_name,
             srdf_group_number=srdf_group_number, rdf_type='RDF1')
         sg_rdfg_list = self.replication.get_storage_group_srdf_group_list(
-            storage_group_id='ci_new_srdf_delete')
+            storage_group_id=storage_group_name)
         self.assertIn(srdf_group_number, sg_rdfg_list)
         self.provisioning.delete_storage_group(
-            storage_group_id='ci_new_srdf_delete')
+            storage_group_id=storage_group_name)
 
     def test_modify_storage_group_srdf_set_consistency_enable(self):
         """Test test_modify_storage_group_srdf to enable consistency."""
