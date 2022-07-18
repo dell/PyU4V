@@ -242,7 +242,8 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
                 resource_level_id=temp_u4v_conn.array_id,
                 resource_type=constants.AUDIT_LOG_RECORD,
                 resource=constants.EXPORT_FILE,
-                payload={constants.AUDIT_LOG_FILENAME: 'ci_test'})
+                payload={constants.AUDIT_LOG_FILENAME: 'ci_test'},
+                timeout=480)
             self.assertTrue(dummy_data)
 
             temp_dir_path = Path(self.create_temp_directory())
@@ -276,7 +277,8 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
                 resource_level_id=temp_u4v_conn.array_id,
                 resource_type=constants.AUDIT_LOG_RECORD,
                 resource=constants.EXPORT_FILE,
-                payload={constants.AUDIT_LOG_FILENAME: 'ci_test'})
+                payload={constants.AUDIT_LOG_FILENAME: 'ci_test'},
+                timeout=480)
             self.assertTrue(dummy_data)
 
             temp_dir_path = Path.cwd()
@@ -509,9 +511,3 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
         self.assertRaises(
             exception.InvalidInputException,
             time_handler.format_time_input, 123, True, True)
-
-    def test_iscsi_regex(self):
-        import re
-        iqn = 'SE-1F:000:iqn.1994-05.com.redhat:338fa4db18b5'
-        result = re.match(constants.iscsi_initiator_pattern, iqn)
-        self.assertTrue(result)

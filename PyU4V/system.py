@@ -89,6 +89,7 @@ class SystemFunctions(object):
     def __init__(self, array_id, rest_client):
         """__init__."""
         self.common = CommonFunctions(rest_client)
+        self.is_v4 = self.common.is_array_v4(array_id)
         self.array_id = array_id
 
     def get_system_health(self, array_id=None):
@@ -795,10 +796,10 @@ class SystemFunctions(object):
         response = self.common.get_request(
             target_uri=target_uri, resource_type=AUDIT_LOG_RECORD)
 
-        return response
+        return response if response else dict()
 
     def download_audit_log_record(self, array_id=None, return_binary=False,
-                                  dir_path=None, file_name=None):
+                                  dir_path=None, file_name=None, timeout=None):
         """Download audit log record for the last week in PDF
 
         :param array_id: array serial number -- str
@@ -806,6 +807,7 @@ class SystemFunctions(object):
                               record pdf to file -- bool
         :param dir_path: file write directory path -- str
         :param file_name: file name -- str
+        :param timeout: timeout -- int
         :returns: download details -- dict
         """
         array_id = self.array_id if not array_id else array_id
@@ -823,7 +825,7 @@ class SystemFunctions(object):
             category=SYSTEM,
             resource_level=SYMMETRIX, resource_level_id=array_id,
             resource_type=AUDIT_LOG_RECORD,
-            resource=EXPORT_FILE, payload=req_body)
+            resource=EXPORT_FILE, payload=req_body, timeout=timeout)
 
         return_dict = dict()
 
@@ -851,35 +853,42 @@ class SystemFunctions(object):
         :returns: iSCSI directors -- list
         """
         array_id = array_id if array_id else self.array_id
-        dir_list = self.common.get_resource(
+
+        response = self.common.get_resource(
             category=SYSTEM,
             resource_level=SYMMETRIX, resource_level_id=array_id,
             resource_type=DIRECTOR)
+        dir_list = response.get('directorId', list()) if response else list()
         response_dir_list = list()
-        for director in dir_list.get(DIRECTOR_ID, list()):
-            if iscsi_only and re.match(r'^SE-\d[A-Z]$', director):
-                response_dir_list.append(director)
-            elif not iscsi_only:
-                response_dir_list.append(director)
+        if not self.is_v4:
+            for director in dir_list:
+                if iscsi_only and re.match(r'^SE-\d[A-Z]$', director):
+                    response_dir_list.append(director)
+                elif not iscsi_only:
+                    response_dir_list.append(director)
+            if response_dir_list:
+                dir_list = response_dir_list
+        else:
+            if iscsi_only:
+                port_list = self.get_iscsi_director_port_list_v4(dir_list)
+                dir_list = list(set([p['directorId'] for p in port_list]))
 
-        return response_dir_list
+        return dir_list
 
-    def get_director_port_list(self, director_id, array_id=None,
-                               iscsi_target=None):
+    def get_director_port_list(
+            self, director_id, array_id=None, filters=None):
         """Get a list of director ports for a specified director.
+
 
         :param director_id: director id -- str
         :param array_id: array id -- str
-        :param iscsi_target: if the port is an iSCSI target, applicable to
-                             front-end SE directors only, default to not set
-                             -- bool
+        :param filters: user inputted filters
+                        see documentation for details
         :returns: director ports -- list
         """
         array_id = array_id if array_id else self.array_id
-
-        filters = dict()
-        if isinstance(iscsi_target, bool):
-            filters['iscsi_target'] = iscsi_target
+        if not filters:
+            filters = dict()
 
         port_list = self.common.get_resource(
             category=SYSTEM,
@@ -888,6 +897,28 @@ class SystemFunctions(object):
             resource=PORT, params=filters)
         return port_list.get(
             'symmetrixPortKey', list()) if port_list else list()
+
+    def get_directory_port_iscsi_endpoint_list(
+            self, director_id, iscsi_endpoint, array_id=None):
+        """Get a list of director ports for a specified director.
+
+        :param director_id: director id -- str
+        :param iscsi_endpoint: if the port is an iSCSI target, applicable to
+                               front-end SE or OR directors only, default to
+                               not set -- bool
+        :param array_id: array id -- str
+        :returns: director ports -- list
+        """
+
+        filters = dict()
+        if isinstance(iscsi_endpoint, bool):
+            filters['iscsi_endpoint'] = 'true' if iscsi_endpoint else 'false'
+        else:
+            msg = 'iscsi_endpoint must be a bool.'
+            LOG.exception(msg)
+            raise exception.InvalidInputException(data=msg)
+
+        return self.get_director_port_list(director_id, array_id, filters)
 
     def get_ip_interface_list(self, director_id, port_id, array_id=None):
         """Get a list of IP interfaces for a given array.
@@ -932,12 +963,10 @@ class SystemFunctions(object):
 
         Requires minimum version of Unisphere 9.2.1.x and API account must
         have security admin role
-
         Change local user password.
         :param username: username for local account -- str
         :param current_password: existing password for local account -- str
         :param new_password: new password for local account -- str
-
         """
         request_body = {
             'username': username,
@@ -950,3 +979,237 @@ class SystemFunctions(object):
 
         return self.common.modify_resource(
             category=SYSTEM, resource_level=LOCAL_USER, payload=request_body)
+
+    def get_director(self, director):
+        """Query for details of a director for a symmetrix.
+
+        :param director: the director ID e.g. FA-1D -- str
+        :returns: director details -- dict
+        """
+        return self.common.get_resource(
+            category=SYSTEM,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=DIRECTOR, resource_type_id=director)
+
+    def get_director_port(self, director, port_no):
+        """Get details of the symmetrix director port.
+
+        :param director: the director ID e.g. FA-1D -- str
+        :param port_no: the port number e.g. 1 -- str
+        :returns: director port details -- dict
+        """
+        return self.common.get_resource(
+            category=SYSTEM,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=DIRECTOR, resource_type_id=director,
+            resource=PORT, resource_id=port_no)
+
+    def get_port_identifier(self, director, port_no):
+        """Get the identifier (wwn) of the physical port.
+
+        :param director: the id of the director -- str
+        :param port_no: the number of the port -- str
+        :returns: wwn (FC) or iqn (iscsi) -- str or None
+        """
+        wwn = None
+        port_info = self.get_director_port(director, port_no)
+        if port_info:
+            try:
+                wwn = port_info['symmetrixPort']['identifier']
+            except KeyError:
+                LOG.error('Cannot retrieve port information.')
+        return wwn
+
+    def get_fa_directors(self):
+        """Get all FA directors on the array.
+
+        :returns: fa director strings  -- list
+        """
+        directors = self.get_director_list()
+        fa_directors = set()
+        for director in directors:
+            if 'FA-' in director:
+                fa_directors.add(director)
+        return list(fa_directors)
+
+    def get_or_directors(self):
+        """Get all OR directors on the array.
+
+        :returns: or director strings  -- list
+        """
+        directors = self.get_director_list()
+        or_directors = set()
+        for director in directors:
+            if 'OR-' in director:
+                or_directors.add(director)
+        return list(or_directors)
+
+    def get_iscsi_ip_address_and_iqn(self, port_id):
+        """Get the ip addresses from the director port.
+
+        :param port_id: director port identifier -- str
+        :returns: ip addresses, iqn --  list, str
+        """
+        ip_addresses, iqn = list(), None
+        dir_id = port_id.split(':')[0]
+        port_no = port_id.split(':')[1]
+        port_details = self.get_director_port(dir_id, port_no)
+        if port_details:
+            try:
+                ip_addresses = port_details['symmetrixPort']['ip_addresses']
+                iqn = port_details['symmetrixPort']['identifier']
+            except (KeyError, TypeError):
+                LOG.info('Could not get IP address from director port')
+        return ip_addresses, iqn
+
+    def get_target_wwns_from_port_group(self, port_group_id):
+        """Get the director ports' WWNs.
+
+        :param port_group_id: the name of the port group -- str
+        :returns: target_wwns -- target wwns for the port group -- list
+        """
+        target_wwns = list()
+        port_group_details = self.get_port_group(port_group_id)
+        dir_port_list = port_group_details['symmetrixPortKey']
+        for dir_port in dir_port_list:
+            dir_id = dir_port['directorId']
+            port_no = dir_port['portId']
+            wwn = self.get_port_identifier(dir_id, port_no)
+            target_wwns.append(wwn)
+        return target_wwns
+
+    def get_port_group(self, port_group_id):
+        """Get port group details.
+
+        :param port_group_id: name of the portgroup -- str
+        :returns: port group details -- dict
+        """
+        return self.common.get_resource(
+            category=constants.SLOPROVISIONING,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=constants.PORTGROUP, resource_type_id=port_group_id)
+
+    def get_any_director_port(self, director, filters=None):
+        """Get a non-GuestOS port from a director.
+
+        :param director: director to search for ports with -- str
+        :param filters: filters to apply when search for port -- str
+        :returns: port -- int
+        """
+        selected_port = None
+        if director and re.match(constants.DIRECTOR_SEARCH_PATTERN, director):
+            port_list = self.get_director_port_list(
+                director, filters=filters)
+            # Avoid GOS ports
+            port_list = [
+                p for p in port_list if int(p[constants.PORT_ID]) < 30]
+            if port_list:
+                selected_port = port_list[0][constants.PORT_ID]
+        return selected_port
+
+    def get_iscsi_director_port_list_v4(self, directors):
+        """Get iSCSI directors and ports for V4.
+
+        In V4 the enabled_protocol = iSCSI
+
+        :param directors: directors -- list
+        :returns: port list
+        """
+        return self.get_director_port_list_by_protocol_v4(
+            directors, protocol='iSCSI')
+
+    def get_director_port_list_by_protocol_v4(
+            self, directors, protocol='SCSI_FC'):
+        """Get directors and ports for V4 by protocol.
+
+        In V4 the enabled_protocol can be one of
+        NVMe_TCP
+        SCSI_FC
+        NVMe_FC
+        RDF_FC
+        iSCSI
+        RDF_GigE
+
+        :param directors: directors -- list
+        :param protocol: protocol -- str
+        :returns: port list
+        """
+        ports_list = []
+        if not directors:
+            return directors
+        for d in directors:
+            filters_dict = dict()
+            director = None
+            if 'OR-' in d:
+                director = d
+                filters_dict = {
+                    'enabled_protocol': protocol}
+            if director:
+                ports = self.get_director_port_list(
+                    director, filters=filters_dict)
+                if ports:
+                    for p in ports:
+                        ports_list += [p]
+        return ports_list
+
+    def get_fc_director_port_list_v4(self, directors):
+        """Get FC directors and ports for V4.
+
+        In V4 the enabled_protocol = SCSI_FC
+
+        :param directors: directors -- list
+        :returns: port list
+        """
+        return self.get_director_port_list_by_protocol_v4(
+            directors, protocol='SCSI_FC')
+
+    def get_nvme_director_port_list_v4(self, directors):
+        """Get NVMe directors and ports for V4.
+
+        In V4 the enabled_protocol = NVMe_FC
+        :param directors: directors -- list
+        :returns: port list
+        """
+        return self.get_director_port_list_by_protocol_v4(
+            directors, protocol='NVMe_FC')
+
+    def get_rdf_director_port_list_v4(self, directors):
+        """Get RDF directors and ports for V4.
+
+        In V4 the enabled_protocol = RDF_FC
+
+        :param directors: directors -- list
+        :returns: port list
+        """
+        return self.get_director_port_list_by_protocol_v4(
+            directors, protocol='RDF_FC')
+
+    def get_rdf_gige_director_port_list_v4(self, directors):
+        """Get RDF GIGE directors and ports for V4.
+
+        In V4 the enabled_protocol = RDF_GigE
+
+        :param directors: directors -- list
+        :returns: port list
+        """
+        return self.get_director_port_list_by_protocol_v4(
+            directors, protocol='RDF_GigE')
+
+    def set_director_port_online(self, director, port_no, port_online):
+        """Set Director Port online or offline.
+
+        :param director: the director ID e.g. FA-1D -- str
+        :param port_no: the port number e.g. 1 -- str
+        :param port_online: True will attempt to online port, false wll offline
+                            --bool
+        :returns: director port details -- dict
+        """
+        payload = {
+            'editPortActionParamType': {
+                'onlineOfflineParamType': {'port_online': port_online}}}
+
+        return self.common.modify_resource(
+            category=SYSTEM, resource_level=SYMMETRIX,
+            resource_level_id=self.array_id, resource_type=DIRECTOR,
+            resource_type_id=director, resource=PORT,
+            resource_id=port_no, payload=payload)

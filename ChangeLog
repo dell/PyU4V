@@ -1,12 +1,359 @@
 PyU4V Change Log
 ================
-version 9.2.1.6
-- Add emulation_type parameter to storage group and volume creation function.
 
-version 9.2.1.5
-- Allow for the use of 92 endpoint in the U4V10.0 and greater.
+Version 10.0.0.0 - released 10/19/2022
+====================================
+
+
+
+Added Functionality 10.0
+------------------------
+Provisioning.py
+Allow for a different Emulation Type for storage group and volume creation.
+added create_empty_port_group function
+
+Download audit log record
+-------------------------
+Download audit log record and take longer than the default 120 seconds
+Now timeout is configurable so this can be increase or decreased at will.
+
+Added Functionality 10.0
+------------------------
+Replication.py
+get_rdf_group_list updated to add new search params to simplify workflows for
+RDFG operations.
+modify_storage_group_snapshot_by_snapid added force and remote options.
+get_storage_group_replication_details updated with new filter options to
+simplify workflows.
+
+
+Deprecated functions to be removed in 10.2
+------------------------------------------
+These functions will been removed entirely from the PyU4V code-base after the
+required two release notification period.
+    - Old: PyU4V.performance.PerformanceFunctions.get_iscsi_target_stats
+        - New: PyU4V.performance.PerformanceFunctions.get_endpoint_stats
+
+    - Old: PyU4V.performance.PerformanceFunctions.get_iscsi_target_keys
+        - New: PyU4V.performance.PerformanceFunctions.get_endpoint_keys
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_director
+        - New: PyU4V.system.SystemFunctions.get_director
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_director_list
+        - New: PyU4V.system.SystemFunctions.get_director_list
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_director_port
+        - New: PyU4V.system.SystemFunctions.get_director_port
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_director_port_list
+        - New: PyU4V.system.SystemFunctions.get_director_port_list
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_port_identifier
+        - New: PyU4V.system.SystemFunctions.get_port_identifier
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_fa_directors
+        - New: PyU4V.system.SystemFunctions.get_fa_directors
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_iscsi_ip_address_and_iqn
+        - New: PyU4V.system.SystemFunctions.get_iscsi_ip_address_and_iqn
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.get_any_director_port
+        - New: PyU4V.system.SystemFunctions.get_any_director_port
+
+Create port group
+-----------------
+port_group_protocol required in request payload for a create port group
+operation.  Values are one of SCSI_FC, iSCSI, NVMe_TCP.
+
+Real-Time Performance
+---------------------
+- The following functions have been updated to accept an array_id to accomodate
+  differences between V3/V4 systems
+    - PyU4V.real_time.RealTimeFunctions.get_categories()
+    - PyU4V.real_time.RealTimeFunctions.get_category_metrics()
+
+Diagnostic Performance
+----------------------
+- Cloud Provider has been added to PerformanceFunctions()
+    - PyU4V.performance.PerformanceFunctions.get_cloud_provider_keys()
+    - PyU4V.performance.PerformanceFunctions.get_cloud_provider_stats()
+- EM Directors have been added to PerformanceFunctions()
+    - PyU4V.performance.PerformanceFunctions.get_em_director_keys()
+    - PyU4V.performance.PerformanceFunctions.get_em_director_stats()
+- SDNAS has been added to PerformanceFunctions()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_filesystem_keys()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_filesystem_stats()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_interface_keys()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_interface_stats()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_node_keys()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_node_stats()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_server_keys()
+    - PyU4V.performance.PerformanceFunctions.get_sdnas_server_stats()
+- zHyperLinkPorts have been added to PerformanceFunctions()
+    - PyU4V.performance.PerformanceFunctions.get_zhyperlink_port_keys()
+    - PyU4V.performance.PerformanceFunctions.get_zhyperlink_port_stats()
+- Attribute added to PerformanceFunctions() for is_v4 array.
+- PerformanceFunctions.get_performance_categories_list() has been changed to
+  retrieve categories via Unisphere REST endpoint instead of hard coded
+  category map.
+- PerformanceFunctions.get_performance_metrics_list() has been changed to
+  retrieve metrics via Unisphere REST endpoint instead of hard coded metric
+  map.
+- Performance category/metric map for diagnostic performance endpoints has
+  been removed entirely in favour of REST endpoints. Categories and metrics
+  are still obtained through the same functions, the underlying data retrieval
+  is the only thing to change.
+- PerformanceFunctions.get_threshold_categories() now accepts an array_id to
+  accommodated difference in categories between V3/V4 systems.
+- PerformanceFunctions.get_threshold_category_settings() now accepts an
+  array_id to accommodated difference in categories between V3/V4 systems.
+- When generating threshold CSV files from
+  PerformanceFunctions.generate_threshold_settings_csv it is now possible to
+  set category as an input value to limit the CSV threshold to only that
+  category.
+- CI tests for thresholds have been updated to target a default threshold
+  marked as KPI to ensure it has both first and second threshold values
+  populated before the test runs.
+- Removed trailing white space from performance metrics in the metric map.
+
+System Changes
+--------------
+- SystemFunctions.get_audit_log_record() has been updated to extract audit log
+  record details after changes were made to Unisphere REST responses. What is
+  returned to the user from PyU4V will not change.
+- set_director_port_online function added.
+CI Test Improvements
+--------------------
+- Performance CI tests will output dead metrics to screen when encountered
+  instead of just failing and moving on.
+- Array performance CI tests have been improved to provide better coverage of
+  all metrics and reporting of dead metrics.
+- Certain tests are skipped if they are version specific and CI array does not
+  meet required version (V3/V4)
+
+Building URI with args deprecated
+---------------------------------
+This functionality as provided by PyU4V.common.CommonFunctions._build_uri_args
+has been marked for deprecation since PyU4V 9.1 and has been fully removed in
+the 10.0 release. The impact of this is such that the following methods must
+be called with kwargs to form target URIs if you are using them for access
+to custom REST endpoints.
+    - PyU4V.common.CommonFunctions.get_resource
+    - PyU4V.common.CommonFunctions.create_resource
+    - PyU4V.common.CommonFunctions.modify_resource
+    - PyU4V.common.CommonFunctions.delete_resource
+
+Deprecated functions to be removed in 10.2
+------------------------------------------
+These functions will been removed entirely from the PyU4V code-base after the
+required two release notification period.
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.create_multiport_port_group
+        - New: PyU4V.provisioning.ProvisioningFunctions.create_new_port_group
+
+    - Old: PyU4V.provisioning.ProvisioningFunctions.create_port_group
+        - New: PyU4V.provisioning.ProvisioningFunctions.create_new_port_group
+
+Deprecated functions removed from code-base
+-------------------------------------------
+These functions have been removed entirely from the PyU4V code-base after the
+required two release notification period.
+
+common.py
+~~~~~~~~~
+    PyU4V.common.CommonFunctions._build_uri_args
+
+performance.py
+~~~~~~~~~~~~~~
+    PyU4V.performance.PerformanceFunctions.get_fe_port_util_last4hrs
+    PyU4V.performance.PerformanceFunctions.get_all_fe_director_metrics
+    PyU4V.performance.PerformanceFunctions.get_director_info
+
+replication.py
+~~~~~~~~~~~~~~
+    PyU4V.replication.ReplicationFunctions.choose_snapshot_from_list_in_console
+
+utils/console.py
+~~~~~~~~~~~~~~~~
+    Entire file removed, PyU4V will not provide console level functionality
+    moving forward. Please handle this outside of PyU4V if it is required.
+
+
+Refactored functions removed from code-base in favour of other functions
+-------------------------------------------
+These refactored functions take the format of...
+    Refactored (removed) function
+        New function to target
+
+common.py
+~~~~~~~~~
+    PyU4V.common.CommonFunctions.create_list_from_file
+        PyU4V.utils.file_handler.create_list_from_file
+    PyU4V.common.CommonFunctions.read_csv_values
+        PyU4V.utils.file_handler.read_csv_values
+    PyU4V.common.CommonFunctions.get_wlp_information
+        PyU4V.workload_planner.WLPFunctions.get_wlp_information
+    PyU4V.common.CommonFunctions.get_headroom
+        PyU4V.workload_planner.WLPFunctions.get_headroom
+
+performance.py
+~~~~~~~~~~~~~~
+    PyU4V.performance.PerformanceFunctions.get_perf_threshold_categories
+        PyU4V.performance.PerformanceFunctions.get_threshold_categories
+    PyU4V.performance.PerformanceFunctions.get_perf_category_threshold_settings
+        PyU4V.performance.PerformanceFunctions.get_threshold_category_settings
+    PyU4V.performance.PerformanceFunctions.set_perf_threshold_and_alert
+        PyU4V.performance.PerformanceFunctions.update_threshold
+    PyU4V.performance.PerformanceFunctions.set_perfthresholds_csv
+        PyU4V.performance.PerformanceFunctions.set_thresholds_from_csv
+    PyU4V.performance.PerformanceFunctions.get_fe_director_list
+        PyU4V.performance.PerformanceFunctions.get_frontend_director_keys
+    PyU4V.performance.PerformanceFunctions.get_fe_port_list
+        PyU4V.performance.PerformanceFunctions.get_frontend_port_keys
+    PyU4V.performance.PerformanceFunctions.get_fe_director_metrics
+        PyU4V.performance.PerformanceFunctions.get_frontend_director_stats
+    PyU4V.performance.PerformanceFunctions.get_fe_port_metrics
+        PyU4V.performance.PerformanceFunctions.get_frontend_port_stats
+    PyU4V.performance.PerformanceFunctions.get_array_metrics
+        PyU4V.performance.PerformanceFunctions.get_array_stats
+    PyU4V.performance.PerformanceFunctions.get_storage_group_metrics
+        PyU4V.performance.PerformanceFunctions.get_storage_group_stats
+    PyU4V.performance.PerformanceFunctions.get_port_group_metrics
+        PyU4V.performance.PerformanceFunctions.get_port_group_stats
+    PyU4V.performance.PerformanceFunctions.get_host_metrics
+        PyU4V.performance.PerformanceFunctions.get_host_stats
+
+provisioning.py
+~~~~~~~~~~~~~~~
+    PyU4V.provisioning.ProvisioningFunctions.get_mvs_from_host
+        PyU4V.provisioning.ProvisioningFunctions.get_masking_views_from_host
+    PyU4V.provisioning.ProvisioningFunctions.get_hostgroup
+        PyU4V.provisioning.ProvisioningFunctions.get_host_group
+    PyU4V.provisioning.ProvisioningFunctions.get_hostgroup_list
+        PyU4V.provisioning.ProvisioningFunctions.get_host_group_list
+    PyU4V.provisioning.ProvisioningFunctions.create_hostgroup
+        PyU4V.provisioning.ProvisioningFunctions.create_host_group
+    PyU4V.provisioning.ProvisioningFunctions.modify_hostgroup
+        PyU4V.provisioning.ProvisioningFunctions.modify_host_group
+    PyU4V.provisioning.ProvisioningFunctions.delete_hostgroup
+        PyU4V.provisioning.ProvisioningFunctions.delete_host_group
+    PyU4V.provisioning.ProvisioningFunctions.get_masking_views_by_host
+        PyU4V.provisioning.ProvisioningFunctions.get_masking_views_by_initiator_group
+    PyU4V.provisioning.ProvisioningFunctions.get_common_masking_views
+        PyU4V.provisioning.ProvisioningFunctions.get_port_group_common_masking_views
+    PyU4V.provisioning.ProvisioningFunctions.get_host_from_maskingview
+        PyU4V.provisioning.ProvisioningFunctions.get_host_from_masking_view
+    PyU4V.provisioning.ProvisioningFunctions.get_storagegroup_from_maskingview
+        PyU4V.provisioning.ProvisioningFunctions.get_storage_group_from_masking_view
+    PyU4V.provisioning.ProvisioningFunctions.get_portgroup_from_maskingview
+        PyU4V.provisioning.ProvisioningFunctions.get_port_group_from_masking_view
+    PyU4V.provisioning.ProvisioningFunctions.get_maskingview_connections
+        PyU4V.provisioning.ProvisioningFunctions.get_masking_view_connections
+    PyU4V.provisioning.ProvisioningFunctions.find_host_lun_id_for_vol
+        PyU4V.provisioning.ProvisioningFunctions.find_host_lun_id_for_volume
+    PyU4V.provisioning.ProvisioningFunctions.get_portgroup
+        PyU4V.provisioning.ProvisioningFunctions.get_port_group
+    PyU4V.provisioning.ProvisioningFunctions.get_portgroup_list
+        PyU4V.provisioning.ProvisioningFunctions.get_port_group_list
+    PyU4V.provisioning.ProvisioningFunctions.get_ports_from_pg
+        PyU4V.provisioning.ProvisioningFunctions.get_ports_from_port_group
+    PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_pg
+        PyU4V.provisioning.ProvisioningFunctions.get_target_wwns_from_port_group
+    PyU4V.provisioning.ProvisioningFunctions.create_portgroup
+        PyU4V.provisioning.ProvisioningFunctions.create_port_group
+    PyU4V.provisioning.ProvisioningFunctions.create_multiport_portgroup
+        PyU4V.provisioning.ProvisioningFunctions.create_multiport_port_group
+    PyU4V.provisioning.ProvisioningFunctions.create_portgroup_from_file
+        PyU4V.provisioning.ProvisioningFunctions.create_port_group_from_file
+    PyU4V.provisioning.ProvisioningFunctions.modify_portgroup
+        PyU4V.provisioning.ProvisioningFunctions.modify_port_group
+    PyU4V.provisioning.ProvisioningFunctions.delete_portgroup
+        PyU4V.provisioning.ProvisioningFunctions.delete_port_group
+    PyU4V.provisioning.ProvisioningFunctions.get_slo_list
+        PyU4V.provisioning.ProvisioningFunctions.get_service_level_list
+    PyU4V.provisioning.ProvisioningFunctions.get_slo
+        PyU4V.provisioning.ProvisioningFunctions.get_service_level
+    PyU4V.provisioning.ProvisioningFunctions.modify_slo
+        PyU4V.provisioning.ProvisioningFunctions.modify_service_level
+    PyU4V.provisioning.ProvisioningFunctions.get_mv_from_sg
+        PyU4V.provisioning.ProvisioningFunctions.get_masking_view_from_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.get_num_vols_in_sg
+        PyU4V.provisioning.ProvisioningFunctions.get_num_vols_in_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.is_child_sg_in_parent_sg
+        PyU4V.provisioning.ProvisioningFunctions.is_child_storage_group_in_parent_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.get_child_sg_from_parent
+        PyU4V.provisioning.ProvisioningFunctions.get_child_storage_groups_from_parent
+    PyU4V.provisioning.ProvisioningFunctions.create_non_empty_storagegroup
+        PyU4V.provisioning.ProvisioningFunctions.create_non_empty_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.create_empty_sg
+        PyU4V.provisioning.ProvisioningFunctions.create_empty_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.add_existing_vol_to_sg
+        PyU4V.provisioning.ProvisioningFunctions.add_existing_volume_to_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.add_new_vol_to_storagegroup
+        PyU4V.provisioning.ProvisioningFunctions.add_new_volume_to_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.create_volume_from_sg_return_dev_id
+        PyU4V.provisioning.ProvisioningFunctions.create_volume_from_storage_group_return_id
+    PyU4V.provisioning.ProvisioningFunctions.add_child_sg_to_parent_sg
+        PyU4V.provisioning.ProvisioningFunctions.add_child_storage_group_to_parent_group
+    PyU4V.provisioning.ProvisioningFunctions.remove_child_sg_from_parent_sg
+        PyU4V.provisioning.ProvisioningFunctions.remove_child_storage_group_from_parent_group
+    PyU4V.provisioning.ProvisioningFunctions.update_storagegroup_qos
+        PyU4V.provisioning.ProvisioningFunctions.update_storage_group_qos
+    PyU4V.provisioning.ProvisioningFunctions.remove_vol_from_storagegroup
+        PyU4V.provisioning.ProvisioningFunctions.remove_volume_from_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.delete_storagegroup
+        PyU4V.provisioning.ProvisioningFunctions.delete_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.get_vol_effective_wwn_details_84
+        PyU4V.provisioning.ProvisioningFunctions.get_volume_effective_wwn_details
+    PyU4V.provisioning.ProvisioningFunctions.get_vols_from_storagegroup
+        PyU4V.provisioning.ProvisioningFunctions.get_volumes_from_storage_group
+    PyU4V.provisioning.ProvisioningFunctions.get_storagegroup_from_vol
+        PyU4V.provisioning.ProvisioningFunctions.get_storage_group_from_volume
+    PyU4V.provisioning.ProvisioningFunctions.is_volume_in_storagegroup
+        PyU4V.provisioning.ProvisioningFunctions.is_volume_in_storage_group
+
+replication.py
+~~~~~~~~~~~~~~
+    PyU4V.replication.ReplicationFunctions.get_storage_group_rep
+        PyU4V.replication.ReplicationFunctions.get_storage_group_replication_details
+    PyU4V.replication.ReplicationFunctions.get_storage_group_rep_list
+        PyU4V.replication.ReplicationFunctions.get_replication_enabled_storage_groups
+    PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_list
+        PyU4V.replication.ReplicationFunctions.get_storage_group_snapshot_list
+    PyU4V.replication.ReplicationFunctions.create_storagegroup_snap
+        PyU4V.replication.ReplicationFunctions.create_storage_group_snapshot
+    PyU4V.replication.ReplicationFunctions.get_storagegroup_snapshot_generation_list
+        PyU4V.replication.ReplicationFunctions.get_storage_group_snapshot_generation_list
+    PyU4V.replication.ReplicationFunctions.modify_storagegroup_snap
+        PyU4V.replication.ReplicationFunctions.modify_storage_group_snapshot
+    PyU4V.replication.ReplicationFunctions.delete_storagegroup_snapshot
+        PyU4V.replication.ReplicationFunctions.delete_storage_group_snapshot
+    PyU4V.replication.ReplicationFunctions.is_vol_in_rep_session
+        PyU4V.replication.ReplicationFunctions.is_volume_in_replication_session
+    PyU4V.replication.ReplicationFunctions.are_vols_rdf_paired
+        PyU4V.replication.ReplicationFunctions.are_volumes_rdf_paired
+    PyU4V.replication.ReplicationFunctions.get_storagegroup_srdfg_list
+        PyU4V.replication.ReplicationFunctions.get_storage_group_srdf_group_list
+    PyU4V.replication.ReplicationFunctions.get_storagegroup_srdf_details
+        PyU4V.replication.ReplicationFunctions.get_storage_group_srdf_details
+    PyU4V.replication.ReplicationFunctions.create_storagegroup_srdf_pairings
+        PyU4V.replication.ReplicationFunctions.create_storage_group_srdf_pairings
+    PyU4V.replication.ReplicationFunctions.modify_storagegroup_srdf
+        PyU4V.replication.ReplicationFunctions.modify_storage_group_srdf
+    PyU4V.replication.ReplicationFunctions.suspend_storagegroup_srdf
+        PyU4V.replication.ReplicationFunctions.suspend_storage_group_srdf
+    PyU4V.replication.ReplicationFunctions.establish_storagegroup_srdf
+        PyU4V.replication.ReplicationFunctions.establish_storage_group_srdf
+    PyU4V.replication.ReplicationFunctions.failover_storagegroup_srdf
+        PyU4V.replication.ReplicationFunctions.failover_storage_group_srdf
+    PyU4V.replication.ReplicationFunctions.failback_storagegroup_srdf
+        PyU4V.replication.ReplicationFunctions.failback_storage_group_srdf
+    PyU4V.replication.ReplicationFunctions.delete_storagegroup_srdf
+        PyU4V.replication.ReplicationFunctions.delete_storage_group_srdf
 
 version 9.2.1.4
+===============
 - added enable/disable consistency feature to modify_storage_group_srdf
   function in replication
 - Updated add_existing_volume_to_storage_group to create RDF pairings.
@@ -20,21 +367,23 @@ version 9.2.1.4
   modify_storage_group_snapshot_snapsetid
 
 version 9.2.1.3
+===============
 - added enable_mobility id to provisioning functions create_storage_group,
   add_new_volume_to_storage_group, create_volume_from_storage_group_return_id
 - added get_snapshot_policy_storage_group_list to snapshot_policy functions
 
-Version 9.2.1.2
+Version 9.2.1.2 - released 08/03/21
+===================================
 - support for changing local users passwords via REST, requires Unipshere 9.2.1
-  new function change_local_user_password
-
-=======
+  change_local_user_password function added.
 
 Version 9.2.1.1 - released 15/02/21
+===================================
 - Support for Snapshot Policy compliance
 - Refactoring of snapshot policy modification by operation.
 
 Version 9.2.0.8 - released 05/02/21
+===================================
 - Update __init__.py to reflect the correct version
 - Update the docs to reflect new version
 

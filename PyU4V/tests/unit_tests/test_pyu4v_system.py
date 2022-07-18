@@ -48,6 +48,8 @@ AUDIT_LOG_FILENAME = constants.AUDIT_LOG_FILENAME
 SUCCESS = constants.SUCCESS
 BINARY_DATA = constants.BINARY_DATA
 AUDIT_RECORD_PATH = constants.AUDIT_RECORD_PATH
+DIRECTOR = constants.DIRECTOR
+PORT = constants.PORT
 
 
 class PyU4VSystemTest(testtools.TestCase):
@@ -435,7 +437,7 @@ class PyU4VSystemTest(testtools.TestCase):
             category=SYSTEM, resource_level=SYMMETRIX,
             resource_level_id=self.system.array_id,
             resource_type=AUDIT_LOG_RECORD, resource=EXPORT_FILE,
-            payload=ref_req_body)
+            payload=ref_req_body, timeout=None)
         self.assertTrue(response[SUCCESS])
         self.assertIn(BINARY_DATA, response.keys())
         self.assertEqual(b'test_binary_data', response[BINARY_DATA])
@@ -456,7 +458,7 @@ class PyU4VSystemTest(testtools.TestCase):
                 category=SYSTEM, resource_level=SYMMETRIX,
                 resource_level_id=self.system.array_id,
                 resource_type=AUDIT_LOG_RECORD, resource=EXPORT_FILE,
-                payload=ref_req_body)
+                payload=ref_req_body, timeout=None)
             mck_write.assert_called_once_with(
                 data=ref_response, file_extension=constants.PDF_SUFFIX,
                 file_name='test', dir_path='test')
@@ -496,11 +498,11 @@ class PyU4VSystemTest(testtools.TestCase):
         self.assertIsInstance(iscsi_dir_list, list)
         self.assertEqual([self.data.director_id2], iscsi_dir_list)
 
-    def test_get_director_port_list(self):
+    def test_get_director_from_port_list(self):
         """Test get_director_port_list."""
         director_id = self.data.director_id1
         dir_port_list = self.system.get_director_port_list(
-            director_id=director_id, iscsi_target=False)
+            director_id=director_id, filters={'iscsi_endpoint': 'false'})
         self.assertTrue(dir_port_list)
         self.assertIsInstance(dir_port_list, list)
         self.assertEqual(self.data.port_key_list.get('symmetrixPortKey'),
@@ -547,3 +549,132 @@ class PyU4VSystemTest(testtools.TestCase):
         }
         mck_modify.assert_called_once_with(
             category=SYSTEM, resource_level=LOCAL_USER, payload=payload)
+
+    def test_get_director_port_list(self):
+        """Test get_director_port_list."""
+        port_key_list = self.system.get_director_port_list(
+            self.data.director_id1)
+        self.assertEqual(
+            self.data.port_key_list['symmetrixPortKey'], port_key_list)
+
+    def test_get_directory_port_iscsi_endpoint_list(self):
+        """Test get_directory_port_iscsi_endpoint_list."""
+        port_key_list = self.system.get_directory_port_iscsi_endpoint_list(
+            self.data.director_id1, True)
+        self.assertEqual(
+            self.data.port_key_list['symmetrixPortKey'], port_key_list)
+
+    def test_get_directory_port_iscsi_endpoint_list_invalid_input(self):
+        """Test get_directory_port_iscsi_endpoint_list."""
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.system.get_directory_port_iscsi_endpoint_list,
+            self.data.director_id1, None)
+
+    def test_get_port_identifier(self):
+        """Test get_port_identifier."""
+        wwn = self.system.get_port_identifier(
+            self.data.director_id1, self.data.port_id1)
+        self.assertEqual(self.data.wwnn1, wwn)
+
+    def test_get_port_identifier_key_exception(self):
+        """Test get_port_identifier with key exception."""
+        with mock.patch.object(self.system,
+                               'get_director_port',
+                               return_value={'test': 'data'}):
+            wwn = self.system.get_port_identifier(
+                self.data.director_id1, self.data.port_id1)
+            self.assertEqual(None, wwn)
+
+    def test_get_director_port(self):
+        """Test get_director_port."""
+        port_details = self.system.get_director_port(
+            self.data.director_id1, self.data.port_id1)
+        self.assertEqual(self.data.port_list[0], port_details)
+
+    def test_get_fa_directors(self):
+        """Test get_fa_directors."""
+        fa_director = self.data.director_id1
+        se_director = self.data.director_id2
+        directors = [fa_director, se_director]
+        with mock.patch.object(self.system, 'get_director_list',
+                               return_value=directors) as mck_get_dir:
+            fa_directors = self.system.get_fa_directors()
+            self.assertEqual([fa_director], fa_directors)
+            mck_get_dir.assert_called_once()
+
+    def test_get_or_directors(self):
+        """Test get_or_directors."""
+        or_director = self.data.or_director_id
+        ef_director = self.data.ef_director_id
+        em_director = self.data.em_director_id
+        directors = [or_director, ef_director, em_director]
+        with mock.patch.object(self.system, 'get_director_list',
+                               return_value=directors) as mck_get_dir:
+            or_directors = self.system.get_or_directors()
+            self.assertEqual([or_director], or_directors)
+            mck_get_dir.assert_called_once()
+
+    def test_get_target_wwns_from_port_group(self):
+        """Test get_target_wwns_from_port_group."""
+        with mock.patch.object(
+                self.system, 'get_port_group', return_value={
+                    'symmetrixPortKey': [{
+                        'directorId': self.data.director_id1,
+                        'portId': self.data.port_id1}]}) as mck_get_grp:
+            target_wwns = self.system.get_target_wwns_from_port_group(
+                self.data.port_group_name_f)
+            self.assertEqual([self.data.wwnn1], target_wwns)
+            mck_get_grp.assert_called_once_with(self.data.port_group_name_f)
+
+    def test_get_director(self):
+        """Test get_director."""
+        dir_details = self.system.get_director(self.data.director_id1)
+        self.assertEqual(self.data.director_info, dir_details)
+
+    def test_get_iscsi_ip_address_and_iqn(self):
+        """Test get_iscsi_ip_address_and_iqn."""
+        ip_addresses, iqn = self.system.get_iscsi_ip_address_and_iqn(
+            'SE-4E:0')
+        self.assertEqual([self.data.ip], ip_addresses)
+        self.assertEqual(self.data.initiator, iqn)
+
+    def test_get_any_director_port(self):
+        """Test get_any_director_port."""
+        return_val = [{constants.PORT_ID: self.data.port_id1}]
+        with mock.patch.object(
+            self.system, 'get_director_port_list',
+                return_value=return_val) as mck_get_dir_port:
+            port = self.system.get_any_director_port(
+                self.data.director_id1)
+            self.assertEqual(port, self.data.port_id1)
+            mck_get_dir_port.assert_called_once_with(
+                self.data.director_id1, filters=None)
+
+    def test_get_fc_director_port_list_v4(self):
+        """Test get_port_identifier with key exception."""
+        with mock.patch.object(self.system,
+                               'get_director_port_list',
+                               return_value=self.data.v4_port_list):
+            fc_director_port_list = self.system.get_fc_director_port_list_v4(
+                [self.data.or_director_id])
+            self.assertEqual(self.data.v4_port_list, fc_director_port_list)
+
+    @mock.patch.object(common.CommonFunctions, 'modify_resource')
+    def test_set_director_port_online(self, mck_modify):
+        """Test set_director_port_online."""
+        self.system.set_director_port_online(
+            director=self.data.or_director_id, port_no=self.data.port_id1,
+            port_online=False)
+        payload = {
+            'editPortActionParamType': {
+                'onlineOfflineParamType': {
+                    'port_online': False
+                }
+            }
+        }
+        mck_modify.assert_called_once_with(
+            category=SYSTEM, resource_level=SYMMETRIX,
+            resource_level_id=self.data.array,
+            resource_type=DIRECTOR, resource_type_id=self.data.or_director_id,
+            resource=PORT, resource_id=self.data.port_id1, payload=payload)

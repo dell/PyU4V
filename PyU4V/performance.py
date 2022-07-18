@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2021 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,16 +21,13 @@ import time
 
 from PyU4V import common
 from PyU4V import real_time
-from PyU4V.utils import constants
 from PyU4V.utils import decorators
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
-from PyU4V.utils import performance_category_map
 from PyU4V.utils import performance_constants as pc
 
 
 LOG = logging.getLogger(__name__)
-CATEGORY_MAP = performance_category_map.performance_data
 
 
 class PerformanceFunctions(object):
@@ -44,6 +41,7 @@ class PerformanceFunctions(object):
         self.get_request = self.common.get_resource
         self.put_request = self.common.modify_resource
         self.array_id = array_id
+        self.is_v4 = self.common.is_array_v4(self.array_id)
         self.timestamp = None
         self.recency = 7
 
@@ -399,6 +397,56 @@ class PerformanceFunctions(object):
             start_time = end_time - time_difference
         return start_time, end_time
 
+    def _get_rb_key(self, category):
+        """Get the required request body key for array/symmetrix ID.
+
+        In Unisphere 10.0 V4 arrays with new categories use arrayId instead
+        of symmetrixId, this call determines if the new key should be used
+        or the old one.
+
+        :param category: the target performance category -- str
+        :returns: the request body key -- str
+        """
+        key = pc.SYMM_ID
+        if category and category in pc.NEW_CATEGORIES:
+            key = pc.SYSTEM_ID
+
+        return key
+
+    def _run_v4_filesystem_request(self, category, request_body, keys=False,
+                                   metrics=False):
+        """Perform request to get keys or stats for file.
+
+        Filsystem endpoints are nested under /performance/file so do not follow
+        traditional layout of performance endpoints. This function makes the
+        changes required to get at the file endpoints.
+
+        :param category: performance category -- str
+        :param keys: if endpoint is for keys -- bool
+        :param metrics: if endpoint is for metrics -- bool
+        :returns: response -- dict
+        :raises: exception.InvalidInputException
+        """
+        if keys == metrics:
+            raise exception.InvalidInputException(
+                'You must specify set one of keys or metrics to True for '
+                '_run_v4_filesystem_request().')
+
+        rt = None
+        if 'FileSystem' in category:
+            rt = pc.FILESYSTEM
+        elif 'Interface' in category:
+            rt = pc.INTERFACE
+        elif 'Node' in category:
+            rt = pc.NODE
+        elif 'Server' in category:
+            rt = pc.SERVER
+
+        return self.post_request(
+            category=pc.PERFORMANCE, resource_level=pc.FILE,
+            resource_type=rt, object_type=pc.KEYS if keys else pc.METRICS,
+            payload=request_body)
+
     def get_performance_key_list(
             self, category, array_id=None, director_id=None,
             storage_group_id=None, storage_container_id=None,
@@ -418,7 +466,7 @@ class PerformanceFunctions(object):
         """
         request_body = dict()
         if array_id:
-            request_body[pc.SYMM_ID] = array_id
+            request_body[self._get_rb_key(category)] = array_id
         if director_id:
             request_body[pc.DIR_ID] = director_id
         if storage_group_id:
@@ -431,13 +479,17 @@ class PerformanceFunctions(object):
             request_body[pc.START_DATE] = start_time
             request_body[pc.END_DATE] = end_time
 
-        cat = CATEGORY_MAP.get(category.upper())
-        if cat:
-            request = self.get_request if pc.ARRAY in cat[pc.CATEGORY] else (
-                self.post_request)
-            response = request(
-                category=pc.PERFORMANCE, resource_level=cat[pc.CATEGORY],
-                resource_type=pc.KEYS, payload=request_body)
+        category_list = self.get_performance_categories_list(array_id)
+        if category in category_list:
+            if 'SDNAS' in category:
+                response = self._run_v4_filesystem_request(
+                    category, request_body, keys=True)
+            else:
+                request = self.get_request if pc.ARRAY in category else (
+                    self.post_request)
+                response = request(
+                    category=pc.PERFORMANCE, resource_level=category,
+                    resource_type=pc.KEYS, payload=request_body)
 
             if response:
                 return response
@@ -452,42 +504,53 @@ class PerformanceFunctions(object):
                 'please correct the category name before trying '
                 'again.'.format(cat=category))
 
-    @staticmethod
-    def get_performance_categories_list():
+    def get_performance_categories_list(self, array_id=None):
         """Get the list of supported performance categories.
 
+        :param array_id: array id -- str
         :returns: categories -- list
         """
-        categories = list()
-        for cat in CATEGORY_MAP:
-            category_info = CATEGORY_MAP.get(cat)
-            categories.append(category_info[pc.CATEGORY])
-        return categories
+        array_id = self.array_id if not array_id else array_id
+        response = self.get_request(
+            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+            resource_type=pc.HELP, resource_type_id=array_id,
+            resource=pc.CATEGORIES)
 
-    @staticmethod
-    def validate_category(category):
+        return response.get('categoryName', list()) if response else list()
+
+    def validate_category(self, category, array_id=None):
         """Check that a supplied category is valid.
 
+        :param category: performance category -- str
+        :param array_id: array id -- str
         :raises: InvalidInputException
         """
-        if category.upper() not in CATEGORY_MAP:
+        array_id = self.array_id if not array_id else array_id
+        category_list = self.get_performance_categories_list(array_id)
+        if category not in category_list:
             raise exception.InvalidInputException(
                 'Invalid category "{cat}" supplied, please correct the '
                 'supplied category and try again.'.format(cat=category))
 
-    @staticmethod
-    def get_performance_metrics_list(category, kpi_only=False):
+    def get_performance_metrics_list(self, category, kpi_only=False,
+                                     array_id=None):
         """For a given category, return the list of valid metrics.
 
         :param category: performance category -- str
         :param kpi_only: if only KPI metrics should be returned -- bool
+        :param array_id: array id -- str
         :returns: metrics -- list
         """
-        if CATEGORY_MAP.get(category.upper()):
-            user_cat = CATEGORY_MAP.get(category.upper())
-            kpi_list = user_cat[pc.METRICS_KPI] if kpi_only else (
-                user_cat[pc.METRICS_ALL])
-            return kpi_list
+        array_id = self.array_id if not array_id else array_id
+        category_list = self.get_performance_categories_list(array_id)
+        if category in category_list:
+            mode = 'Kpi' if kpi_only else 'All'
+            response = self.get_request(
+                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+                resource_type=pc.HELP, resource_type_id=array_id,
+                resource=category, object_type=pc.METRICS,
+                object_type_id=mode)
+            return response.get('metricName', list()) if response else list()
         else:
             raise exception.InvalidInputException(
                 'There was an issue retrieving the metrics for user '
@@ -650,8 +713,7 @@ class PerformanceFunctions(object):
         # 1. Validate category
         self.validate_category(category)
 
-        # 2. Format Time input - request body input need to retrieve object
-        # specific timestamps
+        # 2. Extract required IDs from request body
         if request_body:
             req_body_copy = copy.deepcopy(request_body)
             # Dir/Port Scenario
@@ -669,11 +731,13 @@ class PerformanceFunctions(object):
                         if match:
                             object_id = req_body_copy.get(match.group())
 
+        # 3. Format Time input - request body input need to retrieve object
+        # specific timestamps
         start_time, end_time = self.format_time_input(
             array_id=array_id, category=category, director_id=director_id,
             key_tgt_id=object_id, start_time=start_time, end_time=end_time)
 
-        # 3. Check recency
+        # 4. Check recency
         if recency:
             recency = recency if isinstance(recency, int) else self.recency
 
@@ -682,7 +746,7 @@ class PerformanceFunctions(object):
                     'Timestamp failed recency check of {rec} '
                     'minutes.'.format(rec=recency))
 
-        # 4. Format Metrics
+        # 5. Format Metrics
         if isinstance(metrics, list):
             metrics_list = metrics
         elif isinstance(metrics, str):
@@ -695,7 +759,7 @@ class PerformanceFunctions(object):
             else:
                 metrics_list = self.format_metrics(metrics)
 
-        # 5. Set data format
+        # 6. Set data format
         if data_format.upper() not in [pc.AVERAGE.upper(), pc.MAXIMUM.upper()]:
             raise exception.InvalidInputException(
                 'Invalid data format "{f}" specified, please use one of '
@@ -706,7 +770,8 @@ class PerformanceFunctions(object):
         else:
             data_format = pc.AVERAGE
 
-        # Add asset IDs to the return dict before additional key/values added
+        # 7. Add asset IDs to the return dict before additional key/values
+        # added
         if request_body:
             for k, v in request_body.items():
                 key = self.common.convert_to_snake_case(k)
@@ -715,14 +780,18 @@ class PerformanceFunctions(object):
         # 6. Set request body
         request_body[pc.START_DATE] = start_time
         request_body[pc.END_DATE] = end_time
-        request_body[pc.SYMM_ID] = str(array_id)
+        request_body[self._get_rb_key(category)] = str(array_id)
         request_body[pc.DATA_FORMAT] = str(data_format)
         request_body[pc.METRICS] = metrics_list
 
         # 7. Post Request
-        perf_response = self.post_request(
-            category=pc.PERFORMANCE, resource_level=category,
-            resource_type=pc.METRICS, payload=request_body)
+        if 'SDNAS' in category:
+            perf_response = self._run_v4_filesystem_request(
+                category, request_body, metrics=True)
+        else:
+            perf_response = self.post_request(
+                category=pc.PERFORMANCE, resource_level=category,
+                resource_type=pc.METRICS, payload=request_body)
 
         # 8 Format results response
         performance_details.update(
@@ -770,94 +839,30 @@ class PerformanceFunctions(object):
         return response.get(
             pc.DAYS_TO_FULL_RESULT, list()) if response else list()
 
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_threshold_categories',
-        9.1, 10.0)
-    def get_perf_threshold_categories(self):
+    def get_threshold_categories(self, array_id=None):
         """Get a list of performance threshold categories.
 
-        DEPRECATION NOTICE:
-        PerformanceFunctions.get_perf_threshold_categories() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_threshold_categories(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        This call is being refactored in favour of
-        performance.get_threshold_categories().
-
+        :param array_id: array serial number -- str
         :returns: performance threshold categories -- list
         """
-        return self.get_threshold_categories()
-
-    def get_threshold_categories(self):
-        """Get a list of performance threshold categories.
-
-        :returns: performance threshold categories -- list
-        """
+        array_id = array_id if array_id else self.array_id
         categories = self.get_request(
             category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=pc.CATEGORIES)
+            resource_type=array_id, resource=pc.CATEGORIES)
         return categories.get(pc.THRESH_CAT, list()) if categories else list()
 
-    @decorators.refactoring_notice(
-        'PyU4V.performance',
-        'PyU4V.performance.get_category_threshold_settings', 9.1, 10.0)
-    def get_perf_category_threshold_settings(self, category):
-        """Get performance threshold category settings.
-
-        DEPRECATION NOTICE:
-        PerformanceFunctions.get_perf_category_threshold_settings() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_threshold_category_settings(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param category: category id -- str
-        :returns: category settings --  dict
-        """
-        return self.get_threshold_category_settings(category)
-
-    def get_threshold_category_settings(self, category):
+    def get_threshold_category_settings(self, category, array_id=None):
         """Get performance threshold category settings.
 
         :param category: category id -- str
+        :param array_id: array serial number -- str
         :returns: category settings --  dict
         """
+        array_id = array_id if array_id else self.array_id
         return self.get_request(
             category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=pc.LIST, resource_type_id=category)
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.update_threshold', 9.1, 10.0)
-    def set_perf_threshold_and_alert(
-            self, category, metric, firstthreshold, secondthreshold, notify):
-        """Set performance thresholds and alerts.
-
-        DEPRECATION NOTICE:
-        PerformanceFunctions.set_perf_threshold_and_alert() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.update_threshold_settings(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Function to set performance alerts, suggested use with CSV file to
-        get parameter settings from user template. Set to check for 3 out of 5
-        samples before returning alert, if users need more control use
-        performance.update_threshold_settings().
-
-        :param category: category id -- str
-        :param metric: performance metric -- str
-        :param firstthreshold: first threshold -- int
-        :param secondthreshold: second threshold -- int
-        :param notify: notify user with alert -- bool
-        :returns: operation success details -- dict
-        """
-        return self.update_threshold_settings(
-            category=category, metric=metric, alert=notify,
-            first_threshold=str(firstthreshold),
-            second_threshold=str(secondthreshold),
-            first_threshold_occurrences=3, first_threshold_samples=5,
-            first_threshold_severity=pc.WARN_LVL,
-            second_threshold_occurrences=3, second_threshold_samples=5,
-            second_threshold_severity=pc.CRIT_LVL)
+            resource_type=pc.LIST, resource_type_id=array_id,
+            resource=category)
 
     def update_threshold_settings(
             self, category, metric, first_threshold, second_threshold,
@@ -927,20 +932,6 @@ class PerformanceFunctions(object):
                     int(threshold.get(pc.SEC_THRESH)),
                     threshold.get(pc.ALERT_ERR), threshold.get(pc.KPI)])
         file_handler.write_to_csv_file(output_csv_path, data_for_csv)
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.update_threshold', 9.1, 10.0)
-    def set_perfthresholds_csv(self, csvfilename):
-        """Set performance thresholds using a CSV file.
-
-        DEPRECATION NOTICE: PerformanceFunctions.set_perfthresholds_csv() will
-        be refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.set_thresholds_from_csv(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param csvfilename: the path to the csv file
-        """
-        self.set_thresholds_from_csv(csvfilename)
 
     def set_thresholds_from_csv(self, csv_file_path, kpi_only=True):
         """Set performance thresholds using a CSV file.
@@ -1178,23 +1169,26 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    def get_database_keys(self, array_id=None):
-        """List databases for the given array.
+    def get_cloud_provider_keys(self, array_id=None):
+        """List cache partitions for the given array.
 
         :param array_id: array id -- str
-        :returns: database info with first and last available dates -- list
+        :returns: cache partition info with first and last available
+                  dates -- list
         """
         array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.DB,
+        key_list = self.get_performance_key_list(category=pc.CLOUD_PROVIDER,
                                                  array_id=array_id)
-        return key_list.get(pc.DB_INFO, list()) if key_list else list()
+        return key_list.get(
+            pc.CLOUD_PROVIDER_INFO, list()) if key_list else list()
 
-    def get_database_stats(
-            self, database_id, metrics, array_id=None, data_format=pc.AVERAGE,
-            start_time=None, end_time=None, recency=None):
-        """List time range performance data for given database.
+    def get_cloud_provider_stats(
+            self, cloud_provider_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given cache partition.
 
-        :param database_id: database id -- str
+        :param cloud_provider_id: cache partition id -- str
         :param metrics: performance metrics to retrieve -- str or list
         :param array_id: array id -- str
         :param data_format: response data format 'Average' or 'Maximum' -- str
@@ -1204,9 +1198,9 @@ class PerformanceFunctions(object):
         :returns: performance metrics -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        request_body = {pc.DB_ID: database_id}
+        request_body = {pc.CLOUD_PROVIDER_ID: cloud_provider_id}
         return self.get_performance_stats(
-            array_id=array_id, category=pc.DB, metrics=metrics,
+            array_id=array_id, category=pc.CLOUD_PROVIDER, metrics=metrics,
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
@@ -1340,6 +1334,39 @@ class PerformanceFunctions(object):
         request_body = {pc.EDS_EMU_ID: emulation_id}
         return self.get_performance_stats(
             array_id=array_id, category=pc.EDS_EMU, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
+    def get_em_director_keys(self, array_id=None):
+        """List EM directors for the given array.
+
+        :param array_id: array id -- str
+        :returns: EDS director info with first and last available dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(category=pc.EM_DIR,
+                                                 array_id=array_id)
+        return key_list.get(pc.EM_DIR_INFO, list()) if key_list else list()
+
+    def get_em_director_stats(
+            self, director_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given EM director.
+
+        :param director_id: director id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.DIR_ID: director_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.EM_DIR, metrics=metrics,
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
@@ -1775,23 +1802,51 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @decorators.refactoring_notice(
+        'PyU4V.performance', 'get_endpoint_keys', 10.0, 10.2)
     def get_iscsi_target_keys(self, array_id=None):
         """List iSCSI targets for the given array.
+
+        DEPRECATION NOTICE:
+        PerformanceFunctions.get_iscsi_target_keys() will be
+        refactored in PyU4V version 10.2 in favour of
+        PerformanceFunctions.get_endpoint_keys().
+        For further information please consult PyU4V 10.0 release notes.
 
         :param array_id: array_id: array id -- str
         :returns: iSCSI interfaces info with first and last available
                   dates -- list
         """
         array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.ISCSI_TGT,
+        key_list = self.get_performance_key_list(category=pc.ENDPOINT,
                                                  array_id=array_id)
-        return key_list.get(pc.ISCSI_TGT_INFO, list()) if key_list else list()
+        return key_list.get(pc.ENDPOINT_INFO, list()) if key_list else list()
 
+    def get_endpoint_keys(self, array_id=None):
+        """List endpoints for the given array.
+
+        :param array_id: array_id: array id -- str
+        :returns: Endpoint info with first and last available
+                  dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(category=pc.ENDPOINT,
+                                                 array_id=array_id)
+        return key_list.get(pc.ENDPOINT_INFO, list()) if key_list else list()
+
+    @decorators.refactoring_notice(
+        'PyU4V.performance', 'get_endpoint_stats', 10.0, 10.2)
     def get_iscsi_target_stats(
             self, iscsi_target_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
             recency=None):
         """List time range performance data for given iSCSI target.
+
+        DEPRECATION NOTICE:
+        PerformanceFunctions.get_iscsi_target_keys() will be
+        refactored in PyU4V version 10.2 in favour of
+        PerformanceFunctions.get_endpoint_stats().
+        For further information please consult PyU4V 10.0 release notes.
 
         :param iscsi_target_id: iSCSI target id -- str
         :param metrics: performance metrics to retrieve -- str or list
@@ -1803,9 +1858,31 @@ class PerformanceFunctions(object):
         :returns: performance metrics -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        request_body = {pc.ISCSI_TGT_ID_METRICS: iscsi_target_id}
+        request_body = {pc.ENDPOINT_ID_METRICS: iscsi_target_id}
         return self.get_performance_stats(
-            array_id=array_id, category=pc.ISCSI_TGT, metrics=metrics,
+            array_id=array_id, category=pc.ENDPOINT, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
+    def get_endpoint_stats(
+            self, endpoint_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given iSCSI target.
+
+        :param endpoint_id: iSCSI target id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.ENDPOINT_ID_METRICS: endpoint_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.ENDPOINT, metrics=metrics,
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
@@ -1845,8 +1922,8 @@ class PerformanceFunctions(object):
     def get_port_group_keys(self, array_id=None):
         """List port group for the given array.
 
-        :param array_id: array id -- str
-        :returns: port group info with first and last available dates -- list
+        :param array_id: array_id: array id -- str
+        :returns: port group info with first and last available
         """
         array_id = self.array_id if not array_id else array_id
         key_list = self.get_performance_key_list(category=pc.PG,
@@ -2044,6 +2121,146 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    def get_sdnas_filesystem_keys(self, array_id=None):
+        """List SDNAS Filesystems for the given array.
+
+        :param array_id: array id -- str
+        :returns: SDNAS Filesystem info with first and last available
+                  dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(
+            category=pc.SDNAS_FS, array_id=array_id)
+        return key_list.get(
+            pc.SDNAS_FS_INFO, list()) if key_list else list()
+
+    def get_sdnas_filesystem_stats(
+            self, sdnas_filesystem_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given SDNAS Filesystem.
+
+        :param sdnas_filesystem_id: SDNAS Filesystem id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.SDNAS_FS_ID: sdnas_filesystem_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.SDNAS_FS, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
+    def get_sdnas_interface_keys(self, array_id=None):
+        """List SDNAS Interfaces for the given array.
+
+        :param array_id: array id -- str
+        :returns: SDNAS Interface info with first and last available
+                  dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(
+            category=pc.SDNAS_INTERFACE, array_id=array_id)
+        return key_list.get(
+            pc.SDNAS_INTERFACE_INFO, list()) if key_list else list()
+
+    def get_sdnas_interface_stats(
+            self, sdnas_interface_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given SDNAS Interface.
+
+        :param sdnas_interface_id: SDNAS Interface id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.SDNAS_INTERFACE_ID: sdnas_interface_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.SDNAS_INTERFACE, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
+    def get_sdnas_node_keys(self, array_id=None):
+        """List SDNAS Nodes for the given array.
+
+        :param array_id: array id -- str
+        :returns: SDNAS Interface info with first and last available
+                  dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(
+            category=pc.SDNAS_NODE, array_id=array_id)
+        return key_list.get(
+            pc.SDNAS_NODE_INFO, list()) if key_list else list()
+
+    def get_sdnas_node_stats(
+            self, sdnas_node_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given SDNAS Node.
+
+        :param sdnas_node_id: SDNAS Node id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.SDNAS_NODE_ID: sdnas_node_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.SDNAS_NODE, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
+    def get_sdnas_server_keys(self, array_id=None):
+        """List SDNAS Servers for the given array.
+
+        :param array_id: array id -- str
+        :returns: SDNAS Interface info with first and last available
+                  dates -- list
+        """
+        array_id = self.array_id if not array_id else array_id
+        key_list = self.get_performance_key_list(
+            category=pc.SDNAS_SERVER, array_id=array_id)
+        return key_list.get(
+            pc.SDNAS_SERVER_INFO, list()) if key_list else list()
+
+    def get_sdnas_server_stats(
+            self, sdnas_server_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given SDNAS Server.
+
+        :param sdnas_server_id: SDNAS Server id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.SDNAS_SERVER_ID: sdnas_server_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.SDNAS_SERVER, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
     def get_storage_container_keys(self, array_id=None):
         """List storage containers for the given array.
 
@@ -2215,268 +2432,36 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_frontend_director_keys',
-        9.1, 10.0)
-    def get_fe_director_list(self):
-        """Get list of all FE Directors.
+    def get_zhyperlink_port_keys(self, array_id=None):
+        """List zHyperLink Ports for the given array.
 
-        DEPRECATION NOTICE: PerformanceFunctions.get_fe_director_list() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_frontend_director_keys(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :returns: all FE directors -- list
-        """
-        dir_list = list()
-        response = self.get_frontend_director_keys(array_id=self.array_id)
-        for director in response:
-            dir_list.append(director.get(pc.DIR_ID))
-        return dir_list
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_frontend_port_keys',
-        9.1, 10.0)
-    def get_fe_port_list(self):
-        """Get a list of all front end ports in the array.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_fe_port_list() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_frontend_port_keys(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :returns: all FE directors and ports -- list
-        """
-        port_list = list()
-        dir_list = self.get_fe_director_list()
-        for director in dir_list:
-            director_ports = dict()
-            response = self.get_frontend_port_keys(
-                array_id=self.array_id, director_id=director)
-            for port in response:
-                director_ports[port.get(pc.PORT_ID)] = director
-            port_list.append(director_ports)
-        return port_list
-
-    @decorators.deprecation_notice('PyU4V.performance', 9.1, 10.0)
-    def get_fe_port_util_last4hrs(self, dir_id, port_id):
-        """Get FE port percent busy stats for last 4 hours.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_fe_port_list() will be
-        deprecated in PyU4V version 10.0. For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param dir_id: director id -- str
-        :param port_id: port id -- str
-        :returns: port details -- dict
-        """
-        start_time, end_time = self.get_timestamp_by_hour(hours_difference=4)
-        return self.get_frontend_port_stats(
-            array_id=self.array_id, director_id=dir_id, port_id=port_id,
-            metrics='PercentBusy', start_time=start_time, end_time=end_time)
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_frontend_director_stats',
-        9.1, 10.0)
-    def get_fe_director_metrics(self, start_date, end_date,
-                                director, dataformat=pc.AVERAGE):
-        """Get one or more metrics for front end directors.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_fe_director_metrics() will
-        be refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_frontend_director_stats(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
-        :param director: FE director -- str
-        :param dataformat: pc.AVERAGE, 'Maximum' -- str
-        :returns: performance data -- dict
-        """
-        return self.get_frontend_director_stats(
-            array_id=self.array_id, director_id=director, metrics=pc.KPI,
-            start_time=start_date, end_time=end_date, data_format=dataformat)
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_frontend_port_stats',
-        9.1, 10.0)
-    def get_fe_port_metrics(self, start_date, end_date, director_id,
-                            port_id, dataformat, metriclist):
-        """Get one or more metrics for front end director ports.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_fe_port_metrics() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_frontend_port_stats(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
-        :param director_id: director id -- str
-        :param port_id: port id -- str
-        :param dataformat: 'Average', 'Maximum' -- str
-        :param metriclist: performance metrics -- list
-        :returns: performance data -- dict
-        """
-        return self.get_frontend_port_stats(
-            array_id=self.array_id, director_id=director_id, port_id=port_id,
-            metrics=metriclist, data_format=dataformat, start_time=start_date,
-            end_time=end_date)
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_array_stats', 9.1, 10.0)
-    def get_array_metrics(self, start_date, end_date, array_id=None):
-        """Get array performance information.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_array_metrics() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_array_stats(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
         :param array_id: array id -- str
-        :returns: performance details -- dict
+        :returns: thin pools with first and last available dates -- list
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_array_stats(
-            array_id=array_id, start_time=start_date, end_time=end_date,
-            metrics=pc.KPI)
+        key_list = self.get_performance_key_list(
+            category=pc.ZHYPER_LINK_PORT, array_id=array_id)
+        return key_list.get(
+            pc.ZHYPER_LINK_PORT_INFO, list()) if key_list else list()
 
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_storage_group_stats',
-        9.1, 10.0)
-    def get_storage_group_metrics(self, sg_id, start_date, end_date):
-        """Get storage group performance information.
+    def get_zhyperlink_port_stats(
+            self, zhyperlink_port_id, metrics, array_id=None,
+            data_format=pc.AVERAGE, start_time=None, end_time=None,
+            recency=None):
+        """List time range performance data for given zHyperLink Port.
 
-        DEPRECATION NOTICE: PerformanceFunctions.get_storage_group_metrics()
-        will be refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_storage_group_stats(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param sg_id: storage group id -- str
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
-        :returns: performance details -- dict
+        :param zhyperlink_port_id: zHyperLink Port id -- str
+        :param metrics: performance metrics to retrieve -- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
         """
-        return self.get_storage_group_stats(
-            array_id=self.array_id, storage_group_id=sg_id, metrics=pc.KPI,
-            start_time=start_date, end_time=end_date)
-
-    @decorators.deprecation_notice('PyU4V.performance', 9.1, 10.0)
-    def get_all_fe_director_metrics(self, start_date, end_date):
-        """Get performance information of all front end directors.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_all_fe_director_metrics()
-        will be  deprecated in PyU4V version 10.0. For further information
-        please consult PyU4V 9.1 release notes.
-
-        :param start_date: EPOCH Time in Milliseconds -- str
-        :param end_date: EPOCH Time in Milliseconds -- str
-        :returns: sg performance details -- dict
-        """
-        dir_list = self.get_fe_director_list()
-        all_directors = list()
-        for fe_director in dir_list:
-            all_directors.append(self.get_frontend_director_stats(
-                array_id=self.array_id, director_id=fe_director,
-                metrics=pc.KPI, start_time=start_date, end_time=end_date))
-        return all_directors
-
-    @decorators.deprecation_notice('PyU4V.performance', 9.1, 10.0)
-    def get_director_info(self, director_id, start_date, end_date):
-        """Get director performance information.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_director_info()
-        will be  deprecated in PyU4V version 10.0. For further information
-        please consult PyU4V 9.1 release notes.
-
-        :param director_id: director id -- str
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
-        :returns: performance details -- dict
-        """
-        director_type = ''
-        perf_metrics_payload = dict()
-        if any(x in director_id for x in pc.BE_DIR_TAGS):
-            perf_metrics_payload = self.get_backend_director_stats(
-                array_id=self.array_id, director_id=director_id,
-                metrics=pc.KPI, start_time=start_date, end_time=end_date)
-            director_type = 'BE'
-
-        elif any(x in director_id for x in pc.FE_DIR_TAGS):
-            perf_metrics_payload = self.get_frontend_director_stats(
-                array_id=self.array_id, director_id=director_id,
-                metrics=pc.KPI, start_time=start_date, end_time=end_date)
-            director_type = 'FE'
-
-        elif any(x in director_id for x in pc.RDF_DIR_TAGS):
-            perf_metrics_payload = self.get_rdf_director_stats(
-                array_id=self.array_id, director_id=director_id,
-                metrics=pc.KPI, start_time=start_date, end_time=end_date)
-            director_type = 'RDF'
-
-        elif any(x in director_id for x in pc.IM_DIR_TAGS):
-            perf_metrics_payload = self.get_im_director_stats(
-                array_id=self.array_id, director_id=director_id,
-                metrics=pc.KPI, start_time=start_date, end_time=end_date)
-            director_type = 'IM'
-
-        elif any(x in director_id for x in pc.EDS_DIR_TAGS):
-            perf_metrics_payload = self.get_eds_director_stats(
-                array_id=self.array_id, director_id=director_id,
-                metrics=pc.KPI, start_time=start_date, end_time=end_date)
-            director_type = 'EDS'
-
-        # Get director info level data...
-        director_info = self.get_request(
-            category=constants.SYSTEM,
-            resource_level=constants.SYMMETRIX,
-            resource_level_id=self.array_id,
-            resource_type=constants.DIRECTOR, resource_type_id=director_id)
-
-        for k, v in director_info.items():
-            key = self.common.convert_to_snake_case(k)
-            perf_metrics_payload[key] = v
-
-        perf_metrics_payload['director_type'] = director_type
-
-        return perf_metrics_payload
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_port_group_stats',
-        9.1, 10.0)
-    def get_port_group_metrics(self, pg_id, start_date, end_date):
-        """Get Port Group performance information.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_port_group_metrics() will
-        be refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_port_group_stats(). For further information
-        please consult PyU4V 9.1 release notes.
-
-        :param pg_id: port group id -- str
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
-        :returns: port group performance details -- dict
-        """
-        return self.get_port_group_stats(
-            array_id=self.array_id, port_group_id=pg_id, metrics=pc.KPI,
-            start_time=start_date, end_time=end_date)
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'PyU4V.performance.get_host_stats', 9.1, 10.0)
-    def get_host_metrics(self, host, start_date, end_date):
-        """Get host performance information.
-
-        DEPRECATION NOTICE: PerformanceFunctions.get_host_metrics() will be
-        refactored in PyU4V version 10.0 in favour of
-        PerformanceFunctions.get_host_stats(). For further information please
-        consult PyU4V 9.1 release notes.
-
-        :param host: host name -- str
-        :param start_date: timestamp in milliseconds since epoch -- str
-        :param end_date: timestamp in milliseconds since epoch -- str
-        :returns: port group performance details -- dict
-        """
-        return self.get_host_stats(
-            host_id=host, metrics=pc.KPI, array_id=self.array_id,
-            start_time=start_date, end_time=end_date)
+        array_id = self.array_id if not array_id else array_id
+        request_body = {pc.PORT_ID: zhyperlink_port_id}
+        return self.get_performance_stats(
+            array_id=array_id, category=pc.ZHYPER_LINK_PORT, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)

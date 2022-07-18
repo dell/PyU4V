@@ -17,9 +17,7 @@ import logging
 
 from PyU4V.common import CommonFunctions
 from PyU4V.provisioning import ProvisioningFunctions
-from PyU4V.utils import console
 from PyU4V.utils import constants
-from PyU4V.utils import decorators
 from PyU4V.utils import exception
 
 LOG = logging.getLogger(__name__)
@@ -109,44 +107,32 @@ class ReplicationFunctions(object):
                       'for array {arr}'.format(arr=self.array_id))
         return snap_capability
 
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'get_storage_group_srdf_details', 9.1, 10.0)
-    def get_storage_group_rep(self, storage_group_name):
-        """Given a name, return storage group srdf info.
-
-        DEPRECATION NOTICE: ReplicationFunctions.get_storage_group_rep()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.get_storage_group_srdf_details(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param storage_group_name: storage group id -- str
-        :returns: storage group replication details -- dict
-        """
-        return self.get_storage_group_replication_details(storage_group_name)
-
-    def get_storage_group_replication_details(self, storage_group_id):
-        """Given a storage group id, return storage group srdf info.
+    def get_storage_group_replication_details(
+            self, storage_group_id, return_remote_sg_info=False,
+            exclude_sl_snaps=False, exclude_manual_snaps=False):
+        """Given a storage group id, return storage group srdf info and
+        snapshot information.
 
         :param storage_group_id: storage group id -- str
+        :param return_remote_sg_info: returns additional information for keys
+               remote_storage_groups -- bool
+        :param exclude_sl_snaps: excludes details of any service level snaps
+               from the return -- bool
+        :param exclude_manual_snaps: excludes details of any manual snaps from
+               the return -- bool
         :returns: storage group replication details -- dict
         """
+        filters = {
+            'include_remote_sgs': return_remote_sg_info,
+            'exclude_sl_snaps': exclude_sl_snaps,
+            'exclude_manual_snaps': exclude_manual_snaps
+        }
+
         return self.get_resource(
             category=REPLICATION,
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'get_replication_enabled_storage_groups',
-        9.1, 10.0)
-    def get_storage_group_rep_list(self, has_snapshots=False, has_srdf=False):
-        """Return list of storage groups with replication.
-
-        :param has_snapshots: return only storage groups with snapshots
-        :param has_srdf: return only storage groups with SRDF
-        :returns: list of storage groups with associated replication
-        """
-        return self.get_replication_enabled_storage_groups(has_snapshots,
-                                                           has_srdf)
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
+            params=filters)
 
     def get_replication_enabled_storage_groups(self, has_snapshots=False,
                                                has_srdf=False):
@@ -169,22 +155,6 @@ class ReplicationFunctions(object):
             response.get('name', list()) if response else list())
         return storage_group_list
 
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'get_storage_group_snapshot_list', 9.1, 10.0)
-    def get_storagegroup_snapshot_list(self, storagegroup_id):
-        """Get a list of snapshots associated with a storage group.
-
-        DEPRECATION NOTICE:
-        ReplicationFunctions.get_storagegroup_snapshot_list() will be
-        refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.get_storage_group_snapshot_list(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param storagegroup_id: storage group id -- str
-        :returns: snapshot ids -- list
-        """
-        return self.get_storage_group_snapshot_list(storagegroup_id)
-
     def get_storage_group_snapshot_list(self, storage_group_id):
         """Get a list of snapshots associated with a storage group.
 
@@ -200,30 +170,6 @@ class ReplicationFunctions(object):
         except exception.ResourceNotFoundException:
             return list()
         return response.get('name', list()) if response else list()
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'create_storage_group_snap', 9.1, 10.0)
-    def create_storagegroup_snap(
-            self, sg_name, snap_name, ttl=None, hours=False):
-        """Create a snapVx snapshot of a storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.create_storagegroup_snap()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.create_storage_group_snap(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        To establish a new generation of an existing SnapVX snapshot for a
-        source SG, use the same name as the existing snapshot for the new
-        snapshot.
-
-        :param sg_name: source storage group id -- str
-        :param snap_name: snapshot name -- str
-        :param ttl: Time To Live -- str
-        :param hours: if TTL is in hours instead of days -- bool
-        :returns: snapshot details -- dict
-        """
-        return self.create_storage_group_snapshot(sg_name, snap_name, ttl,
-                                                  hours)
 
     def create_storage_group_snapshot(
             self, storage_group_id, snap_name, ttl=None, hours=False,
@@ -255,31 +201,6 @@ class ReplicationFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
             resource=SNAPSHOT, payload=payload)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions',
-        'get_storage_group_snapshot_generation_list', 9.1, 10.0)
-    def get_storagegroup_snapshot_generation_list(
-            self, storagegroup_id, snap_name):
-        """Get a snapshot and its generation count information for an sg.
-
-        DEPRECATION NOTICE:
-        ReplicationFunctions.get_storagegroup_snapshot_generation_list()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.get_storage_group_snapshot_generation_list(). For
-        further information please consult PyU4V 9.1 release notes.
-
-        The most recent snapshot will have a gen number of 0. The oldest
-        snapshot will have a gen number = genCount - 1 (i.e. if there are 4
-        generations of particular snapshot, the oldest will have a gen num
-        of 3).
-
-        :param storagegroup_id: name of the storage group -- str
-        :param snap_name: the name of the snapshot -- str
-        :returns: generation numbers -- list
-        """
-        return self.get_storage_group_snapshot_generation_list(
-            storagegroup_id, snap_name)
 
     def get_storage_group_snapshot_generation_list(
             self, storage_group_id, snap_name):
@@ -427,8 +348,10 @@ class ReplicationFunctions(object):
         sg_list = self.get_replication_enabled_storage_groups(
             has_snapshots=True)
         for sg in sg_list:
-            snap_list = self.get_storage_group_replication_details(sg)
-            for snapshot_name in snap_list['snapVXSnapshots']:
+            sg_snap_info = self.get_storage_group_replication_details(sg)
+            if not sg_snap_info.get('snapVXSnapshots'):
+                continue
+            for snapshot_name in sg_snap_info.get('snapVXSnapshots'):
                 snap_id_list = (
                     self.get_storage_group_snapshot_snap_id_list(
                         sg, snapshot_name))
@@ -457,37 +380,6 @@ class ReplicationFunctions(object):
                                 'snap_creation_time': snap_creation_time})
                             expired_snap_list.append(expired_snap_details)
         return expired_snap_list
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'modify_storage_group_snapshot', 9.1, 10.0)
-    def modify_storagegroup_snap(
-            self, source_sg_id, target_sg_id, snap_name, link=False,
-            unlink=False, restore=False, new_name=None, gen_num=0,
-            _async=False):
-        """Modify a storage group snapshot.
-
-        DEPRECATION NOTICE: ReplicationFunctions.modify_storagegroup_snap()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.modify_storage_group_snapshot(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Please note that only one parameter can be modified at a time.
-        Default action is not to create full copy
-
-        :param source_sg_id: source sg id -- str
-        :param target_sg_id: target sg id (Can be None) -- str
-        :param snap_name: snapshot name -- str
-        :param link: link action required -- bool
-        :param unlink: unlink action required -- bool
-        :param restore: restore action required -- bool
-        :param new_name: new name for the snapshot -- str
-        :param gen_num: generation number -- int
-        :param _async: if call should be async -- bool
-        :returns: modified storage group snapshot details -- dict
-        """
-        return self.modify_storage_group_snapshot(
-            source_sg_id, target_sg_id, snap_name, link, unlink, restore,
-            new_name, gen_num, _async)
 
     def modify_storage_group_snapshot(
             self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
@@ -543,7 +435,7 @@ class ReplicationFunctions(object):
     def modify_storage_group_snapshot_by_snap_id(
             self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
             snap_id, link=False, unlink=False, restore=False, new_name=None,
-            _async=False, relink=False):
+            _async=False, relink=False, remote=False, force=False):
         """Modify a storage group snapshot using it's snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -562,16 +454,28 @@ class ReplicationFunctions(object):
         :param new_name: new name for the snapshot -- str
         :param _async: if call should be async -- bool
         :param relink: relink action required -- bool
+        :param remote: used when linking/relinking to established R1 Storage
+                       group,using this feature acknowledges that the data
+                       from snapshot will be transmitted to R2 site,removes
+                       the need to suspend/establish SRDF as part of link
+                       operation.Caution should be applied -- bool
+        :param force: forces operation to succeed that would normally
+                      fail.Example terminate snapshots in SG where devices
+                      have been added,using symforce will bypass the device
+                      count check.Should be used with caution. -- bool
         :returns: modified storage group snapshot details -- dict
         """
         payload = dict()
         if link:
             payload = ({'action': 'Link', 'link': {
                 'storage_group_name': tgt_storage_grp_id,
+                'remote': remote,
+                'force': force,
                 'copy': False}})
         elif unlink:
             payload = ({'action': 'Unlink', 'unlink': {
-                'storage_group_name': tgt_storage_grp_id}})
+                'storage_group_name': tgt_storage_grp_id,
+                'force': force}})
         elif restore:
             payload = {'action': 'Restore'}
         elif new_name:
@@ -579,7 +483,9 @@ class ReplicationFunctions(object):
                         'action': 'Rename'})
         elif relink:
             payload = ({'action': 'Relink', 'relink': {
-                'storage_group_name': tgt_storage_grp_id}})
+                'storage_group_name': tgt_storage_grp_id,
+                'remote': remote,
+                'force': force}})
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.modify_resource(
@@ -706,7 +612,7 @@ class ReplicationFunctions(object):
         :param gen_num: snapshot generation number -- int
         :returns: snapshot details -- dict
         """
-        return self.modify_storagegroup_snap(
+        return self.modify_storage_group_snapshot(
             sg_id, unlink_sg_name, snap_name,
             unlink=True, gen_num=gen_num, _async=_async)
 
@@ -727,23 +633,6 @@ class ReplicationFunctions(object):
         return self.modify_storage_group_snapshot_by_snap_id(
             sg_id, unlink_sg_name, snap_name, snap_id,
             unlink=True, _async=_async)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'delete_storage_group_snapshot', 9.1, 10.0)
-    def delete_storagegroup_snapshot(self, storagegroup, snap_name, gen_num=0):
-        """Delete the snapshot of a storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.delete_storagegroup_snapshot()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.delete_storage_group_snapshot(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param storagegroup: storage group id -- str
-        :param snap_name: snapshot name -- str
-        :param gen_num: snapshot generation number -- int
-        """
-
-        self.delete_storage_group_snapshot(storagegroup, snap_name, gen_num)
 
     def delete_storage_group_snapshot(self, storage_group_id, snap_name,
                                       gen=0):
@@ -782,38 +671,13 @@ class ReplicationFunctions(object):
             resource=SNAPSHOT, resource_id=snap_name,
             object_type=SNAP_ID, object_type_id=snap_id)
 
-    @decorators.deprecation_notice('ReplicationFunctions', 9.1, 10.0)
-    def choose_snapshot_from_list_in_console(self, storagegroup_id):
-        """Allow a user to select a snapshot from a list.
-
-        DEPRECATION NOTICE:
-        ReplicationFunctions.choose_snapshot_from_list_in_console() will be
-        deprecated in PyU4V version 10.0. For further information please
-        consult PyU4V 9.1 release notes.
-
-        :param storagegroup_id: storage group id -- str
-        :returns: chosen snapshot details -- dict
-        """
-        snap_list = self.get_storagegroup_snapshot_list(storagegroup_id)
-        return console.choose_from_list('snapshot', snap_list)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'is_volume_in_replication_session', 9.1, 10.0)
-    def is_vol_in_rep_session(self, device_id):
-        """Check if a volume is in a replication session.
-
-        DEPRECATION NOTICE: ReplicationFunctions.is_vol_in_rep_session() will
-        be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.is_volume_in_replication_session(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param device_id: device id -- str
-        :returns: snap vx target, snap vx source, rdf group -- bool, bool, list
-        """
-        return self.is_volume_in_replication_session(device_id)
-
     def is_volume_in_replication_session(self, device_id):
         """Check if a volume is in a replication session.
+
+        NOTE: There may be a time delay between the snapshot creation
+        and the object model update.  See the following test for usage:
+        tests.ci_tests.test_pyu4v_ci_replication.CITestReplication.
+        test_is_volume_in_replication_session
 
         :param device_id: device id -- str
         :returns: snap vx target, snap vx source, rdf group -- bool, bool, list
@@ -843,17 +707,41 @@ class ReplicationFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=array_id,
             resource_type=RDFG, resource_type_id=rdf_number)
 
-    def get_rdf_group_list(self, array_id=None):
+    def get_rdf_group_list(self, array_id=None, remote_symmetrix_id=None,
+                           rdf_mode=None, volume_count=None, group_type=None):
         """Get rdf group list from array.
 
-        :param array_id: array serial number -- str
+        :param array_id: local array serial number -- str
+        :param remote_symmetrix_id: Optional value that filters returned list
+                                    to display only SRDF Groups between the
+                                    local array and specified remote
+                                    array, 12 Digit array_id
+                                    e.g. 000297900330  -- str
+        :param rdf_mode: Optional value that filters returned list to display
+                         only SRDF Groups of a specified RDF mode,
+                         Synchronous, Asynchronous, Active, or AdaptiveCopy
+                         -- str
+        :param volume_count: Optional value that filters returned list to
+                             display only SRDF Groups that have a specified
+                             volume count -- int
+        :param group_type: 	Optional value that filters returned list to
+                            display only SRDF Groups of a specified group type
+                            valid options are Witness, Global_Mirror,
+                            Data_Migration, VVOL_ASYNC, MetroDR_Metro,
+                            MetroDR_DR, Metro, Star_Normal,
+                            Star_Recovery, Sqar_Normal, Sqar_Recovery,
+                            PPRC, FILE_SYNC, FILE_ASYNC, Dynamic -- str
         :returns: rdf group list -- list
         """
+        filters = {'remote_symmetrix_id': remote_symmetrix_id,
+                   'rdf_mode': rdf_mode,
+                   'volume_count': volume_count,
+                   'group_type': group_type}
         array_id = self.array_id if not array_id else array_id
         response = self.get_resource(
             category=REPLICATION,
             resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDFG)
+            resource_type=RDFG, params=filters)
         return response.get('rdfGroupID', list()) if response else list()
 
     def get_rdf_group_volume(self, rdf_number, device_id):
@@ -881,26 +769,6 @@ class ReplicationFunctions(object):
             resource_type=RDFG, resource_type_id=rdf_number,
             resource=VOLUME)
         return response.get('name', list()) if response else list()
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'are_volumes_rdf_paired', 9.1, 10.0)
-    def are_vols_rdf_paired(self, remote_array, device_id,
-                            target_device, rdf_group):
-        """Check if a pair of volumes are RDF paired.
-
-        DEPRECATION NOTICE: ReplicationFunctions.are_vols_rdf_paired() will
-        be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.are_volumes_rdf_paired(). For further information
-        please consult PyU4V 9.1 release notes.
-
-        :param remote_array: remote array serial number -- str
-        :param device_id: device id -- str
-        :param target_device: target device id -- str
-        :param rdf_group: rdf group number -- int
-        :returns: paired, state -- bool, string
-        """
-        return self.are_volumes_rdf_paired(remote_array, device_id,
-                                           target_device, rdf_group)
 
     def are_volumes_rdf_paired(self, remote_array, device_id,
                                target_device, rdf_group):
@@ -944,21 +812,6 @@ class ReplicationFunctions(object):
                 number = None
         return number
 
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'get_storage_group_srdf_group_list', 9.1, 10.0)
-    def get_storagegroup_srdfg_list(self, storagegroup_id):
-        """Get the rdf group numbers for a storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.get_storagegroup_srdfg_list()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.get_storagegroup_srdfg_list(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param storagegroup_id: replicated storage group id -- str
-        :returns: rdf group numbers -- list
-        """
-        return self.get_storage_group_srdf_group_list(storagegroup_id)
-
     def get_storage_group_srdf_group_list(self, storage_group_id,
                                           array_id=None):
         """Get the rdf group numbers for a storage group.
@@ -975,23 +828,6 @@ class ReplicationFunctions(object):
             resource=RDFG)
         return response.get('rdfgs', list()) if response else list()
 
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'get_storage_group_rdf_details', 9.1, 10.0)
-    def get_storagegroup_srdf_details(self, storagegroup_id, rdfg_num):
-        """Get the details for an rdf group on a particular storage group.
-
-        DEPRECATION NOTICE:
-        ReplicationFunctions.get_storagegroup_srdf_details() will be refactored
-        in PyU4V version 10.0 in favour of
-        ReplicationFunctions.get_storage_group_rdf_details(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param storagegroup_id: replicated storage group id -- str
-        :param rdfg_num: rdf group number -- int
-        :returns: storage group rdf details -- dict
-        """
-        return self.get_storage_group_srdf_details(storagegroup_id, rdfg_num)
-
     def get_storage_group_srdf_details(self, storage_group_id, rdfg_num):
         """Get the details for an rdf group on a particular storage group.
 
@@ -1004,36 +840,6 @@ class ReplicationFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
             resource=RDFG, resource_id=rdfg_num)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'create_storage_group_srdf_pairings',
-        9.1, 10.0)
-    def create_storagegroup_srdf_pairings(
-            self, storagegroup_id, remote_sid, srdfmode, establish=None,
-            _async=False, rdfg_number=None, forceNewRdfGroup=False):
-        """RDF protect a storage group.
-
-        DEPRECATION NOTICE:
-        ReplicationFunctions.create_storagegroup_srdf_pairings() will be
-        refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.create_storage_group_srdf_pairings(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Valid modes are 'Active', 'AdaptiveCopyDisk', 'Synchronous', and
-        'Asynchronous'.
-
-        :param storagegroup_id: storage group id -- str
-        :param remote_sid: remote array id -- str
-        :param srdfmode: replication mode -- str
-        :param establish: establish srdf -- bool
-        :param _async: if call should be async -- bool
-        :param rdfg_number: rdf group number -- int
-        :param forceNewRdfGroup: if operation should use force -- bool
-        :returns: storage group rdf details -- dict
-        """
-        return self.create_storage_group_srdf_pairings(
-            storagegroup_id, remote_sid, srdfmode, establish, _async,
-            rdfg_number, forceNewRdfGroup)
 
     def create_storage_group_srdf_pairings(
             self, storage_group_id, remote_sid, srdf_mode, establish=None,
@@ -1068,33 +874,6 @@ class ReplicationFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
             resource=RDFG, payload=rdf_payload)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'modify_storage_group_srdf', 9.1, 10.0)
-    def modify_storagegroup_srdf(
-            self, storagegroup_id, action, rdfg, options=None, _async=False):
-        """Modify the state of a rdf group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.modify_storagegroup_srdf()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.modify_storage_group_srdf(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        This may be a long running task depending on the size of the SRDF
-        group, can switch to async call if required. Available actions are
-        'Establish', 'Split', 'Suspend', 'Restore', 'Resume', 'Failover',
-        'Failback', 'Swap', 'SetBias', and 'SetMode'.
-
-        :param storagegroup_id: storage group id -- str
-        :param action: the rdf action --str
-        :param rdfg: rdf group number -- int
-        :param options: srdf options e.g.
-                        {setMode': {'mode': 'Asynchronous'}} -- dict
-        :param _async: if call should be async -- bool
-        :returns: storage group rdf details -- dict
-        """
-        return self.modify_storage_group_srdf(
-            storagegroup_id, action, rdfg, options, _async)
 
     def modify_storage_group_srdf(
             self, storage_group_id, action, srdf_group_number, options=None,
@@ -1136,35 +915,11 @@ class ReplicationFunctions(object):
             payload.update(ASYNC_UPDATE)
         if options and action:
             payload.update(options)
-
         return self.modify_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=self.array_id, resource_type=STORAGEGROUP,
-            resource_type_id=storage_group_id, resource=RDFG,
-            resource_id=srdf_group_number, payload=payload)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'suspend_storage_group_srdf', 9.1, 10.0)
-    def suspend_storagegroup_srdf(self, storagegroup_id, rdfg_no,
-                                  suspend_options=None, _async=False):
-        """Suspend IO on the links for the given storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.suspend_storagegroup_srdf()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.suspend_storage_group_srdf(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Optional boolean parameters to set are "bypass", "metroBias", "star",
-        "immediate", "hop2", "consExempt", "force", "symForce".
-
-        :param storagegroup_id: storage group id -- str
-        :param rdfg_no: rdf group number -- int
-        :param suspend_options: suspend parameters -- dict
-        :param _async: if call should be async -- bool
-        :returns: storage group rdf details -- dict
-        """
-        return self.suspend_storage_group_srdf(
-            storagegroup_id, rdfg_no, suspend_options, _async)
+            category=REPLICATION,
+            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
+            resource=RDFG, resource_id=srdf_group_number, payload=payload)
 
     def suspend_storage_group_srdf(self, storage_group_id, srdf_group_number,
                                    suspend_options=None, _async=False):
@@ -1182,30 +937,6 @@ class ReplicationFunctions(object):
         return self.modify_storage_group_srdf(
             storage_group_id, 'suspend', srdf_group_number,
             options=suspend_options, _async=_async)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'establish_storage_group_srdf', 9.1, 10.0)
-    def establish_storagegroup_srdf(
-            self, storagegroup_id, rdfg_no,
-            establish_options=None, _async=False):
-        """Establish io on the links for the given storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.establish_storagegroup_srdf()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.establish_storage_group_srdf(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Optional boolean parameters to set are 'bypass', 'metroBias', 'star',
-        'hop2', 'force', 'symForce', 'full'.
-
-        :param storagegroup_id: storage group id -- str
-        :param rdfg_no: rdf group number -- int
-        :param establish_options: establish parameters -- dict
-        :param _async: if call should be async -- bool
-        :returns: storage group rdf details -- dict
-        """
-        return self.establish_storage_group_srdf(
-            storagegroup_id, rdfg_no, establish_options, _async)
 
     def establish_storage_group_srdf(
             self, storage_group_id, srdf_group_number,
@@ -1225,30 +956,6 @@ class ReplicationFunctions(object):
             storage_group_id, 'establish', srdf_group_number,
             options=establish_options, _async=_async)
 
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'failover_storage_group_srdf', 9.1, 10.0)
-    def failover_storagegroup_srdf(
-            self, storagegroup_id, rdfg_no,
-            failover_options=None, _async=False):
-        """Failover a given storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.failover_storagegroup_srdf()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.failover_storage_group_srdf(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Optional boolean parameters to set are 'bypass', 'star', 'restore',
-        'immediate', 'hop2', 'force', 'symForce', 'remote', 'establish'.
-
-        :param storagegroup_id: storage group id -- str
-        :param rdfg_no: rdf group number -- int
-        :param failover_options: failover parameters -- dict
-        :param _async: if call should be async -- bool
-        :returns: storage group rdf details -- dict
-        """
-        return self.failover_storage_group_srdf(
-            storagegroup_id, rdfg_no, failover_options, _async)
-
     def failover_storage_group_srdf(
             self, storage_group_id, srdf_group_number,
             failover_options=None, _async=False):
@@ -1266,30 +973,6 @@ class ReplicationFunctions(object):
         return self.modify_storage_group_srdf(
             storage_group_id, 'failover', srdf_group_number,
             options=failover_options, _async=_async)
-
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'failback_storage_group_srdf', 9.1, 10.0)
-    def failback_storagegroup_srdf(
-            self, storagegroup_id, rdfg_no, failback_options=None,
-            _async=False):
-        """Failback a given storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.failback_storagegroup_srdf()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.failback_storage_group_srdf(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        Optional boolean parameters to set are 'bypass', 'recoverPoint',
-        'star', 'hop2', 'force', 'symForce', 'remote'.
-
-        :param storagegroup_id: storage group id -- str
-        :param rdfg_no: rdf group number -- int
-        :param failback_options: failback parameters -- dict
-        :param _async: if call should be async -- bool
-        :returns: storage group rdf details -- dict
-        """
-        return self.failback_storage_group_srdf(
-            storagegroup_id, rdfg_no, failback_options, _async)
 
     def failback_storage_group_srdf(
             self, storage_group_id, srdf_group_number, failback_options=None,
@@ -1309,23 +992,6 @@ class ReplicationFunctions(object):
             storage_group_id, 'failback', srdf_group_number,
             options=failback_options, _async=_async)
 
-    @decorators.refactoring_notice(
-        'ReplicationFunctions', 'delete_storage_group_srdf', 9.1, 10.0)
-    def delete_storagegroup_srdf(
-            self, storagegroup_id, rdfg_num=None):
-        """Delete srdf pairings for a given storage group.
-
-        DEPRECATION NOTICE: ReplicationFunctions.delete_storagegroup_srdf()
-        will be refactored in PyU4V version 10.0 in favour of
-        ReplicationFunctions.delete_storage_group_srdf(). For further
-        information please consult PyU4V 9.1 release notes.
-
-        :param storagegroup_id: storage group id -- str
-        :param rdfg_num: rdf group number -- int
-        :returns: storage group rdf details -- dict
-        """
-        self.delete_storage_group_srdf(storagegroup_id, rdfg_num)
-
     def delete_storage_group_srdf(
             self, storage_group_id, srdf_group_number, filters=None):
         """Delete srdf pairings for a given storage group.
@@ -1337,11 +1003,12 @@ class ReplicationFunctions(object):
                         usage example filters={'keepR1': 'true'} -- dict
         :returns: storage group rdf details -- dict
         """
-        self.delete_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=self.array_id, resource_type=STORAGEGROUP,
-            resource_type_id=storage_group_id, resource=RDFG,
-            resource_id=srdf_group_number, params=filters)
+        if srdf_group_number:
+            self.delete_resource(
+                category=REPLICATION, resource_level=SYMMETRIX,
+                resource_level_id=self.array_id, resource_type=STORAGEGROUP,
+                resource_type_id=storage_group_id, resource=RDFG,
+                resource_id=srdf_group_number, params=filters)
 
     def get_rdf_director_list(self, array_id=None, filters=None):
         """Finds out directors configured for SRDF on the specified array.
@@ -1352,10 +1019,13 @@ class ReplicationFunctions(object):
         """
         if not array_id:
             array_id = self.array_id
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDF_DIRECTOR, params=filters)
+        try:
+            response = self.get_resource(
+                category=REPLICATION,
+                resource_level=SYMMETRIX, resource_level_id=array_id,
+                resource_type=RDF_DIRECTOR, params=filters)
+        except exception.ResourceNotFoundException:
+            return list()
         director_list = (
             response.get('directorId', list()) if response else list())
         return director_list

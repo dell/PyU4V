@@ -22,9 +22,7 @@ import socket
 import time
 
 from PyU4V.utils import constants
-from PyU4V.utils import decorators
 from PyU4V.utils import exception
-from PyU4V.utils import file_handler
 
 LOG = logging.getLogger(__name__)
 
@@ -205,12 +203,11 @@ class CommonFunctions(object):
                     data=exception_message)
         return task
 
-    def build_target_uri(self, *args, **kwargs):
+    def build_target_uri(self, **kwargs):
         """Build the target URI.
 
         This function calls into _build_uri() for access outside this class.
 
-        :param args: arguments passed in to form URI -- str
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -224,12 +221,11 @@ class CommonFunctions(object):
         :key object_type_id: optional name of resource -- str
         :returns: target URI -- str
         """
-        return self._build_uri(*args, **kwargs)
+        return self._build_uri(**kwargs)
 
-    def _build_uri(self, *args, **kwargs):
+    def _build_uri(self, **kwargs):
         """Build the target URI.
 
-        :param args: arguments passed in to form URI -- str
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -244,77 +240,45 @@ class CommonFunctions(object):
         :returns: target URI -- str
         """
         target_uri, version = str(), None
-        # Old method - has arguments passed which define URI
-        if args:
-            target_uri = self._build_uri_args(*args, **kwargs)
-        # New method - new method is to have only keyword arguments passed
-        elif not args and kwargs:
-            if kwargs.get('category') not in ['performance', 'common']:
-                version = self._build_uri_get_version(kwargs.get('version'),
-                                                      kwargs.get('no_version'))
-            if version:
-                target_uri += '/{version}'.format(version=version)
 
-            target_uri += '/{category}'.format(
-                category=kwargs.get('category'))
-
-            if kwargs.get('resource_level'):
-                target_uri += '/{resource_level}'.format(
-                    resource_level=kwargs.get('resource_level'))
-
-            if kwargs.get('resource_level_id'):
-                target_uri += '/{resource_level_id}'.format(
-                    resource_level_id=kwargs.get('resource_level_id'))
-
-            if kwargs.get('resource_type'):
-                target_uri += '/{resource_type}'.format(
-                    resource_type=kwargs.get('resource_type'))
-                if kwargs.get('resource_type_id'):
-                    target_uri += '/{resource_type_id}'.format(
-                        resource_type_id=kwargs.get('resource_type_id'))
-
-            if kwargs.get('resource'):
-                target_uri += '/{resource}'.format(
-                    resource=kwargs.get('resource'))
-                if kwargs.get('resource_id'):
-                    target_uri += '/{resource_id}'.format(
-                        resource_id=kwargs.get('resource_id'))
-
-            if kwargs.get('object_type'):
-                target_uri += '/{object_type}'.format(
-                    object_type=kwargs.get('object_type'))
-                if kwargs.get('object_type_id'):
-                    target_uri += '/{object_type_id}'.format(
-                        object_type_id=kwargs.get('object_type_id'))
-
-        return target_uri
-
-    @decorators.deprecation_notice('CommonFunctions', 9.1, 10.0)
-    def _build_uri_args(self, *args, **kwargs):
-        """Legacy method for building target URI.
-
-        DEPRECATION NOTICE: CommonFunctions._build_uri_args() will be
-        deprecated in PyU4V version 10.0 in favour of
-        CommonFunctions._build_uri() with kwargs only. For further information
-        please consult PyU4V 9.1 release notes.
-
-        :param args: arguments passed in to form URI -- str
-        :param kwargs: key word arguments passed in to form URI -- str
-        :returns: the target URI -- str
-        """
-        version = self._build_uri_get_version(kwargs.get('version'),
-                                              kwargs.get('no_version'))
-        array_id, category, resource_type = args[0], args[1], args[2]
-        resource_name = kwargs.get('resource_name')
-        target_uri = str()
-
+        if kwargs.get('category') not in ['performance', 'common']:
+            version = self._build_uri_get_version(kwargs.get('version'),
+                                                  kwargs.get('no_version'))
         if version:
-            target_uri += ('/{version}'.format(version=version))
-        target_uri += ('/{cat}/symmetrix/{array_id}/{res_type}'.format(
-            cat=category, array_id=array_id, res_type=resource_type))
-        if resource_name:
-            target_uri += '/{resource_name}'.format(
-                resource_name=kwargs.get('resource_name'))
+            target_uri += '/{version}'.format(version=version)
+
+        target_uri += '/{category}'.format(
+            category=kwargs.get('category'))
+
+        if kwargs.get('resource_level'):
+            target_uri += '/{resource_level}'.format(
+                resource_level=kwargs.get('resource_level'))
+
+        if kwargs.get('resource_level_id'):
+            target_uri += '/{resource_level_id}'.format(
+                resource_level_id=kwargs.get('resource_level_id'))
+
+        if kwargs.get('resource_type'):
+            target_uri += '/{resource_type}'.format(
+                resource_type=kwargs.get('resource_type'))
+            if kwargs.get('resource_type_id'):
+                target_uri += '/{resource_type_id}'.format(
+                    resource_type_id=kwargs.get('resource_type_id'))
+
+        if kwargs.get('resource'):
+            target_uri += '/{resource}'.format(
+                resource=kwargs.get('resource'))
+            if kwargs.get('resource_id'):
+                target_uri += '/{resource_id}'.format(
+                    resource_id=kwargs.get('resource_id'))
+
+        if kwargs.get('object_type'):
+            target_uri += '/{object_type}'.format(
+                object_type=kwargs.get('object_type'))
+            if kwargs.get('object_type_id'):
+                target_uri += '/{object_type_id}'.format(
+                    object_type_id=kwargs.get('object_type_id'))
+
         return target_uri
 
     def _build_uri_get_version(self, version=None, no_version=False):
@@ -366,7 +330,7 @@ class CommonFunctions(object):
         :key params: query parameters -- dict
         :returns: resource object -- dict
         """
-        target_uri = self._build_uri(*args, **kwargs)
+        target_uri = self._build_uri(**kwargs)
         resource_type = None
         if args:
             resource_type = args[2]
@@ -392,7 +356,7 @@ class CommonFunctions(object):
         :key payload: query parameters -- dict
         :returns: resource object -- dict
         """
-        target_uri = self._build_uri(*args, **kwargs)
+        target_uri = self._build_uri(**kwargs)
         message, status_code = self.request(
             target_uri, POST, request_object=kwargs.get('payload'))
         resource_type = None
@@ -422,7 +386,7 @@ class CommonFunctions(object):
         :key payload: query parameters
         :returns: resource object -- dict
         """
-        target_uri = self._build_uri(*args, **kwargs)
+        target_uri = self._build_uri(**kwargs)
         message, status_code = self.request(
             target_uri, PUT, request_object=kwargs.get('payload'))
         resource_type = None
@@ -451,10 +415,10 @@ class CommonFunctions(object):
         :key object_type_id: optional name of resource -- str
         :key payload: query parameters
         """
-        target_uri = self._build_uri(*args, **kwargs)
+        target_uri = self._build_uri(**kwargs)
         message, status_code = self.request(
             target_uri, DELETE, request_object=kwargs.get('payload'),
-            params=kwargs.get('params'))
+            params=kwargs.get('payload'))
         resource_type = None
         if args:
             resource_type = args[2]
@@ -485,7 +449,7 @@ class CommonFunctions(object):
         target_uri = self._build_uri(**kwargs)
         response, status_code = self.rest_client.file_transfer_request(
             method=POST, download=True, uri=target_uri,
-            r_obj=kwargs.get('payload'))
+            timeout=kwargs.get('timeout'), r_obj=kwargs.get('payload'))
         try:
             message = response.raw.reason
             operation = ('download {resource_type} resource'.format(
@@ -540,50 +504,10 @@ class CommonFunctions(object):
                     uri=target_uri))
         return response_content
 
-    @staticmethod
-    @decorators.refactoring_notice(
-        'CommonFunctions', 'utils.file_handler.create_list_from_file',
-        9.1, 10.0)
-    def create_list_from_file(file_name):
-        """Given a file, create a list from its contents.
-
-        DEPRECATION NOTICE: CommonFunctions.create_list_from_file() will be
-        refactored in PyU4V version 10.0 in favour of
-        utils.file_handler.create_list_from_file(). For further information
-        please consult PyU4V 9.1 release notes.
-
-        :param file_name: path to the file -- str
-        :returns: file contents -- list
-        """
-        return file_handler.create_list_from_file(file_name)
-
-    @staticmethod
-    @decorators.refactoring_notice(
-        'CommonFunctions', 'utils.file_handler.read_csv_values', 9.1, 10.0)
-    def read_csv_values(file_name, delimiter=',', quotechar='|'):
-        """Read any csv file with headers.
-
-        DEPRECATION NOTICE: CommonFunctions.read_csv_values() will be
-        refactored in PyU4V version 10.0 in favour of
-        utils.file_handler.read_csv_values(). For further information please
-        consult PyU4V 9.1 release notes.
-
-        You can extract the multiple lists from the headers in the CSV file.
-        In your own script, call this function and assign to data variable,
-        then extract the lists to the variables.
-
-        :param file_name: path to the file -- str
-        :param delimiter: delimiter kwarg for csv DictReader object -- str
-        :param quotechar: quotechar kwarg for csv DictReader object -- str
-        :returns: file contents -- dict
-        """
-        return file_handler.read_csv_values(
-            file_name, delimiter=delimiter, quotechar=quotechar)
-
     def get_uni_version(self):
         """Get the unisphere version from the server.
 
-        :returns: version and major_version e.g. "V9.2.0.0", "92" -- str, str
+        :returns: version and major_version e.g. "V10.0.0.0", "100" -- str, str
         """
         version, major_version = None, None
         response = self.get_resource(category=VERSION, no_version=True)
@@ -662,54 +586,6 @@ class CommonFunctions(object):
                                                                  start, end)
         return full_response
 
-    @decorators.refactoring_notice(
-        'CommonFunctions', 'WLPFunctions.get_wlp_information', 9.1, 10.0)
-    def get_wlp_information(self, array_id):
-        """Get the latest timestamp from WLP for processing new Workloads.
-
-        DEPRECATION NOTICE: CommonFunctions.get_wlp_information() will be
-        refactored in PyU4V version 10.0 in favour of
-        WLPFunctions.get_wlp_information(). For further information please
-        consult PyU4V 9.1 release notes.
-
-        :param array_id: array id -- str
-        :returns: wlp details -- dict
-        """
-        response = self.get_resource(category=WLP, resource_level=SYMMETRIX,
-                                     resource_level_id=array_id)
-        return response if response else dict()
-
-    @decorators.refactoring_notice(
-        'CommonFunctions', 'WLPFunctions.get_headroom', 9.1, 10.0)
-    def get_headroom(self, array_id, workload=None, srp=None, slo=None):
-        """Get the Remaining Headroom Capacity.
-
-        DEPRECATION NOTICE: CommonFunctions.get_headroom() will be refactored
-        in PyU4V version 10.0 in favour of WLPFunctions.get_headroom(). For
-        further information please consult PyU4V 9.1 release notes.
-
-        Get the headroom capacity for a given srp/ slo/ workload combination.
-
-        :param array_id: array id -- str
-        :param workload: the workload type -- str
-        :param srp: storage resource pool id -- str
-        :param slo: service level id -- str
-        :returns: headroom details -- dict
-        """
-        params = dict()
-        if srp:
-            params['srp'] = srp
-        if slo:
-            params['slo'] = slo
-        if workload:
-            params['workloadtype'] = workload
-
-        response = self.get_resource(
-            category=WLP,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=HEADROOM, params=params)
-        return response.get('gbHeadroom', list()) if response else list()
-
     @staticmethod
     def check_ipv4(ipv4):
         """Check if a given string is a valid ipv6 address
@@ -769,3 +645,23 @@ class CommonFunctions(object):
         pattern2 = r'^[0-9]{13}$'
         return re.match(pattern1, in_epoch_timestamp) or re.match(
             pattern2, in_epoch_timestamp)
+
+    def is_array_v4(self, array_id):
+        """Check to see if array is a v4
+
+        :param array_id: the array serial number
+        :returns: bool
+        """
+
+        is_v4 = False
+        array_details = self.get_array(array_id)
+
+        if array_details:
+            ucode_version = array_details.get(
+                'ucode') or array_details.get('microcode')
+            if ucode_version:
+                major_version = ucode_version.split('.')[0]
+                if major_version >= constants.UCODE_6079:
+                    is_v4 = True
+
+        return is_v4

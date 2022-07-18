@@ -461,6 +461,7 @@ class FakeRequestsSession(object):
             # Days to Full scenario
             category = None
 
+        # Call is for Real-Time related data
         if performance_section == pc.REAL_TIME:
             if category == pc.HELP:
                 if uri_components[-1] == pc.CATEGORIES:
@@ -474,9 +475,20 @@ class FakeRequestsSession(object):
             elif category == pc.METRICS:
                 return_object = self.p_data.rt_perf_metrics
 
+        # Helper method for retrieval of categories and metrics
+        elif category == pc.HELP:
+            # Retrieve list of performance categories
+            if uri_components[-1] == pc.CATEGORIES:
+                return_object = self.p_data.perf_cats
+            # Retrieve list of performance metrics
+            elif uri_components[-2] == pc.METRICS:
+                return_object = self.p_data.perf_metrics
+
+        # If the call is for diagnostic level metrics
         elif category == pc.METRICS:
             return_object = self.p_data.perf_metrics_resp
 
+        # If the call is for diagnostic level keys
         elif category == pc.KEYS:
             if performance_section == pc.ARRAY:
                 return_object = self.p_data.array_keys
@@ -490,10 +502,10 @@ class FakeRequestsSession(object):
                 return_object = self.p_data.board_keys
             elif performance_section == pc.CACHE_PART:
                 return_object = self.p_data.cache_partition_keys
+            elif performance_section == pc.CLOUD_PROVIDER:
+                return_object = self.p_data.cloud_provider_keys
             elif performance_section == pc.CORE:
                 return_object = self.p_data.core_keys
-            elif performance_section == pc.DB:
-                return_object = self.p_data.database_keys
             elif performance_section == pc.DEV_GRP:
                 return_object = self.p_data.device_group_keys
             elif performance_section == pc.DISK:
@@ -506,6 +518,8 @@ class FakeRequestsSession(object):
                 return_object = self.p_data.eds_dir_keys
             elif performance_section == pc.EDS_EMU:
                 return_object = self.p_data.eds_emu_keys
+            elif performance_section == pc.EM_DIR:
+                return_object = self.p_data.em_dir_keys
             elif performance_section == pc.EXT_DIR:
                 return_object = self.p_data.ext_dir_keys
             elif performance_section == pc.EXT_DISK:
@@ -566,30 +580,49 @@ class FakeRequestsSession(object):
                 return_object = self.p_data.storage_resource_by_pool_keys
             elif performance_section == pc.THIN_POOL:
                 return_object = self.p_data.thin_pool_keys
+            elif performance_section == pc.ZHYPER_LINK_PORT:
+                return_object = self.p_data.zhyperlink_port_keys
+            elif performance_section == pc.ENDPOINT:
+                return_object = self.p_data.endpoint_keys
 
-        else:
-            # Days to full settings
-            if pc.DAYS_TO_FULL in uri_components:
-                return_object = self.p_data.days_to_full_resp
+        # SDNAS call
+        elif performance_section == 'file':
+            # Return SDNAS performance stats
+            if uri_components[-1] == pc.METRICS:
+                return_object = self.p_data.perf_metrics_resp
+            # Return SDNAS keys
+            elif uri_components[-1] == pc.KEYS:
+                if category == pc.FILESYSTEM:
+                    return_object = self.p_data.sdnas_filesystem_keys
+                elif category == pc.INTERFACE:
+                    return_object = self.p_data.sdnas_interface_keys
+                elif category == pc.NODE:
+                    return_object = self.p_data.sdnas_node_keys
+                elif category == pc.SERVER:
+                    return_object = self.p_data.sdnas_server_keys
 
-            # Threshold Settings
-            elif pc.THRESHOLD in uri_components:
-                if pc.CATEGORIES in uri_components:
-                    return_object = self.p_data.threshold_cat_resp
-                elif pc.LIST in uri_components:
-                    return_object = self.p_data.threshold_settings_resp
-                    return_object[pc.CATEGORY] = uri_components[-1]
+        # Days to full call
+        elif pc.DAYS_TO_FULL in uri_components:
+            return_object = self.p_data.days_to_full_resp
 
-            # Array registration details
-            elif pc.ARRAY in uri_components:
-                if pc.REG in uri_components:
-                    return_object = self.p_data.array_is_registered_true
-                elif pc.REG_DETAILS in uri_components:
-                    return_object = self.p_data.array_reg_details_enabled
-                elif pc.REGISTER in uri_components:
-                    return_object = self.p_data.array_register_success
-                elif pc.BACKUP in uri_components:
-                    return_object = self.p_data.array_backup_success
+        # Threshold call
+        elif pc.THRESHOLD in uri_components:
+            if pc.CATEGORIES in uri_components:
+                return_object = self.p_data.threshold_cat_resp
+            elif pc.LIST in uri_components:
+                return_object = self.p_data.threshold_settings_resp
+                return_object[pc.CATEGORY] = uri_components[-1]
+
+        # Array registration call
+        elif pc.ARRAY in uri_components:
+            if pc.REG in uri_components:
+                return_object = self.p_data.array_is_registered_true
+            elif pc.REG_DETAILS in uri_components:
+                return_object = self.p_data.array_reg_details_enabled
+            elif pc.REGISTER in uri_components:
+                return_object = self.p_data.array_register_success
+            elif pc.BACKUP in uri_components:
+                return_object = self.p_data.array_backup_success
 
         return status_code, return_object
 

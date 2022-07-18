@@ -39,8 +39,9 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '9.2.1.6'
-UNISPHERE_VERSION = '92'
+PYU4V_VERSION = '10.0.0.0'
+UNISPHERE_VERSION = '100'
+UCODE_6079 = '6079'
 VERSION = 'version'
 ITERATOR = 'Iterator'
 PAGE = 'page'
@@ -203,6 +204,41 @@ RESERVED_CAP_PERCENT = 'reserved_cap_percent'
 TOTAL_SRDF_DSE_ALLOCATED_CAP_GB = 'total_srdf_dse_allocated_cap_gb'
 RDFA_DSE = 'rdfa_dse'
 DISK_GROUP_ID = 'diskGroupId'
+
+# V3 SRP constants
+SUBSCRIBED_ALLOCATED_TB = 'subscribed_allocated_tb'
+SUBSCRIBED_TOTAL_TB = 'subscribed_total_tb'
+SNAPSHOT_MODIFIED_TB = 'snapshot_modified_tb'
+SNAPSHOT_TOTAL_TB = 'snapshot_total_tb'
+USABLE_USED_TB = 'usable_used_tb'
+USABLE_TOTAL_TB = 'usable_total_tb'
+EFFECTIVE_USED_CAPACITY_PERCENT = 'effective_used_capacity_percent'
+
+# V4 SRP constants
+FBA_SRP_CAPACITY = 'fba_srp_capacity'
+SERVICE_LEVELS = 'service_levels'
+USED_TB = 'used_tb'
+TOTAL_TB = 'total_tb'
+FREE_TB = 'free_tb'
+EFFECTIVE_CAPACITY_TB = 'effective_capacity_tb'
+PROVISIONED_TB = 'provisioned_tb'
+PROVISIONED_PERCENT = 'provisioned_percent'
+EFFECTIVE_USED_PERCENT = 'effective_used_percent'
+PHYSICAL_CAPACITY = 'physical_capacity'
+EFFECTIVE_CAPACITY_RESOURCES = 'effective_capacity_resources'
+EFFECTIVE_CAPACITY_USAGE = 'effective_capacity_usage'
+PHYSICAL_USED_PERCENT = 'physical_used_percent'
+REDUCING_DATA_PERCENT = 'reducing_data_percent'
+SAVINGS_TB = 'savings_tb'
+EFFECTIVE_USED = 'effective_used'
+PHYSICAL_USED = 'physical_used'
+SNAPSHOT_USED_TB = 'snapshot_used_tb'
+USER_USED_TB = 'user_used_tb'
+ENABLED_AND_REDUCING_TB = 'enabled_and_reducing_tb'
+ENABLED_AND_UNREDUCIBLE_TB = 'enabled_and_unreducible_tb'
+ENABLED_AND_UNEVALUATED_TB = 'enabled_and_unevaluated_tb'
+DATA_REDUCTION_DISABLED_TB = 'data_reduction_disabled_tb'
+DISABLED_AND_UNREDUCED_TB = 'disabled_and_unreduced_tb'
 
 # Storage Group constants
 STORAGE_GROUP_ID_CAMEL = 'storageGroupId'
@@ -390,3 +426,9 @@ COUNT = 'count'
 
 # Date/Time
 STR_TIME_FORMAT = '%Y%m%d%H%M%S'
+
+# Port structure
+PORT_STRUCTURE = [{
+    'directorId': str,
+    'portId': str}
+]

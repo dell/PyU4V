@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2021 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         """setUp."""
         super(CITestProvisioning, self).setUp()
         self.provisioning = self.conn.provisioning
+        self.is_v4 = self.common.is_array_v4(self.conn.array_id)
 
     def test_get_array(self):
         """Test get_array."""
@@ -41,6 +42,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_director(self):
         """Test get_director."""
+        if self.is_v4:
+            self.skipTest(
+                'Skipping test_get_director for V4. '
+                'It is recommended to use system.SystemFunctions.get_director '
+                'instead.')
         availability = 'availability'
         director_number = 'director_number'
         director_slot_number = 'director_slot_number'
@@ -53,7 +59,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.assertIn(director_slot_number, director_details)
             self.assertIn(constants.DIRECTOR_ID, director_details)
             self.assertIn(constants.NUM_OF_PORTS, director_details)
-            self.assertIn(constants.NUM_OF_CORES, director_details)
+            if not self.is_v4:
+                self.assertIn(constants.NUM_OF_CORES, director_details)
+                self.assertIsInstance(
+                    director_details[constants.NUM_OF_CORES], int)
             self.assertIsInstance(director_details[availability], str)
             self.assertIsInstance(director_details[director_number], int)
             self.assertIsInstance(director_details[director_slot_number], int)
@@ -61,13 +70,16 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.assertIsInstance(director_id, str)
             self.assertIsInstance(
                 director_details[constants.NUM_OF_PORTS], int)
-            self.assertIsInstance(
-                director_details[constants.NUM_OF_CORES], int)
             self.assertIsNotNone(re.match(constants.DIRECTOR_SEARCH_PATTERN,
                                           director_id))
 
     def test_get_director_list(self):
         """Test get_director_list."""
+        if self.is_v4:
+            self.skipTest(
+                'Skipping test_get_director_list for V4. '
+                'It is recommended to use '
+                'system.SystemFunctions.get_director_list instead.')
         director_list = self.provisioning.get_director_list()
         self.assertTrue(len(director_list) > 0)
         self.assertIsInstance(director_list, list)
@@ -78,6 +90,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_director_port(self):
         """Test get_director_port."""
+        if self.is_v4:
+            self.skipTest(
+                'Skipping test_get_director_port for V4. '
+                'It is recommended to use '
+                'system.SystemFunctions.get_director_port instead.')
         director_port_list = self.provisioning.get_port_list()
         for director_port in director_port_list:
             director = director_port[constants.DIRECTOR_ID]
@@ -85,9 +102,15 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             port_details = self.provisioning.get_director_port(
                 director, port)
             self._validate_director_port(port_details)
+            break
 
     def test_get_director_port_list(self):
         """Test get_director_port_list."""
+        if self.is_v4:
+            self.skipTest(
+                'Skipping test_get_director_port_list for V4. '
+                'It is recommended to use '
+                'system.SystemFunctions.get_director_port_list instead.')
         director_list = self.provisioning.get_director_list()
         director = director_list[0]
         director_port_list = self.provisioning.get_director_port_list(
@@ -108,6 +131,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_port_identifier(self):
         """Test get_port_identifier."""
+        if self.is_v4:
+            self.skipTest(
+                'Skipping test_get_port_identifier for V4. '
+                'It is recommended to use '
+                'system.SystemFunctions.get_port_identifier instead.')
         director_port_list = self.provisioning.get_port_list()
         for director_port in director_port_list:
             director = director_port[constants.DIRECTOR_ID]
@@ -116,6 +144,12 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 director, port)
             if port_identifier is not None:
                 self.assertIsInstance(port_identifier, str)
+                # search_pattern = '{wwn}|{iqn}'.format(
+                #     wwn=constants.WWN_SEARCH_PATTERN_16,
+                #     iqn=constants.ISCSI_IQN_SEARCH_PATTERN)
+                # self.assertIsNotNone(
+                #     re.match(search_pattern, port_identifier))
+                # break
 
     def test_create_empty_host(self):
         """Test create_host create empty host."""
@@ -193,6 +227,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             constants.ENABLED: constants.TRUE}
         self.provisioning.modify_host(
             host_name, host_flag_dict=host_flags)
+        # Model update delay
+        time.sleep(1)
         host_details = self.provisioning.get_host(host_name)
         enabled_flags = host_details[constants.ENABLED_FLAGS]
         self.assertIn(constants.SPC2_PROTOCOL_VERSION_FLAG, enabled_flags)
@@ -253,24 +289,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         host_list = self.provisioning.get_host_list()
         self.assertNotIn(host_name, host_list)
 
-    def test_get_mvs_from_host(self):
-        """Test get_mvs_from_host."""
-        masking_view_list = self.provisioning.get_masking_view_list()
-        # _Cloud masking views throw errors with GET requests
-        masking_view_list = [mv for mv in masking_view_list if
-                             '_CLOUD' not in mv]
-        for masking_view in masking_view_list:
-            masking_view_details = (
-                self.provisioning.get_masking_view(masking_view))
-            if constants.HOST_ID in masking_view_details:
-                host_id = masking_view_details[constants.HOST_ID]
-            else:
-                host_id = masking_view_details[constants.HOST_GROUP_ID]
-            host_masking_views = (
-                self.provisioning.get_mvs_from_host(host_id))
-            self.assertIsInstance(host_masking_views, list)
-            self.assertIn(masking_view, host_masking_views)
-
     def test_get_masking_views_from_host(self):
         """Test get_masking_views_from_host."""
         masking_view_list = self.provisioning.get_masking_view_list()
@@ -282,15 +300,22 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 self.provisioning.get_masking_view(masking_view))
             if constants.HOST_ID in masking_view_details:
                 host_id = masking_view_details[constants.HOST_ID]
+                host_masking_views = (
+                    self.provisioning.get_masking_views_from_host(host_id))
             else:
-                host_id = masking_view_details[constants.HOST_GROUP_ID]
-            host_masking_views = (
-                self.provisioning.get_masking_views_from_host(host_id))
+                host_group_id = masking_view_details[constants.HOST_GROUP_ID]
+                host_masking_views = (
+                    self.provisioning.get_masking_views_from_host_group(
+                        host_group_id))
+
             self.assertIsInstance(host_masking_views, list)
             self.assertIn(masking_view, host_masking_views)
 
     def test_get_initiator_ids_from_host(self):
         """Test get_initiator_ids_from_host."""
+        # pattern = '{wwn}|{iscsi}'.format(
+        #     wwn=constants.WWN_SEARCH_PATTERN_16,
+        #     iscsi=constants.ISCSI_IQN_SEARCH_PATTERN)
         host_list = self.provisioning.get_host_list()
         host_list = [host for host in host_list if '_CLOUD' not in host]
         for host in host_list:
@@ -302,6 +327,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                 initiators = host_details[constants.INITIATOR]
                 for initiator in initiators:
                     self.assertIsInstance(initiator, str)
+                    # self.assertIsNotNone(
+                    #     re.match(pattern, initiator))
 
     def test_create_host_group_host_flags(self):
         """Test create_host_group."""
@@ -316,11 +343,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsNotNone(host_group)
         self.assertEqual(constants.SCSI_3_FLAG, enabled_flags)
 
-    def test_create_hostgroup(self):
-        """Test create_hostgroup."""
+    def test_create_host_group(self):
+        """Test create_host_group."""
         host_name = self.create_empty_host()
         host_group_name = self.generate_name('host_group')
-        self.conn.provisioning.create_hostgroup(
+        self.conn.provisioning.create_host_group(
             host_group_name, [host_name])
         self.addCleanup(self.delete_host_group, host_group_name)
         host_group_list = self.provisioning.get_host_group_list()
@@ -355,23 +382,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(1, host_group_details[constants.NUM_OF_HOSTS])
         self.provisioning.modify_host_group(host_group_name,
                                             add_host_list=[host_name])
-        host_group_details = self.provisioning.get_host_group(host_group_name)
-        hosts_in_group = host_group_details[constants.HOST]
-        host_was_added = False
-        for item in hosts_in_group:
-            if item[constants.HOST_ID] == host_name:
-                host_was_added = True
-        self.assertEqual(2, host_group_details[constants.NUM_OF_HOSTS])
-        self.assertTrue(host_was_added)
-
-    def test_modify_hostgroup_add_host(self):
-        """Test modify hostgroup add host."""
-        host_group_name = self.create_host_group()
-        host_group_details = self.provisioning.get_host_group(host_group_name)
-        host_name = self.create_empty_host()
-        self.assertEqual(1, host_group_details[constants.NUM_OF_HOSTS])
-        self.provisioning.modify_hostgroup(host_group_name,
-                                           add_host_list=[host_name])
+        # Model update delay
+        time.sleep(1)
         host_group_details = self.provisioning.get_host_group(host_group_name)
         hosts_in_group = host_group_details[constants.HOST]
         host_was_added = False
@@ -405,8 +417,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         host_group_name = self.create_host_group()
         host_group_details = self.provisioning.get_host_group(host_group_name)
 
-        enabled_flags = host_group_details[constants.ENABLED_FLAGS]
-        self.assertEqual('', enabled_flags)
+        enabled_flags = host_group_details.get(constants.ENABLED_FLAGS)
+        self.assertIsNone(enabled_flags)
 
         try:
             host_groups_hosts = host_group_details.get(constants.HOST)
@@ -420,7 +432,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                                                 host_flag_dict=host_flags)
             host_group_details = self.provisioning.get_host_group(
                 host_group_name)
-            enabled_flags = host_group_details[constants.ENABLED_FLAGS]
+            enabled_flags = host_group_details.get(constants.ENABLED_FLAGS)
             self.assertIn(constants.SCSI_3_FLAG, enabled_flags)
         except exception.VolumeBackendAPIException:
             self.skipTest('Erroneous error for consistent lun violation which '
@@ -428,18 +440,18 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                           'to pin down source at present but manual tests '
                           'pass for the feature with no issues.')
 
-    def test_get_hostgroup(self):
-        """Test get_hostgroup."""
+    def test_get_host_group(self):
+        """Test get_host_group."""
         host_group_list = self.conn.provisioning.get_host_group_list()
         for host_group in host_group_list:
-            host_group_details = self.conn.provisioning.get_hostgroup(
+            host_group_details = self.conn.provisioning.get_host_group(
                 host_group)
             self.assertIsNotNone(host_group_details)
             self.assertIsInstance(host_group_details, dict)
 
-    def test_get_hostgroup_list(self):
-        """Test get_hostgroup_list."""
-        host_group_list = self.conn.provisioning.get_hostgroup_list()
+    def test_get_host_group_list(self):
+        """Test get_host_group_list."""
+        host_group_list = self.conn.provisioning.get_host_group_list()
         self.assertIsNotNone(host_group_list)
         self.assertIsInstance(host_group_list, list)
 
@@ -457,21 +469,13 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         host_group_list = self.provisioning.get_host_list()
         self.assertNotIn(host_group_name, host_group_list)
 
-    def test_delete_hostgroup(self):
-        """Test delete_hostgroup."""
-        host_group_name = self.create_host_group()
-        host_group_list = self.provisioning.get_host_group_list()
-        self.assertIn(host_group_name, host_group_list)
-        self.provisioning.delete_hostgroup(host_group_name)
-        host_group_list = self.provisioning.get_host_list()
-        self.assertNotIn(host_group_name, host_group_list)
-
     def test_get_initiator(self):
         """Test get_initiator."""
         initiator_list = self.provisioning.get_initiator_list()
         for initiator in initiator_list:
             initiator_details = self.provisioning.get_initiator(initiator)
             self._validate_initiator_details(initiator_details)
+            break
 
     def test_get_initiator_list(self):
         """Test get_initiator_list."""
@@ -479,8 +483,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(initiator_list, list)
         for initiator in initiator_list:
             self.assertIsInstance(initiator, str)
-            self.assertIsNotNone(
-                re.match(constants.INITIATOR_SEARCH_PATTERN, initiator))
+            # self.assertIsNotNone(
+            #     re.match(constants.INITIATOR_SEARCH_PATTERN, initiator))
 
     def test_get_inuse_initiator_list_from_array(self):
         """Test get_in_use_initiator_list_from_array."""
@@ -488,8 +492,24 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(in_use_list, list)
         for initiator in in_use_list:
             self.assertIsInstance(initiator, str)
-            self.assertIsNotNone(
-                re.match(constants.INITIATOR_SEARCH_PATTERN, initiator))
+            # self.assertIsNotNone(
+            #     re.match(constants.INITIATOR_SEARCH_PATTERN, initiator))
+
+    def test_modify_initiator_remove_masking_entry(self):
+        """Test modify_initiator remove masking entry."""
+        if self.is_v4:
+            director_type = 'OR'
+        else:
+            director_type = 'FA'
+        initiator = self.provisioning.get_in_use_initiator(
+            director_type)
+        if not initiator:
+            self.skipTest('test_modify_initiator_remove_masking_entry '
+                          '- Unable to get an available initiator.')
+        self.assertRaises(
+            exception.VolumeBackendAPIException,
+            self.provisioning.modify_initiator,
+            initiator, remove_masking_entry=constants.TRUE)
 
     def test_modify_initiator_replace_initiator(self):
         """Test modify_initiator replace initiator."""
@@ -520,26 +540,18 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_modify_initiator_rename_alias(self):
         """Test modify_initiator rename alias."""
-        initiator = self.provisioning.get_available_initiator()
-        if not initiator:
+        initiator_list = self.provisioning.get_available_initiator_list()
+        if not initiator_list:
             self.skipTest('test_modify_initiator_rename_alias '
                           '- Unable to get an available initiator.')
-        initiator_details = self.provisioning.get_initiator(initiator)
-        initiator_id = initiator_details[constants.INITIATOR_ID]
-        old_alias = (initiator_id, initiator_id)
-        if constants.ALIAS in initiator_details:
-            old_alias = tuple(initiator_details[constants.ALIAS].split('/'))
+        initiator = initiator_list[0]
         new_alias = (
             'pyu4v_ci', 'pyu4v_alias-{}'.format(round(time.time())))
         new_alias_str = new_alias[0] + '/' + new_alias[1]
-        self.provisioning.modify_initiator(initiator, rename_alias=new_alias)
+        self.provisioning.modify_initiator(
+            initiator, rename_alias=new_alias)
         initiator_details = self.provisioning.get_initiator(initiator)
-        try:
-            self.assertEqual(
-                new_alias_str, initiator_details[constants.ALIAS])
-        finally:
-            self.provisioning.modify_initiator(
-                initiator, rename_alias=old_alias)
+        self.assertEqual(new_alias_str, initiator_details[constants.ALIAS])
 
     def test_modify_initiator_set_fcid(self):
         """Test modify_initiator set fcid."""
@@ -608,6 +620,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
     def test_is_initiator_in_host_success(self):
         """Test is_initiator_in_host where initiator is in host."""
         initiator = self.provisioning.get_in_use_initiator()
+        if not initiator:
+            self.skipTest('test_is_initiator_in_host_success '
+                          '- Unable to get an in-use initiator.')
         result = self.provisioning.is_initiator_in_host(initiator)
         self.assertTrue(result)
 
@@ -623,6 +638,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
     def test_get_initiator_group_from_initiator_group(self):
         """Test get_initiator_group_from_initiator init group exists."""
         initiator = self.provisioning.get_in_use_initiator()
+        if not initiator:
+            self.skipTest('test_get_initiator_group_from_initiator_group '
+                          '- Unable to get an in-use initiator.')
         initiator_details = self.provisioning.get_initiator(initiator)
         group = self.provisioning.get_initiator_group_from_initiator(
             initiator)
@@ -775,19 +793,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(returned_masking_view, str)
         self.assertEqual(masking_view_name, returned_masking_view)
 
-    def test_get_masking_views_by_host(self):
-        """Test get_masking_views_by_host."""
-        masking_view_name, masking_view_details = self.create_masking_view()
-        initiator_group = masking_view_details[constants.HOST_ID]
-        returned_masking_view_list = (
-            self.provisioning.get_masking_views_by_host(
-                initiator_group))
-        self.assertIsNotNone(returned_masking_view_list)
-        self.assertIsInstance(returned_masking_view_list, list)
-        returned_masking_view = returned_masking_view_list[0]
-        self.assertIsInstance(returned_masking_view, str)
-        self.assertEqual(masking_view_name, returned_masking_view)
-
     def test_get_element_from_masking_view_port_group(self):
         """Test get_element_from_masking_view port group."""
         masking_view_name, masking_view_details = self.create_masking_view()
@@ -843,19 +848,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(common_masking_view, str)
         self.assertEqual(masking_view_name, common_masking_view)
 
-    def test_get_common_masking_views(self):
-        """Test get_common_masking_views."""
-        masking_view_name, masking_view_details = self.create_masking_view()
-        port_group_name = masking_view_details[constants.PORT_GROUP_ID]
-        initiator_group_name = masking_view_details[constants.HOST_ID]
-        common_masking_view_list = self.provisioning.get_common_masking_views(
-            port_group_name, initiator_group_name)
-        self.assertIsNotNone(common_masking_view_list)
-        self.assertIsInstance(common_masking_view_list, list)
-        common_masking_view = common_masking_view_list[0]
-        self.assertIsInstance(common_masking_view, str)
-        self.assertEqual(masking_view_name, common_masking_view)
-
     def test_rename_masking_view(self):
         """Test rename_masking_view."""
         masking_view_name, _ = self.create_masking_view()
@@ -880,29 +872,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(host, str)
         self.assertEqual(masking_view_details[constants.HOST_ID], host)
 
-    def test_get_host_from_maskingview(self):
-        """Test get_host_from_maskingview."""
-        masking_view_name, masking_view_details = self.create_masking_view()
-        host = self.provisioning.get_host_from_maskingview(masking_view_name)
-        self.assertIsNotNone(host)
-        self.assertIsInstance(host, str)
-        self.assertEqual(masking_view_details[constants.HOST_ID], host)
-
     def test_get_storage_group_from_masking_view(self):
         """Test storage_group_from_masking_view."""
         masking_view_name, masking_view_details = self.create_masking_view()
         storage_group = self.provisioning.get_storage_group_from_masking_view(
-            masking_view_name)
-        self.assertIsNotNone(storage_group)
-        self.assertIsInstance(storage_group, str)
-        self.assertEqual(
-            masking_view_details[constants.STORAGE_GROUP_ID_CAMEL],
-            storage_group)
-
-    def test_get_storagegroup_from_maskingview(self):
-        """Test storagegroup_from_maskingview."""
-        masking_view_name, masking_view_details = self.create_masking_view()
-        storage_group = self.provisioning.get_storagegroup_from_maskingview(
             masking_view_name)
         self.assertIsNotNone(storage_group)
         self.assertIsInstance(storage_group, str)
@@ -921,21 +894,15 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.assertEqual(
                 masking_view_details[constants.PORT_GROUP_ID], port_group)
 
-    def test_get_portgroup_from_maskingview(self):
-        """Test get_portgroup_from_maskingview."""
-        masking_view_name, masking_view_details = self.create_masking_view()
-        if masking_view_name:
-            port_group = self.provisioning.get_portgroup_from_maskingview(
-                masking_view_name)
-            self.assertIsNotNone(port_group)
-            self.assertIsInstance(port_group, str)
-            self.assertEqual(
-                masking_view_details[constants.PORT_GROUP_ID], port_group)
-
     def test_get_masking_view_connections(self):
         """Test get_masking_view_connections."""
         _, active_connections = (
             self.provisioning.get_active_masking_view_connections())
+        if not active_connections:
+            self.skipTest(
+                'test_get_masking_view_connections - Could not find any '
+                'masking view active connections.')
+
         self.assertIsInstance(active_connections, list)
         for connection in active_connections:
             self._validiate_masking_view_connection(connection)
@@ -944,21 +911,12 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         """Test find_host_lun_id_for_volume."""
         selected_masking_view, active_connections = (
             self.provisioning.get_active_masking_view_connections())
+        if not active_connections:
+            self.skipTest(
+                'test_find_host_lun_id_for_volume - Could not find any '
+                'active connections.')
         for connection in active_connections:
             lun = self.provisioning.find_host_lun_id_for_volume(
-                selected_masking_view, connection[constants.VOLUME_ID_CAMEL])
-            if lun is not None:
-                self.assertIsInstance(lun, int)
-                self.assertEqual(
-                    int(connection[constants.HOST_LUN_ADDRESS], 16), lun)
-                break
-
-    def test_find_host_lun_id_for_vol(self):
-        """Test find_host_lun_id_for_vol."""
-        selected_masking_view, active_connections = (
-            self.provisioning.get_active_masking_view_connections())
-        for connection in active_connections:
-            lun = self.provisioning.find_host_lun_id_for_vol(
                 selected_masking_view, connection[constants.VOLUME_ID_CAMEL])
             if lun is not None:
                 self.assertIsInstance(lun, int)
@@ -971,7 +929,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         volume_details = self.create_volume()
         device_id = volume_details[constants.DEVICE_ID]
         masking_view_name, _ = self.create_masking_view()
-        lun = self.provisioning.find_host_lun_id_for_vol(
+        lun = self.provisioning.find_host_lun_id_for_volume(
             masking_view_name, device_id)
         self.assertIsNone(lun)
 
@@ -1009,35 +967,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             port_group_name, port_group_result, [formatted_director_port],
             num_of_ports, num_of_masking_views, ref_type)
 
-    def test_get_portgroup(self):
-        """Test get_portgroup."""
-        port_group_name, port_group_details = self.create_port_group()
-        port_group_result = self.provisioning.get_portgroup(port_group_name)
-        director = port_group_details[
-            constants.SYMMETRIX_PORT_KEY][0][constants.DIRECTOR_ID]
-        port = port_group_details[
-            constants.SYMMETRIX_PORT_KEY][0][constants.PORT_ID]
-        formatted_director_port = self.provisioning.format_director_port(
-            director, port)
-        num_of_ports = port_group_details[constants.NUM_OF_PORTS]
-        num_of_masking_views = port_group_details[
-            constants.NUM_OF_MASKING_VIEWS]
-        ref_type = port_group_details[constants.TYPE]
-        self._validate_port_group_details(
-            port_group_name, port_group_result, [formatted_director_port],
-            num_of_ports, num_of_masking_views, ref_type)
-
     def test_get_port_group_list(self):
         """Test get_port_group_list."""
         port_group_list = self.provisioning.get_port_group_list()
-        self.assertIsNotNone(port_group_list)
-        self.assertIsInstance(port_group_list, list)
-        for port_group in port_group_list:
-            self.assertIsInstance(port_group, str)
-
-    def test_get_portgroup_list(self):
-        """Test get_portgroup_list."""
-        port_group_list = self.provisioning.get_portgroup_list()
         self.assertIsNotNone(port_group_list)
         self.assertIsInstance(port_group_list, list)
         for port_group in port_group_list:
@@ -1057,35 +989,12 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsNotNone(
             re.match(constants.PORT_SEARCH_PATTERN, result_port))
 
-    def test_get_ports_from_pg(self):
-        """Test get_ports_from_pg."""
-        port_group_name, port_group_details = self.create_port_group()
-        port_list = self.provisioning.get_ports_from_pg(port_group_name)
-        self.assertIsNotNone(port_list)
-        self.assertIsInstance(port_list, list)
-        reference_port = port_group_details[
-            constants.SYMMETRIX_PORT_KEY][0][constants.PORT_ID]
-        result_port = port_list[0]
-        self.assertEqual(reference_port, result_port)
-        self.assertIsNotNone(
-            re.match(constants.PORT_SEARCH_PATTERN, result_port))
-
     def test_get_target_wwns_from_port_group(self):
         """Test get_target_wwns_from_port_group."""
         port_group_name, port_group_details = self.create_port_group()
+        # Model update delay
+        time.sleep(1)
         target_wwns = self.provisioning.get_target_wwns_from_port_group(
-            port_group_name)
-        self.assertIsNotNone(target_wwns)
-        self.assertIsInstance(target_wwns, list)
-        for wwn in target_wwns:
-            self.assertIsInstance(wwn, str)
-            self.assertIsNotNone(
-                re.match(constants.WWN_SEARCH_PATTERN_16, wwn))
-
-    def test_get_target_wwns_from_pg(self):
-        """Test get_target_wwns_from_pg."""
-        port_group_name, port_group_details = self.create_port_group()
-        target_wwns = self.provisioning.get_target_wwns_from_pg(
             port_group_name)
         self.assertIsNotNone(target_wwns)
         self.assertIsInstance(target_wwns, list)
@@ -1096,6 +1005,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_iscsi_ip_address_and_iqn(self):
         """Test get_iscsi_ip_address_and_iqn."""
+        if self.is_v4:
+            self.skipTest(
+                'Skipping test_get_iscsi_ip_address_and_iqn for V4. '
+                'It is recommended to use '
+                'system.SystemFunctions.get_iscsi_ip_address_and_iqn instead.')
         port_list = self.provisioning.get_port_list()
         se_director_ports = [p for p in port_list if 'SE-' in p[
             constants.DIRECTOR_ID]]
@@ -1116,107 +1030,84 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                     self.assertTrue(valid_ip)
             if iqn:
                 self.assertIsInstance(iqn, str)
+                # self.assertIsNotNone(
+                #     re.match(constants.ISCSI_IQN_SEARCH_PATTERN, iqn))
+
+    def test_empty_create_port_group(self):
+        """Test create_empty_port_group."""
+        if not self.is_v4:
+            self.skipTest('Skipping Test as array is not V4')
+        port_group_name = self.generate_name(constants.PORT_GROUP)
+        self.conn.provisioning.create_empty_port_group(
+            port_group_id=port_group_name, port_group_protocol="SCSI_FC")
+        self.addCleanup(self.delete_port_group, port_group_name)
+        port_group_list = self.conn.provisioning.get_port_group_list()
+        self.assertIn(port_group_name, port_group_list)
 
     def test_create_port_group(self):
         """Test create_port_group."""
-        directors = self.conn.provisioning.get_director_list()
-        port_group_name = self.generate_name(constants.PORT_GROUP)
-        director = None
         port = None
-        for d in directors:
-            if 'FA-' in d:
-                director = d
-                port = self.conn.provisioning.get_director_port_list(
-                    director)[0][constants.PORT_ID]
-                break
-        formatted_director_port = self.provisioning.format_director_port(
-            director, port)
-        port_group_details = self.conn.provisioning.create_port_group(
-            port_group_name, director, port)
-        self.addCleanup(self.delete_port_group, port_group_name)
-        self._validate_port_group_details(
-            port_group_name, port_group_details, [formatted_director_port])
+        ports, director, port_group_protocol = self.create_port_group_helper(
+            'test_create_port_group')
 
-    def test_create_portgroup(self):
-        """Test create_portgroup."""
-        directors = self.conn.provisioning.get_director_list()
-        port_group_name = self.generate_name(constants.PORT_GROUP)
-        director = None
-        port = None
-        for d in directors:
-            if 'FA-' in d:
-                director = d
-                port = self.conn.provisioning.get_director_port_list(
-                    director)[0][constants.PORT_ID]
-                break
-        formatted_director_port = self.provisioning.format_director_port(
-            director, port)
-        port_group_details = self.conn.provisioning.create_portgroup(
-            port_group_name, director, port)
-        self.addCleanup(self.delete_port_group, port_group_name)
-        self._validate_port_group_details(
-            port_group_name, port_group_details, [formatted_director_port])
+        if ports:
+            port = ports[0][constants.PORT_ID]
+        if director and port:
+            port_group_name = self.generate_name(constants.PORT_GROUP)
+            formatted_director_port = self.provisioning.format_director_port(
+                director, port)
+            port_group_details = self.conn.provisioning.create_port_group(
+                port_group_name, director, port,
+                port_group_protocol=port_group_protocol)
+            self.addCleanup(self.delete_port_group, port_group_name)
+            self._validate_port_group_details(
+                port_group_name, port_group_details, [formatted_director_port])
+        else:
+            self.skipTest(
+                'test_create_port_group - Could not get director and port'
+                'for test.')
 
     def test_create_multiport_port_group(self):
         """Test create_multiport_port_group."""
-        port_group_name = self.generate_name(constants.PORT_GROUP)
-        fa_directors = self.provisioning.get_fa_directors()
         selected_director_ports = list()
-        for director in fa_directors:
-            if len(selected_director_ports) < 2:
-                ports = self.provisioning.get_director_port_list(
-                    director, filters='aclx=true')
-                # avoid GOS ports
-                ports = [p for p in ports if int(p[constants.PORT_ID]) < 30]
-                selected_director_ports.append(ports[0])
-        reference_director_ports = list()
-        for director_port in selected_director_ports:
-            director_id = director_port[constants.DIRECTOR_ID]
-            port_id = director_port[constants.PORT_ID]
-            formatted_director_port = self.provisioning.format_director_port(
-                director_id, port_id)
-            reference_director_ports.append(formatted_director_port)
-        port_group_details = self.provisioning.create_multiport_port_group(
-            port_group_name, selected_director_ports)
-        self.addCleanup(self.delete_port_group, port_group_name)
-        self._validate_port_group_details(
-            port_group_name, port_group_details, reference_director_ports,
-            2)
+        ports, director, port_group_protocol = self.create_port_group_helper(
+            'test_create_multiport_port_group')
 
-    def test_create_multiport_portgroup(self):
-        """Test create_multiport_portgroup."""
-        port_group_name = self.generate_name(constants.PORT_GROUP)
-        fa_directors = self.provisioning.get_fa_directors()
-        selected_director_ports = list()
-        for director in fa_directors:
-            if len(selected_director_ports) < 2:
-                ports = self.provisioning.get_director_port_list(
-                    director, filters='aclx=true')
-                # avoid GOS ports
-                ports = [p for p in ports if int(p[constants.PORT_ID]) < 30]
-                selected_director_ports.append(ports[0])
-        reference_director_ports = list()
-        for director_port in selected_director_ports:
-            director_id = director_port[constants.DIRECTOR_ID]
-            port_id = director_port[constants.PORT_ID]
-            formatted_director_port = self.provisioning.format_director_port(
-                director_id, port_id)
-            reference_director_ports.append(formatted_director_port)
-        port_group_details = self.provisioning.create_multiport_portgroup(
-            port_group_name, selected_director_ports)
-        self.addCleanup(self.delete_port_group, port_group_name)
-        self._validate_port_group_details(
-            port_group_name, port_group_details, reference_director_ports,
-            2)
+        if ports and len(ports) >= 2:
+            selected_director_ports.append(ports[0])
+            selected_director_ports.append(ports[1])
+        else:
+            self.skipTest(
+                'test_create_multiport_port_group - Not enough ports for '
+                'this test.')
+        if selected_director_ports:
+            reference_director_ports = list()
+            port_group_name = self.generate_name(constants.PORT_GROUP)
+            for director_port in selected_director_ports:
+                director_id = director_port[constants.DIRECTOR_ID]
+                port_id = director_port[constants.PORT_ID]
+                formatted_director_port = (
+                    self.provisioning.format_director_port(
+                        director_id, port_id))
+                reference_director_ports.append(formatted_director_port)
+            port_group_details = self.provisioning.create_multiport_port_group(
+                port_group_name, selected_director_ports,
+                port_group_protocol=port_group_protocol)
+            self.addCleanup(self.delete_port_group, port_group_name)
+            self._validate_port_group_details(
+                port_group_name, port_group_details, reference_director_ports,
+                2)
+        else:
+            self.skipTest(
+                'test_create_multiport_port_group - selected_director_ports '
+                'not populated.')
 
     def test_create_port_group_from_file(self):
         """Test create_port_group_from_file."""
-        fa_directors = self.provisioning.get_fa_directors()
-        if fa_directors:
-            port_group_name = self.generate_name()
-            director = fa_directors[0]
-            port = self.provisioning.get_any_director_port(
-                director, filters='aclx=true')
+        ports, director, port_group_protocol = self.create_port_group_helper(
+            'test_create_port_group_from_file')
+        if ports:
+            port = ports[0][constants.PORT_ID]
             formatted_director_port = self.provisioning.format_director_port(
                 director, port)
             csv_file_name = 'test.csv'
@@ -1224,32 +1115,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             csv_file_path = os.path.join(temp_dir, csv_file_name)
             with open(csv_file_path, 'w') as tmp:
                 tmp.write(formatted_director_port)
+            port_group_name = self.generate_name(constants.PORT_GROUP)
             port_group_details = (
                 self.provisioning.create_port_group_from_file(
-                    csv_file_path, port_group_name))
-            self.addCleanup(self.delete_port_group, port_group_name)
-            self._validate_port_group_details(
-                port_group_name, port_group_details,
-                [formatted_director_port])
-
-    def test_create_portgroup_from_file(self):
-        """Test create_portgroup_from_file."""
-        fa_directors = self.provisioning.get_fa_directors()
-        if fa_directors:
-            port_group_name = self.generate_name()
-            director = fa_directors[0]
-            port = self.provisioning.get_any_director_port(
-                director, filters='aclx=true')
-            formatted_director_port = self.provisioning.format_director_port(
-                director, port)
-            csv_file_name = 'test.csv'
-            temp_dir = self.create_temp_directory()
-            csv_file_path = os.path.join(temp_dir, csv_file_name)
-            with open(csv_file_path, 'w') as tmp:
-                tmp.write(formatted_director_port)
-            port_group_details = (
-                self.provisioning.create_portgroup_from_file(
-                    csv_file_path, port_group_name))
+                    csv_file_path, port_group_name,
+                    port_group_protocol=port_group_protocol))
             self.addCleanup(self.delete_port_group, port_group_name)
             self._validate_port_group_details(
                 port_group_name, port_group_details,
@@ -1268,6 +1138,8 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         remaining_port = director_port_list[1][constants.PORT_ID]
         remaining_director_port = self.provisioning.format_director_port(
             remaining_director, remaining_port)
+        # model update issue
+        time.sleep(2)
         modify_port_result = self.provisioning.modify_port_group(
             port_group_name, remove_port=(remove_director, remove_port))
         self._validate_port_group_details(
@@ -1280,25 +1152,34 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_modify_port_group_add_port(self):
         """Test modify_port_group add port."""
-        fa_directors = self.provisioning.get_fa_directors()
-        selected_director_ports = list()
-        for fa_director in fa_directors:
-            port = self.provisioning.get_any_director_port(
-                fa_director, filters='aclx=true')
-            director_port = self.provisioning.format_director_port(
-                fa_director, port)
-            selected_director_ports.append(director_port)
-        port_group_name = self.generate_name(constants.PORT_GROUP)
-        director, port = selected_director_ports[0].split(':')
-        port_group_details = self.provisioning.create_port_group(
-            port_group_name, director, port)
-        self.addCleanup(self.delete_port_group, port_group_name)
+        port_group_name, port_group_details = self.create_port_group(
+            number_of_ports=1)
+        director_port_list = port_group_details[constants.SYMMETRIX_PORT_KEY]
+        existing_director = director_port_list[0][constants.DIRECTOR_ID]
+        existing_port = director_port_list[0][constants.PORT_ID]
+        reference_director_ports = list()
+        formatted_director_port = (
+            self.provisioning.format_director_port(
+                existing_director, existing_port))
+        reference_director_ports.append(formatted_director_port)
+
         self.assertEqual(1, port_group_details[constants.NUM_OF_PORTS])
-        director, port = selected_director_ports[1].split(':')
-        modify_result = self.provisioning.modify_port_group(
-            port_group_name, add_port=(director, port))
+        ports, director, port_group_protocol = self.create_port_group_helper(
+            'test_modify_port_group_add_port')
+        for port in ports:
+            director_id = port[constants.DIRECTOR_ID]
+            port_id = port[constants.PORT_ID]
+            if existing_port != port_id:
+                modify_result = self.provisioning.modify_port_group(
+                    port_group_name, add_port=(director_id, port_id))
+                formatted_director_port = (
+                    self.provisioning.format_director_port(
+                        director_id, port_id))
+                reference_director_ports.append(formatted_director_port)
+                break
+
         self._validate_port_group_details(
-            port_group_name, modify_result, selected_director_ports[:2],
+            port_group_name, modify_result, reference_director_ports,
             ref_port_count=2)
 
     def test_modify_port_group_rename_port_group(self):
@@ -1323,21 +1204,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
                           self.provisioning.modify_port_group,
                           port_group_name)
 
-    def test_modify_portgroup_rename_port_group(self):
-        """Test modify_portgroup rename."""
-        port_group_name, _ = self.create_port_group()
-        new_name = self.generate_name(constants.PORT_GROUP)
-        port_group_list = self.provisioning.get_port_group_list()
-        while new_name in port_group_list:
-            new_name = self.generate_name(constants.PORT_GROUP)
-            port_group_list = self.provisioning.get_port_group_list()
-        modify_result = self.provisioning.modify_portgroup(
-            port_group_name, rename_portgroup=new_name)
-        self.addCleanup(self.delete_port_group, new_name)
-        port_group_list = self.provisioning.get_port_group_list()
-        self.assertIn(new_name, port_group_list)
-        self._validate_port_group_details(new_name, modify_result)
-
     def test_delete_port_group(self):
         """Test delete_port_group."""
         port_group_name, _ = self.create_port_group()
@@ -1346,25 +1212,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_port_group(port_group_name)
         port_group_list = self.provisioning.get_port_group_list()
         self.assertNotIn(port_group_name, port_group_list)
-
-    def test_delete_portgroup(self):
-        """Test delete_portgroup."""
-        port_group_name, _ = self.create_port_group()
-        port_group_list = self.provisioning.get_port_group_list()
-        self.assertIn(port_group_name, port_group_list)
-        self.provisioning.delete_portgroup(port_group_name)
-        port_group_list = self.provisioning.get_port_group_list()
-        self.assertNotIn(port_group_name, port_group_list)
-
-    def test_get_slo_list(self):
-        """Test get_slo_list."""
-        service_level_list = self.provisioning.get_slo_list()
-        valid_service_level_list = ['Bronze', 'Silver', 'Gold',
-                                    'Platinum', 'Diamond', 'Optimized']
-        self.assertIsNotNone(service_level_list)
-        for service_level in service_level_list:
-            self.assertIsInstance(service_level, str)
-            self.assertIn(service_level, valid_service_level_list)
 
     def test_get_service_level_list(self):
         """Test get_service_level_list."""
@@ -1385,14 +1232,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self._validate_service_level_details(
                 service_level, service_level_details)
 
-    def test_get_slo(self):
-        """Test get_slo."""
-        service_level_list = self.provisioning.get_service_level_list()
-        for service_level in service_level_list:
-            service_level_details = self.provisioning.get_slo(service_level)
-            self._validate_service_level_details(
-                service_level, service_level_details)
-
     def test_modify_service_level(self):
         """Test modify_service_level."""
         service_level_list = self.provisioning.get_service_level_list()
@@ -1409,23 +1248,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             new_name)
         self._validate_service_level_details(new_name, service_level_details)
         self.provisioning.modify_service_level(new_name, old_name)
-
-    def test_modify_slo(self):
-        """Test modify_slo."""
-        service_level_list = self.provisioning.get_service_level_list()
-        service_level = service_level_list[0]
-        service_level_details = self.provisioning.get_service_level(
-            service_level)
-        old_name = service_level_details[constants.SLO_ID]
-        new_name = self.generate_name(constants.SERVICE_LEVEL)
-        self.provisioning.modify_slo(service_level, new_name)
-        service_level_list = self.provisioning.get_service_level_list()
-        self.assertIn(new_name, service_level_list)
-        self.assertNotIn(old_name, service_level_list)
-        service_level_details = self.provisioning.get_service_level(
-            new_name)
-        self._validate_service_level_details(new_name, service_level_details)
-        self.provisioning.modify_slo(new_name, old_name)
 
     def test_get_srp(self):
         """Test get_srp."""
@@ -1533,18 +1355,16 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(
             ref_storage_group_details[constants.CAP_GB],
             storage_group_details[constants.CAP_GB])
-        self.assertEqual(
-            ref_storage_group_details[constants.DEVICE_EMULATION],
-            storage_group_details[constants.DEVICE_EMULATION])
+        if storage_group_details.get(constants.NUM_OF_VOLS) > 0:
+            self.assertEqual(
+                ref_storage_group_details[constants.DEVICE_EMULATION],
+                storage_group_details[constants.DEVICE_EMULATION])
         self.assertEqual(
             ref_storage_group_details[constants.TYPE],
             storage_group_details[constants.TYPE])
         self.assertEqual(
             ref_storage_group_details[constants.UNPROTECTED],
             storage_group_details[constants.UNPROTECTED])
-        self.assertEqual(
-            ref_storage_group_details[constants.COMPRESSION],
-            storage_group_details[constants.COMPRESSION])
 
     def test_get_storage_group_demand_report(self):
         """Test get_storage_group_demand_report."""
@@ -1591,20 +1411,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             self.create_masking_view())
         storage_group = ref_masking_view_details[
             constants.STORAGE_GROUP_ID_CAMEL]
+        # Model Update time delay
+        time.sleep(1)
         masking_view_list = (
             self.provisioning.get_masking_view_from_storage_group(
                 storage_group))
-        self.assertIsInstance(masking_view_list, list)
-        self.assertIsNotNone(masking_view_list)
-        self.assertEqual(ref_masking_view_name, masking_view_list[0])
-
-    def test_get_mv_from_sg(self):
-        """Test get_mv_from_sg."""
-        ref_masking_view_name, ref_masking_view_details = (
-            self.create_masking_view())
-        storage_group = ref_masking_view_details[
-            constants.STORAGE_GROUP_ID_CAMEL]
-        masking_view_list = self.provisioning.get_mv_from_sg(storage_group)
         self.assertIsInstance(masking_view_list, list)
         self.assertIsNotNone(masking_view_list)
         self.assertEqual(ref_masking_view_name, masking_view_list[0])
@@ -1623,24 +1434,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         time.sleep(10)
         self.addCleanup(self.delete_volume, storage_group_name, device_id)
         volume_count = self.provisioning.get_num_vols_in_storage_group(
-            storage_group_name)
-        self.assertIsInstance(volume_count, int)
-        self.assertEqual(1, volume_count)
-
-    def test_get_num_vols_in_sg(self):
-        """Test get_num_vols_in_sg."""
-        storage_group_name = self.create_empty_storage_group()
-        volume_count = self.provisioning.get_num_vols_in_sg(
-            storage_group_name)
-        self.assertIsInstance(volume_count, int)
-        self.assertEqual(0, volume_count)
-        volume_name = self.generate_name()
-        device_id = (
-            self.conn.provisioning.create_volume_from_storage_group_return_id(
-                volume_name, storage_group_name, '1', cap_unit='GB'))
-        time.sleep(10)
-        self.addCleanup(self.delete_volume, storage_group_name, device_id)
-        volume_count = self.provisioning.get_num_vols_in_sg(
             storage_group_name)
         self.assertIsInstance(volume_count, int)
         self.assertEqual(1, volume_count)
@@ -1672,56 +1465,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(result, bool)
         self.assertTrue(result)
 
-    def test_is_child_sg_in_parent_sg(self):
-        """Test is_child_sg_in_parent_sg."""
-        parent_storage_group = self.create_empty_storage_group()
-        child_storage_group = self.create_empty_storage_group()
-        result = self.provisioning.is_child_sg_in_parent_sg(
-            child_storage_group, parent_storage_group)
-        self.assertIsInstance(result, bool)
-        self.assertFalse(result)
-        self.provisioning.add_child_storage_group_to_parent_group(
-            child_storage_group, parent_storage_group)
-        result = self.provisioning.is_child_sg_in_parent_sg(
-            child_storage_group, parent_storage_group)
-        # Remove to aid cleanup
-        self.provisioning.remove_child_storage_group_from_parent_group(
-            child_storage_group, parent_storage_group)
-        # Auto-generated child storage-groups appear, clean it
-        storage_group_list = self.provisioning.get_storage_group_list()
-        auto_created_child = '{psg}_1'.format(psg=parent_storage_group)
-        if auto_created_child in storage_group_list:
-            self.provisioning.remove_child_storage_group_from_parent_group(
-                auto_created_child, parent_storage_group)
-            self.addCleanup(self.delete_storage_group, auto_created_child)
-        self.assertIsInstance(result, bool)
-        self.assertTrue(result)
-
-    def test_is_child_sg_in_parent_sg_legacy_add_remove(self):
-        """Test is_child_sg_in_parent_sg legacy add/remove."""
-        parent_storage_group = self.create_empty_storage_group()
-        child_storage_group = self.create_empty_storage_group()
-        result = self.provisioning.is_child_sg_in_parent_sg(
-            child_storage_group, parent_storage_group)
-        self.assertIsInstance(result, bool)
-        self.assertFalse(result)
-        self.provisioning.add_child_sg_to_parent_sg(
-            child_storage_group, parent_storage_group)
-        result = self.provisioning.is_child_sg_in_parent_sg(
-            child_storage_group, parent_storage_group)
-        # Remove to aid cleanup
-        self.provisioning.remove_child_sg_from_parent_sg(
-            child_storage_group, parent_storage_group)
-        # Auto-generated child storage-groups appear, clean it
-        storage_group_list = self.provisioning.get_storage_group_list()
-        auto_created_child = '{psg}_1'.format(psg=parent_storage_group)
-        if auto_created_child in storage_group_list:
-            self.provisioning.remove_child_sg_from_parent_sg(
-                auto_created_child, parent_storage_group)
-            self.addCleanup(self.delete_storage_group, auto_created_child)
-        self.assertIsInstance(result, bool)
-        self.assertTrue(result)
-
     def test_get_child_storage_groups_from_parent(self):
         """Test get_child_storage_groups_from_parent."""
         parent_storage_group_name = self.create_empty_storage_group()
@@ -1729,22 +1472,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.add_child_storage_group_to_parent_group(
             child_storage_group_name, parent_storage_group_name)
         child_list = self.provisioning.get_child_storage_groups_from_parent(
-            parent_storage_group_name)
-        self.assertIsInstance(child_list, list)
-        self.assertIsNot(0, len(child_list))
-        self.assertIn(child_storage_group_name, child_list)
-        for child in child_list:
-            self.provisioning.remove_child_storage_group_from_parent_group(
-                child, parent_storage_group_name)
-            self.provisioning.delete_storage_group(child)
-
-    def test_get_child_sg_from_parent(self):
-        """Test get_child_sg_from_parent."""
-        parent_storage_group_name = self.create_empty_storage_group()
-        child_storage_group_name = self.create_empty_storage_group()
-        self.provisioning.add_child_storage_group_to_parent_group(
-            child_storage_group_name, parent_storage_group_name)
-        child_list = self.provisioning.get_child_sg_from_parent(
             parent_storage_group_name)
         self.assertIsInstance(child_list, list)
         self.assertIsNot(0, len(child_list))
@@ -1778,65 +1505,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self._validate_storage_group_details(
             storage_group_name, storage_group_details)
 
-    def test_create_storage_group_mobility_id(self):
-        """Test create_storage_group with mobility ID enabled."""
-        storage_group_name = self.generate_name('sg')
-        self.provisioning.create_storage_group(
-            self.SRP, storage_group_name, self.SLO,
-            enable_mobility_id=True, num_vols=1, cap_unit='GB', vol_size=1)
-        storage_group_volumes = (
-            self.provisioning.get_volumes_from_storage_group(
-                storage_group_name))
-        vol_details = self.provisioning.get_volume(storage_group_volumes[0])
-        self.addCleanup(self.delete_storage_group, storage_group_name)
-        for volume in storage_group_volumes:
-            self.addCleanup(self.delete_volume, storage_group_name, volume)
-        self.assertTrue(vol_details.get('mobility_id_enabled'))
-
-    def test_create_storage_group_return_id_mobility_enabled(self):
-        """Test create_storage_group_return_id with mobility_enabled."""
-        storage_group_name = self.create_empty_storage_group()
-        volume_name = self.generate_name()
-        device = (
-            self.conn.provisioning.create_volume_from_storage_group_return_id(
-                volume_name, storage_group_name, 1, enable_mobility_id=True))
-        device_details = self.provisioning.get_volume(device)
-        self.assertTrue(device_details.get('mobility_id_enabled'))
-        self.addCleanup(self.delete_storage_group, storage_group_name)
-
-    def test_create_storage_group_mobility_id_disabled(self):
-        """Test test_create_storage_group mobility_id disabled."""
-        storage_group_name = self.generate_name('sg')
-        self.provisioning.create_storage_group(
-            self.SRP, storage_group_name, self.SLO,
-            enable_mobility_id=False, num_vols=1, cap_unit='GB', vol_size=1)
-        storage_group_volumes = (
-            self.provisioning.get_volumes_from_storage_group(
-                storage_group_name))
-        vol_details = self.provisioning.get_volume(storage_group_volumes[0])
-        self.addCleanup(self.delete_storage_group, storage_group_name)
-        for volume in storage_group_volumes:
-            self.addCleanup(self.delete_volume, storage_group_name, volume)
-        self.assertFalse(vol_details.get('mobility_id_enabled'))
-
     def test_create_non_empty_storage_group(self):
         """Test create_non_empty_storage_group."""
         storage_group_name = self.generate_name('sg')
         result = self.provisioning.create_non_empty_storage_group(
-            self.SRP, storage_group_name, self.SLO, None, 1, '1', 'GB')
-        time.sleep(10)
-        self.addCleanup(self.delete_storage_group, storage_group_name)
-        self._validate_storage_group_details(storage_group_name, result)
-        volumes = self.provisioning.get_volumes_from_storage_group(
-            storage_group_name)
-        self.assertEqual(1, len(volumes))
-        for volume in volumes:
-            self.addCleanup(self.delete_volume, storage_group_name, volume)
-
-    def test_create_non_empty_storagegroup(self):
-        """Test create_non_empty_storagegroup."""
-        storage_group_name = self.generate_name('sg')
-        result = self.provisioning.create_non_empty_storagegroup(
             self.SRP, storage_group_name, self.SLO, None, 1, '1', 'GB')
         time.sleep(10)
         self.addCleanup(self.delete_storage_group, storage_group_name)
@@ -1853,27 +1525,21 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         storage_group_details = self.provisioning.create_storage_group(
             self.SRP, storage_group_name, slo=None, workload=None,
             num_vols=3, vol_size=1)
-        self.addCleanup(self.delete_storage_group, storage_group_name)
         volume_count = storage_group_details[constants.NUM_OF_VOLS]
         self.assertEqual(3, volume_count)
         self.assertEqual('NONE', storage_group_details[constants.SLO])
-        self.assertTrue(storage_group_details[constants.COMPRESSION])
+        if not self.is_v4:
+            self.assertTrue(storage_group_details[constants.COMPRESSION])
+        volumes = self.provisioning.get_volumes_from_storage_group(
+            storage_group_name)
+        self.assertEqual(3, len(volumes))
+        for volume in volumes:
+            self.addCleanup(self.delete_volume, storage_group_name, volume)
 
     def test_create_empty_storage_group(self):
         """Test create_empty_storage_group."""
         storage_group_name = self.generate_name('sg')
         storage_group_details = self.provisioning.create_empty_storage_group(
-            self.SRP, storage_group_name, self.SLO, None)
-        self.addCleanup(self.delete_storage_group, storage_group_name)
-        self._validate_storage_group_details(
-            storage_group_name, storage_group_details)
-        volume_count = storage_group_details[constants.NUM_OF_VOLS]
-        self.assertEqual(0, volume_count)
-
-    def test_create_empty_sg(self):
-        """Test create_empty_sg."""
-        storage_group_name = self.generate_name('sg')
-        storage_group_details = self.provisioning.create_empty_sg(
             self.SRP, storage_group_name, self.SLO, None)
         self.addCleanup(self.delete_storage_group, storage_group_name)
         self._validate_storage_group_details(
@@ -1926,29 +1592,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             storage_group_name)
         self.assertIn(device_id, volume_list)
 
-    def test_add_existing_vol_to_sg(self):
-        """Test add_existing_vol_to_sg."""
-        volume_name = self.generate_name()
-        storage_group_name = self.create_empty_storage_group()
-        device_id = (
-            self.provisioning.create_volume_from_storage_group_return_id(
-                volume_name, storage_group_name, '1'))
-        time.sleep(10)
-        self.addCleanup(self.delete_volume, storage_group_name, device_id)
-        self.provisioning.remove_volume_from_storage_group(
-            storage_group_name, device_id)
-        storage_group_details = self.provisioning.get_storage_group(
-            storage_group_name)
-        self.assertEqual(0, storage_group_details[constants.NUM_OF_VOLS])
-        self.provisioning.add_existing_vol_to_sg(
-            storage_group_name, device_id)
-        storage_group_details = self.provisioning.get_storage_group(
-            storage_group_name)
-        self.assertEqual(1, storage_group_details[constants.NUM_OF_VOLS])
-        volume_list = self.provisioning.get_volumes_from_storage_group(
-            storage_group_name)
-        self.assertIn(device_id, volume_list)
-
     def test_add_new_volume_to_storage_group(self):
         """Test add_new_volume_to_storage_group."""
         storage_group_name = self.create_empty_storage_group()
@@ -1966,31 +1609,13 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         for volume in volume_list:
             self.addCleanup(self.delete_volume, storage_group_name, volume)
 
-    def test_add_new_volume_to_storage_group_mobility_id_enabled(self):
-        """Test add_new_volume_to_storage_group with mobility id."""
+    def test_add_new_volume_append_id_to_storage_group(self):
+        """Test add_new_volume_to_storage_group."""
         storage_group_name = self.create_empty_storage_group()
         storage_group_details = (
             self.provisioning.add_new_volume_to_storage_group(
                 storage_group_name, 1, '1', 'GB', create_new_volumes=True,
-                enable_mobility_id=True))
-        time.sleep(10)
-        self._validate_storage_group_details(
-            storage_group_name, storage_group_details)
-        storage_group_details = self.provisioning.get_storage_group(
-            storage_group_name)
-        self.assertEqual(1, storage_group_details[constants.NUM_OF_VOLS])
-        volume_list = self.provisioning.get_volumes_from_storage_group(
-            storage_group_name)
-        volume_details = self.provisioning.get_volume(volume_list[0])
-        self.assertTrue(volume_details.get('mobility_id_enabled'))
-        for volume in volume_list:
-            self.addCleanup(self.delete_volume, storage_group_name, volume)
-
-    def test_add_new_vol_to_storagegroup(self):
-        """Test add_new_vol_to_storagegroup."""
-        storage_group_name = self.create_empty_storage_group()
-        storage_group_details = self.provisioning.add_new_vol_to_storagegroup(
-            storage_group_name, 1, '1', 'GB')
+                vol_name='my-vol', append_vol_id=True))
         time.sleep(10)
         self._validate_storage_group_details(
             storage_group_name, storage_group_details)
@@ -2050,23 +1675,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
             storage_group_name=sg_name)
         self.assertEqual(1, storage_group_details[constants.NUM_OF_VOLS])
 
-    def test_remove_vol_from_storagegroup(self):
-        """Test remove_vol_from_storagegroup."""
-        volume_name = self.generate_name()
-        storage_group_name = self.create_empty_storage_group()
-        device_id = (
-            self.provisioning.create_volume_from_storage_group_return_id(
-                volume_name, storage_group_name, '1'))
-        time.sleep(10)
-        self.addCleanup(self.delete_volume, storage_group_name, device_id)
-        self.provisioning.remove_vol_from_storagegroup(
-            storage_group_name, device_id)
-        storage_group_details = self.provisioning.get_storage_group(
-            storage_group_name)
-        self.assertEqual(0, storage_group_details[constants.NUM_OF_VOLS])
-        self.provisioning.add_existing_volume_to_storage_group(
-            storage_group_name, device_id)
-
     def test_move_volumes_between_storage_groups(self):
         """Test move_volumes_between_storage_groups."""
         storage_group_name_1 = self.create_empty_storage_group()
@@ -2106,20 +1714,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         qos_specs = update_results[constants.HOST_IO_LIMIT]
         self._validate_qos_specs(iops, mbps, distribution, qos_specs)
 
-    def test_update_storagegroup_qos_all(self):
-        """Test update_storagegroup_qos."""
-        storage_group_name = self.create_empty_storage_group()
-        max_iops = 'maxIOPS'
-        iops = '3000'
-        mbps = '4000'
-        distribution = 'Never'
-        qos_update = {max_iops: iops, constants.MAX_MBPS: mbps,
-                      constants.DISTRIBUTION_TYPE: distribution}
-        update_results = self.provisioning.update_storagegroup_qos(
-            storage_group_name, qos_update)
-        qos_specs = update_results[constants.HOST_IO_LIMIT]
-        self._validate_qos_specs(iops, mbps, distribution, qos_specs)
-
     def test_update_storage_group_qos_exception(self):
         """Test update_storage_group_qos exception."""
         storage_group_name = self.create_empty_storage_group()
@@ -2153,15 +1747,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         storage_group_list = self.provisioning.get_storage_group_list()
         self.assertNotIn(storage_group_name, storage_group_list)
 
-    def test_delete_storagegroup(self):
-        """Test delete_storagegroup."""
-        storage_group_name = self.create_empty_storage_group()
-        storage_group_list = self.provisioning.get_storage_group_list()
-        self.assertIn(storage_group_name, storage_group_list)
-        self.provisioning.delete_storagegroup(storage_group_name)
-        storage_group_list = self.provisioning.get_storage_group_list()
-        self.assertNotIn(storage_group_name, storage_group_list)
-
     def test_get_volume_known_volume(self):
         """Test get_volume known volume contents."""
         volume = self.create_volume()
@@ -2190,54 +1775,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(volume_list, list)
         for volume in volume_list:
             self.assertIsInstance(volume, str)
-
-    def test_get_volume_effective_wwn_details_84(self):
-        """Test test_get_volume_effective_wwn_details_84."""
-        volume_list = self.provisioning.get_volume_list()
-        selected_volume_list = list()
-        selected_volume_details = None
-        for volume in volume_list:
-            volume_details = self.provisioning.get_volume(volume)
-            if volume_details[constants.HAS_EFFECTIVE_WWN]:
-                selected_volume_list.append(volume)
-                selected_volume_details = volume_details
-                break
-        if selected_volume_details is None:
-            self.skipTest('test_get_volume_effective_wwn_details_84 - could '
-                          'not find a volume with effective wwn flag set to '
-                          'true.')
-        csv_file_name = 'test.csv'
-        temp_dir = self.create_temp_directory()
-        csv_file_path = os.path.join(temp_dir, csv_file_name)
-        self.provisioning.get_vol_effective_wwn_details_84(
-            selected_volume_list, csv_file_path)
-        parsed_values = file_handler.read_csv_values(csv_file_path)
-        self.assertIsInstance(parsed_values, dict)
-        self.assertIn(constants.VOLUME_ID_CAMEL, parsed_values)
-        self.assertIn(constants.WWN, parsed_values)
-        self.assertIn(constants.HAS_EFFECTIVE_WWN, parsed_values)
-        self.assertIn(constants.EFFECTIVE_WWN, parsed_values)
-        self.assertIn(constants.STORAGE_GROUP_ID_CAMEL, parsed_values)
-        self.assertEqual(
-            selected_volume_details[constants.VOLUME_ID_CAMEL], parsed_values[
-                constants.VOLUME_ID_CAMEL][0])
-        self.assertEqual(selected_volume_details[constants.WWN],
-                         parsed_values[constants.WWN][0])
-        self.assertEqual(
-            str(selected_volume_details[constants.HAS_EFFECTIVE_WWN]),
-            parsed_values[constants.HAS_EFFECTIVE_WWN][0])
-        self.assertEqual(
-            selected_volume_details[constants.EFFECTIVE_WWN],
-            parsed_values[constants.EFFECTIVE_WWN][0])
-        if selected_volume_details.get('num_of_storage_groups', 0) > 0:
-            if constants.STORAGE_GROUP_ID_CAMEL in selected_volume_details:
-                storage_group_reference = selected_volume_details[
-                    constants.STORAGE_GROUP_ID_CAMEL]
-            else:
-                storage_group_reference = None
-            self.assertEqual(
-                str(storage_group_reference),
-                parsed_values[constants.STORAGE_GROUP_ID_CAMEL][0])
 
     def test_get_volume_effective_wwn_details(self):
         """Test get_volume_effective_wwn_details."""
@@ -2314,26 +1851,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         for volume in volume_list:
             self.assertIsInstance(volume, str)
 
-    def test_get_vols_from_storagegroup(self):
-        """Test get_vols_from_storagegroup."""
-        storage_group_name = self.create_empty_storage_group()
-        volume_list = self.provisioning.get_vols_from_storagegroup(
-            storage_group_name)
-        self.assertEqual(list(), volume_list)
-        self.assertIsInstance(volume_list, list)
-        volume_name = self.generate_name()
-        self.provisioning.create_volume_from_storage_group_return_id(
-            volume_name, storage_group_name, 1)
-        time.sleep(10)
-        device_id = self.provisioning.find_volume_device_id(volume_name)
-        self.addCleanup(self.delete_volume, storage_group_name, device_id)
-        volume_list = self.provisioning.get_vols_from_storagegroup(
-            storage_group_name)
-        self.assertIsInstance(volume_list, list)
-        self.assertIn(device_id, volume_list)
-        for volume in volume_list:
-            self.assertIsInstance(volume, str)
-
     def test_get_storage_group_from_volume(self):
         """Test get_storage_group_from_volume."""
         storage_group_name = self.create_empty_storage_group()
@@ -2344,23 +1861,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         time.sleep(10)
         self.addCleanup(self.delete_volume, storage_group_name, device_id)
         storage_group_list = self.provisioning.get_storage_group_from_volume(
-            device_id)
-        self.assertIsNotNone(storage_group_list)
-        self.assertIsInstance(storage_group_list, list)
-        self.assertIn(storage_group_name, storage_group_list)
-        for storage_group in storage_group_list:
-            self.assertIsInstance(storage_group, str)
-
-    def test_get_storagegroup_from_vol(self):
-        """Test get_storagegroup_from_vol."""
-        storage_group_name = self.create_empty_storage_group()
-        volume_name = self.generate_name()
-        device_id = (
-            self.provisioning.create_volume_from_storage_group_return_id(
-                volume_name, storage_group_name, 1))
-        time.sleep(10)
-        self.addCleanup(self.delete_volume, storage_group_name, device_id)
-        storage_group_list = self.provisioning.get_storagegroup_from_vol(
             device_id)
         self.assertIsNotNone(storage_group_list)
         self.assertIsInstance(storage_group_list, list)
@@ -2386,7 +1886,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         """Test is_volume_in_storage_group True result legacy vol create."""
         storage_group_name = self.create_empty_storage_group()
         device_id = (
-            self.provisioning.create_volume_from_sg_return_dev_id(
+            self.provisioning.create_volume_from_storage_group_return_id(
                 self.generate_name(), storage_group_name, 1))
         time.sleep(10)
         self.addCleanup(self.delete_volume, storage_group_name, device_id)
@@ -2400,15 +1900,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         storage_group_name = self.create_empty_storage_group()
         device_id = self.create_volume()[constants.DEVICE_ID]
         result = self.provisioning.is_volume_in_storage_group(
-            device_id, storage_group_name)
-        self.assertIsInstance(result, bool)
-        self.assertFalse(result)
-
-    def test_is_volume_in_storagegroup(self):
-        """Test is_volume_in_storagegroup."""
-        storage_group_name = self.create_empty_storage_group()
-        device_id = self.create_volume()[constants.DEVICE_ID]
-        result = self.provisioning.is_volume_in_storagegroup(
             device_id, storage_group_name)
         self.assertIsInstance(result, bool)
         self.assertFalse(result)
@@ -2497,6 +1988,15 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         identifier = self.provisioning.find_volume_identifier(device_id)
         self.assertEqual(identifier, new_name)
 
+    def test_rename_volume_with_append_id(self):
+        """Test rename_volume with optional parameter append_vol_id."""
+        volume_details = self.create_volume()
+        device_id = volume_details[constants.DEVICE_ID].lstrip('0')
+        new_name = self.generate_name()
+        self.provisioning.rename_volume(device_id, new_name, True)
+        identifier = self.provisioning.find_volume_identifier(device_id)
+        self.assertEqual(identifier, new_name + device_id)
+
     def test_delete_volume(self):
         """Test delete_volume."""
         volume_name = self.generate_name()
@@ -2520,7 +2020,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         csv_file_path = os.path.join(temp_dir, csv_file_name)
         self.provisioning.find_low_volume_utilization(10, csv_file_path)
         parsed_values = file_handler.read_csv_values(csv_file_path)
-        self.assertIsNotNone(parsed_values)
+        if not parsed_values:
+            self.skipTest("test_find_low_volume_utilization "
+                          "- Test skipped as no data has been parsed.")
+
         self.assertIsInstance(parsed_values, dict)
         sg_name = 'sg_name'
         identifier = 'identifier'
@@ -2545,11 +2048,12 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_any_director_port(self):
         """Test get_any_director_port."""
-        fa_directors = self.provisioning.get_fa_directors()
-        fa_director = fa_directors[0]
-        port = self.provisioning.get_any_director_port(fa_director)
-        self.assertIsNotNone(port)
-        self.assertIsInstance(port, str)
+        if not self.is_v4:
+            fa_directors = self.provisioning.get_fa_directors()
+            fa_director = fa_directors[0]
+            port = self.provisioning.get_any_director_port(fa_director)
+            self.assertIsNotNone(port)
+            self.assertIsInstance(port, str)
 
     def test_format_director_port(self):
         """Test format_director_port."""
@@ -2632,6 +2136,12 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         :param ref_view_count: reference view count to check for -- int
         :param ref_type: reference connection type to check for -- str
         """
+        if self.is_v4:
+            if ref_type == 'Fibre':
+                ref_type = 'SCSI_FC'
+        # This seems to be necessary for now as model is not being updated
+        # fast enough
+        time.sleep(1)
         port_group_list = self.provisioning.get_port_group_list()
         self.assertIn(port_group_name, port_group_list)
 
@@ -2788,7 +2298,9 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn(constants.NUM_OF_MASKING_VIEWS, storage_group_details)
         self.assertIn(constants.NUM_OF_SNAPSHOTS, storage_group_details)
         self.assertIn(constants.CAP_GB, storage_group_details)
-        self.assertIn(constants.DEVICE_EMULATION, storage_group_details)
+        # Not populated when storage group is empty
+        if storage_group_details.get(constants.NUM_OF_VOLS) > 0:
+            self.assertIn(constants.DEVICE_EMULATION, storage_group_details)
         self.assertIn(constants.TYPE, storage_group_details)
         self.assertIn(constants.UNPROTECTED, storage_group_details)
         self.assertIsInstance(
@@ -2812,13 +2324,12 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(
             storage_group_details[constants.NUM_OF_SNAPSHOTS], int)
         self.assertIsInstance(storage_group_details[constants.CAP_GB], float)
-        self.assertIsInstance(
-            storage_group_details[constants.DEVICE_EMULATION], str)
+        if storage_group_details.get(constants.NUM_OF_VOLS) > 0:
+            self.assertIsInstance(
+                storage_group_details[constants.DEVICE_EMULATION], str)
         self.assertIsInstance(storage_group_details[constants.TYPE], str)
         self.assertIsInstance(
             storage_group_details[constants.UNPROTECTED], bool)
-        self.assertIsInstance(
-            storage_group_details[constants.COMPRESSION], bool)
         self.assertEqual(
             storage_group_id,
             storage_group_details[constants.STORAGE_GROUP_ID_CAMEL])
@@ -2951,7 +2462,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         :param srp_details: srp details -- dict
         """
         self._validate_srp_general(srp_details)
-        self._validate_srp_check_capacity(srp_details)
+        if self.is_v4:
+            self._validate_srp_check_capacity_v4(srp_details)
+        else:
+            self._validate_srp_check_capacity_v3(srp_details)
         self._validate_srp_check_efficiency(srp_details)
 
     def _validate_srp_general(self, srp_details):
@@ -2966,8 +2480,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn(constants.TOTAL_SRDF_DSE_ALLOCATED_CAP_GB, srp_details)
         self.assertIn(constants.RDFA_DSE, srp_details)
         self.assertIn(constants.DISK_GROUP_ID, srp_details)
-        self.assertIn(constants.SRP_CAPACITY, srp_details)
-        self.assertIn(constants.SRP_CAPACITY, srp_details)
+        if self.is_v4:
+            self.assertIn(constants.FBA_SRP_CAPACITY, srp_details)
+        else:
+            self.assertIn(constants.SRP_CAPACITY, srp_details)
         self.assertIsInstance(srp_details[constants.SRP_ID], str)
         self.assertIsInstance(srp_details[constants.NUM_OF_DISK_GROUPS], int)
         self.assertIsInstance(srp_details[constants.EMULATION], str)
@@ -2978,36 +2494,168 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(srp_details[constants.RDFA_DSE], bool)
         self.assertIsInstance(srp_details[constants.DISK_GROUP_ID], list)
 
-    def _validate_srp_check_capacity(self, srp_details):
+    def _validate_srp_check_capacity_v3(self, srp_details):
         """Helper method for validating srp return details.
 
         :param srp_details: srp details -- dict
         """
-        subscribed_allocated_tb = 'subscribed_allocated_tb'
-        subscribed_total_tb = 'subscribed_total_tb'
-        snapshot_modified_tb = 'snapshot_modified_tb'
-        snapshot_total_tb = 'snapshot_total_tb'
-        usable_used_tb = 'usable_used_tb'
-        usable_total_tb = 'usable_total_tb'
-        effective_used_capacity_percent = 'effective_used_capacity_percent'
-        srp_capacity = srp_details[constants.SRP_CAPACITY]
+        srp_capacity = srp_details.get(constants.SRP_CAPACITY)
         self.assertIsInstance(srp_capacity, dict)
-        self.assertIn(subscribed_allocated_tb, srp_capacity)
-        self.assertIn(subscribed_total_tb, srp_capacity)
-        self.assertIn(snapshot_modified_tb, srp_capacity)
-        self.assertIn(snapshot_total_tb, srp_capacity)
-        self.assertIn(usable_used_tb, srp_capacity)
-        self.assertIn(usable_total_tb, srp_capacity)
-        self.assertIn(effective_used_capacity_percent, srp_capacity)
-        self.assertIs(float, type(
-            srp_capacity[subscribed_allocated_tb]))
-        self.assertIsInstance(srp_capacity[subscribed_total_tb], float)
-        self.assertIsInstance(srp_capacity[snapshot_modified_tb], float)
-        self.assertIsInstance(srp_capacity[snapshot_total_tb], float)
-        self.assertIsInstance(srp_capacity[usable_used_tb], float)
-        self.assertIsInstance(srp_capacity[usable_total_tb], float)
-        self.assertIs(int, type(
-            srp_capacity[effective_used_capacity_percent]))
+        self.assertIn(constants.SUBSCRIBED_ALLOCATED_TB, srp_capacity)
+        self.assertIn(constants.SUBSCRIBED_TOTAL_TB, srp_capacity)
+        self.assertIn(constants.SNAPSHOT_MODIFIED_TB, srp_capacity)
+        self.assertIn(constants.SNAPSHOT_TOTAL_TB, srp_capacity)
+        self.assertIn(constants.USABLE_USED_TB, srp_capacity)
+        self.assertIn(constants.USABLE_TOTAL_TB, srp_capacity)
+        self.assertIn(constants.EFFECTIVE_USED_CAPACITY_PERCENT, srp_capacity)
+        self.assertIsInstance(
+            srp_capacity.get(constants.SUBSCRIBED_ALLOCATED_TB), float)
+        self.assertIsInstance(
+            srp_capacity.get(constants.SUBSCRIBED_TOTAL_TB), float)
+        self.assertIsInstance(
+            srp_capacity.get(constants.SNAPSHOT_MODIFIED_TB), float)
+        self.assertIsInstance(
+            srp_capacity.get(constants.SNAPSHOT_TOTAL_TB), float)
+        self.assertIsInstance(
+            srp_capacity.get(constants.USABLE_USED_TB), float)
+        self.assertIsInstance(
+            srp_capacity.get(constants.USABLE_TOTAL_TB), float)
+        self.assertIsInstance(
+            srp_capacity.get(constants.EFFECTIVE_USED_CAPACITY_PERCENT), int)
+
+    def _validate_srp_check_capacity_v4(self, srp_details):
+        """Helper method for validating srp return details.
+
+        :param srp_details: srp details -- dict
+        """
+        service_levels = srp_details.get(constants.SERVICE_LEVELS)
+        self.assertIsInstance(service_levels, list)
+        srp_efficiency = srp_details.get(constants.SRP_EFFICIENCY)
+        self.assertIsInstance(srp_efficiency, dict)
+        srp_capacity = srp_details.get(constants.FBA_SRP_CAPACITY)
+        self.assertIsInstance(srp_capacity, dict)
+        provisioned_capacity = srp_capacity.get('provisioned')
+        self.assertIsInstance(provisioned_capacity, dict)
+        self.assertIn(constants.PROVISIONED_TB, provisioned_capacity)
+        # self.assertIn(constants.TOTAL_TB, provisioned_capacity)
+        # self.assertIn(constants.FREE_TB, provisioned_capacity)
+        self.assertIn(constants.EFFECTIVE_CAPACITY_TB, provisioned_capacity)
+        self.assertIn(constants.PROVISIONED_PERCENT, provisioned_capacity)
+        self.assertIsInstance(
+            provisioned_capacity.get(constants.PROVISIONED_TB), float)
+        # self.assertIsInstance(
+        #    provisioned_capacity.get(constants.TOTAL_TB), float)
+        # self.assertIsInstance(
+        #    provisioned_capacity.get(constants.FREE_TB), float)
+        self.assertIsInstance(
+            provisioned_capacity.get(constants.EFFECTIVE_CAPACITY_TB), float)
+        self.assertIsInstance(
+            provisioned_capacity.get(constants.PROVISIONED_PERCENT), float)
+
+        effective_capacity = srp_capacity.get('effective')
+        self.assertIsInstance(effective_capacity, dict)
+        self.assertIn(constants.USED_TB, effective_capacity)
+        self.assertIn(constants.TOTAL_TB, effective_capacity)
+        self.assertIn(constants.FREE_TB, effective_capacity)
+        self.assertIn(constants.EFFECTIVE_USED_PERCENT, effective_capacity)
+        self.assertIn(constants.PHYSICAL_CAPACITY, effective_capacity)
+        self.assertIsInstance(
+            effective_capacity.get(constants.USED_TB), float)
+        self.assertIsInstance(
+            effective_capacity.get(constants.TOTAL_TB), float)
+        self.assertIsInstance(
+            effective_capacity.get(constants.FREE_TB), float)
+        self.assertIsInstance(
+            effective_capacity.get(constants.EFFECTIVE_USED_PERCENT), float)
+        self.assertIsInstance(
+            effective_capacity.get(constants.PHYSICAL_CAPACITY), dict)
+
+        physical_capacity = effective_capacity.get(constants.PHYSICAL_CAPACITY)
+        self.assertIn(constants.USED_TB, physical_capacity)
+        self.assertIn(constants.TOTAL_TB, physical_capacity)
+        self.assertIn(constants.FREE_TB, physical_capacity)
+        self.assertIsInstance(physical_capacity.get(constants.USED_TB), float)
+        self.assertIsInstance(physical_capacity.get(constants.TOTAL_TB), float)
+        self.assertIsInstance(physical_capacity.get(constants.FREE_TB), float)
+
+        self.assertIn(
+            constants.EFFECTIVE_CAPACITY_RESOURCES, effective_capacity)
+        effective_capacity_resources = effective_capacity.get(
+            constants.EFFECTIVE_CAPACITY_RESOURCES)
+        self.assertIn(constants.USED_TB, effective_capacity_resources)
+        self.assertIn(constants.TOTAL_TB, effective_capacity_resources)
+        self.assertIn(constants.FREE_TB, effective_capacity_resources)
+        self.assertIsInstance(
+            effective_capacity_resources.get(constants.USED_TB), float)
+        self.assertIsInstance(
+            effective_capacity_resources.get(constants.TOTAL_TB), float)
+        self.assertIsInstance(
+            effective_capacity_resources.get(constants.FREE_TB), float)
+
+        self.assertIn(constants.EFFECTIVE_CAPACITY_USAGE, effective_capacity)
+        effective_capacity_usage = effective_capacity.get(
+            constants.EFFECTIVE_CAPACITY_USAGE)
+        self.assertIn(constants.SNAPSHOT_USED_TB, effective_capacity_usage)
+        self.assertIn(constants.FREE_TB, effective_capacity_usage)
+        self.assertIsInstance(
+            effective_capacity_usage.get(constants.SNAPSHOT_USED_TB), float)
+        self.assertIsInstance(
+            effective_capacity_usage.get(constants.FREE_TB), float)
+
+        snapshot_capacity = srp_capacity.get('snapshot')
+        self.assertIsInstance(snapshot_capacity, dict)
+        self.assertIn(constants.EFFECTIVE_USED_PERCENT, snapshot_capacity)
+        self.assertIn(constants.PHYSICAL_USED_PERCENT, snapshot_capacity)
+        self.assertIsInstance(
+            snapshot_capacity.get(constants.EFFECTIVE_USED_PERCENT), float)
+        self.assertIsInstance(
+            snapshot_capacity.get(constants.PHYSICAL_USED_PERCENT), float)
+
+        data_reduction = srp_capacity.get('data_reduction')
+        self.assertIsInstance(data_reduction, dict)
+        # self.assertIn(constants.REDUCING_DATA_PERCENT, data_reduction)
+        self.assertIn(constants.SAVINGS_TB, data_reduction)
+        self.assertIn(constants.EFFECTIVE_USED, data_reduction)
+        # self.assertIsInstance(
+        #     data_reduction.get(constants.REDUCING_DATA_PERCENT), float)
+        self.assertIsInstance(data_reduction.get(constants.SAVINGS_TB), float)
+        self.assertIsInstance(
+            data_reduction.get(constants.EFFECTIVE_USED), dict)
+
+        effective_used = data_reduction.get(constants.EFFECTIVE_USED)
+        self.assertIn(constants.ENABLED_AND_REDUCING_TB, effective_used)
+        self.assertIn(constants.ENABLED_AND_UNREDUCIBLE_TB, effective_used)
+        self.assertIn(constants.ENABLED_AND_UNEVALUATED_TB, effective_used)
+        self.assertIn(constants.DISABLED_AND_UNREDUCED_TB, effective_used)
+        # self.assertIn(constants.DATA_REDUCTION_DISABLED_TB, effective_used)
+        self.assertIsInstance(
+            effective_used.get(constants.ENABLED_AND_REDUCING_TB), float)
+        self.assertIsInstance(
+            effective_used.get(constants.ENABLED_AND_UNREDUCIBLE_TB), float)
+        self.assertIsInstance(
+            effective_used.get(constants.ENABLED_AND_UNEVALUATED_TB), float)
+        # self.assertIsInstance(
+        #     effective_used.get(constants.DATA_REDUCTION_DISABLED_TB), float)
+        self.assertIsInstance(
+            effective_used.get(constants.DISABLED_AND_UNREDUCED_TB), float)
+
+        self.assertIn(constants.PHYSICAL_USED, data_reduction)
+        physical_used = data_reduction.get(constants.PHYSICAL_USED)
+        self.assertIn(constants.ENABLED_AND_REDUCING_TB, physical_used)
+        self.assertIn(constants.ENABLED_AND_UNREDUCIBLE_TB, physical_used)
+        self.assertIn(constants.ENABLED_AND_UNEVALUATED_TB, physical_used)
+        # self.assertIn(constants.DATA_REDUCTION_DISABLED_TB, physical_used)
+        self.assertIn(constants.DISABLED_AND_UNREDUCED_TB, physical_used)
+        self.assertIsInstance(
+            physical_used.get(constants.ENABLED_AND_REDUCING_TB), float)
+        self.assertIsInstance(
+            physical_used.get(constants.ENABLED_AND_UNREDUCIBLE_TB), float)
+        self.assertIsInstance(
+            physical_used.get(constants.ENABLED_AND_UNEVALUATED_TB), float)
+        # self.assertIsInstance(
+        #     physical_used.get(constants.DATA_REDUCTION_DISABLED_TB), float)
+        self.assertIsInstance(
+            physical_used.get(constants.DISABLED_AND_UNREDUCED_TB), float)
 
     def _validate_srp_check_efficiency(self, srp_details):
         """Helper method for validating srp return details.
@@ -3024,7 +2672,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         srp_efficiency = srp_details[constants.SRP_EFFICIENCY]
         self.assertIsInstance(srp_efficiency, dict)
         self.assertIn(compression_state, srp_efficiency)
-        self.assertIn(data_reduction_enabled_percent, srp_efficiency)
+        # self.assertIn(data_reduction_enabled_percent, srp_efficiency)
         self.assertIsInstance(srp_efficiency[compression_state], str)
         self.assertIs(float, type(
             srp_efficiency[data_reduction_enabled_percent]))
@@ -3090,31 +2738,66 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn(constants.STORAGE_GROUP_DEMAND, srp_report)
         self.assertIsInstance(
             srp_report[constants.STORAGE_GROUP_DEMAND], list)
-        subscribed_gb = 'subscribed_gb'
-        allocated_gb = 'allocated_gb'
-        used_gb = 'used_gb'
-        snapshot_allocated_gb = 'snapshot_allocated_gb'
-        snapshot_used_gb = 'snapshot_used_gb'
+
         compression_ratio_to_one = 'compression_ratio_to_one'
         for report in srp_report[constants.STORAGE_GROUP_DEMAND]:
             self.assertIsInstance(report, dict)
             self.assertIn(constants.STORAGE_GROUP_ID_CAMEL, report)
             self.assertIn(constants.EMULATION, report)
-            self.assertIn(subscribed_gb, report)
-            self.assertIn(allocated_gb, report)
-            self.assertIn(constants.ALLOCATED_PERCENT, report)
-            self.assertIn(used_gb, report)
-            self.assertIn(snapshot_allocated_gb, report)
-            self.assertIn(snapshot_used_gb, report)
+            if not self.is_v4:
+                subscribed_gb = 'subscribed_gb'
+                allocated_gb = 'allocated_gb'
+                used_gb = 'used_gb'
+                snapshot_allocated_gb = 'snapshot_allocated_gb'
+                snapshot_used_gb = 'snapshot_used_gb'
+                self.assertIn(subscribed_gb, report)
+                self.assertIn(allocated_gb, report)
+                self.assertIn(constants.ALLOCATED_PERCENT, report)
+                self.assertIn(used_gb, report)
+                self.assertIn(snapshot_allocated_gb, report)
+                self.assertIn(snapshot_used_gb, report)
+                self.assertIsInstance(report[subscribed_gb], float)
+                self.assertIsInstance(report[allocated_gb], float)
+                self.assertIsInstance(report[constants.ALLOCATED_PERCENT], int)
+                self.assertIsInstance(report[used_gb], float)
+                self.assertIsInstance(report[snapshot_allocated_gb], float)
+                self.assertIsInstance(report[snapshot_used_gb], float)
+            elif self.is_v4:
+                provisioned_gb = 'provisioned_gb'
+                effective_used_gb = 'effective_used_gb'
+                physical_used_gb = 'physical_used_gb'
+                data_reduction_state = 'data_reduction_state'
+                unreducible_data_gb = 'unreducible_data_gb'
+                # snapshot_count = 'snapshot_count'
+                snapshot_effective_used_gb = 'snapshot_effective_used_gb'
+                snapshot_physical_used_gb = 'snapshot_physical_used_gb'
+                snapshot_resources_percent = 'snapshot_resources_percent'
+                self.assertIn(provisioned_gb, report)
+                self.assertIn(effective_used_gb, report)
+                self.assertIn(physical_used_gb, report)
+                self.assertIn(data_reduction_state, report)
+                self.assertIn(unreducible_data_gb, report)
+                # self.assertIn(snapshot_count, report)
+                self.assertIn(snapshot_effective_used_gb, report)
+                self.assertIn(snapshot_physical_used_gb, report)
+                self.assertIn(snapshot_resources_percent, report)
+                self.assertIsInstance(report[provisioned_gb], float)
+                self.assertIsInstance(report[effective_used_gb], float)
+                self.assertIsInstance(report[physical_used_gb], float)
+                self.assertIsInstance(report[data_reduction_state], bool)
+                self.assertIsInstance(report[unreducible_data_gb], float)
+                # self.assertIsInstance(report[snapshot_count], float)
+                self.assertIsInstance(
+                    report[snapshot_effective_used_gb], float)
+                self.assertIsInstance(
+                    report[snapshot_physical_used_gb], float)
+                self.assertIsInstance(
+                    report[snapshot_resources_percent], float)
+
             self.assertIsInstance(
                 report[constants.STORAGE_GROUP_ID_CAMEL], str)
             self.assertIsInstance(report[constants.EMULATION], str)
-            self.assertIsInstance(report[subscribed_gb], float)
-            self.assertIsInstance(report[allocated_gb], float)
-            self.assertIsInstance(report[constants.ALLOCATED_PERCENT], int)
-            self.assertIsInstance(report[used_gb], float)
-            self.assertIsInstance(report[snapshot_allocated_gb], float)
-            self.assertIsInstance(report[snapshot_used_gb], float)
+
             if compression_ratio_to_one in report:
                 self.assertIs(
                     float, type(report[compression_ratio_to_one]))

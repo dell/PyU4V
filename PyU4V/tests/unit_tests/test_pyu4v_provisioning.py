@@ -19,6 +19,7 @@ import testtools
 
 from unittest import mock
 
+from PyU4V import common
 from PyU4V import provisioning
 from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
@@ -249,9 +250,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_type=constants.HOST,
                 resource_type_id=host_id)
 
-    def test_get_mvs_from_host(self):
-        """Test get_mvs_from_host."""
-        mv_list = self.provisioning.get_mvs_from_host(
+    def test_get_masking_views_from_host(self):
+        """Test get_masking_views_from_host."""
+        mv_list = self.provisioning.get_masking_views_from_host(
             self.data.initiatorgroup_name_i)
         self.assertEqual([self.data.masking_view_name_i], mv_list)
 
@@ -263,17 +264,17 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_get_host_group(self):
         """Test get_host_group."""
-        hg_details = self.provisioning.get_hostgroup(self.data.hostgroup_id)
+        hg_details = self.provisioning.get_host_group(self.data.hostgroup_id)
         self.assertEqual(self.data.hostgroup, hg_details)
 
-    def test_get_hostgroup_list(self):
-        """Test get_hostgroup_list."""
-        hg_list = self.provisioning.get_hostgroup_list()
+    def test_get_host_group_list(self):
+        """Test get_host_group_list."""
+        hg_list = self.provisioning.get_host_group_list()
         self.assertEqual(self.data.hostgroup_list['hostGroupId'], hg_list)
         with mock.patch.object(
                 self.provisioning, 'get_resource',
                 return_value={'some_key': 'some_value'}):
-            hg_list = self.provisioning.get_hostgroup_list()
+            hg_list = self.provisioning.get_host_group_list()
             self.assertEqual(list(), hg_list)
 
     def test_create_host_group(self):
@@ -283,7 +284,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'hostId': host_list, 'hostGroupId': host_group_id}
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_hostgroup(
+            self.provisioning.create_host_group(
                 self.data.hostgroup_id, [self.data.initiatorgroup_name_f])
             mock_create.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -301,7 +302,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                    'hostFlags': host_flags, 'executionOption': 'ASYNCHRONOUS'}
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_hostgroup(
+            self.provisioning.create_host_group(
                 host_group_id, host_list, host_flags, _async=True)
             mock_create.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -318,7 +319,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'setHostGroupFlagsParam': {'hostFlags': host_flag_dict}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_hostgroup(
+            self.provisioning.modify_host_group(
                 host_group_id, host_flag_dict=host_flag_dict)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -336,7 +337,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'removeHostParam': {'host': remove_host_list}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_hostgroup(
+            self.provisioning.modify_host_group(
                 host_group_id, remove_host_list=remove_host_list)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -354,7 +355,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'addHostParam': {'host': add_host_list}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_hostgroup(
+            self.provisioning.modify_host_group(
                 host_group_id, add_host_list=add_host_list)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -372,7 +373,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'renameHostGroupParam': {'new_host_group_name': new_name}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_hostgroup(
+            self.provisioning.modify_host_group(
                 host_group_id, new_name=new_name)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -388,15 +389,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'modify_resource'):
             self.assertRaises(exception.InvalidInputException,
-                              self.provisioning.modify_hostgroup,
+                              self.provisioning.modify_host_group,
                               hostgroup_name)
 
-    def test_delete_hostgroup(self):
-        """Test delete_hostgroup."""
+    def test_delete_host_group(self):
+        """Test delete_host_group."""
         with mock.patch.object(
                 self.provisioning, 'delete_resource') as mock_delete:
             host_group_id = self.data.hostgroup_id
-            self.provisioning.delete_hostgroup(host_group_id)
+            self.provisioning.delete_host_group(host_group_id)
             mock_delete.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
                 resource_level=constants.SYMMETRIX,
@@ -616,9 +617,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.data.storagegroup_name_1)
         self.assertEqual(self.data.sg_details[1]['maskingview'], mv_list)
 
-    def test_get_masking_views_by_host(self):
-        """Test get_masking_views_by_host."""
-        mv_list = self.provisioning.get_masking_views_by_host(
+    def test_get_masking_views_by_initiator_group(self):
+        """Test get_masking_views_by_initiator_group."""
+        mv_list = self.provisioning.get_masking_views_by_initiator_group(
             self.data.initiatorgroup_name_f)
         self.assertEqual(self.data.initiator_list[0]['maskingview'], mv_list)
 
@@ -670,15 +671,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                               self.provisioning.get_element_from_masking_view,
                               self.data.masking_view_name_f)
 
-    def test_get_common_masking_views(self):
-        """Test get_common_masking_views."""
+    def test_get_port_group_common_masking_views(self):
+        """Test get_port_group_common_masking_views."""
         port_group_name = self.data.port_group_name_f
         initiator_group_name = self.data.initiatorgroup_name_f
         ref_dict = {'port_group_name': port_group_name,
                     'host_or_host_group_name': initiator_group_name}
         with mock.patch.object(
                 self.provisioning, 'get_masking_view_list') as mock_list:
-            self.provisioning.get_common_masking_views(
+            self.provisioning.get_port_group_common_masking_views(
                 port_group_name, initiator_group_name)
             mock_list.assert_called_once_with(ref_dict)
 
@@ -713,44 +714,45 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_type_id=masking_view_name,
                 payload=payload)
 
-    def test_get_host_from_maskingview(self):
-        """Test get_host_from_maskingview."""
-        ig_id = self.provisioning.get_host_from_maskingview(
+    def test_get_host_from_masking_view(self):
+        """Test get_host_from_masking_view."""
+        ig_id = self.provisioning.get_host_from_masking_view(
             self.data.masking_view_name_f)
         self.assertEqual(self.data.initiatorgroup_name_f, ig_id)
 
-    def test_get_storage_group_from_maskingview(self):
-        """Test get_storage_group_from_maskingview."""
-        storage_group_id = self.provisioning.get_storagegroup_from_maskingview(
-            self.data.masking_view_name_f)
+    def test_get_storage_group_from_masking_view(self):
+        """Test get_storage_group_from_masking_view."""
+        storage_group_id = (
+            self.provisioning.get_storage_group_from_masking_view(
+                self.data.masking_view_name_f))
         self.assertEqual(self.data.storagegroup_name, storage_group_id)
 
-    def test_get_port_group_from_maskingview(self):
-        """Test get_port_group_from_maskingview."""
-        port_group_id = self.provisioning.get_portgroup_from_maskingview(
+    def test_get_port_group_from_masking_view(self):
+        """Test get_port_group_from_masking_view."""
+        port_group_id = self.provisioning.get_port_group_from_masking_view(
             self.data.masking_view_name_f)
         self.assertEqual(self.data.port_group_name_f, port_group_id)
 
-    def test_get_maskingview_connections(self):
-        """Test get_maskingview_connections."""
-        mv_conn_list = self.provisioning.get_maskingview_connections(
+    def test_get_masking_view_connections(self):
+        """Test get_masking_view_connections."""
+        mv_conn_list = self.provisioning.get_masking_view_connections(
             self.data.masking_view_name_f)
         self.assertEqual(
             self.data.maskingview[0]['maskingViewConnection'], mv_conn_list)
 
-    def test_find_host_lun_id_for_vol_success(self):
-        """Test find_host_lun_id_for_vol successful return."""
-        host_lun_id = self.provisioning.find_host_lun_id_for_vol(
+    def test_find_host_lun_id_for_volume_success(self):
+        """Test find_host_lun_id_for_volume successful return."""
+        host_lun_id = self.provisioning.find_host_lun_id_for_volume(
             self.data.masking_view_name_f, self.data.device_id)
         self.assertEqual(3, host_lun_id)
 
-    def test_find_host_lun_id_for_vol_failure(self):
-        """Test find_host_lun_id_for_vol unsuccessful return."""
+    def test_find_host_lun_id_for_volume_failure(self):
+        """Test find_host_lun_id_for_volume unsuccessful return."""
         with mock.patch.object(
-                self.provisioning, 'get_maskingview_connections',
+                self.provisioning, 'get_masking_view_connections',
                 side_effect=[list(), [{'not_host_lun': 'value'}]]):
             for x in range(0, 2):
-                host_lun_id2 = self.provisioning.find_host_lun_id_for_vol(
+                host_lun_id2 = self.provisioning.find_host_lun_id_for_volume(
                     self.data.masking_view_name_f, self.data.device_id)
                 self.assertIsNone(host_lun_id2)
 
@@ -762,18 +764,18 @@ class PyU4VProvisioningTest(testtools.TestCase):
 
     def test_get_port_group(self):
         """Test get_port_group."""
-        port_group_details = self.provisioning.get_portgroup(
+        port_group_details = self.provisioning.get_port_group(
             self.data.port_group_name_f)
         self.assertEqual(self.data.portgroup[0], port_group_details)
 
     def test_get_port_group_list(self):
         """Test get_port_group_list."""
-        port_group_list = self.provisioning.get_portgroup_list()
+        port_group_list = self.provisioning.get_port_group_list()
         self.assertEqual(self.data.pg_list['portGroupId'], port_group_list)
 
     def test_get_ports_from_port_group(self):
         """Test get_ports_from_port_group."""
-        port_list = self.provisioning.get_ports_from_pg(
+        port_list = self.provisioning.get_ports_from_port_group(
             self.data.port_group_name_f)
         self.assertEqual(['FA-1D:4'], port_list)
 
@@ -784,7 +786,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'symmetrixPortKey': [{
                         'directorId': self.data.director_id1,
                         'portId': self.data.port_id1}]}) as mck_get_grp:
-            target_wwns = self.provisioning.get_target_wwns_from_pg(
+            target_wwns = self.provisioning.get_target_wwns_from_port_group(
                 self.data.port_group_name_f)
             self.assertEqual([self.data.wwnn1], target_wwns)
             mck_get_grp.assert_called_once_with(self.data.port_group_name_f)
@@ -825,8 +827,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                           'portId': port_id}]})
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_portgroup(port_group_id, director_id,
-                                               port_id)
+            self.provisioning.create_port_group(
+                port_group_id, director_id, port_id)
         mock_create.assert_called_once_with(
             category=constants.SLOPROVISIONING,
             resource_level=constants.SYMMETRIX,
@@ -835,14 +837,100 @@ class PyU4VProvisioningTest(testtools.TestCase):
             payload=payload)
         mck_update.assert_called_once()
 
+    def test_empty_create_port_group(self):
+        """Test create_empty_port_group."""
+        port_group_id = self.data.port_group_name_f
+        payload = ({'portGroupId': port_group_id})
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            self.provisioning.create_empty_port_group(
+                port_group_id)
+        mock_create.assert_called_once_with(
+            category=constants.SLOPROVISIONING,
+            resource_level=constants.SYMMETRIX,
+            resource_level_id=self.data.array,
+            resource_type=constants.PORTGROUP,
+            payload=payload)
+
     def test_get_child_storage_group_from_parent(self):
         """Test get_child_storage_group_from_parent."""
         parent_storage_group = self.data.parent_sg
         ref_child_storage_group_list = [self.data.storagegroup_name_1]
         act_child_storage_group_list = (
-            self.provisioning.get_child_sg_from_parent(parent_storage_group))
+            self.provisioning.get_child_storage_groups_from_parent(
+                parent_storage_group))
         self.assertEqual(ref_child_storage_group_list,
                          act_child_storage_group_list)
+
+    @mock.patch.object(
+        provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
+    def test_create_new_port_group(self, mck_update):
+        """Test create_new_port_group."""
+        port_group_id = self.data.port_group_name_f
+        port_dict_list = [{'directorId': self.data.director_id1,
+                           'portId': self.data.port_id1},
+                          {'directorId': self.data.director_id2,
+                           'portId': self.data.port_id2}, ]
+
+        payload = {'portGroupId': port_group_id,
+                   'symmetrixPortKey': port_dict_list}
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            self.provisioning.create_new_port_group(
+                port_group_id, port_dict_list)
+        mock_create.assert_called_once_with(
+            category=constants.SLOPROVISIONING,
+            resource_level=constants.SYMMETRIX,
+            resource_level_id=self.data.array,
+            resource_type=constants.PORTGROUP,
+            payload=payload)
+        mck_update.assert_called_once()
+
+    @mock.patch.object(
+        common.CommonFunctions, 'is_array_v4', return_value=True)
+    @mock.patch.object(
+        provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
+    def test_create_new_port_group_V4(self, mck_update, mck_v4):
+        """Test create_new_port_group."""
+        port_group_protocol = 'SCSI_FC'
+        port_group_id = self.data.port_group_name_f
+        port_dict_list = [{'directorId': self.data.director_id1,
+                           'portId': self.data.port_id1},
+                          {'directorId': self.data.director_id2,
+                           'portId': self.data.port_id2}, ]
+
+        payload = {'portGroupId': port_group_id,
+                   'symmetrixPortKey': port_dict_list,
+                   'port_group_protocol': 'SCSI_FC'}
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            self.provisioning.create_new_port_group(
+                port_group_id, port_dict_list, port_group_protocol)
+        mock_create.assert_called_once_with(
+            category=constants.SLOPROVISIONING,
+            resource_level=constants.SYMMETRIX,
+            resource_level_id=self.data.array,
+            resource_type=constants.PORTGROUP,
+            payload=payload)
+        mck_update.assert_called_once()
+
+    @mock.patch.object(
+        common.CommonFunctions, 'is_array_v4', return_value=True)
+    @mock.patch.object(
+        provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
+    def test_create_new_port_group_V4_no_port_group_protocol(
+            self, mck_update, mck_v4):
+        """Test create_new_port_group."""
+        port_group_id = self.data.port_group_name_f
+        port_dict_list = [{'directorId': self.data.director_id1,
+                           'portId': self.data.port_id1},
+                          {'directorId': self.data.director_id2,
+                           'portId': self.data.port_id2}, ]
+
+        self.assertRaises(
+            exception.InvalidInputException,
+            self.provisioning.create_new_port_group, port_group_id,
+            port_dict_list)
 
     @mock.patch.object(
         provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
@@ -858,7 +946,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                    'symmetrixPortKey': port_dict_list}
         with mock.patch.object(
                 self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_multiport_portgroup(
+            self.provisioning.create_multiport_port_group(
                 port_group_id, port_dict_list)
         mock_create.assert_called_once_with(
             category=constants.SLOPROVISIONING,
@@ -879,11 +967,11 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'portId': self.data.port_id2}]
         with mock.patch.object(
                 self.provisioning,
-                'create_multiport_portgroup') as mock_create:
-            self.provisioning.create_portgroup_from_file(
+                'create_new_port_group') as mock_create:
+            self.provisioning.create_port_group_from_file(
                 'my-file', port_group_id)
             mock_create.assert_called_once_with(
-                port_group_id, payload)
+                port_group_id, payload, None)
         mock_create_from_file.assert_called()
 
     @mock.patch.object(
@@ -899,7 +987,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'portId': dirport[1]}]}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_portgroup(
+            self.provisioning.modify_port_group(
                 port_group_name, remove_port=dirport)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -917,14 +1005,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
         ref_payload = {'editPortGroupActionParam': {
                        'renamePortGroupParam': {
                            'new_port_group_name': new_port_group_name}}}
-        act_result = self.provisioning.modify_portgroup(
-            port_group_name, rename_portgroup=new_port_group_name)
+        act_result = self.provisioning.modify_port_group(
+            port_group_name, rename_port_group=new_port_group_name)
         ref_result = self.data.job_list[0]
         self.assertEqual(ref_result, act_result)
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_portgroup(
-                port_group_name, rename_portgroup=new_port_group_name)
+            self.provisioning.modify_port_group(
+                port_group_name, rename_port_group=new_port_group_name)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
                 resource_level=constants.SYMMETRIX,
@@ -946,7 +1034,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'portId': dirport[1]}]}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_portgroup(
+            self.provisioning.modify_port_group(
                 port_group_name, add_port=dirport)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
@@ -962,14 +1050,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
         port_group_name = self.data.port_group_name_f
         self.assertRaises(
             exception.InvalidInputException,
-            self.provisioning.modify_portgroup, port_group_name)
+            self.provisioning.modify_port_group, port_group_name)
 
     def test_delete_port_group(self):
         """Test delete_port_group."""
         port_group = self.data.port_group_name_f
         with mock.patch.object(
                 self.provisioning, 'delete_resource') as mock_del:
-            self.provisioning.delete_portgroup(port_group)
+            self.provisioning.delete_port_group(port_group)
             mock_del.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
                 resource_level=constants.SYMMETRIX,
@@ -978,18 +1066,18 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_type_id=port_group
             )
 
-    def test_get_slo_list(self):
-        """Test get_slo_list."""
-        slo_list = self.provisioning.get_slo_list()
+    def test_get_service_level_list(self):
+        """Test get_service_level_list."""
+        slo_list = self.provisioning.get_service_level_list()
         self.assertEqual(self.data.slo_list['sloId'], slo_list)
 
-    def test_get_slo(self):
-        """Test get_slo."""
-        slo_details = self.provisioning.get_slo(self.data.slo)
+    def test_get_service_level(self):
+        """Test get_service_level."""
+        slo_details = self.provisioning.get_service_level(self.data.slo)
         self.assertEqual(self.data.slo_details, slo_details)
 
-    def test_modify_slo(self):
-        """Test modify_slo."""
+    def test_modify_service_level(self):
+        """Test modify_service_level."""
         current_name = self.data.slo
         new_name = 'new_name'
         ref_payload = {'editSloActionParam': {
@@ -997,7 +1085,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 'sloId': new_name}}}
         with mock.patch.object(
                 self.provisioning, 'modify_resource') as mock_mod:
-            self.provisioning.modify_slo(current_name, new_name)
+            self.provisioning.modify_service_level(current_name, new_name)
             mock_mod.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
                 resource_level=constants.SYMMETRIX,
@@ -1006,7 +1094,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_type_id=current_name,
                 payload=ref_payload)
         ref_result = self.data.job_list[0]
-        act_result = self.provisioning.modify_slo(current_name, new_name)
+        act_result = self.provisioning.modify_service_level(
+            current_name, new_name)
         self.assertEqual(ref_result, act_result)
 
     def test_get_srp(self):
@@ -1043,25 +1132,27 @@ class PyU4VProvisioningTest(testtools.TestCase):
         self.assertEqual(self.data.sg_list['storageGroupId'],
                          storage_group_list)
 
-    def test_get_mv_from_sg(self):
-        """Test get_mv_from_sg."""
-        mv_list = self.provisioning.get_mv_from_sg(
+    def test_get_masking_view_from_storage_group(self):
+        """Test get_masking_view_from_storage_group."""
+        mv_list = self.provisioning.get_masking_view_from_storage_group(
             self.data.storagegroup_name_1)
         self.assertEqual(self.data.sg_details[1]['maskingview'], mv_list)
 
     def test_get_num_vols_in_storage_group(self):
         """Test get_num_vols_in_storage_group."""
-        num_vols = self.provisioning.get_num_vols_in_sg(
+        num_vols = self.provisioning.get_num_vols_in_storage_group(
             self.data.storagegroup_name)
         self.assertEqual(2, num_vols)
 
-    def test_is_child_storage_group_in_parent_sg(self):
-        """Test is_child_storage_group_in_parent_sg."""
-        is_child = self.provisioning.is_child_sg_in_parent_sg(
-            self.data.storagegroup_name_1, self.data.parent_sg)
+    def test_is_child_storage_group_in_parent_storage_group(self):
+        """Test is_child_storage_group_in_parent_storage_group."""
+        is_child = (
+            self.provisioning.is_child_storage_group_in_parent_storage_group(
+                self.data.storagegroup_name_1, self.data.parent_sg))
         self.assertTrue(is_child)
-        is_child2 = self.provisioning.is_child_sg_in_parent_sg(
-            self.data.storagegroup_name_2, self.data.parent_sg)
+        is_child2 = (
+            self.provisioning.is_child_storage_group_in_parent_storage_group(
+                self.data.storagegroup_name_2, self.data.parent_sg))
         self.assertFalse(is_child2)
 
     def test_create_storage_group_no_slo(self):
@@ -1098,28 +1189,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     {'sloId': 'None', 'workloadSelection': 'None',
                      'volumeAttributes': [
                          {'volume_size': '0', 'capacityUnit': 'CYL',
-                          'num_of_vols': 0}]}]}
-
-            mock_create.assert_called_once_with(
-                category='sloprovisioning',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
-
-    def test_create_storage_group_mobility_id(self):
-        """Test create_storage_group no slo set."""
-        with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_storage_group(
-                srp_id=self.data.srp, sg_id='new-sg', slo=None,
-                workload=None, enable_mobility_id=True)
-
-            payload = {
-                'srpId': 'SRP_1', 'storageGroupId': 'new-sg',
-                'emulation': 'FBA', 'sloBasedStorageGroupParam': [
-                    {'sloId': 'None', 'workloadSelection': 'None',
-                     "enable_mobility_id": True,
-                     'volumeAttributes': [
-                         {'volume_size': '0', 'capacityUnit': 'GB',
                           'num_of_vols': 0}]}]}
 
             mock_create.assert_called_once_with(
@@ -1236,10 +1305,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     file_contents = list(csv.reader(f))
                     self.assertEqual(ref_out_data, file_contents)
 
-    def test_get_vol_effective_wwn_details_84(self):
-        """Test get_vol_effective_wwn_details_84."""
-        col_list = ['volumeId', 'effective_wwn', 'wwn', 'has_effective_wwn',
-                    'storageGroupId']
+    def test_get_volume_effective_wwn_details_file_handling(self):
+        """Test get_volume_effective_wwn_details."""
+        col_list = ['volume_id', 'effective_wwn', 'wwn', 'has_effective_wwn',
+                    'storage_group_id']
         ref_volume = self.data.volume_details[0]
         storage_group_format = "{sg}".format(sg=ref_volume['storageGroupId'])
         row_list = [ref_volume['volumeId'], '', ref_volume['wwn'], '',
@@ -1249,7 +1318,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with tempfile.TemporaryDirectory() as td:
             vol_list = [self.data.device_id]
             file_name = os.path.join(td, 'temp_ut_file')
-            self.provisioning.get_vol_effective_wwn_details_84(vol_list,
+            self.provisioning.get_volume_effective_wwn_details(vol_list,
                                                                file_name)
             with open(file_name, 'r') as f:
                 file_contents = list(csv.reader(f))
@@ -1377,6 +1446,36 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_level_id=self.data.array,
                 resource_type='storagegroup', payload=payload1)
 
+    def test_create_storage_group_vol_name_append_vol_id(self):
+        """Test create_storage_group."""
+        with mock.patch.object(
+                self.provisioning, 'create_resource') as mock_create:
+            # 1 - no slo, not async
+            self.provisioning.create_storage_group(
+                self.data.srp, 'new-sg', slo='Diamond', workload=None,
+                num_vols=1, vol_size='1', vol_name='ID4TEST',
+                append_vol_id=True)
+            volume_identifier = {
+                'identifier_name': 'ID4TEST',
+                'volumeIdentifierChoice': 'identifier_name_plus_volume_id'}
+            payload1 = {
+                'srpId': 'SRP_1',
+                'storageGroupId': 'new-sg',
+                'emulation': 'FBA',
+                'sloBasedStorageGroupParam': [
+                    {'sloId': 'Diamond',
+                     'workloadSelection': 'None',
+                     'volumeAttributes': [{
+                         'volume_size': '1',
+                         'capacityUnit': 'GB',
+                         'num_of_vols': 1,
+                         'volumeIdentifier': volume_identifier}]}]}
+
+            mock_create.assert_called_once_with(
+                category='sloprovisioning', resource_level='symmetrix',
+                resource_level_id=self.data.array,
+                resource_type='storagegroup', payload=payload1)
+
     def test_create_storage_group_ckd(self):
         """Test create_storage_group with ckd emulation."""
         with mock.patch.object(
@@ -1418,41 +1517,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         cap_unit = 'GB'
         with mock.patch.object(
                 self.provisioning, 'create_storage_group') as mock_create:
-            self.provisioning.create_non_empty_storagegroup(
+            self.provisioning.create_non_empty_storage_group(
                 srp_id, storage_group_id, slo, workload, num_vols, vol_size,
                 cap_unit)
             mock_create.assert_called_once_with(
                 srp_id, storage_group_id, slo, workload,
                 do_disable_compression=False,
                 num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-                _async=False, enable_mobility_id=False, vol_name=None,
-                snapshot_policy_ids=None, emulation_type='FBA')
-        act_result = self.provisioning.create_non_empty_storagegroup(
-            srp_id, storage_group_id, slo, workload, num_vols, vol_size,
-            cap_unit)
-        ref_result = self.data.job_list[0]
-        self.assertEqual(ref_result, act_result)
-
-    def test_create_non_empty_storage_group_mobility_id(self):
-        """Test create_non_empty_storage_group."""
-        srp_id = self.data.srp
-        storage_group_id = self.data.storagegroup_name_2
-        slo = self.data.slo
-        workload = self.data.workload
-        num_vols = 1
-        vol_size = '2'
-        cap_unit = 'GB'
-        with mock.patch.object(
-                self.provisioning, 'create_storage_group') as mock_create:
-            self.provisioning.create_non_empty_storage_group(
-                srp_id, storage_group_id, slo, workload, num_vols, vol_size,
-                cap_unit, enable_mobility_id=True)
-            mock_create.assert_called_once_with(
-                srp_id, storage_group_id, slo, workload,
-                do_disable_compression=False,
-                num_vols=num_vols, vol_size=vol_size, cap_unit=cap_unit,
-                _async=False, enable_mobility_id=True, vol_name=None,
-                snapshot_policy_ids=None, emulation_type='FBA')
+                _async=False, snapshot_policy_ids=None, vol_name=None,
+                enable_mobility_id=False, emulation_type='FBA')
         act_result = self.provisioning.create_non_empty_storage_group(
             srp_id, storage_group_id, slo, workload, num_vols, vol_size,
             cap_unit)
@@ -1467,13 +1540,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         workload = self.data.workload
         with mock.patch.object(
                 self.provisioning, 'create_storage_group') as mock_create:
-            self.provisioning.create_empty_sg(
+            self.provisioning.create_empty_storage_group(
                 srp_id, storage_group_id, slo, workload)
             mock_create.assert_called_once_with(
                 srp_id, storage_group_id, slo, workload,
                 do_disable_compression=False, _async=False,
                 snapshot_policy_ids=None, emulation_type='FBA')
-        act_result = self.provisioning.create_empty_sg(
+        act_result = self.provisioning.create_empty_storage_group(
             srp_id, storage_group_id, slo, workload)
         ref_result = self.data.job_list[0]
         self.assertEqual(ref_result, act_result)
@@ -1507,7 +1580,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'volumeId': [self.data.device_id]}}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            self.provisioning.add_existing_vol_to_sg(
+            self.provisioning.add_existing_volume_to_storage_group(
                 self.data.storagegroup_name, self.data.device_id)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
@@ -1521,13 +1594,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                'volumeId': [self.data.device_id]}}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            self.provisioning.add_existing_vol_to_sg(
+            self.provisioning.add_existing_volume_to_storage_group(
                 self.data.storagegroup_name, [self.data.device_id], True)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_add_new_vol_to_storage_group_no_name(self):
-        """Test add_new_vol_to_storage_group no vol name, not async."""
+    def test_add_new_volume_to_storage_group_no_name(self):
+        """Test add_new_volume_to_storage_group no vol name, not async."""
         num_of_volumes = 1
         volume_size = 10
         volume_capacity_type = 'GB'
@@ -1541,7 +1614,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # no vol name; not _async
-            self.provisioning.add_new_vol_to_storagegroup(
+            self.provisioning.add_new_volume_to_storage_group(
                 self.data.storagegroup_name, num_of_volumes, volume_size,
                 volume_capacity_type)
             payload = {'editStorageGroupActionParam': {
@@ -1550,9 +1623,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_add_new_vol_to_storage_group_no_name_ckd(self):
+    def test_add_new_volume_to_storage_group_no_name_ckd(self):
         """Test add_new_vol_to_storage_group no vol name.
-
         Test add_new_vol_to_storage_group no vol name, not async,
         CKD emulation.
         """
@@ -1578,33 +1650,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_add_new_vol_to_storage_group_mobility_id(self):
-        """Test add_new_vol_to_storage_group no vol name, not async."""
-        num_of_volumes = 1
-        volume_size = 10
-        volume_capacity_type = 'GB'
-        add_vol_info = {
-            'emulation': 'FBA',
-            'create_new_volumes': False,
-            "enable_mobility_id": True,
-            'volumeAttributes': [{
-                'num_of_vols': num_of_volumes,
-                'volume_size': volume_size,
-                'capacityUnit': volume_capacity_type}]}
-        with mock.patch.object(
-                self.provisioning, 'modify_storage_group') as mock_mod:
-            # no vol name; not _async
-            self.provisioning.add_new_volume_to_storage_group(
-                self.data.storagegroup_name, num_of_volumes, volume_size,
-                volume_capacity_type, enable_mobility_id=True)
-            payload = {'editStorageGroupActionParam': {
-                'expandStorageGroupParam': {
-                    'addVolumeParam': add_vol_info}}}
-            mock_mod.assert_called_once_with(
-                self.data.storagegroup_name, payload)
-
-    def test_add_new_vol_to_storage_group_name_async(self):
-        """Test add_new_vol_to_storage_group vol name, async."""
+    def test_add_new_volume_to_storage_group_name_async(self):
+        """Test add_new_volume_to_storage_group vol name, async."""
         num_of_volumes = 1
         volume_size = 10
         volume_capacity_type = 'GB'
@@ -1625,13 +1672,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'executionOption': 'ASYNCHRONOUS'}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            self.provisioning.add_new_vol_to_storagegroup(
+            self.provisioning.add_new_volume_to_storage_group(
                 self.data.storagegroup_name, num_of_volumes, volume_size,
                 volume_capacity_type, True, volume_name)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_add_new_ckd_vol_to_storage_group_name_async(self):
+    def test_add_new_ckd_volume_to_storage_group_name_async(self):
         """Test add_new_vol_to_storage_group vol name, async, CKD emulation."""
         num_of_volumes = 1
         volume_size = 1113  # Model 1 3390
@@ -1657,6 +1704,36 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 self.data.storagegroup_name, num_of_volumes, volume_size,
                 volume_capacity_type, True, volume_name,
                 emulation_type='CKD-3390')
+            mock_mod.assert_called_once_with(
+                self.data.storagegroup_name, payload)
+
+    def test_add_new_volume_to_storage_group_name_append_vol_id_async(self):
+        """Test add_new_volume_to_storage_group vol name and vol id, async."""
+        num_of_volumes = 1
+        volume_size = 10
+        volume_capacity_type = 'GB'
+        volume_name = 'my-vol'
+        add_vol_info = {
+            'emulation': 'FBA',
+            'create_new_volumes': False,
+            'volumeAttributes': [{
+                'num_of_vols': num_of_volumes,
+                'volume_size': volume_size,
+                'capacityUnit': volume_capacity_type,
+                'volumeIdentifier': {
+                    'identifier_name': volume_name,
+                    'volumeIdentifierChoice': 'identifier_name_plus_volume_id'
+                }
+            }]}
+        payload = {'editStorageGroupActionParam': {
+            'expandStorageGroupParam': {
+                'addVolumeParam': add_vol_info}},
+            'executionOption': 'ASYNCHRONOUS'}
+        with mock.patch.object(
+                self.provisioning, 'modify_storage_group') as mock_mod:
+            self.provisioning.add_new_volume_to_storage_group(
+                self.data.storagegroup_name, num_of_volumes, volume_size,
+                volume_capacity_type, True, volume_name, append_vol_id=True)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
@@ -1727,21 +1804,21 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_remove_vol_from_storage_group_volume_string(self):
-        """Test remove_vol_from_storage_group single volume."""
+    def test_remove_volume_from_storage_group_string(self):
+        """Test remove_volume_from_storage_group single volume."""
         payload = {'editStorageGroupActionParam': {
             'removeVolumeParam': {
                 'volumeId': [self.data.device_id]}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             # vol id, not list; not _async
-            self.provisioning.remove_vol_from_storagegroup(
+            self.provisioning.remove_volume_from_storage_group(
                 self.data.storagegroup_name, self.data.device_id)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_remove_vol_from_replicated_storage_group_multihop(self):
-        """Test remove_vol_from_storage_group single volume."""
+    def test_remove_volume_from_storage_group_multihop(self):
+        """Test remove_volume_from_storage_group single volume."""
         payload = {
             'editStorageGroupActionParam': {
                 'removeVolumeParam': {
@@ -1765,8 +1842,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_remove_vol_from_storage_group_volume_list(self):
-        """Test remove_vol_from_storage_group multiple volumes."""
+    def test_remove_volume_from_storage_group_list(self):
+        """Test remove_volume_from_storage_group multiple volumes."""
         payload = {'executionOption': 'ASYNCHRONOUS',
                    'editStorageGroupActionParam': {
                        'removeVolumeParam': {
@@ -1774,7 +1851,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
             mock_mod.reset_mock()
-            self.provisioning.remove_vol_from_storagegroup(
+            self.provisioning.remove_volume_from_storage_group(
                 self.data.storagegroup_name, [self.data.device_id], True)
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
@@ -1810,22 +1887,22 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(
                 self.data.storagegroup_name, payload)
 
-    def test_create_volume_from_storage_group_return_dev_id(self):
-        """Test create_volume_from_storage_group_return_dev_id."""
+    def test_create_volume_from_storage_group_return_id(self):
+        """Test create_volume_from_storage_group_return_id."""
         storage_group_name = self.data.storagegroup_name_1
         job = {'status': 'SUCCEEDED',
                'jobId': '12345',
                'result': 'created',
                'resourceLink': 'storagegroup/%s' % storage_group_name,
                'description': 'Creating new Volumes for MY-SG : [00001]'}
+        test_func = (
+            self.provisioning.create_volume_from_storage_group_return_id)
         with mock.patch.object(
                 self.provisioning, 'add_new_volume_to_storage_group',
                 return_value=job):
             with mock.patch.object(self.provisioning, 'get_volume_list',
                                    return_value=['00001']):
-                device_id = (
-                    self.provisioning.create_volume_from_sg_return_dev_id(
-                        'volume_name', storage_group_name, '2'))
+                device_id = test_func('volume_name', storage_group_name, '2')
                 self.assertEqual(self.data.device_id, device_id)
 
     def test_add_child_storage_group_to_parent_storage_group(self):
@@ -1838,12 +1915,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'storageGroupId': [child_storage_group]}}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            self.provisioning.add_child_sg_to_parent_sg(
+            self.provisioning.add_child_storage_group_to_parent_group(
                 child_storage_group, parent_storage_group)
             mock_mod.assert_called_once_with(
                 parent_storage_group, ref_payload)
         ref_result = self.data.job_list[0]
-        act_result = self.provisioning.add_child_sg_to_parent_sg(
+        act_result = self.provisioning.add_child_storage_group_to_parent_group(
             child_storage_group, parent_storage_group)
         self.assertEqual(ref_result, act_result)
 
@@ -1858,13 +1935,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'force': 'true'}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            self.provisioning.remove_child_sg_from_parent_sg(
+            self.provisioning.remove_child_storage_group_from_parent_group(
                 child_storage_group, parent_storage_group)
             mock_mod.assert_called_once_with(
                 parent_storage_group, ref_payload)
         ref_result = self.data.job_list[0]
-        act_result = self.provisioning.remove_child_sg_from_parent_sg(
-            child_storage_group, parent_storage_group)
+        act_result = (
+            self.provisioning.remove_child_storage_group_from_parent_group(
+                child_storage_group, parent_storage_group))
         self.assertEqual(ref_result, act_result)
 
     def test_update_storage_group_qos_success(self):
@@ -1880,7 +1958,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'dynamicDistribution': qos_specs['DistributionType']}}}
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group') as mock_mod:
-            message = self.provisioning.update_storagegroup_qos(
+            message = self.provisioning.update_storage_group_qos(
                 self.data.qos_storagegroup, qos_specs)
             mock_mod.assert_called_once_with(self.data.qos_storagegroup,
                                              ref_payload)
@@ -1890,8 +1968,8 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test update_storage_group_qos no input."""
         with mock.patch.object(
                 self.provisioning, 'modify_storage_group'):
-            message = self.provisioning.update_storagegroup_qos('fail',
-                                                                dict())
+            message = self.provisioning.update_storage_group_qos('fail',
+                                                                 dict())
             self.assertIsNone(message)
 
     def test_update_storage_group_qos_exception(self):
@@ -1899,7 +1977,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         qos_specs2 = {'maxIOPS': '4000',
                       'DistributionType': 'oops'}
         self.assertRaises(exception.InvalidInputException,
-                          self.provisioning.update_storagegroup_qos,
+                          self.provisioning.update_storage_group_qos,
                           self.data.qos_storagegroup, qos_specs2)
 
     def test_set_host_io_limit_iops(self):
@@ -1912,7 +1990,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
                          'DistributionType': dynamic_distribution,
                          'maxMBPS': mbps}
         with mock.patch.object(
-                self.provisioning, 'update_storagegroup_qos') as mock_qos:
+                self.provisioning, 'update_storage_group_qos') as mock_qos:
             self.provisioning.set_host_io_limit_iops_or_mbps(
                 storage_group, iops, dynamic_distribution, mbps)
             mock_qos.assert_called_once_with(storage_group, ref_qos_specs)
@@ -1922,7 +2000,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         storage_group_id = self.data.storagegroup_name
         with mock.patch.object(
                 self.provisioning, 'delete_resource') as mock_delete:
-            self.provisioning.delete_storagegroup(storage_group_id)
+            self.provisioning.delete_storage_group(storage_group_id)
             mock_delete.assert_called_once_with(
                 category=constants.SLOPROVISIONING,
                 resource_level=constants.SYMMETRIX,
@@ -1965,34 +2043,34 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                 self.data.device_id3]
                 self.assertEqual(ref_vol_list, vol_list)
 
-    def test_get_vols_from_storage_group(self):
-        """Test get_vols_from_storage_group."""
-        vol_list = self.provisioning.get_vols_from_storagegroup(
+    def test_get_volumes_from_storage_group(self):
+        """Test get_volumes_from_storage_group."""
+        vol_list = self.provisioning.get_volumes_from_storage_group(
             self.data.storagegroup_name)
         ref_vol_list = [self.data.device_id, self.data.device_id2]
         self.assertEqual(ref_vol_list, vol_list)
         with mock.patch.object(self.provisioning, 'get_volume_list',
                                return_value=list()):
-            vol_list = self.provisioning.get_vols_from_storagegroup(
+            vol_list = self.provisioning.get_volumes_from_storage_group(
                 self.data.storagegroup_name)
             self.assertIsNotNone(vol_list)
             self.assertEqual(list(), vol_list)
 
-    def test_get_storage_group_from_vol(self):
-        """Test get_storage_group_from_vol."""
-        storage_group_list = self.provisioning.get_storagegroup_from_vol(
+    def test_get_storage_group_from_volume(self):
+        """Test get_storage_group_from_volume."""
+        storage_group_list = self.provisioning.get_storage_group_from_volume(
             self.data.device_id)
         self.assertEqual([self.data.storagegroup_name], storage_group_list)
 
     def test_is_volume_in_storage_group_success(self):
         """Test is_volume_in_storage_group successful."""
-        is_vol = self.provisioning.is_volume_in_storagegroup(
+        is_vol = self.provisioning.is_volume_in_storage_group(
             self.data.device_id, self.data.storagegroup_name)
         self.assertTrue(is_vol)
 
     def test_is_volume_in_storage_group_failure(self):
         """Test is_volume_in_storage_group unsuccessful."""
-        is_vol2 = self.provisioning.is_volume_in_storagegroup(
+        is_vol2 = self.provisioning.is_volume_in_storage_group(
             self.data.device_id, self.data.storagegroup_name_1)
         self.assertFalse(is_vol2)
 
@@ -2115,6 +2193,27 @@ class PyU4VProvisioningTest(testtools.TestCase):
             mock_mod.assert_called_once_with(device_id, ref_payload_name)
         ref_result = self.data.job_list[0]
         act_result = self.provisioning.rename_volume(device_id, new_name)
+        self.assertEqual(ref_result, act_result)
+
+    def test_rename_volume_name_append_id(self):
+        """Test rename_volume with optional parameter append volume id"""
+        new_name = 'new_name'
+        device_id = self.data.device_id
+        ref_payload_name = {
+            'editVolumeActionParam': {
+                'modifyVolumeIdentifierParam': {
+                    'volumeIdentifier': {
+                        'identifier_name': new_name,
+                        'volumeIdentifierChoice':
+                            'identifier_name_plus_volume_id'
+                    }
+                }}}
+        with mock.patch.object(
+                self.provisioning, '_modify_volume') as mock_mod:
+            self.provisioning.rename_volume(device_id, new_name, True)
+            mock_mod.assert_called_once_with(device_id, ref_payload_name)
+        ref_result = self.data.job_list[0]
+        act_result = self.provisioning.rename_volume(device_id, new_name, True)
         self.assertEqual(ref_result, act_result)
 
     def test_rename_volume_no_name(self):
@@ -2304,36 +2403,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 resource_level_id=self.data.array,
                 resource_type=constants.VOLUME,
                 resource_type_id=device_id)
-
-    @mock.patch.object(
-        provisioning.ProvisioningFunctions, 'modify_storage_group',
-        return_value=dict())
-    def test_add_existing_volume_to_storage_group_multi_hop(
-            self, mck_sg_modify):
-        """Test add_existing_volume_to_storage_group for SRDF protected SG."""
-        self.provisioning.add_existing_volume_to_storage_group(
-            storage_group_id=self.data.storagegroup_name, vol_ids=["00123"],
-            remote_array_1_id=self.data.remote_array,
-            remote_array_1_sgs=[self.data.storagegroup_name],
-            remote_array_2_id=self.data.remote_array2,
-            remote_array_2_sgs=[self.data.storagegroup_name])
-        mck_sg_modify.assert_called_once_with(
-            self.data.storagegroup_name,
-            self.data.sg_expand_payload_multi_site)
-
-    @mock.patch.object(
-        provisioning.ProvisioningFunctions, 'modify_storage_group',
-        return_value=dict())
-    def test_add_existing_volume_to_storage_group_single_hop(
-            self, mck_sg_modify):
-        """Test add_existing_volume_to_storage_group for SRDF protected SG."""
-        self.provisioning.add_existing_volume_to_storage_group(
-            storage_group_id=self.data.storagegroup_name, vol_ids=["00123"],
-            remote_array_1_id=self.data.remote_array,
-            remote_array_1_sgs=[self.data.storagegroup_name])
-        mck_sg_modify.assert_called_once_with(
-            self.data.storagegroup_name,
-            self.data.sg_expand_payload_basic_srdf)
 
     @mock.patch.object(
         provisioning.ProvisioningFunctions, 'get_split_list',

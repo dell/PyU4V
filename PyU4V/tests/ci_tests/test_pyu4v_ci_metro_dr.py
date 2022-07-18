@@ -74,14 +74,24 @@ class CITestMetroDR(base.TestBaseTestCase, testtools.TestCase):
         running test may take 15 minutes or more.
         """
         sg_name, environment_name = self.setup_metro_dr()
+        self.wait_for_metro_dr_sync(environment_name)
         self.metro_dr.delete_metrodr_environment(
             environment_name=environment_name)
         environment_list = self.metro_dr.get_metrodr_environment_list()
         self.assertNotIn(environment_name, environment_list)
-        time.sleep(120)  # Allowing time to sync.
-        job = self.metro_dr.convert_to_metrodr_environment(
-            storage_group_name=sg_name, environment_name=environment_name)
-        self.common.wait_for_job_complete(job=job)
+        is_synced_count = 0
+        while is_synced_count <= 10:
+            is_synced_count += 1
+            time.sleep(20)
+            try:
+                job = self.metro_dr.convert_to_metrodr_environment(
+                    storage_group_name=sg_name,
+                    environment_name=environment_name)
+                self.common.wait_for_job_complete(job=job)
+                is_synced_count = 11
+            except Exception as ex:
+                print(ex)
+                pass
         metro_dr_list = self.metro_dr.get_metrodr_environment_list()
         self.assertIn(environment_name, metro_dr_list)
 

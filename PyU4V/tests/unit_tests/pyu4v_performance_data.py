@@ -19,6 +19,24 @@ class PerformanceData(object):
 
     first_date = 1555777200000
     last_date = 1587399600000
+    # This is a combined list of all V3 and V4 categories
+    perf_cats = {
+        'categoryName': [
+            'Array', 'BEDirector', 'BEPort', 'BeEmulation', 'Board',
+            'CachePartition', 'DeviceGroup', 'DiskGroup', 'EDSDirector',
+            'EDSEmulation', 'EMDirector', 'Endpoint', 'ExternalDirector',
+            'ExternalDisk', 'ExternalDiskGroup', 'FEDirector', 'FEPort',
+            'FiconEmulation', 'FeEmulation', 'FiconEmulationThread',
+            'FiconPortThread', 'Host', 'IMDirector', 'IMEmulation',
+            'IPInterface', 'ISCSITarget', 'Initiator', 'MaskingView',
+            'PortGroup', 'RDFA', 'RDFDirector', 'RDFEmulation', 'RDFPort',
+            'RDFS', 'SDNASFileSystem', 'SDNASInterface', 'SDNASNode',
+            'SDNASServer', 'SRP', 'StorageContainer', 'StorageGroup',
+            'StorageResource', 'ThinPool', 'cloudprovider', 'zHyperLinkPort']}
+
+    perf_metrics = {
+        'metricName': [
+            'BEIOs', 'BEReadReqs', 'FEReadReqs', 'HostMBs', 'HostIOs']}
 
     perf_metrics_resp = {'resultList': {
         'result': [{'PercentBusy': 0.025403459, 'timestamp': first_date},
@@ -43,11 +61,11 @@ class PerformanceData(object):
     array_is_registered_true = {'isRegistered': True}
     array_is_registered_false = {'isRegistered': False}
 
-    array_register_success = {"message": [
-        "Successfully applied registration changes for "
-        "{arr} array(s).".format(arr=array)]}
-    array_register_fail = {"message": [
-        "Could not apply registration changes for {arr} array(s).".format(
+    array_register_success = {'message': [
+        'Successfully applied registration changes for '
+        '{arr} array(s).'.format(arr=array)]}
+    array_register_fail = {'message': [
+        'Could not apply registration changes for {arr} array(s).'.format(
             arr=array)]}
 
     array_backup_success = {'message': [
@@ -79,6 +97,12 @@ class PerformanceData(object):
         'cachePartitionInfo': [{'cachePartitionId': cache_part_id,
                                 'firstAvailableDate': first_date,
                                 'lastAvailableDate': last_date}]}
+
+    cloud_provider_id = 'test_cloud_provider'
+    cloud_provider_keys = {
+        'cloudProviderInfo': [{'name': cloud_provider_id,
+                               'firstAvailableDate': first_date,
+                               'lastAvailableDate': last_date}]}
 
     core_id = '1:0'
     core_keys = {'coreInfo': [{'coreId': core_id,
@@ -123,6 +147,17 @@ class PerformanceData(object):
     eds_emu_keys = {'edsEmulationInfo': [{'edsEmulationId': eds_emu_id,
                                           'firstAvailableDate': first_date,
                                           'lastAvailableDate': last_date}]}
+
+    em_dir_id = 'EM-2A'
+    em_dir_keys = {'emDirectorInfo': [{'directorId': em_dir_id,
+                                       'firstAvailableDate': first_date,
+                                       'lastAvailableDate': last_date}]}
+
+    endpoint_id = 'iqn.1992-04.com.emc:6000097011bd05c04485017b00000003'
+    endpoint_keys = {'endpointInfo': [{'endpointId': endpoint_id,
+                                       'firstAvailableDate': first_date,
+                                       'lastAvailableDate': last_date}]}
+
     ext_dir_id = 'ED-1G'
     ext_dir_keys = {'externalDirectorInfo': [{'directorId': ext_dir_id,
                                               'firstAvailableDate': first_date,
@@ -239,6 +274,35 @@ class PerformanceData(object):
                                       'firstAvailableDate': first_date,
                                       'lastAvailableDate': last_date}]}
 
+    sdnas_filesystem_id = 'test_filesystem'
+    sdnas_filesystem_keys = {
+        'sdnasFileSystemInfoType': [{'fileSystemID': sdnas_filesystem_id,
+                                     'firstAvailableDate': first_date,
+                                     'lastAvailableDate': last_date}]}
+
+    sdnas_interface_id = 'test_interface'
+    sdnas_guest_id = 'FILE-0'
+    sdnas_guest_interface_id = 'FILE-0:eth1'
+    sdnas_interface_keys = {
+        'sdnasInterfaceInfoType': [
+            {'interfaceID': sdnas_interface_id,
+             'guestID': sdnas_guest_id,
+             'guestInterfaceID': sdnas_guest_interface_id,
+             'firstAvailableDate': first_date,
+             'lastAvailableDate': last_date}]}
+
+    sdnas_node_id = 'test_sdnas_node'
+    sdnas_node_keys = {
+        'sdnasNodeInfoType': [{'nodeID': sdnas_node_id,
+                               'firstAvailableDate': first_date,
+                               'lastAvailableDate': last_date}]}
+
+    sdnas_server_id = 'test_sdnas_server'
+    sdnas_server_keys = {
+        'sdnasServerInfoType': [{'nasServerID': sdnas_server_id,
+                                 'firstAvailableDate': first_date,
+                                 'lastAvailableDate': last_date}]}
+
     storage_container_id = 'test_container_1'
     storage_container_keys = {'storageContainerInfo': [{
         'storageContainerId': storage_container_id,
@@ -274,6 +338,12 @@ class PerformanceData(object):
                                     'firstAvailableDate': first_date,
                                     'lastAvailableDate': last_date}]}
 
+    zhyperlink_port_id = 'test_zhyperlink_port'
+    zhyperlink_port_keys = {
+        'ZHyperLinkPortInfoType': [{'portId': zhyperlink_port_id,
+                                    'firstAvailableDate': first_date,
+                                    'lastAvailableDate': last_date}]}
+
     # Threshold
     threshold_cat_resp = {'endpoint': ['Array']}
     threshold_settings_resp = {
@@ -290,25 +360,25 @@ class PerformanceData(object):
         'TotalPoolCapacityGB': 62590.0, 'instanceId': array}]}
 
     # Real-time
-    rt_categories = {"categoryName": [
-        "Array", "BEDirector", "BEPort", "ExternalDirector", "FEDirector",
-        "FEPort", "RDFDirector", "RDFPort", "StorageGroups"]}
+    rt_categories = {'categoryName': [
+        'Array', 'BEDirector', 'BEPort', 'ExternalDirector', 'FEDirector',
+        'FEPort', 'RDFDirector', 'RDFPort', 'StorageGroups']}
 
-    rt_metrics = {"metricName": ["IOs", "PercentBusy", "ReadReqs", "Reqs",
-                                 "WriteReqs"]}
+    rt_metrics = {'metricName': ['IOs', 'PercentBusy', 'ReadReqs', 'Reqs',
+                                 'WriteReqs']}
 
-    rt_times = {"arrayInfo": [
-        {"symmetrixId": array, "firstAvailableDate": 1599739566984,
-         "lastAvailableDate": 1599743600991},
-        {"symmetrixId": remote_array, "firstAvailableDate": 1599739572983,
-         "lastAvailableDate": 1599743600984}]}
+    rt_times = {'arrayInfo': [
+        {'symmetrixId': array, 'firstAvailableDate': 1599739566984,
+         'lastAvailableDate': 1599743600991},
+        {'symmetrixId': remote_array, 'firstAvailableDate': 1599739572983,
+         'lastAvailableDate': 1599743600984}]}
 
-    rt_keys = {"keys": [array, remote_array]}
+    rt_keys = {'keys': [array, remote_array]}
 
     rt_perf_metrics = {
-        "expirationTime": 1599744006249, "count": 13,
-        "maxPageSize": 1000, "id": "b6807ec4-3ef3-4b7c-818f-5eda2311910a_0",
-        "resultList": {"from": 1, "to": 13, "result": [
-            {"FEReadReqs": 12.0, "HostMBs": 0.30714843},
-            {"FEReadReqs": 12.333333, "HostMBs": 0.30714843},
-            {"FEReadReqs": 14.0, "HostMBs": 0.38320404}]}}
+        'expirationTime': 1599744006249, 'count': 13,
+        'maxPageSize': 1000, 'id': 'b6807ec4-3ef3-4b7c-818f-5eda2311910a_0',
+        'resultList': {'from': 1, 'to': 13, 'result': [
+            {'FEReadReqs': 12.0, 'HostMBs': 0.30714843},
+            {'FEReadReqs': 12.333333, 'HostMBs': 0.30714843},
+            {'FEReadReqs': 14.0, 'HostMBs': 0.38320404}]}}

@@ -16,7 +16,8 @@
 
 class CommonData(object):
     """Common array data."""
-    U4P_VERSION = '92'
+    U4P_VERSION = '100'
+    server_version = {'version': 'V10.0.0.0'}
 
     array = '000197800123'
     remote_array = '000197800124'
@@ -42,7 +43,6 @@ class CommonData(object):
     rdf_group_name_91 = 'Group1'
     rdf_group_num_91 = 1
     rdf_group_no = '70'
-    u4v_version = '92'
     parent_sg = 'PU-HostX-SG'
     storagegroup_name_1 = 'PU-mystoragegroup1-SG'
     storagegroup_name_2 = 'PU-mystoragegroup2-SG'
@@ -59,6 +59,14 @@ class CommonData(object):
     port_id2 = '0'
     port_key1 = {'directorId': director_id1, 'portId': port_id1}
     port_key2 = {'directorId': director_id2, 'portId': port_id2}
+
+    # V4 director port info
+    or_director_id = 'OR-1D'
+    ef_director_id = 'EF-1D'
+    em_director_id = 'EM-1D'
+
+    v4_port_list = [{'directorId': 'OR-1D', 'portId': '4'},
+                    {'directorId': 'OR-4E', 'portId': '0'}]
 
     # Connector info
     wwpn1 = '123456789012345'
@@ -562,7 +570,7 @@ class CommonData(object):
                   'model': 'VMAX250F',
                   'ucode': '5977.1091.1092'}]
     symm_list = {'symmetrixId': [array, remote_array]}
-    server_version = {'version': 'V9.2.0.0'}
+
     alert_list = {'alertId': ['15a15a58-26a0-4127-9e63-00ca162df789',
                   '2d9e481b-552a-4a33-a586-4bb1d11605c5']}
     alert_id = '15a15a58-26a0-4127-9e63-00ca162df789'
@@ -859,7 +867,7 @@ class CommonData(object):
              'entry_date': 1599519725,
              'username': 'C:10.10.10.10\\pyu4v_user'}]}}
 
-    audit_record = {
+    audit_record = {'objectList': [{
         'function_class': 'BaseCtrl', 'process_id': '5228',
         'api_library': 'SEK', 'action_code': 'Create', 'task_id': '4584',
         'api_version': 'V9.2.0.1', 'application_id': 'UNIVMAX',
@@ -874,7 +882,7 @@ class CommonData(object):
         'message': (
             'STARTING on PyU4V-sg(Storage group) "CREATE" '
             'operation. Symm=000111222333, SERVICE_LEVEL_NAME=Diamond '
-            'SRP_NAME=SRP_1 ')}
+            'SRP_NAME=SRP_1 ')}]}
 
     compliance_details = {
         'storage_group_name': storagegroup_name,

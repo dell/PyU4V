@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """test_pyu4v_ci_common.py."""
-import os
+
 import re
-import tempfile
 import testtools
 
 from unittest.mock import MagicMock
@@ -66,8 +65,6 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
             side_effect=self.common._build_uri_get_version)
         common.CommonFunctions.get_resource = MagicMock(
             side_effect=self.common.get_resource)
-        common.CommonFunctions.read_csv_values = MagicMock(
-            side_effect=self.common.read_csv_values)
 
         self.create_volume()
 
@@ -80,8 +77,6 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         common.CommonFunctions.get_request.assert_called()
         common.CommonFunctions._build_uri_get_version.assert_called()
         common.CommonFunctions.get_resource.assert_called()
-        # One that is not called
-        common.CommonFunctions.read_csv_values.assert_not_called()
 
     def test_common_for_modify_host(self):
         """"Test methods used by create host operation.
@@ -97,82 +92,12 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         self.conn.provisioning.create_resource.assert_called()
         self.conn.provisioning.modify_resource.assert_called()
 
-    def test_create_list_from_file(self):
-        """Test file_handler.create_list_from_file."""
-        # Initialise path strings for temporary file and directory
-        temp_dir, file_path = str(), str()
-        try:
-            # Create temporary directory
-            temp_dir = tempfile.mkdtemp()
-            # Create path for temporary file
-            file_path = os.path.join(temp_dir, 'temp_list.txt')
-            # Initialise empty string and set length of file contents (line
-            # count)
-            data, list_length = str(), 5
-            # Create file contents
-            for i in range(0, list_length):
-                data += 'value-{i}\n'.format(i=i)
-            # Write file contents to the temporary file path
-            with open(file_path, 'w') as my_file:
-                my_file.writelines(data)
-            # Using the file just written to, read contents and return list
-            my_list = self.common.create_list_from_file(file_path)
-            # Assert return is a list and of the correct length
-            self.assertIsInstance(my_list, list)
-            self.assertEqual(list_length, len(my_list))
-            # Cleanup temporary files
-            self.addCleanup(self.cleanup_files, pyu4v_orig=None,
-                            temp_file=file_path, temp_dir=temp_dir)
-        # If there are any exceptions raised ensure cleanup is carried out on
-        # temporary files
-        except Exception as e:
-            self.addCleanup(self.cleanup_files, pyu4v_orig=None,
-                            temp_file=file_path, temp_dir=temp_dir)
-            raise Exception('Test failed with exception: {msg}'.format(msg=e))
-
-    def test_read_csv_values(self):
-        """Test read_csv_values."""
-        # Initialise path strings for temporary file and directory
-        temp_dir, file_path = str(), str()
-        try:
-            # Create temporary directory
-            temp_dir = tempfile.mkdtemp()
-            # Create path for temporary CSV file
-            pyu4v_path = os.path.join(temp_dir, 'temp_spread.csv')
-            # Initialise empty string
-            data = str()
-            # Create file contents
-            for i in range(0, 9):
-                val = 'key' if i <= 2 else 'value'
-                data += '{prefix}-{num}'.format(prefix=val, num=i)
-                data += '\n' if (i + 1) % 3 == 0 else ','
-            # Write file contents to the temporary file path
-            with open(pyu4v_path, 'w') as file:
-                file.writelines(data)
-            # Using the file just written to, read contents and return dict
-            read_contents = self.common.read_csv_values(pyu4v_path)
-            # Assert return is a dict
-            self.assertIsInstance(read_contents, dict)
-            ref_contents = {'key-0': ['value-3', 'value-6'],
-                            'key-1': ['value-4', 'value-7'],
-                            'key-2': ['value-5', 'value-8']}
-            # Assert CSV reader returned expected populated dict
-            self.assertEqual(ref_contents, read_contents)
-            # Cleanup temporary files
-            self.addCleanup(self.cleanup_files, pyu4v_orig=None,
-                            temp_file=pyu4v_path, temp_dir=temp_dir)
-        # If there are any exceptions raised ensure cleanup is carried out on
-        # temporary files
-        except Exception as e:
-            self.addCleanup(self.cleanup_files, pyu4v_orig=None,
-                            temp_file=file_path, temp_dir=temp_dir)
-            raise Exception('Test failed with exception: {msg}'.format(msg=e))
-
     def test_get_uni_version(self):
         """Test get_uni_version."""
         version, major_version = self.common.get_uni_version()
-        major = UNISPHERE_VERSION[0] + '.' + UNISPHERE_VERSION[1]
-        self.assertTrue(re.match(r'^T|V' + major + r'\S+$', version))
+        major = (UNISPHERE_VERSION[0] + UNISPHERE_VERSION[1] + '.'
+                 + UNISPHERE_VERSION[2])
+        self.assertTrue(re.match(r'^T|X|V' + major + r'\S+$', version))
         self.assertEqual(UNISPHERE_VERSION, major_version)
 
     def test_get_array_list(self):
@@ -192,37 +117,33 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         array = self.common.get_array(self.conn.array_id)
         self.assertEqual(self.conn.array_id, array['symmetrixId'])
 
-    def test_get_wlp_information(self):
-        """Test wlp_information."""
-        wlp_dict = self.common.get_wlp_information(self.conn.array_id)
-        self.assertEqual(self.conn.array_id, wlp_dict['symmetrixId'])
-
-    def test_get_headroom(self):
-        """Test get_headroom."""
-        headroom_list = self.common.get_headroom(self.conn.array_id)
-        self.assertIsInstance(headroom_list, list)
-        for i in range(len(headroom_list)):
-            self.assertTrue(
-                set({'emulation': 'CKD'}.items()).issubset(
-                    set(headroom_list[i].items()))
-                or set({'emulation': 'FBA'}.items()).issubset(
-                    set(headroom_list[i].items())))
-
     def test_get_iterator_results(self):
         """Test get_iterator_results."""
-        start_time, end_time = self.conn.performance.extract_timestamp_keys(
-            category='Array')
-        result = self.conn.performance.get_array_stats(
-            metrics='PercentReads', start_time=start_time, end_time=end_time)
-        self.assertTrue(result)
-        self.assertIsInstance(result, dict)
-        if result and len(result.get('result')) <= 1000:
-            self.skipTest(
-                'Skipping test_get_iterator_results because there is not '
-                'enough performance data collected. It takes just under four '
-                'days to build up enough data to return more than 1000 '
-                'performance results. There are currently only {cnt} '
-                'performance intervals available'.format(
-                    cnt=len(result.get('result'))))
+        if self.conn.performance.is_array_diagnostic_performance_registered():
+            start_time, end_time = (
+                self.conn.performance.extract_timestamp_keys(
+                    category='Array'))
+            result = self.conn.performance.get_array_stats(
+                metrics='PercentReads', start_time=start_time,
+                end_time=end_time)
+            self.assertTrue(result)
+            self.assertIsInstance(result, dict)
+            if result and len(result.get('result')) <= 1000:
+                self.skipTest(
+                    'Skipping test_get_iterator_results because there is not '
+                    'enough performance data collected. It takes just under '
+                    'four days to build up enough data to return more than '
+                    '1000 performance results. There are currently only {cnt} '
+                    'performance intervals available'.format(
+                        cnt=len(result.get('result'))))
+            else:
+                self.assertTrue(len(result.get('result')) > 1000)
         else:
-            self.assertTrue(len(result.get('result')) > 1000)
+            self.skipTest('Skipping test_get_iterator_results because array '
+                          'is not registered for performance metrics which '
+                          'are required for this test.')
+
+    def test_is_array_v4(self):
+        """Test get_array."""
+        if self.common.is_array_v4(self.conn.array_id):
+            self.assertTrue(self.common.is_array_v4(self.conn.array_id))

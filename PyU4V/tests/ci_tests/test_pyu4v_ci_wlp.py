@@ -24,6 +24,7 @@ class CITestWLP(base.TestBaseTestCase, testtools.TestCase):
     def setUp(self):
         """setUp."""
         super(CITestWLP, self).setUp()
+        self.is_v4 = self.common.is_array_v4(self.conn.array_id)
 
     def test_get_wlp_capabilities(self):
         """Test get_wlp_information."""
@@ -49,12 +50,16 @@ class CITestWLP(base.TestBaseTestCase, testtools.TestCase):
         for stats in srp_headroom_stats:
             self.assertTrue(stats)
             self.assertEqual('SRP_1', stats.get('srpId'))
-            assert 'serviceLevelId' in stats
+            if not self.is_v4:
+                assert 'serviceLevelId' in stats
             assert 'emulation' in stats
             assert 'capacity' in stats
 
     def test_get_headroom_info_service_level(self):
         """Test get_headroom Service Level details."""
+        if self.is_v4:
+            self.skipTest(
+                'Service level headroom is not supported by V4 arrays.')
         sl_headroom_stats = self.conn.wlp.get_headroom(
             self.conn.array_id, srp='SRP_1', slo='Diamond')
         for stats in sl_headroom_stats:
@@ -66,6 +71,9 @@ class CITestWLP(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_headroom_info_workload_exception(self):
         """Test get_headroom PowerMax Workload exception."""
+        if self.is_v4:
+            self.skipTest(
+                'Workload headroom is not supported by V4 arrays.')
         self.assertRaises(
             exception.ResourceNotFoundException,
             self.conn.wlp.get_headroom, self.conn.array_id, srp='SRP_1',

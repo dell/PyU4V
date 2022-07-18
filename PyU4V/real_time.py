@@ -62,27 +62,32 @@ class RealTimeFunctions(object):
         r = minutes if isinstance(minutes, int) else self.recency
         return (int(time.time()) * 1000) - timestamp < r * pc.ONE_MINUTE
 
-    def get_categories(self):
+    def get_categories(self, array_id=None):
         """Get a list of real-time supported performance categories.
 
+        :param array_id: array serial number -- str
         :returns: categories -- list
         """
+        array_id = array_id if array_id else self.array_id
         response = self.get_request(
             no_version=True, category=pc.PERFORMANCE,
             resource_level=pc.REAL_TIME, resource_type=pc.HELP,
-            resource=pc.CATEGORIES)
+            resoruce=array_id, object_type=pc.CATEGORIES)
         return response.get(pc.CATEGORY_NAME, list()) if response else list()
 
-    def get_category_metrics(self, category):
+    def get_category_metrics(self, category, array_id=None):
         """Get metrics available for a real-time performance category.
 
         :param category: real-time performance category -- str
+        :param array_id: array serial number -- str
         :returns: metrics -- list
         """
+        array_id = array_id if array_id else self.array_id
         response = self.get_request(
             no_version=True, category=pc.PERFORMANCE,
             resource_level=pc.REAL_TIME, resource_type=pc.HELP,
-            resource=category, object_type=pc.METRICS)
+            resource_type_id=array_id, resource=category,
+            object_type=pc.METRICS)
         return response.get(pc.METRIC_NAME, list()) if response else list()
 
     def get_timestamps(self, array_id=None):
@@ -244,6 +249,8 @@ class RealTimeFunctions(object):
             no_version=True, category=pc.PERFORMANCE,
             resource_level=pc.REAL_TIME, resource_type=pc.METRICS,
             payload=request_params)
+        if not response:
+            return None
 
         return_response = {
             pc.ARRAY_ID: array_id, pc.START_DATE_SN: start_date,

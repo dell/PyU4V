@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2021 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,10 +25,7 @@ from PyU4V.tests.unit_tests import pyu4v_performance_data as pd
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
-from PyU4V.utils import performance_category_map
 from PyU4V.utils import performance_constants as pc
-
-CATEGORY_MAP = performance_category_map.performance_data
 
 
 class PyU4VPerformanceTest(testtools.TestCase):
@@ -411,6 +408,70 @@ class PyU4VPerformanceTest(testtools.TestCase):
             hours_difference=5)
         self.assertEqual((end_time - start_time), pc.ONE_HOUR * 5)
 
+    def test_get_rb_key(self):
+        """Test _get_rb_key where category matches if statement."""
+        # This function is only relevant for V4 arrays where new categories
+        # use systemId instead of symmetrixId
+        self.perf.is_v4 = True
+        response = self.perf._get_rb_key(category='SDNASServer')
+        self.assertEqual(pc.SYSTEM_ID, response)
+
+    def test_run_v4_filesystem_request_invalid_input_exception(self):
+        """Test _run_v4_filesystem_request with invalid input."""
+        self.assertRaises(exception.InvalidInputException,
+                          self.perf._run_v4_filesystem_request,
+                          category='TEST', request_body={},
+                          keys=True, metrics=True)
+
+        self.assertRaises(exception.InvalidInputException,
+                          self.perf._run_v4_filesystem_request,
+                          category='TEST', request_body={},
+                          keys=False, metrics=False)
+
+    def test_run_v4_filesystem_request_filesystem(self):
+        """Test _run_v4_filesystem_request for filesystem."""
+        rt = 'filesystem'
+        with mock.patch.object(
+                self.perf, 'post_request') as mck_request:
+            self.perf._run_v4_filesystem_request(
+                category='FileSystem', request_body={}, keys=True)
+            mck_request.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.FILE,
+                resource_type=rt, object_type=pc.KEYS, payload={})
+
+    def test_run_v4_filesystem_request_interface(self):
+        """Test _run_v4_filesystem_request for interface."""
+        rt = 'Interface'
+        with mock.patch.object(
+                self.perf, 'post_request') as mck_request:
+            self.perf._run_v4_filesystem_request(
+                category='Interface', request_body={}, keys=True)
+            mck_request.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.FILE,
+                resource_type=rt, object_type=pc.KEYS, payload={})
+
+    def test_run_v4_filesystem_request_node(self):
+        """Test _run_v4_filesystem_request for node."""
+        rt = 'node'
+        with mock.patch.object(
+                self.perf, 'post_request') as mck_request:
+            self.perf._run_v4_filesystem_request(
+                category='Node', request_body={}, metrics=True)
+            mck_request.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.FILE,
+                resource_type=rt, object_type=pc.METRICS, payload={})
+
+    def test_run_v4_filesystem_request_server(self):
+        """Test _run_v4_filesystem_request for server."""
+        rt = 'server'
+        with mock.patch.object(
+                self.perf, 'post_request') as mck_request:
+            self.perf._run_v4_filesystem_request(
+                category='Server', request_body={}, metrics=True)
+            mck_request.assert_called_once_with(
+                category=pc.PERFORMANCE, resource_level=pc.FILE,
+                resource_type=rt, object_type=pc.METRICS, payload={})
+
     def test_get_performance_key_list_post_with_inputs(self):
         """Test get_performance_key_list post with all inputs set."""
         time_now = int(time.time())
@@ -445,20 +506,21 @@ class PyU4VPerformanceTest(testtools.TestCase):
                           self.perf.get_performance_key_list, 'FAKECAT')
         # No keys returned
         with mock.patch.object(
-                self.perf, 'get_request', return_value=None):
+                self.perf, 'get_request',
+                side_effect=[self.p_data.perf_cats, None]):
             self.assertRaises(exception.ResourceNotFoundException,
-                              self.perf.get_performance_key_list, 'ARRAY')
+                              self.perf.get_performance_key_list, 'Array')
 
     def test_get_performance_key_list_array_get(self):
         """Test get_performance_key_list get with Array category."""
         with mock.patch.object(
                 self.perf, 'get_request',
-                return_value=self.p_data.array_keys) as mck_request:
+                side_effect=[
+                    self.p_data.perf_cats,
+                    self.p_data.array_keys]) as mck_request:
             key_response = self.perf.get_performance_key_list(
                 category=pc.ARRAY)
-            mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.KEYS, payload=dict())
+            self.assertEqual(2, mck_request.call_count)
             self.assertEqual(key_response, self.p_data.array_keys)
 
     def test_get_performance_key_list_exception(self):
@@ -466,11 +528,19 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertRaises(exception.InvalidInputException,
                           self.perf.get_performance_key_list, 'FAKE_CAT')
 
+    def test_get_performance_key_list_v4_filesystem_call(self):
+        """Test get_performance_key_list V4 filesystem call."""
+        with mock.patch.object(
+                self.perf, '_run_v4_filesystem_request') as mck_request:
+            self.perf.get_performance_key_list(
+                category='SDNASFileSystem')
+            mck_request.assert_called_once_with(
+                'SDNASFileSystem', {}, keys=True)
+
     def test_get_performance_categories_list(self):
         """Test get_performance_categories_list."""
         cat_list = self.perf.get_performance_categories_list()
         self.assertTrue(cat_list)
-        self.assertEqual(len(cat_list), len(CATEGORY_MAP))
 
     def test_validate_category(self):
         """Test _validate_category pass."""
@@ -483,11 +553,10 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_performance_metrics_list(self):
         """Test get_performance_metrics_list success."""
-        array_perf_info = CATEGORY_MAP.get(pc.ARRAY.upper())
-        ref_array_kpi_metrics = array_perf_info.get(pc.METRICS_KPI)
-        array_kpi_metrics = self.perf.get_performance_metrics_list(
-            pc.ARRAY, kpi_only=True)
-        self.assertEqual(ref_array_kpi_metrics, array_kpi_metrics)
+        array_metrics = self.perf.get_performance_metrics_list(
+            pc.ARRAY, kpi_only=False)
+        self.assertIsInstance(array_metrics, list)
+        self.assertNotEqual(array_metrics, list())
 
     def test_get_performance_metrics_list_exception(self):
         """Test get_performance_metrics_list invalid category."""
@@ -537,7 +606,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_extract_timestamp_keys_empty(self):
         """Test extract_timestamp_keys exception."""
-        with mock.patch.object(self.perf, 'get_request',
+        with mock.patch.object(self.perf, 'get_performance_key_list',
                                return_value=self.p_data.array_keys_empty):
             start, end = self.perf.extract_timestamp_keys(
                 self.p_data.array, pc.ARRAY)
@@ -655,13 +724,13 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_performance_stats_request_body_disk_tech(self):
         """Test get_performance_stats with request body variant 1."""
-        array_category_info = CATEGORY_MAP.get(pc.ARRAY.upper())
-        array_kpi_metrics = array_category_info.get(pc.METRICS_KPI)
+        array_metrics = self.perf.get_performance_metrics_list(
+            category=pc.ARRAY)
 
         ref_payload = {
             'symmetrixId': self.p_data.array, 'dataFormat': pc.AVERAGE,
             'startDate': str(self.time_now), 'endDate': str(self.time_now),
-            'metrics': array_kpi_metrics,
+            'metrics': array_metrics,
             'directorId': self.p_data.fe_dir_id,
             'diskTechnology': self.p_data.disk_technology}
         with mock.patch.object(
@@ -679,12 +748,12 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_performance_stats_request_body_other_tgt_id(self):
         """Test get_performance_stats with request body variant 2."""
-        array_category_info = CATEGORY_MAP.get(pc.ARRAY.upper())
-        array_all_metrics = array_category_info.get(pc.METRICS_ALL)
+        array_metrics = self.perf.get_performance_metrics_list(
+            category=pc.ARRAY)
         ref_payload = {
             'symmetrixId': self.p_data.array, 'dataFormat': pc.MAXIMUM,
             'startDate': str(self.time_now), 'endDate': str(self.time_now),
-            'metrics': array_all_metrics,
+            'metrics': array_metrics,
             'directorId': self.p_data.fe_dir_id,
             'portId': self.p_data.fe_port_id}
         with mock.patch.object(
@@ -699,6 +768,22 @@ class PyU4VPerformanceTest(testtools.TestCase):
             mck_request.assert_called_once_with(
                 category=pc.PERFORMANCE, resource_level=pc.ARRAY,
                 resource_type=pc.METRICS, payload=ref_payload)
+
+    def test_get_performance_stats_filesystem_call(self):
+        """Test get_performance_stats with filesystem call."""
+        ref_response = {
+            'startDate': str(self.time_now), 'endDate': str(self.time_now),
+            'dataFormat': pc.AVERAGE, 'metrics': ['PercentBusy'],
+            'systemId': self.p_data.array}
+
+        with mock.patch.object(
+                self.perf, '_run_v4_filesystem_request') as mck_request:
+            self.perf.get_performance_stats(
+                category=pc.SDNAS_FS, metrics='PercentBusy',
+                array_id=self.p_data.array, start_time=self.time_now,
+                end_time=self.time_now, recency=True)
+            mck_request.assert_called_once_with(
+                pc.SDNAS_FS, ref_response, metrics=True)
 
     def test_get_performance_stats_with_recency_exception(self):
         """Test get_performance_stats recency check exception."""
@@ -753,25 +838,11 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertRaises(exception.InvalidInputException,
                           self.perf.get_days_to_full, self.p_data.array)
 
-    def test_get_perf_threshold_categories(self):
-        """Test get_perf_threshold_categories."""
-        with mock.patch.object(
-                self.perf, 'get_threshold_categories') as mck_request:
-            self.perf.get_perf_threshold_categories()
-            mck_request.assert_called_once()
-
     def test_get_threshold_categories(self):
         """Test get_threshold_categories."""
         response = self.perf.get_threshold_categories()
         self.assertIsInstance(response, list)
         self.assertTrue(response)
-
-    def test_get_perf_category_threshold_settings(self):
-        """Test get_perf_category_threshold_settings."""
-        with mock.patch.object(
-                self.perf, 'get_threshold_category_settings') as mck_request:
-            self.perf.get_perf_category_threshold_settings(category=pc.ARRAY)
-            mck_request.assert_called_once_with(pc.ARRAY)
 
     def test_get_threshold_category_settings(self):
         """Test get_threshold_category_settings."""
@@ -780,23 +851,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertIsNotNone(response)
         self.assertEqual(response.get(pc.CATEGORY), pc.ARRAY)
-
-    def test_set_perf_threshold_and_alert(self):
-        """Test set_perf_threshold_and_alert."""
-        category, metric, alert = 'Array', 'PercentBusy', True
-        first_threshold, second_threshold = 20, 30
-        with mock.patch.object(
-                self.perf, 'update_threshold_settings') as mck_request:
-            self.perf.set_perf_threshold_and_alert(
-                category, metric, first_threshold, second_threshold, alert)
-            mck_request.assert_called_once_with(
-                category=category, metric=metric, alert=True,
-                first_threshold=str(first_threshold),
-                second_threshold=str(second_threshold),
-                first_threshold_occurrences=3, first_threshold_samples=5,
-                first_threshold_severity=pc.WARN_LVL,
-                second_threshold_occurrences=3, second_threshold_samples=5,
-                second_threshold_severity=pc.CRIT_LVL)
 
     def test_update_threshold_settings(self):
         """Test update_threshold_settings."""
@@ -830,13 +884,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
                 category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
                 resource_type=pc.UPDATE, resource_type_id=category,
                 payload=ref_payload)
-
-    def test_set_perfthresholds_csv(self):
-        """Test set_perfthresholds_csv."""
-        with mock.patch.object(
-                self.perf, 'set_thresholds_from_csv') as mck_request:
-            self.perf.set_perfthresholds_csv(csvfilename='fake_csv')
-            mck_request.assert_called_once_with('fake_csv')
 
     def test_set_thresholds_from_csv(self):
         """Test set_perfthresholds_csv."""
@@ -1001,20 +1048,20 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.CACHE_PART))
 
-    def test_get_database_keys(self):
-        """Test get_database_keys."""
-        response = self.perf.get_database_keys()
+    def test_get_cloud_provider_keys(self):
+        """Test get_cloud_provider_keys."""
+        response = self.perf.get_cloud_provider_keys()
         self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.DB_ID))
+        self.assertTrue(response[0].get(pc.CLOUD_PROVIDER_ID))
 
-    def test_get_database_stats(self):
-        """Test get_database_stats."""
-        response = self.perf.get_database_stats(
-            database_id=self.p_data.database_id, metrics=pc.KPI,
+    def test_get_cloud_provider_stats(self):
+        """Test get_cloud_provider_stats."""
+        response = self.perf.get_cloud_provider_stats(
+            cloud_provider_id=self.p_data.cloud_provider_id, metrics=pc.KPI,
             start_time=self.time_now, end_time=self.time_now)
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.DB))
+                         self.common.convert_to_snake_case(pc.CLOUD_PROVIDER))
 
     def test_get_device_group_keys(self):
         """Test get_device_group_keys."""
@@ -1075,6 +1122,21 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.EDS_EMU))
+
+    def test_get_em_director_keys(self):
+        """Test get_eds_director_keys."""
+        response = self.perf.get_em_director_keys()
+        self.assertIsInstance(response, list)
+        self.assertTrue(response[0].get(pc.DIR_ID))
+
+    def test_get_em_director_stats(self):
+        """Test get_eds_director_stats."""
+        response = self.perf.get_em_director_stats(
+            director_id=self.p_data.em_dir_id, metrics=pc.KPI,
+            start_time=self.time_now, end_time=self.time_now)
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get('reporting_level'),
+                         self.common.convert_to_snake_case(pc.EM_DIR))
 
     def test_get_external_disk_keys(self):
         """Test get_external_disk_keys."""
@@ -1264,7 +1326,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         """Test get_iscsi_target_keys."""
         response = self.perf.get_iscsi_target_keys()
         self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.ISCSI_TGT_ID_METRICS))
+        self.assertTrue(response[0].get(pc.ENDPOINT_ID_METRICS))
 
     def test_get_iscsi_target_stats(self):
         """Test get_iscsi_target_stats."""
@@ -1273,7 +1335,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
             start_time=self.time_now, end_time=self.time_now)
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.ISCSI_TGT))
+                         self.common.convert_to_snake_case(pc.ENDPOINT))
 
     def test_get_masking_view_keys(self):
         """Test get_masking_view_keys."""
@@ -1382,6 +1444,66 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.RDF_PORT))
 
+    def test_get_sdnas_filesystem_keys(self):
+        """Test get_sdnas_filesystem_keys."""
+        response = self.perf.get_sdnas_filesystem_keys()
+        self.assertIsInstance(response, list)
+        self.assertTrue(response[0].get(pc.SDNAS_FS_ID))
+
+    def test_get_sdnas_filesystem_stats(self):
+        """Test get_sdnas_filesystem_stats."""
+        response = self.perf.get_sdnas_filesystem_stats(
+            sdnas_filesystem_id=self.p_data.sdnas_filesystem_id,
+            metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get('reporting_level'),
+                         self.common.convert_to_snake_case(pc.SDNAS_FS))
+
+    def test_get_sdnas_interface_keys(self):
+        """Test get_sdnas_interface_keys."""
+        response = self.perf.get_sdnas_interface_keys()
+        self.assertIsInstance(response, list)
+        self.assertTrue(response[0].get(pc.SDNAS_INTERFACE_ID))
+
+    def test_get_sdnas_interface_stats(self):
+        """Test get_sdnas_interface_stats."""
+        response = self.perf.get_sdnas_interface_stats(
+            sdnas_interface_id=self.p_data.sdnas_interface_id,
+            metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get('reporting_level'),
+                         self.common.convert_to_snake_case(pc.SDNAS_INTERFACE))
+
+    def test_get_sdnas_node_keys(self):
+        """Test get_sdnas_node_keys."""
+        response = self.perf.get_sdnas_node_keys()
+        self.assertIsInstance(response, list)
+        self.assertTrue(response[0].get(pc.SDNAS_NODE_ID))
+
+    def test_get_sdnas_node_stats(self):
+        """Test get_sdnas_node_stats."""
+        response = self.perf.get_sdnas_node_stats(
+            sdnas_node_id=self.p_data.sdnas_node_id,
+            metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get('reporting_level'),
+                         self.common.convert_to_snake_case(pc.SDNAS_NODE))
+
+    def test_get_sdnas_server_keys(self):
+        """Test get_sdnas_server_keys."""
+        response = self.perf.get_sdnas_server_keys()
+        self.assertIsInstance(response, list)
+        self.assertTrue(response[0].get(pc.SDNAS_SERVER_ID))
+
+    def test_get_sdnas_server_stats(self):
+        """Test get_sdnas_server_stats."""
+        response = self.perf.get_sdnas_server_stats(
+            sdnas_server_id=self.p_data.sdnas_server_id,
+            metrics=pc.KPI, start_time=self.time_now, end_time=self.time_now)
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get('reporting_level'),
+                         self.common.convert_to_snake_case(pc.SDNAS_SERVER))
+
     def test_get_storage_container_keys(self):
         """Test get_storage_container_keys."""
         response = self.perf.get_storage_container_keys()
@@ -1458,141 +1580,18 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.THIN_POOL))
 
-    def test_get_fe_director_list(self):
-        """Test get_fe_director_list."""
-        response = self.perf.get_fe_director_list()
+    def test_get_zhyperlink_port_keys(self):
+        """Test get_zhyperlink_port_keys."""
+        response = self.perf.get_zhyperlink_port_keys()
         self.assertIsInstance(response, list)
-        self.assertTrue(response)
-        self.assertEqual(len(response), 1)
+        self.assertTrue(response[0].get(pc.PORT_ID))
 
-    def test_get_fe_port_list(self):
-        """Test get_fe_port_list."""
-        response = self.perf.get_fe_port_list()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response)
-        self.assertEqual(len(response), 1)
-
-    def test_get_fe_port_util_last4hrs(self):
-        """Test get_fe_port_util_last4hrs."""
-        response = self.perf.get_fe_port_util_last4hrs(
-            dir_id=self.p_data.fe_dir_id, port_id=self.p_data.fe_port_id)
+    def test_get_zhyperlink_port_stats(self):
+        """Test get_zhyperlink_port_stats."""
+        response = self.perf.get_zhyperlink_port_stats(
+            zhyperlink_port_id=self.p_data.zhyperlink_port_id, metrics=pc.KPI,
+            start_time=self.time_now, end_time=self.time_now)
         self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
-
-    def test_get_fe_director_metrics(self):
-        """Test get_fe_director_metrics."""
-        response = self.perf.get_fe_director_metrics(
-            start_date=self.time_now, end_date=self.time_now,
-            director=self.p_data.fe_dir_id)
-        self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
-
-    def test_get_fe_port_metrics(self):
-        """Test get_fe_port_metrics."""
-        response = self.perf.get_fe_port_metrics(
-            start_date=self.time_now, end_date=self.time_now,
-            director_id=self.p_data.fe_dir_id, metriclist=pc.KPI,
-            port_id=self.p_data.fe_port_id, dataformat=pc.AVERAGE)
-        self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
-
-    def test_get_array_metrics(self):
-        """Test get_array_metrics."""
-        response = self.perf.get_array_metrics(
-            start_date=self.time_now, end_date=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
-
-    def test_get_storage_group_metrics(self):
-        """Test get_storage_group_metrics."""
-        response = self.perf.get_storage_group_metrics(
-            sg_id=self.p_data.storage_group_id,
-            start_date=self.time_now, end_date=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
-
-    def test_get_all_fe_director_metrics(self):
-        """Test get_all_fe_director_metrics."""
-        response = self.perf.get_all_fe_director_metrics(
-            start_date=self.time_now, end_date=self.time_now)
-        self.assertIsInstance(response, list)
-        self.assertTrue(response)
-        self.assertEqual(len(response), 1)
-
-    def test_get_director_info_be(self):
-        """Test get_director_info backend."""
-        with mock.patch.object(self.perf, 'get_request',
-                               return_value=self.p_data.director_info):
-            response = self.perf.get_director_info(
-                director_id=self.p_data.be_dir_id,
-                start_date=self.time_now, end_date=self.time_now)
-            self.assertIsInstance(response, dict)
-            self.assertTrue(response)
-            self.assertEqual(response.get('director_type'), 'BE')
-
-    def test_get_director_info_fe(self):
-        """Test get_director_info frontend."""
-        with mock.patch.object(self.perf, 'get_request',
-                               return_value=self.p_data.director_info):
-            response = self.perf.get_director_info(
-                director_id=self.p_data.fe_dir_id,
-                start_date=self.time_now, end_date=self.time_now)
-            self.assertIsInstance(response, dict)
-            self.assertTrue(response)
-            self.assertEqual(response.get('director_type'), 'FE')
-
-    def test_get_director_info_im(self):
-        """Test get_director_info IM."""
-        with mock.patch.object(self.perf, 'get_request',
-                               return_value=self.p_data.director_info):
-            response = self.perf.get_director_info(
-                director_id=self.p_data.im_dir_id,
-                start_date=self.time_now, end_date=self.time_now)
-            self.assertIsInstance(response, dict)
-            self.assertTrue(response)
-            self.assertEqual(response.get('director_type'), 'IM')
-
-    def test_get_director_info_rdf(self):
-        """Test get_director_info RDF."""
-        with mock.patch.object(self.perf, 'get_request',
-                               return_value=self.p_data.director_info):
-            response = self.perf.get_director_info(
-                director_id=self.p_data.rdf_dir_id,
-                start_date=self.time_now, end_date=self.time_now)
-            self.assertIsInstance(response, dict)
-            self.assertTrue(response)
-            self.assertEqual(response.get('director_type'), 'RDF')
-
-    def test_get_director_info_eds(self):
-        """Test get_director_info EDS."""
-        with mock.patch.object(self.perf, 'get_request',
-                               return_value=self.p_data.director_info):
-            response = self.perf.get_director_info(
-                director_id=self.p_data.ext_dir_id,
-                start_date=self.time_now, end_date=self.time_now)
-            self.assertIsInstance(response, dict)
-            self.assertTrue(response)
-            self.assertEqual(response.get('director_type'), 'EDS')
-
-    def test_get_port_group_metrics(self):
-        """Test get_port_group_metrics."""
-        response = self.perf.get_port_group_metrics(
-            pg_id=self.p_data.port_group_id,
-            start_date=self.time_now, end_date=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
-
-    def test_get_host_metrics(self):
-        """Test get_host_metrics."""
-        response = self.perf.get_host_metrics(
-            host=self.p_data.host_id,
-            start_date=self.time_now, end_date=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertTrue(response)
-        self.assertEqual(len(response.get('result')), 2)
+        self.assertEqual(
+            response.get('reporting_level'),
+            self.common.convert_to_snake_case(pc.ZHYPER_LINK_PORT))

@@ -240,29 +240,33 @@ class TestBaseTestCase(testtools.TestCase):
             self.skipTest("Skipping test because remote_array is not set")
 
     def cleanup_rdfg(self, sg_name, srdf_group_number):
-        current_rdf_state_list = (
-            self.replication.get_storage_group_srdf_details(
-                storage_group_id=sg_name, rdfg_num=srdf_group_number).get(
-                'states'))
-        if 'Synchronized' in current_rdf_state_list or (
-                'Consistent' in current_rdf_state_list):
-            self.replication.suspend_storage_group_srdf(
+        if srdf_group_number:
+            current_rdf_state_list = (
+                self.replication.get_storage_group_srdf_details(
+                    storage_group_id=sg_name, rdfg_num=srdf_group_number).get(
+                    'states'))
+            if (current_rdf_state_list and (
+                    'Synchronized' in current_rdf_state_list or (
+                    'Consistent' in current_rdf_state_list))):
+                self.replication.suspend_storage_group_srdf(
+                    storage_group_id=sg_name,
+                    srdf_group_number=srdf_group_number)
+
+            self.replication.delete_storage_group_srdf(
                 storage_group_id=sg_name, srdf_group_number=srdf_group_number)
-        local_volume_list = self.provision.get_volumes_from_storage_group(
-            sg_name)
-        self.replication.delete_storage_group_srdf(
-            storage_group_id=sg_name, srdf_group_number=srdf_group_number)
-        self.provision.delete_storage_group(storage_group_id=sg_name)
-        for local_volume in local_volume_list:
-            self.provision.delete_volume(device_id=local_volume)
-        self.conn.set_array_id(array_id=self.conn.remote_array)
-        remote_volume_list = self.provision.get_volumes_from_storage_group(
-            sg_name)
-        self.provision.delete_storage_group(storage_group_id=sg_name)
-        for remote_volume in remote_volume_list:
-            self.provision.delete_volume(device_id=remote_volume)
-        self.replication.delete_rdf_group(
-            srdf_group_number=srdf_group_number)
+        if sg_name:
+            local_volume_list = self.provision.get_volumes_from_storage_group(
+                sg_name)
+            for local_volume in local_volume_list:
+                self.delete_volume(sg_name, device_id=local_volume)
+            self.conn.set_array_id(array_id=self.conn.remote_array)
+            remote_volume_list = self.provision.get_volumes_from_storage_group(
+                sg_name)
+            for remote_volume in remote_volume_list:
+                self.delete_volume(sg_name, device_id=remote_volume)
+        if srdf_group_number:
+            self.replication.delete_rdf_group(
+                srdf_group_number=srdf_group_number)
 
     def get_online_rdf_ports(self):
         """Gets a list of all RDF ports online for local and remote array.
@@ -326,6 +330,8 @@ class TestBaseTestCase(testtools.TestCase):
     def setup_srdf_group(self):
         local_array = self.conn.array_id
         local_port_list, remote_port_list = self.get_online_rdf_ports()
+        if not remote_port_list:
+            return None, list(), list()
         srdf_group = self.get_next_free_srdf_group()
         self.conn.set_array_id(local_array)
         self.replication.create_rdf_group(
@@ -361,6 +367,8 @@ class TestBaseTestCase(testtools.TestCase):
             name = 'PyU4V-slo-'
         elif object_type == 'sp':
             name = 'PyU4V-sp-'
+        elif object_type == 'label':
+            return 'PyU4V-' + str(random.randint(1, 999))
         elif object_type == 'metro_dr':
             return 'PyU4V_' + str(random.randint(1, 999))
         else:
@@ -554,37 +562,70 @@ class TestBaseTestCase(testtools.TestCase):
         if storage_group in storage_groups:
             self.provision.delete_storage_group(storage_group)
 
+    def create_port_group_helper(self, function_name):
+        """Create port helper.
+
+        In V4 the enabled_protocol can be one of
+        NVMe_TCP
+        SCSI_FC
+        RDF_FC
+        iSCSI
+        RDF_GigE
+
+        :param function_name: function name
+        """
+        port_group_protocol = None
+        directors = self.conn.system.get_director_list()
+        if not directors:
+            message = function_name + ' - Could not find any directors.'
+            self.skipTest(message)
+        director = None
+        ports = None
+        for d in directors:
+            filters_dict = dict()
+            if self.is_v4:
+                if 'OR-' in d:
+                    director = d
+                    filters_dict = {
+                        'aclx': 'true',
+                        'enabled_protocol': 'SCSI_FC'}
+                    port_group_protocol = 'SCSI_FC'
+            else:
+                if 'FA-' in d:
+                    director = d
+                    filters_dict = {'aclx': 'true'}
+            if director:
+                ports = self.conn.system.get_director_port_list(
+                    director, filters=filters_dict)
+                # avoid GOS ports
+                ports = [p for p in ports if int(p['portId']) < 30]
+                break
+        if not ports and not director:
+            message = function_name + ' - Could not find ports and director.'
+            self.skipTest(message)
+
+        return ports, director, port_group_protocol
+
     def create_port_group(self, number_of_ports=1):
         """Create a port group.
 
         :param number_of_ports: minimum port count to add -- int
         :returns: new port group details -- tuple
         """
-        directors = self.provision.get_director_list()
-        fa_directors = list()
-        for d in directors:
-            if 'FA-' in d:
-                fa_directors.append(d)
-
+        ports, director, port_group_protocol = self.create_port_group_helper(
+            'create_port_group')
         selected_director_ports = list()
-        for director in fa_directors:
-            if len(selected_director_ports) < number_of_ports:
-                ports = self.provision.get_director_port_list(
-                    director, filters='aclx=true')
-                # avoid GOS ports
-                ports = [p for p in ports if int(p['portId']) < 30]
-                selected_director_ports.append(ports[0])
+        if len(ports) < number_of_ports:
+            message = ('create_port_group - the requested number of ports '
+                       'exceeds the available number of ports.')
+            self.skipTest(message)
 
+        for i in range(number_of_ports):
+            selected_director_ports.append(ports[i])
         port_group_name = self.generate_name('port-group')
-        if number_of_ports == 1:
-            director = selected_director_ports[0]['directorId']
-            port = selected_director_ports[0]['portId']
-            port_group_details = self.provision.create_port_group(
-                port_group_name, director, port)
-        else:
-            port_group_details = (
-                self.provision.create_multiport_port_group(
-                    port_group_name, selected_director_ports))
+        port_group_details = (
+            self.provision.create_new_port_group(
+                port_group_name, selected_director_ports, port_group_protocol))
 
         self.addCleanup(self.delete_port_group, port_group_name)
         return port_group_name, port_group_details
@@ -598,11 +639,13 @@ class TestBaseTestCase(testtools.TestCase):
         if port_group_name in port_group_list:
             self.provision.delete_port_group(port_group_name)
 
-    def create_masking_view(self, use_host_group=False, _async=False):
+    def create_masking_view(
+            self, use_host_group=False, _async=False, host_name=None):
         """Create a new masking view.
 
         :param use_host_group: create view using host group -- bool
         :param _async: call the create command asynchronously -- bool
+        :param host_name:
         :returns: masking view details -- dict
         """
         masking_view_name = self.generate_name('masking_view')
@@ -613,7 +656,8 @@ class TestBaseTestCase(testtools.TestCase):
                 self.generate_name(), storage_group_name, 1))
         self.addCleanup(self.delete_volume, storage_group_name, device)
         if not use_host_group:
-            host_name = self.create_empty_host()
+            if not host_name:
+                host_name = self.create_empty_host()
             masking_view_details = (
                 self.provision.
                 create_masking_view_existing_components(
@@ -665,9 +709,10 @@ class TestBaseTestCase(testtools.TestCase):
             self.assertIn(pc.LA_DATE, key.keys())
         metric_list = self.perf.get_performance_metrics_list(category)
         dead_metrics = list()
+        live_metrics = list()
         asset_id = keys[0].get(id_tag)
-        if category == pc.ISCSI_TGT:
-            id_tag = pc.ISCSI_TGT_ID_METRICS
+        # if category == pc.ISCSI_TGT:
+        #     id_tag = pc.ISCSI_TGT_ID_METRICS
         for metric in metric_list:
             try:
                 metrics = metrics_func(asset_id, metric)
@@ -681,9 +726,15 @@ class TestBaseTestCase(testtools.TestCase):
                                  metrics.get(pc.REP_LEVEL))
                 perf_results = metrics.get(pc.RESULT)[0]
                 self.assertIn(metric, perf_results.keys())
+                live_metrics.append(metric)
             except exception.VolumeBackendAPIException:
                 dead_metrics.append(metric)
-        self.assertFalse(dead_metrics)
+        try:
+            self.assertFalse(dead_metrics)
+        except AssertionError:
+            print('Dead metrics found in category {c}: {m}'.format(
+                c=category, m=dead_metrics))
+            raise AssertionError
 
     def run_extended_input_performance_test_asserts(
             self, category, outer_tag, inner_tag, outer_keys_func,
@@ -773,15 +824,17 @@ class TestBaseTestCase(testtools.TestCase):
             metro_r1_array_id=metro_r1_array_id,
             metro_r2_array_id=metro_r2_array_id, dr_array_id=dr_array_id,
             dr_replication_mode='adaptivecopydisk')
-        self.common.wait_for_job_complete(job=job)
+
+        rc, result, status, task = self.common.wait_for_job_complete(job=job)
+        # Sleep added to give time to synchronize
+        if rc == 0:
+            self.wait_for_metro_dr_sync(environment_name)
         self.addCleanup(self.cleanup_metro_dr, sg_name, environment_name)
 
         return sg_name, environment_name
 
     def cleanup_metro_dr(self, sg_name, environment_name):
         """Cleanup Metro DR created SG and Environments."""
-        # Sleep added to give time to synchronize
-        time.sleep(180)
 
         # Instantiate array cleanup dict
         cleanup_details = {self.conn.array_id: list(),
@@ -794,8 +847,11 @@ class TestBaseTestCase(testtools.TestCase):
             cleanup_details[array] = sg_rdf_list
 
         # Delete metro DR environment
-        self.metro_dr.delete_metrodr_environment(
-            environment_name=environment_name)
+        try:
+            self.metro_dr.delete_metrodr_environment(
+                environment_name=environment_name)
+        except Exception as ex:
+            print(ex)
 
         # Suspend RDF and delete RDF pairs
         for rdfg in cleanup_details.get(self.conn.array_id):
@@ -822,6 +878,25 @@ class TestBaseTestCase(testtools.TestCase):
                     self.replication.delete_rdf_group(rdfg)
                 except exception.ResourceNotFoundException:
                     pass
+
+    def wait_for_metro_dr_sync(self, environment_name):
+        is_synced_count = 0
+        metro_dr_env_details = dict()
+        while not metro_dr_env_details and is_synced_count <= 40:
+            try:
+                metro_dr_env_details = (
+                    self.metro_dr.get_metrodr_environment_details(
+                        environment_name=environment_name))
+            except exception.ResourceNotFoundException:
+                is_synced_count += 1
+                time.sleep(20)
+
+        # while not metro_dr_env_details and is_synced_count <= 20:
+        #     is_synced_count += 1
+        #     time.sleep(20)
+        #     metro_dr_env_details = (
+        #         self.metro_dr.get_metrodr_environment_details(
+        #             environment_name=environment_name))
 
     @staticmethod
     def cleanup_pyu4v_zip_files_in_directory(directory):

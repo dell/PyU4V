@@ -14,6 +14,7 @@
 """test_pyu4v_ci_wlp.py."""
 
 import random
+import re
 import testtools
 import time
 
@@ -77,6 +78,7 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         super(CITestSystem, self).setUp()
         self.common = self.conn.common
         self.system = self.conn.system
+        self.is_v4 = self.common.is_array_v4(self.conn.array_id)
 
     def test_get_system_health(self):
         """Test get_system_health."""
@@ -119,10 +121,11 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         health_check_list, health_check_id = None, None
         try:
             health_check_list = self.system.list_system_health_check()
-            health_check_id = health_check_list.get(HEALTH_CHECK_ID)[0]
         except exception.ResourceNotFoundException:
             self.skipTest('Skip get health check - there are no health '
                           'checks available')
+
+        health_check_id = health_check_list.get(HEALTH_CHECK_ID)[0]
 
         health_check = self.system.get_health_check_details(
             health_check_id=health_check_id)
@@ -490,7 +493,7 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         """Test download_audit_log_record write to file."""
         temp_dir_path = Path(self.create_temp_directory())
         response = self.system.download_audit_log_record(
-            dir_path=str(temp_dir_path))
+            dir_path=str(temp_dir_path), timeout=448)
         self.assertTrue(response)
         self.assertIsInstance(response, dict)
         self.assertTrue(response.get(SUCCESS))
@@ -500,33 +503,44 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
     def test_download_audit_log_record_return_binary(self):
         """Test download_audit_log_record return binary data."""
-        response = self.system.download_audit_log_record(return_binary=True)
+        response = self.system.download_audit_log_record(
+            return_binary=True, timeout=448)
         self.assertTrue(response)
         self.assertIsInstance(response, dict)
         self.assertTrue(response.get(SUCCESS))
         self.assertIn(BINARY_DATA, response.keys())
         self.assertIsInstance(response.get(BINARY_DATA), bytes)
 
-    def test_get_director_list(self):
-        """Test get_director_list."""
-        response = self.system.get_director_list()
-        self.assertTrue(response)
-        self.assertIsInstance(response, list)
+    # def test_get_director_list(self):
+    #     """Test get_director_list."""
+    #     response = self.system.get_director_list()
+    #     self.assertTrue(response)
+    #     self.assertIsInstance(response, list)
 
     def test_get_director_list_iscsi_only(self):
         """Test get_director_list iscsi_only set as True."""
-        response = self.system.get_director_list(iscsi_only=True)
-        self.assertTrue(response)
-        self.assertIsInstance(response, list)
-        for pmax_dir in response:
-            self.assertIn('SE', pmax_dir)
+        dir_list = self.system.get_director_list(iscsi_only=True)
+        if not dir_list:
+            self.skipTest(
+                'test_get_director_list_iscsi_only - No iSCSI Directors '
+                'available in CI environment.')
 
-    def test_get_director_port_list(self):
+        self.assertIsInstance(dir_list, list)
+        if self.is_v4:
+            self.assertIn('OR', dir_list[0])
+        else:
+            self.assertIn('SE', dir_list[0])
+
+    def test_get_director_from_port_list(self):
         """Test get_director_port_list."""
         director_list = self.system.get_director_list()
         director_id = None
         for director in director_list:
-            if director[:2] in ['FA', 'DF', 'RF', 'SE']:
+            if self.common.is_array_v4(self.conn.array_id):
+                if director[:2] in ['OR']:
+                    director_id = director
+                    break
+            elif director[:2] in ['FA', 'DF', 'RF', 'SE']:
                 director_id = director
                 break
         response = self.system.get_director_port_list(director_id=director_id)
@@ -544,16 +558,22 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
             director_id=director_id)
         self.assertTrue(all_ports)
         self.assertIsInstance(all_ports, list)
-
-        tgt_ports = self.system.get_director_port_list(
-            director_id=director_id, iscsi_target=True)
-        self.assertTrue(tgt_ports)
-        self.assertIsInstance(tgt_ports, list)
-
-        not_tgt_ports = self.system.get_director_port_list(
-            director_id=director_id, iscsi_target=False)
-        self.assertTrue(not_tgt_ports)
-        self.assertIsInstance(not_tgt_ports, list)
+        try:
+            tgt_ports = self.system.get_directory_port_iscsi_endpoint_list(
+                director_id=director_id, iscsi_endpoint=True)
+            if tgt_ports:
+                self.assertTrue(tgt_ports)
+                self.assertIsInstance(tgt_ports, list)
+        except exception.ResourceNotFoundException:
+            tgt_ports = list()
+        try:
+            not_tgt_ports = self.system.get_directory_port_iscsi_endpoint_list(
+                director_id=director_id, iscsi_endpoint=False)
+            if not_tgt_ports:
+                self.assertTrue(not_tgt_ports)
+                self.assertIsInstance(not_tgt_ports, list)
+        except exception.ResourceNotFoundException:
+            not_tgt_ports = list()
 
         self.assertEqual(len(all_ports),
                          (len(tgt_ports) + len(not_tgt_ports)))
@@ -566,8 +586,8 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         if not iscsi_dir_list:
             self.skipTest('No iSCSI Directors available in CI environment.')
         for dir_id in iscsi_dir_list:
-            port_list = self.system.get_director_port_list(
-                director_id=dir_id, iscsi_target=False)
+            port_list = self.system.get_directory_port_iscsi_endpoint_list(
+                director_id=dir_id, iscsi_endpoint=False)
             if not port_list:
                 continue
             for port in port_list:
@@ -590,10 +610,11 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
         iscsi_dir_list = self.system.get_director_list(iscsi_only=True)
         if not iscsi_dir_list:
-            self.skipTest('No iSCSI Directors available in CI environment.')
+            self.skipTest('test_get_ip_interface - No iSCSI Directors '
+                          'available in CI environment.')
         for dir_id in iscsi_dir_list:
-            port_list = self.system.get_director_port_list(
-                director_id=dir_id, iscsi_target=False)
+            port_list = self.system.get_directory_port_iscsi_endpoint_list(
+                director_id=dir_id, iscsi_endpoint=False)
             if not port_list:
                 continue
             for port in port_list:
@@ -622,3 +643,317 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
             self.assertEqual(None, change_password)
         except exception.VolumeBackendAPIException:
             self.skipTest('Skip Password Change - please run test manually')
+
+    def test_get_director(self):
+        """Test get_director."""
+        availability = 'availability'
+        director_number = 'director_number'
+        director_slot_number = 'director_slot_number'
+        director_list = self.system.get_director_list()
+        if not director_list:
+            self.skipTest('Skipping test_get_director - no directors.')
+        for director in director_list:
+            director_details = self.system.get_director(director)
+            self.assertIsInstance(director_details, dict)
+            self.assertIn(availability, director_details)
+            self.assertIn(director_number, director_details)
+            self.assertIn(director_slot_number, director_details)
+            self.assertIn(constants.DIRECTOR_ID, director_details)
+            self.assertIn(constants.NUM_OF_PORTS, director_details)
+            if not self.is_v4:
+                self.assertIn(constants.NUM_OF_CORES, director_details)
+                self.assertIsInstance(
+                    director_details[constants.NUM_OF_CORES], int)
+            self.assertIsInstance(director_details[availability], str)
+            self.assertIsInstance(director_details[director_number], int)
+            self.assertIsInstance(director_details[director_slot_number], int)
+            director_id = director_details[constants.DIRECTOR_ID]
+            self.assertIsInstance(director_id, str)
+            self.assertIsInstance(
+                director_details[constants.NUM_OF_PORTS], int)
+            self.assertIsNotNone(re.match(constants.DIRECTOR_SEARCH_PATTERN,
+                                          director_id))
+
+    def test_get_director_list(self):
+        """Test get_director_list."""
+        director_list = self.system.get_director_list()
+        if not director_list:
+            self.skipTest('Skipping test_get_director_list - no directors.')
+        self.assertIsInstance(director_list, list)
+        for director in director_list:
+            self.assertIsInstance(director, str)
+            self.assertIsNotNone(re.match(constants.DIRECTOR_SEARCH_PATTERN,
+                                          director))
+
+    def test_get_director_port(self):
+        """Test get_director_port."""
+        director_port_list = self.provision.get_port_list()
+        if not director_port_list:
+            self.skipTest('Skipping test_get_director_port as no ports exist')
+        director_port = director_port_list[0]
+        director = director_port[constants.DIRECTOR_ID]
+        port = director_port[constants.PORT_ID]
+        port_details = self.system.get_director_port(
+            director, port)
+        self._validate_director_port(port_details)
+
+    def test_get_director_port_list(self):
+        """Test get_director_port_list."""
+        director_list = self.system.get_director_list()
+        if not director_list:
+            self.skipTest('Skipping test_get_director_port_list '
+                          'as no directors exist')
+        director = director_list[0]
+        director_port_list = self.system.get_director_port_list(
+            director)
+        if not director_list:
+            self.skipTest('Skipping test_get_director_port_list '
+                          'as no port exist for the director')
+        self.assertIsInstance(director_port_list, list)
+        for director_port in director_port_list:
+            self.assertIsInstance(director_port, dict)
+            self.assertIn(constants.DIRECTOR_ID, director_port)
+            self.assertIn(constants.PORT_ID, director_port)
+            director_id = director_port[constants.DIRECTOR_ID]
+            port_id = director_port[constants.PORT_ID]
+            self.assertIsInstance(director_id, str)
+            self.assertIsInstance(port_id, str)
+            self.assertIsNotNone(
+                re.match(constants.DIRECTOR_SEARCH_PATTERN, director_id))
+            self.assertIsNotNone(
+                re.match(constants.PORT_SEARCH_PATTERN, port_id))
+
+    def test_get_port_identifier(self):
+        """Test get_port_identifier."""
+        director_port_list = self.provision.get_port_list()
+        if not director_port_list:
+            self.skipTest('Skipping test_get_port_identifier '
+                          'as no ports exist for that array')
+        director_port = director_port_list[0]
+        director = director_port[constants.DIRECTOR_ID]
+        port = director_port[constants.PORT_ID]
+        port_identifier = self.system.get_port_identifier(
+            director, port)
+        if not port_identifier:
+            self.skipTest('Skipping test_get_port_identifier '
+                          'as no port identifier exists for that'
+                          'port')
+        self.assertIsInstance(port_identifier, str)
+        search_pattern = '{wwn}|{iqn}'.format(
+            wwn=constants.WWN_SEARCH_PATTERN_16,
+            iqn=constants.ISCSI_IQN_SEARCH_PATTERN)
+        self.assertIsNotNone(
+            re.match(search_pattern, port_identifier))
+
+    def _validate_director_port(self, port_details):
+        """Helper method for validating get director port return details.
+
+        :param port_details: port details -- dict
+        """
+        symmetrix_port = 'symmetrixPort'
+        port_interface = 'port_interface'
+        port_status = 'port_status'
+        director_status = 'director_status'
+        num_of_hypers = 'num_of_hypers'
+        max_speed = 'max_speed'
+        self.assertIsInstance(port_details, dict)
+        self.assertIn(symmetrix_port, port_details)
+        port_details = port_details[symmetrix_port]
+        symmetrix_port_key = port_details[constants.SYMMETRIX_PORT_KEY]
+        self.assertIsInstance(symmetrix_port_key, dict)
+        self.assertIn(constants.DIRECTOR_ID, symmetrix_port_key)
+        self.assertIn(constants.PORT_ID, symmetrix_port_key)
+        self.assertIsInstance(symmetrix_port_key[constants.PORT_ID], str)
+        director_id = symmetrix_port_key[constants.DIRECTOR_ID]
+        self.assertIsInstance(director_id, str)
+        self.assertIsNotNone(
+            re.match(constants.DIRECTOR_SEARCH_PATTERN, director_id))
+        if port_interface in port_details:
+            self.assertIsInstance(port_details[port_interface], str)
+        if port_status in port_details:
+            self.assertIsInstance(port_details[port_status], str)
+        if director_status in port_details:
+            self.assertIsInstance(port_details[director_status], str)
+        if constants.TYPE in port_details:
+            self.assertIsInstance(port_details[constants.TYPE], str)
+        if constants.NUM_OF_CORES in port_details:
+            self.assertIsInstance(port_details[constants.NUM_OF_CORES], int)
+        if num_of_hypers in port_details:
+            self.assertIsInstance(port_details[num_of_hypers], int)
+        if max_speed in port_details:
+            self.assertIsInstance(port_details[max_speed], str)
+
+    def test_get_iscsi_ip_address_and_iqn(self):
+        """Test get_iscsi_ip_address_and_iqn."""
+        ip_addresses = []
+        port_list = self.provision.get_port_list()
+        if not port_list:
+            self.skipTest('Skipping test_get_iscsi_ip_address_and_iqn '
+                          'as no ports were found')
+        if not self.is_v4:
+            iscsi_director_ports = [p for p in port_list if 'SE-' in p[
+                constants.DIRECTOR_ID]]
+        else:
+            # V4 iscsi
+            iscsi_director_ports = self.system.get_iscsi_director_port_list_v4(
+                'test_get_iscsi_ip_address_and_iqn')
+        if not iscsi_director_ports:
+            self.skipTest('Skipping test_get_iscsi_ip_address_and_iqn '
+                          'as SE director ports were found')
+        for se_director_port in iscsi_director_ports:
+            director_id = se_director_port[constants.DIRECTOR_ID]
+            port_id = se_director_port[constants.PORT_ID]
+            iscsi_id = self.provision.format_director_port(
+                director_id, port_id)
+            ip_addresses, iqn = (
+                self.system.get_iscsi_ip_address_and_iqn(iscsi_id))
+
+            if not ip_addresses:
+                continue
+            self.assertIsInstance(ip_addresses, list)
+            for ip in ip_addresses:
+                valid_ip = (
+                    self.common.check_ipv4(
+                        ip) or self.common.check_ipv6(ip))
+                self.assertIsInstance(ip, str)
+                self.assertTrue(valid_ip)
+            self.assertIsNotNone(iqn)
+            # self.assertIsNotNone(
+            #     re.match(constants.ISCSI_IQN_SEARCH_PATTERN, iqn))
+        if not ip_addresses:
+            self.skipTest('Skipping test_get_iscsi_ip_address_and_iqn '
+                          'as no ip_addresses were found for iSCSI.')
+
+    def test_get_any_director_port(self):
+        """Test get_any_director_port."""
+        if not self.is_v4:
+            fa_directors = self.system.get_fa_directors()
+            if not fa_directors:
+                self.skipTest('Skipping test_get_any_director_port '
+                              'as no FA directors found.')
+            fa_director = fa_directors[0]
+            port = self.system.get_any_director_port(fa_director)
+            self.assertIsNotNone(port)
+            self.assertIsInstance(port, str)
+        else:
+            or_directors = self.system.get_or_directors()
+            if not or_directors:
+                self.skipTest('Skipping test_get_any_director_port '
+                              'as no FA directors found.')
+            or_director = or_directors[0]
+            port = self.system.get_any_director_port(or_director)
+            self.assertIsNotNone(port)
+            self.assertIsInstance(port, str)
+
+    def test_get_iscsi_director_port_list_v4(self):
+        """test_get_iscsi_director_port_list_v4."""
+        if not self.is_v4:
+            self.skipTest('Skipping test_get_iscsi_director_port_list_v4 '
+                          '- this if V4 only')
+        directors = self.conn.system.get_director_list()
+        if not directors:
+            self.skipTest('test_get_iscsi_director_port_list_v4 - '
+                          'Could not find any directors.')
+        port_list = self.conn.system.get_iscsi_director_port_list_v4(
+            directors)
+        self.assertIsInstance(port_list, list)
+        self.assertTrue('OR' in port_list[0].get('directorId'))
+        port_info = self.system.get_director_port(
+            port_list[0].get('directorId'), port_list[0].get('portId'))
+        self.assertEqual(
+            ['iSCSI'],
+            port_info.get('symmetrixPort').get('enabled_protocol'))
+
+    def test_get_fc_director_port_list_v4(self):
+        """test_get_fc_director_port_list_v4."""
+        if not self.is_v4:
+            self.skipTest('Skipping test_get_fc_director_port_list_v4 '
+                          '- this if V4 only')
+        directors = self.conn.system.get_director_list()
+        if not directors:
+            self.skipTest('test_get_fc_director_port_list_v4 - '
+                          'Could not find any directors.')
+        port_list = self.conn.system.get_fc_director_port_list_v4(
+            directors)
+        self.assertIsInstance(port_list, list)
+        self.assertTrue('OR' in port_list[0].get('directorId'))
+        port_info = self.system.get_director_port(
+            port_list[0].get('directorId'), port_list[0].get('portId'))
+        self.assertEqual(
+            ['SCSI_FC'],
+            port_info.get('symmetrixPort').get('enabled_protocol'))
+
+    def test_get_nvme_director_port_list_v4(self):
+        """test_get_nvme_director_port_list_v4."""
+        if not self.is_v4:
+            self.skipTest('Skipping test_get_nvme_director_port_list_v4 '
+                          '- this if V4 only')
+        directors = self.conn.system.get_director_list()
+        if not directors:
+            self.skipTest('test_get_nvme_director_port_list_v4 - '
+                          'Could not find any directors.')
+        port_list = self.conn.system.get_nvme_director_port_list_v4(
+            directors)
+        if not port_list:
+            self.skipTest('test_get_nvme_director_port_list_v4 - '
+                          'Could not find any NVMe Ports.')
+        self.assertIsInstance(port_list, list)
+        self.assertTrue('OR' in port_list[0].get('directorId'))
+        port_info = self.system.get_director_port(
+            port_list[0].get('directorId'), port_list[0].get('portId'))
+        self.assertEqual(
+            ['NVMe/FC'],
+            port_info.get('symmetrixPort').get('enabled_protocol'))
+
+    def test_get_rdf_director_port_list_v4(self):
+        """test_get_rdf_director_port_list_v4."""
+        if not self.is_v4:
+            self.skipTest('Skipping test_get_rdf_director_port_list_v4 '
+                          '- this if V4 only')
+        directors = self.conn.system.get_director_list()
+        if not directors:
+            self.skipTest('test_get_rdf_director_port_list_v4 - '
+                          'Could not find any directors.')
+        port_list = self.conn.system.get_rdf_director_port_list_v4(
+            directors)
+        self.assertIsInstance(port_list, list)
+        self.assertTrue('OR' in port_list[0].get('directorId'))
+        port_info = self.system.get_director_port(
+            port_list[0].get('directorId'), port_list[0].get('portId'))
+        self.assertEqual(
+            ['RDF_FC'],
+            port_info.get('symmetrixPort').get('enabled_protocol'))
+
+    def test_get_rdf_gige_director_port_list_v4(self):
+        """test_get_rdf_gige_director_port_list_v4."""
+        if not self.is_v4:
+            self.skipTest('Skipping test_get_rdf_gige_director_port_list_v4 '
+                          '- this if V4 only')
+        directors = self.conn.system.get_director_list()
+        if not directors:
+            self.skipTest('test_get_rdf_gige_director_port_list_v4 - '
+                          'Could not find any directors.')
+        port_list = self.conn.system.get_rdf_gige_director_port_list_v4(
+            directors)
+        self.assertIsInstance(port_list, list)
+        self.assertTrue('OR' in port_list[0].get('directorId'))
+        port_info = self.system.get_director_port(
+            port_list[0].get('directorId'), port_list[0].get('portId'))
+        self.assertEqual(
+            ['RDF_GigE'],
+            port_info.get('symmetrixPort').get('enabled_protocol'))
+
+    def test_set_director_port_online(self):
+        """test_set_director_port_online."""
+        self.skipTest('Skipping Test as disruptive, please run test manually')
+        port_details = self.system.get_director_port(
+            director='OR-1C', port_no='3').get('symmetrixPort')
+        if port_details.get('port_status') == 'ON':
+            port_details = self.system.set_director_port_online(
+                director='OR-1C', port_no='3', port_online=False).get(
+                'symmetrixPort')
+            self.assertEqual('OFF', port_details.get('port_status'))
+            port_details = self.system.set_director_port_online(
+                director='OR-1C', port_no='3', port_online=True).get(
+                'symmetrixPort')
+            self.assertEqual('ON', port_details.get('port_status'))

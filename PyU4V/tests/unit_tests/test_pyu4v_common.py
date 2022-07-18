@@ -13,7 +13,6 @@
 # limitations under the License.
 """test_pyu4v_common.py."""
 
-import csv
 import testtools
 import time
 
@@ -150,10 +149,8 @@ class PyU4VCommonTest(testtools.TestCase):
     def test_build_uri_unhidden(self):
         """Test build_target_uri."""
         with mock.patch.object(self.common, '_build_uri') as mck_build:
-            self.common.build_target_uri(
-                'test_arg', test_kwarg_in='test_kwarg')
-            mck_build.assert_called_once_with(
-                'test_arg', test_kwarg_in='test_kwarg')
+            self.common.build_target_uri(test_kwarg_in='test_kwarg')
+            mck_build.assert_called_once_with(test_kwarg_in='test_kwarg')
 
     def test_build_uri_version_control(self):
         """Test _build_uri."""
@@ -198,27 +195,7 @@ class PyU4VCommonTest(testtools.TestCase):
             array=self.data.array, res=resource_name))
         self.assertEqual(uri_4, built_uri_4)
 
-    def test_traditional_build_uri(self):
-        """Test _build_uri."""
-        # Only default args arrayID, category, resource_type passed
-        built_uri = self.common._build_uri(
-            self.data.array, 'sloprovisioning', 'volume')
-        temp_uri = (
-            '/{}/sloprovisioning/symmetrix/{array}/volume'.format(
-                self.data.U4P_VERSION, array=self.data.array))
-        self.assertEqual(temp_uri, built_uri)
-
-        # Default args passed along with resource_name and version kwarg
-        built_uri_2 = self.common._build_uri(
-            self.data.array, 'sloprovisioning', 'volume',
-            version=self.data.U4P_VERSION, resource_name=self.data.device_id)
-        temp_uri_2 = (
-            '/{}/sloprovisioning/symmetrix/{array}/volume/{res}'.format(
-                self.data.U4P_VERSION, array=self.data.array,
-                res=self.data.device_id))
-        self.assertEqual(temp_uri_2, built_uri_2)
-
-    def test_new_build_uri_minimum(self):
+    def test_build_uri_minimum(self):
         """Test _build_uri."""
         # Pass in only minimum required kwargs - version is optional
         built_uri_1 = self.common._build_uri(
@@ -228,7 +205,7 @@ class PyU4VCommonTest(testtools.TestCase):
             self.data.U4P_VERSION)
         self.assertEqual(temp_uri_1, built_uri_1)
 
-    def test_new_build_uri_resource_level_id(self):
+    def test_build_uri_resource_level_id(self):
         """Test _build_uri."""
         # Pass in minimum kwargs with specified resource_level_id
         built_uri_2 = self.common._build_uri(
@@ -238,7 +215,7 @@ class PyU4VCommonTest(testtools.TestCase):
             self.data.U4P_VERSION, self.data.array))
         self.assertEqual(temp_uri_2, built_uri_2)
 
-    def test_new_build_uri_resource_type(self):
+    def test_build_uri_resource_type(self):
         # Pass in minimum kwargs with specified resource_type
         built_uri_3 = self.common._build_uri(
             version=self.data.U4P_VERSION, category='sloprovisioning',
@@ -248,7 +225,7 @@ class PyU4VCommonTest(testtools.TestCase):
             self.data.U4P_VERSION, self.data.array, 'storagegroup'))
         self.assertEqual(temp_uri_3, built_uri_3)
 
-    def test_new_build_uri_resource_type_id(self):
+    def test_build_uri_resource_type_id(self):
         # Pass in minimum kwargs with specified resource_type_id
         built_uri_4 = self.common._build_uri(
             version=self.data.U4P_VERSION, category='sloprovisioning',
@@ -260,7 +237,7 @@ class PyU4VCommonTest(testtools.TestCase):
             self.data.storagegroup_name_1))
         self.assertEqual(temp_uri_4, built_uri_4)
 
-    def test_new_build_uri_resource(self):
+    def test_build_uri_resource(self):
         # Pass in minimum kwargs with specified resource
         built_uri_5 = self.common._build_uri(
             version=self.data.U4P_VERSION, category='sloprovisioning',
@@ -273,7 +250,7 @@ class PyU4VCommonTest(testtools.TestCase):
             self.data.storagegroup_name_1, 'snap'))
         self.assertEqual(temp_uri_5, built_uri_5)
 
-    def test_new_build_uri_resource_id(self):
+    def test_build_uri_resource_id(self):
         # Pass in minimum kwargs with specified resource_id
         built_uri_6 = self.common._build_uri(
             version=self.data.U4P_VERSION, category='sloprovisioning',
@@ -286,7 +263,7 @@ class PyU4VCommonTest(testtools.TestCase):
             self.data.storagegroup_name_1, 'snap', self.data.snapshot_name))
         self.assertEqual(temp_uri_6, built_uri_6)
 
-    def test_new_build_uri_object_type(self):
+    def test_build_uri_object_type(self):
         # Pass in minimum kwargs with specified object_type
         built_uri_7 = self.common._build_uri(
             version=self.data.U4P_VERSION, category='sloprovisioning',
@@ -301,7 +278,7 @@ class PyU4VCommonTest(testtools.TestCase):
             'generation'))
         self.assertEqual(temp_uri_7, built_uri_7)
 
-    def test_new_build_uri_object_type_id(self):
+    def test_build_uri_object_type_id(self):
         # Pass in minimum kwargs with specified object_type_id
         built_uri_8 = self.common._build_uri(
             version=self.data.U4P_VERSION, category='sloprovisioning',
@@ -317,7 +294,7 @@ class PyU4VCommonTest(testtools.TestCase):
                 self.data.snapshot_name, 'generation', '1'))
         self.assertEqual(temp_uri_8, built_uri_8)
 
-    def test_new_build_uri_performance(self):
+    def test_build_uri_performance(self):
         # Category is performance so no use of version in URI
         built_uri_9 = self.common._build_uri(
             category='performance', resource_level='Array',
@@ -332,13 +309,6 @@ class PyU4VCommonTest(testtools.TestCase):
 
     def test_get_resource(self):
         """Test get_resource."""
-        # Traditional Method
-        message = self.common.get_resource(
-            self.data.array, 'sloprovisioning', 'volume',
-            resource_name=None, params=None)
-        self.assertEqual(self.data.volume_list[2], message)
-
-        # New Method
         message_1 = self.common.get_resource(
             category='sloprovisioning',
             resource_level='symmetrix',
@@ -388,36 +358,11 @@ class PyU4VCommonTest(testtools.TestCase):
             resource_level_id=self.data.array,
             resource_type_id=self.data.storagegroup_name)
 
-    def test_create_list_from_file(self):
-        """Test create_list_from_file."""
-        example_file = """Item1\nItem2\nItem3"""
-        with mock.patch('builtins.open', mock.mock_open(
-                read_data=example_file), create=True):
-            list_from_file = self.common.create_list_from_file(example_file)
-            self.assertIsInstance(list_from_file, list)
-            self.assertIn('Item1', list_from_file)
-
-    @mock.patch('builtins.open', new_callable=mock.mock_open)
-    def test_read_csv_values(self, mck_open):
-        """Test read_csv_values."""
-        csv_response = [
-            {'kpi_a': 'perf_data_1', 'kpi_b': 'perf_data_2'},
-            {'kpi_a': 'perf_data_3', 'kpi_b': 'perf_data_4'},
-            {'kpi_a': 'perf_data_5', 'kpi_b': 'perf_data_6'}]
-
-        with mock.patch.object(csv, 'DictReader', return_value=csv_response):
-            csv_data = self.common.read_csv_values(file_name='mock_csv_file')
-            reference_csv_response = {
-                'kpi_a': ['perf_data_1', 'perf_data_3', 'perf_data_5'],
-                'kpi_b': ['perf_data_2', 'perf_data_4', 'perf_data_6']}
-            self.assertIsInstance(csv_data, dict)
-            self.assertEqual(reference_csv_response, csv_data)
-
     def test_get_uni_version(self):
         """Test get_uni_version."""
         version, major_version = self.common.get_uni_version()
         self.assertEqual(self.data.server_version['version'], version)
-        self.assertEqual(self.data.u4v_version, major_version)
+        self.assertEqual(self.data.U4P_VERSION, major_version)
 
     def test_get_array_list(self):
         """Test get_array_list."""
@@ -433,49 +378,6 @@ class PyU4VCommonTest(testtools.TestCase):
         """Test get_array."""
         array_details = self.common.get_array(self.data.array)
         self.assertEqual(self.data.symmetrix[0], array_details)
-
-    def test_get_wlp_info_success(self):
-        """Test get_wlp_information success."""
-        with mock.patch.object(
-                self.common, 'get_resource',
-                return_value=self.data.wlp_info) as mck_wlp_info:
-            wlp_info = self.common.get_wlp_information(self.data.array)
-            self.assertEqual(self.data.wlp_info, wlp_info)
-            mck_wlp_info.assert_called_once_with(
-                category='wlp', resource_level='symmetrix',
-                resource_level_id=self.data.array)
-
-    def test_get_wlp_info_fail(self):
-        """Test get_wlp_information fail."""
-        with mock.patch.object(self.common, 'get_resource',
-                               return_value=None):
-            wlp_info = self.common.get_wlp_information(self.data.array)
-            self.assertFalse(wlp_info)
-            self.assertIsInstance(wlp_info, dict)
-
-    def test_get_headroom_success(self):
-        """Test get_headroom success."""
-        with mock.patch.object(
-                self.common, 'get_resource',
-                return_value=self.data.headroom_array) as mck_head:
-            headroom = self.common.get_headroom(
-                self.data.array, self.data.workload, 'SRP_TEST', 'Gold')
-            self.assertEqual(self.data.headroom_array['gbHeadroom'], headroom)
-            params = {'srp': 'SRP_TEST', 'slo': 'Gold',
-                      'workloadtype': self.data.workload}
-            mck_head.assert_called_once_with(
-                category='wlp', resource_level='symmetrix',
-                resource_level_id=self.data.array, resource_type='headroom',
-                params=params)
-
-    def test_get_headroom_fail(self):
-        """Test get_headroom fail."""
-        with mock.patch.object(self.common, 'get_resource',
-                               return_value=None):
-            headroom = self.common.get_headroom(self.data.array,
-                                                self.data.workload)
-            self.assertFalse(headroom)
-            self.assertIsInstance(headroom, list)
 
     def test_check_ipv4(self):
         """Test check_ipv4."""
@@ -612,3 +514,17 @@ class PyU4VCommonTest(testtools.TestCase):
         self.assertTrue(self.common.check_epoch_timestamp(millis))
         self.assertFalse(self.common.check_epoch_timestamp(
             '160683603111111111'))
+
+    def test_wwn(self):
+        # # ports = [{"www": 'wwn1'}, {"nqn": 'nqn1'}, {"iqn": 'iqn1'}]
+        # ports = [{"wwn": 'wwn1'}, {"nqn": 'nqn1'}]
+        # valid_ports = [
+        #     port["wwn"] for port in ports if port["wwn"] and not port["nqn"]
+        # ]
+        # print(valid_ports)
+        fruits = ["Apple", "Pear", "Peach", "Banana"]
+
+        fruit_dictionary = {fruit: fruit for fruit in fruits}
+        apple = fruit_dictionary.get("Apple")
+
+        print(apple)
