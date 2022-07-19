@@ -246,7 +246,7 @@ the License.
    :target: https://github.com/dell/PyU4V/blob/master/README.rst
 .. |Platform| image:: https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue
    :target: https://github.com/dell/PyU4V/blob/master/README.rst
-.. |Unisphere| image:: https://img.shields.io/badge/Unisphere-9.2.0.1-blue
+.. |Unisphere| image:: https://img.shields.io/badge/Unisphere-10.0-blue
    :target: https://www.dell.com/support/home/us/en/19/product-support/product/unisphere-powermax/overview
 .. |DTotal| image:: https://pepy.tech/badge/pyu4v
    :target: https://pepy.tech/project/pyu4v
