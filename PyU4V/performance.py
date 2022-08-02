@@ -2463,7 +2463,6 @@ class PerformanceFunctions(object):
 
             metrics = (self.get_performance_metrics_list(
                 category=pc.VOLUME, kpi_only=False))
-            print(f"metrics are {metrics}")
         if volume_range_start and volume_range_end:
             request_body = {
                 "systemId": array_id,
@@ -2472,7 +2471,8 @@ class PerformanceFunctions(object):
 
             }
         else:
-            storage_group_list = ",".join(storage_group_list)
+            if type(storage_group_list)==list:
+                storage_group_list = ",".join(storage_group_list)
             request_body = {
                 "systemId": array_id,
                 "commaSeparatedStorageGroupList": storage_group_list}

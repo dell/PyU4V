@@ -21,6 +21,7 @@ from PyU4V.tests.unit_tests import pyu4v_performance_data as pd
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
 from PyU4V.utils import performance_constants as pc
+from PyU4V.provisioning import *
 
 
 class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
@@ -33,7 +34,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.p_data = pd.PerformanceData()
         self.time_now = int(time.time() * 1000)
         self.is_v4 = self.common.is_array_v4(self.conn.array_id)
-        if not self.perf.is_array_performance_registered(self.conn.array_id):
+        if not (self.perf.is_array_diagnostic_performance_registered(
+                self.conn.array_id)):
             self.skipTest(
                 'Array {arr} is not diagnostic performance registered, '
                 'skipping performance tests.'.format(arr=self.conn.array_id))
@@ -889,6 +891,27 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         metrics_func = self.perf.get_thin_pool_stats
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
+
+    def test_get_volume_stats_device_range(self):
+        """Test get_volume_stats function."""
+        start_time, end_time = self.perf.get_timestamp_by_hour(
+            hours_difference=1)
+        results = self.perf.get_volume_stats(
+            start_time=start_time, end_time=end_time,
+            volume_range_start='00123',
+            volume_range_end='00123',data_format='Average')
+        self.assertIn('result', results)
+
+    def test_get_volume_stats_storage_group_list(self):
+        """Test get volume stats function with storage groups."""
+        start_time, end_time = self.perf.get_timestamp_by_hour(
+            hours_difference=1)
+        sg_list = self.conn.provisioning.get_storage_group_list()
+        sg_list = sg_list[:5]
+        results = self.perf.get_volume_stats(
+            start_time=start_time, end_time=end_time,
+            storage_group_list=sg_list, data_format='Average')
+        self.assertIn('result', results)
 
     def test_zhyperlink_port_performance_function(self):
         """Test zHyperlink Port performance function."""

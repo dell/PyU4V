@@ -32,7 +32,8 @@ class PerformanceData(object):
             'PortGroup', 'RDFA', 'RDFDirector', 'RDFEmulation', 'RDFPort',
             'RDFS', 'SDNASFileSystem', 'SDNASInterface', 'SDNASNode',
             'SDNASServer', 'SRP', 'StorageContainer', 'StorageGroup',
-            'StorageResource', 'ThinPool', 'cloudprovider', 'zHyperLinkPort']}
+            'StorageResource', 'ThinPool', 'cloudprovider',
+            'Volume', 'zHyperLinkPort']}
 
     perf_metrics = {
         'metricName': [

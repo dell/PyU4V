@@ -1,10 +1,14 @@
 PyU4V Change Log
 ================
 
+Version 10.0.0.17
+====================================
+performance.py
+added get_volume_stats - ability to get performance stats from volume level
+with PyU4V
+
 Version 10.0.0.0 - released 10/19/2022
 ====================================
-
-
 
 Added Functionality 10.0
 ------------------------
