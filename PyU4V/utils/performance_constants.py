@@ -213,6 +213,7 @@ SYSTEM_ID = 'systemId'
 TIMES = 'times'
 TIMESTAMP = 'timestamp'
 THIN_POOL = 'ThinPool'
+VOLUME = 'Volume'
 ZHYPER_LINK_PORT = 'zHyperLinkPort'
 ZHYPER_LINK_PORT_INFO = 'ZHyperLinkPortInfoType'
 
@@ -248,4 +249,4 @@ ENDPOINT_ID_METRICS = 'endpointId'
 
 NEW_CATEGORIES = [SDNAS_FS, SDNAS_INTERFACE,
                   SDNAS_NODE, SDNAS_SERVER,
-                  EM_DIR, ENDPOINT]
+                  EM_DIR, ENDPOINT, VOLUME]
