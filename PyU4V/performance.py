@@ -2471,7 +2471,7 @@ class PerformanceFunctions(object):
 
             }
         else:
-            if type(storage_group_list)==list:
+            if type(storage_group_list) == list:
                 storage_group_list = ",".join(storage_group_list)
             request_body = {
                 "systemId": array_id,

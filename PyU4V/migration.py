@@ -131,7 +131,7 @@ class MigrationFunctions(object):
             category=MIGRATION,
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
             resource_type=STORAGEGROUP)
-        return response.get('migratingName') if include_migrations else(
+        return response.get('migratingName') if include_migrations else (
             response.get('name'))
 
     def get_storage_groups(self):

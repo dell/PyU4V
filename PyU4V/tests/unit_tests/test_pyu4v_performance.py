@@ -1579,6 +1579,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.THIN_POOL))
+
     def test_get_volume_stats(self):
         """Test get_thin_pool_stats."""
         response = self.perf.get_volume_stats(

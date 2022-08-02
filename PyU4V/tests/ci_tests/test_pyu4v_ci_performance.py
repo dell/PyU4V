@@ -21,7 +21,6 @@ from PyU4V.tests.unit_tests import pyu4v_performance_data as pd
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
 from PyU4V.utils import performance_constants as pc
-from PyU4V.provisioning import *
 
 
 class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
@@ -899,7 +898,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         results = self.perf.get_volume_stats(
             start_time=start_time, end_time=end_time,
             volume_range_start='00123',
-            volume_range_end='00123',data_format='Average')
+            volume_range_end='00123', data_format='Average')
         self.assertIn('result', results)
 
     def test_get_volume_stats_storage_group_list(self):
