@@ -1580,6 +1580,14 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.THIN_POOL))
 
+    def test_get_volume_stats(self):
+        """Test get_thin_pool_stats."""
+        response = self.perf.get_volume_stats(
+            volume_range_start='00123', volume_range_end='00123',
+            start_time=self.time_now, end_time=self.time_now,
+            data_format='Average')
+        self.assertIsInstance(response, dict)
+
     def test_get_zhyperlink_port_keys(self):
         """Test get_zhyperlink_port_keys."""
         response = self.perf.get_zhyperlink_port_keys()

@@ -25,7 +25,7 @@ queries to validate the successful connection.
 .. code-block:: python
 
     conn.common.get_unisphere_version()
-    ('V9.2.0.0', '92')
+    ('V10.0.0.0', '100')
     conn.common.get_array_list()
     ["000197900123", "000197900124", "000197900125", "000197900126"]
 

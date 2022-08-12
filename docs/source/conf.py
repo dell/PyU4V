@@ -24,9 +24,9 @@ copyright = '2021 Dell Inc. or its subsidiaries.'
 author = 'Dell'
 
 # The short X.Y version.
-version = u'9.2'
+version = u'10.0'
 # The full version, including alpha/beta/rc tags
-release = '9.2.1.6'
+release = '10.0.0.17'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

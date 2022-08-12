@@ -2432,6 +2432,56 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    def get_volume_stats(
+            self, array_id=None, volume_range_start=None,
+            volume_range_end=None, storage_group_list=None,
+            metrics=None, start_time=None, end_time=None, recency=None,
+            data_format=None):
+        """List Performance data for volume level statistics.
+
+        Note: This function can gather statistics for up to 10,000 volumes
+        or 100 Storage groups per call, time range can not exceed 1 hour/60
+        minutes .
+
+        :param volume_range_start: 5 digit device id of first device in range
+                                   -- str
+        :param volume_range_end: 5 digit device id of last device in range
+                                   -- str
+        :param storage_group_list: list of up to 100 storage groups
+                                   -- str or list
+        :param metrics: performance metrics to retrieve, if not specified
+               all available metrics will return by default-- str or list
+        :param array_id: array id -- str
+        :param data_format: response data format 'Average' or 'Maximum' -- str
+        :param start_time: timestamp in milliseconds since epoch -- str
+        :param end_time: timestamp in milliseconds since epoch -- str
+        :param recency: check recency of timestamp in minutes -- int
+        :returns: performance metrics -- dict
+        """
+        array_id = self.array_id if not array_id else array_id
+        if not metrics:
+
+            metrics = (self.get_performance_metrics_list(
+                category=pc.VOLUME, kpi_only=False))
+        if volume_range_start and volume_range_end:
+            request_body = {
+                "systemId": array_id,
+                "volumeStartRange": volume_range_start,
+                "volumeEndRange": volume_range_end,
+
+            }
+        else:
+            if type(storage_group_list) == list:
+                storage_group_list = ",".join(storage_group_list)
+            request_body = {
+                "systemId": array_id,
+                "commaSeparatedStorageGroupList": storage_group_list}
+
+        return self.get_performance_stats(
+            category=pc.VOLUME, metrics=metrics,
+            data_format=data_format, request_body=request_body,
+            start_time=start_time, end_time=end_time, recency=recency)
+
     def get_zhyperlink_port_keys(self, array_id=None):
         """List zHyperLink Ports for the given array.
 
