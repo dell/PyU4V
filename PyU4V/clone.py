@@ -192,3 +192,9 @@ class CloneFunctions(object):
                         f"/{array_id}/storagegroup/"
                         f"{storage_group_id}/clone/storagegroup"),
             resource_type=None, params=query_params)
+    def modify_clone(self):
+        """
+
+        :return:
+        :rtype:
+        """
