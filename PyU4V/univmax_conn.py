@@ -18,6 +18,7 @@ import sys
 import time
 
 from PyU4V.common import CommonFunctions
+from PyU4V.clone import CloneFunctions
 from PyU4V.metro_dr import MetroDRFunctions
 from PyU4V.migration import MigrationFunctions
 from PyU4V.performance import PerformanceFunctions
@@ -113,6 +114,8 @@ class U4VConn(object):
             application_type)
         self.request = self.rest_client.rest_request
         self.common = CommonFunctions(self.rest_client)
+        self.clone = CloneFunctions(self.array_id,
+                                                  self.rest_client)
         self.provisioning = ProvisioningFunctions(self.array_id,
                                                   self.rest_client)
         self.performance = PerformanceFunctions(self.array_id,
