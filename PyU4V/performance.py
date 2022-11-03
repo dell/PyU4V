@@ -504,7 +504,7 @@ class PerformanceFunctions(object):
                 'please correct the category name before trying '
                 'again.'.format(cat=category))
 
-    def get_performance_categories_list(self, array_id=None):
+    def f(self, array_id=None):
         """Get the list of supported performance categories.
 
         :param array_id: array id -- str

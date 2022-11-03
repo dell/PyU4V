@@ -47,43 +47,44 @@ class CloneFunctions(object):
         self.modify_resource = self.common.modify_resource
         self.delete_resource = self.common.delete_resource
         self.array_id = array_id
+        self.version = constants.UNISPHERE_VERSION
 
-    def clone_target_storage_group_list(
+    def get_clone_target_storage_group_list(
             self, array_id, storage_group_id, target_storage_group=None,
             target_storage_group_volume_count=None, volume_pair_count=None,
             state=None, modified_tracks=None, src_protected_tracks=None,
             src_modified_tracks=None, background_copy=None,
             differential=None, precopy=None, vse=None):
-        """Clone target storage group list.
-        param: array_id The storage array ID -- string
-        param: storage_group_id The Storage Group ID -- string
-        param: target_storage_group Value that filters returned list to include
+        """Get Clone target storage group list.
+        :param array_id The storage array ID -- string
+        :param storage_group_id The Storage Group ID -- string
+        :param target_storage_group Value that filters returned list to include
                target storage groups equal to or like the provided
                name -- string
-        param: target_storage_group_volume_count Value that filters returned
+        :param target_storage_group_volume_count Value that filters returned
                list to include target storage groups with the specified
                number of volumes -- string
-        param: volume_pair_count Value that filters returned list to include
+        :param volume_pair_count Value that filters returned list to include
                target storage groups with the specified number of volume
                pairs -- string
-        param: state Value that filters returned list to include target storage
+        :param state Value that filters returned list to include target storage
                groups with pairs in the specified states -- array
-        param: modified_tracks Value that filters returned list to include
+        :param modified_tracks Value that filters returned list to include
                target storage groups with the specified modified
                tracks -- string
-        param: src_protected_tracks Value that filters returned list to include
+        :param src_protected_tracks Value that filters returned list to include
                target storage groups with the specified src protected tracks
                -- string
-        param: src_modified_tracks Value that filters returned list to
+        :param src_modified_tracks Value that filters returned list to
                include target storage groups with the specified src modified
                tracks -- string
-        param: background_copy Value that filters returned list to include
+        :param background_copy Value that filters returned list to include
                target storage groups with background copy flag -- boolean
-        param: differential Value that filters returned list to include target
+        :param differential Value that filters returned list to include target
                storage groups with differential flag -- boolean
-        param: precopy Value that filters returned list to include target
+        :param precopy Value that filters returned list to include target
                storage groups with the precopy flag -- boolean
-        param: vse Value that filters returned list to include target storage
+        :param vse Value that filters returned list to include target storage
                groups with the vse -- boolean
         """
         query_params = {
@@ -97,33 +98,97 @@ class CloneFunctions(object):
             'background_copy': background_copy, 'differential': differential,
             'precopy': precopy,
             'vse': vse, }
-        return api.common.get_request(
-            target_uri=f"/100/replication/symmetrix/{array_id}/storagegroup/"
+        return self.common.get_request(
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
                        f"{storage_group_id}/clone/storagegroup",
             resource_type=None, params=query_params)
 
-    def clone_Pairs_List(self, array_id, storage_group_id):
-        """Clone Pairs List.
-        param: array_id The storage array ID -- string
-        param: storage_group_id The Storage Group ID -- string
+    def get_clone_Pairs_List(self, array_id, storage_group_id):
+        """Get Clone Pairs List.
+        :param array_id The storage array ID -- string
+        :param storage_group_id The Storage Group ID -- string
         """
         query_params = {}
-        return api.common.get_request(
-            target_uri=f"/100/replication/symmetrix"
+        return self.common.get_request(
+            target_uri=f"/{self.version}/replication/symmetrix"
                         f"/{array_id}/storagegroup/{storage_group_id}"
                         f"/clone/volume",
             resource_type=None, params=query_params)
 
-    def clone_storage_group_pair_details(
+    def get_clone_storage_group_pair_details(
             self, array_id, storage_group_id, target_storage_group_id):
-        """Clone storage group pair details.
-        param: array_id The storage array ID -- string
-        param: storage_group_id The Storage Group ID -- string
-        param: target_storage_group_id The Target Storage Group ID -- string
+        """Get Clone storage group pair details.
+        :param array_id The storage array ID -- string
+        :param storage_group_id The Storage Group ID -- string
+        :param target_storage_group_id The Target Storage Group ID -- string
         """
         query_params = {}
-        return api.common.get_request(
-            target_uri=f"/100/replication/symmetrix/{array_id}/storagegroup/"
+        return self.common.get_request(
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
                        f"{storage_group_id}/clone/storagegroup/"
                        f"{target_storage_group_id}",
+            resource_type=None, params=query_params)
+    def create_clone(self, array_id, storage_group_id,
+                     target_storage_group_name, force=False, star=False,
+                     skip=False):
+        """Create Clone.
+        :param array_id: The storage array ID -- string
+        :param storage_group_id: The Storage Group ID -- string
+        :param target_storage_group_name: name of storage group to containin
+                                          clone devices -- string
+        :param force: Attempts to force the operation even though one or more 
+                      volumes may not be in the normal, expected state(s) for 
+                      the specified operation -- bool
+        :param star: Acknowledge the volumes are in an SRDF/Star
+                     configuration --bool
+        :param skip: Skips the source locks action --bool
+        
+        """
+        query_params = {}
+        payload = {
+                    "target_storage_group_name" : target_storage_group_name",
+                    "establish_terminate" : True,
+                    "consistent" : True,
+                    "force": force,
+                    "star": star,
+                    "skip": skip
+                  }
+
+        return self.common.create_resource(
+            target_uri=(f"/{self.version}/replication/symmetrix"
+                        f"/{array_id}/storagegroup/{storage_group_id}"
+                        f"/clone/storagegroup"),
+            resource_type=None, params=query_params, payload=payload)
+    def terminate_clone(self, array_id, storage_group_id,
+                        target_storage_group_name=None,force=False,
+                        symforce=False, star=False,skip=False,
+                        not_ready=False,restored=None):
+        """Create Clone.
+        :param array_id: The storage array ID -- string
+        :param storage_group_id: The Storage Group ID -- string
+        :param target_storage_group_name: name of storage group to contain
+                                          clone devices -- string
+        :param force: Attempts to force the operation even though one or more
+                      volumes may not be in the normal, expected state(s) for
+                      the specified operation -- bool
+        :param star: Acknowledge the volumes are in an SRDF/Star
+                     configuration --bool
+        :param skip: Skips the source locks action --bool
+        :param not_ready: sets clone devices to not ready
+                          after operation -- bool
+        :param restored: removes the restore flag from clone session -- bool
+        """
+        query_params = {
+                    "target_storage_group_name" : target_storage_group_name,
+                    "force": force,
+                    "star": star,
+                    "skip": skip,
+                    "symforce": symforce,
+                    "not_ready": not_ready,
+                    "restored": restored
+                  }
+        return self.common.delete_resource(
+            target_uri=(f"/{self.version}/replication/symmetrix"
+                        f"/{array_id}/storagegroup/"
+                        f"{storage_group_id}/clone/storagegroup"),
             resource_type=None, params=query_params)
