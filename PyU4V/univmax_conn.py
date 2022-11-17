@@ -56,7 +56,7 @@ class U4VConn(object):
                  u4v_version=constants.UNISPHERE_VERSION,
                  interval=5, retries=200, array_id=None,
                  application_type=app_type, remote_array=None,
-                 remote_array_2=None):
+                 remote_array_2=None, proxies=None):
         """__init__."""
         config = config_handler.set_logger_and_config(file_path)
         self.end_date = int(round(time.time() * 1000))
@@ -110,7 +110,7 @@ class U4VConn(object):
 
         self.rest_client = RestRequests(
             username, password, verify, base_url, interval, retries,
-            application_type)
+            application_type, proxies=proxies)
         self.request = self.rest_client.rest_request
         self.common = CommonFunctions(self.rest_client)
         self.provisioning = ProvisioningFunctions(self.array_id,
