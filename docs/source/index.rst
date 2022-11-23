@@ -25,11 +25,11 @@ request and response handling.
 
 .. note::
    You can get the Unisphere for PowerMax REST documentation by
-   navigating to a URL in your local instance of Unisphere for PowerMax.
-   Navigate to ``https://{ip}:{port}/univmax/restapi/docs`` where ``{ip}`` is
-   the IP address of your Unisphere server and ``{port}`` is the port it is
-   listening on. A zip file will be downloaded to your computer containing
-   complete Unisphere REST endpoint documentation.
+   navigating to https://developer.dell.com/apis/4458/ An OpenApi.json file
+   can be download from this site for use with tools like PostMan or for
+   interfacing with PyU4V custom API call mechanism.  Please refer to this
+   documentation when looking for information about query path parameters
+   for functions that accept them.
 
 Supported PyU4V Versions
 ------------------------
