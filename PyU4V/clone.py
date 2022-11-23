@@ -240,10 +240,10 @@ class CloneFunctions(object):
                 'skip': skip
             }}
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-                       f"{storage_group_id}/clone/storagegroup/"
-                       f"{target_storage_group_id}",
-            resource_type=None, payload=payload)
+            target_uri=(
+            f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
+            f"{storage_group_id}/clone/storagegroup/{target_storage_group_id}")
+            , resource_type=None, payload=payload)
 
     def split_clone(
             self, storage_group_id, target_storage_group_id, array_id=None,
@@ -316,14 +316,17 @@ class CloneFunctions(object):
             resource_type=None, payload=payload)
 
     def set_clone_copy_mode(self, storage_group_id, target_storage_group_id,
-                            array_id=None, mode, force=False, _async=False):
+                            mode, array_id=None, force=False, _async=False):
         """Set copy mode on a clone storage group.
         :param storage_group_id: The Storage Group ID -- string
         :param target_storage_group_id:The Storage Group ID of Target
                storage group -- string
-        :param array_id: The storage array ID -- string
         :param mode: set copy, no_copy or pre_copy mode on clone
                      session for storage group -- str
+        :param array_id: The storage array ID -- string
+        :param force: Attempts to force the operation even though one or more
+                      volumes may not be in the normal, expected state(s) for
+                      the specified operation -- boo
         :param _async: if call should be async -- bool
         """
         modes = {'COPY': 'copy', 'NOCOPY': 'no_copy', 'NO_COPY': 'no_copy',
