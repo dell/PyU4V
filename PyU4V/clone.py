@@ -50,14 +50,14 @@ class CloneFunctions(object):
         self.version = constants.UNISPHERE_VERSION
 
     def get_clone_target_storage_group_list(
-            self, array_id, storage_group_id, target_storage_group=None,
+            self, storage_group_id, array_id=None, target_storage_group=None,
             target_storage_group_volume_count=None, volume_pair_count=None,
             state=None, modified_tracks=None, src_protected_tracks=None,
             src_modified_tracks=None, background_copy=None,
             differential=None, precopy=None, vse=None):
         """Get Clone target storage group list.
-        :param array_id The storage array ID -- string
         :param storage_group_id The Storage Group ID -- string
+        :param array_id The storage array ID -- string
         :param target_storage_group Value that filters returned list to include
                target storage groups equal to or like the provided
                name -- string
@@ -86,6 +86,7 @@ class CloneFunctions(object):
                storage groups with the precopy flag -- boolean
         :param vse Value that filters returned list to include target storage
                groups with the vse -- boolean
+        :returns a list of target storage groups -- list
         """
         query_params = {
             'target_storage_group': target_storage_group,
@@ -98,35 +99,43 @@ class CloneFunctions(object):
             'background_copy': background_copy, 'differential': differential,
             'precopy': precopy,
             'vse': vse, }
-        return self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-                       f"{storage_group_id}/clone/storagegroup",
+        array_id = array_id if array_id else self.array_id
+        response = self.common.get_request(
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
+                       f"/storagegroup/{storage_group_id}/clone/storagegroup",
             resource_type=None, params=query_params)
-
-    def get_clone_pairs_List(self, array_id, storage_group_id):
+        if response and response.get('clone_target_sg_names'):
+            target_sg_names_list = response.get('clone_target_sg_names')
+        else:
+            target_sg_names_list = []
+        return target_sg_names_list
+    def get_clone_pairs_list(self,  storage_group_id, array_id=None):
         """Get Clone Pairs List.
-        :param array_id The storage array ID -- string
-        :param storage_group_id The Storage Group ID -- string
+        :param: array_id The storage array ID -- string
+        :param: storage_group_id The Storage Group ID -- string
+        :returns: count and list of clone pairs -- dict
         """
-        query_params = {}
+        array_id = array_id if array_id else self.array_id
         return self.common.get_request(
             target_uri=f"/{self.version}/replication/symmetrix"
                        f"/{array_id}/storagegroup/{storage_group_id}"
                        f"/clone/volume",
-            resource_type=None, params=query_params)
+            resource_type=None)
 
     def get_clone_storage_group_pair_details(
-            self, storage_group_id, array_id=None):
+            self, storage_group_id, target_storage_group_id, array_id=None):
         """Get Clone storage group pair details.
-        :param array_id The storage array ID -- string
+
         :param storage_group_id The Storage Group ID -- string
         :param target_storage_group_id The Target Storage Group ID -- string
+        :param array_id The storage array ID -- string
+
         """
         query_params = {}
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-                       f"{storage_group_id}/clone/storagegroup/"
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
+                       f"/storagegroup/{storage_group_id}/clone/storagegroup/"
                        f"{target_storage_group_id}",
             resource_type=None, params=query_params)
     def create_clone(
@@ -166,8 +175,9 @@ class CloneFunctions(object):
            target_uri=f"/{self.version}/replication/symmetrix"
                       f"/{array_id}/storagegroup/{storage_group_id}"
                       f"/clone/storagegroup", payload=payload)
-    def terminate_clone(self, storage_group_id, array_id=None,
-                        target_storage_group_id=None,force=False,
+    def terminate_clone(self, storage_group_id,
+                        target_storage_group_id=None, array_id=None,
+                        force=False,
                         symforce=False, star=False, skip=False,
                         not_ready=False, restored=None):
         """Terminate Clone Session.
@@ -276,8 +286,8 @@ class CloneFunctions(object):
                 'skip': skip
             }}
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-                       f"{storage_group_id}/clone/storagegroup/"
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
+                       f"/storagegroup/{storage_group_id}/clone/storagegroup/"
                        f"{target_storage_group_id}",
             resource_type=None, payload=payload)
 
@@ -310,44 +320,7 @@ class CloneFunctions(object):
                 'star': star,
             }}
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-                       f"{storage_group_id}/clone/storagegroup/"
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
+                       f"/storagegroup/{storage_group_id}/clone/storagegroup/"
                        f"{target_storage_group_id}",
             resource_type=None, payload=payload)
-
-    def set_clone_copy_mode(self, storage_group_id, target_storage_group_id,
-                            mode, array_id=None, force=False, _async=False):
-        """Set copy mode on a clone storage group.
-        :param storage_group_id: The Storage Group ID -- string
-        :param target_storage_group_id:The Storage Group ID of Target
-               storage group -- string
-        :param mode: set copy, no_copy or pre_copy mode on clone
-                     session for storage group -- str
-        :param array_id: The storage array ID -- string
-        :param force: Attempts to force the operation even though one or more
-                      volumes may not be in the normal, expected state(s) for
-                      the specified operation -- boo
-        :param _async: if call should be async -- bool
-        """
-        modes = {'COPY': 'copy', 'NOCOPY': 'no_copy', 'NO_COPY': 'no_copy',
-                 'PRECOPY': 'pre_copy', 'PRE_COPY':'pre_copy'}
-        try:
-            mode = modes.get(mode.upper())
-        except:
-            print("please supply a valid copy mode, Valid Values are Copy, "
-                  "no_copy, or pre_copy, mode value is not case sensitive.")
-        array_id = array_id if array_id else self.array_id
-        payload = {
-            "action": "SetMode",
-            "set_mode": {
-                mode: 'true',
-                'force': force}}
-        if _async:
-            payload.update(ASYNC_UPDATE)
-
-        return self.common.modify_resource(
-            target_uri=(f"/{self.version}/replication/symmetrix"
-                        f"/{array_id}/storagegroup/"
-                        f"{storage_group_id}/clone/storagegroup/"
-                        f"{target_storage_group_id}"),
-            resource_type=None)

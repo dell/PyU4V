@@ -422,7 +422,6 @@ class CommonFunctions(object):
         target_uri = self._build_uri(**kwargs)
         if kwargs.get('target_uri'):
             target_uri = (kwargs.get('target_uri'))
-            print(target_uri)
         message, status_code = self.request(
             target_uri, DELETE, request_object=kwargs.get('payload'),
             params=kwargs.get('params'))
