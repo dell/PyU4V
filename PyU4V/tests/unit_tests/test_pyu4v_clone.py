@@ -53,7 +53,7 @@ class PyU4VcloneTest(testtools.TestCase):
     @mock.patch.object(common.CommonFunctions, 'get_request',
                        return_value=pcd.CommonData.clone_target_sg_list)
     def test_get_clone_target_storage_group_list(self, patch_get):
-        """test_get_clone_target_storage_group_list. """
+        """Test get_clone_target_storage_group_list. """
         target_sg_list = self.clone.get_clone_target_storage_group_list(
             storage_group_id="PYU4V")
         self.assertEqual(
@@ -63,7 +63,7 @@ class PyU4VcloneTest(testtools.TestCase):
     @mock.patch.object(common.CommonFunctions, 'get_request',
                        return_value=pcd.CommonData.clone_pairs_list)
     def test_get_clone_pairs_list(self, patch_get):
-        """test_get_clone_pairs_list. """
+        """Test get_clone_pairs_list. """
         clone_pairs_list = self.clone.get_clone_pairs_list(
             storage_group_id="PYU4V_SG")
         self.assertEqual(
@@ -71,12 +71,14 @@ class PyU4VcloneTest(testtools.TestCase):
     @mock.patch.object(common.CommonFunctions, 'get_request',
                        return_value=pcd.CommonData.clone_target_get)
     def test_get_clone_storage_group_pair_details(self, patch_get):
+        """Test get_clone_storage_group_pair_details. """
         clone_pair_details = self.clone.get_clone_storage_group_pair_details(
             storage_group_id="PyU4V_SG", target_storage_group_id="PYU4v_TGT_SG"
         )
         self.assertEqual(pcd.CommonData.clone_target_get, clone_pair_details)
 
     def test_create_clone(self):
+        """Test Create Clone."""
         with mock.patch.object(
                 self.common, 'create_resource') as mock_create:
             self.clone.create_clone(
@@ -85,6 +87,7 @@ class PyU4VcloneTest(testtools.TestCase):
             mock_create.assert_called_once()
 
     def test_terminate_clone(self):
+        """Test Terminate Clone."""
         with mock.patch.object(
                 self.common, 'delete_resource') as mock_delete:
             self.clone.terminate_clone(storage_group_id="PyU4V_SG",
@@ -92,6 +95,7 @@ class PyU4VcloneTest(testtools.TestCase):
             mock_delete.assert_called_once()
 
     def test_establish_clone(self):
+        """Test Establish Clone."""
         with mock.patch.object(
                 self.common, 'modify_resource') as mock_modify:
             self.clone.establish_clone(
@@ -99,6 +103,7 @@ class PyU4VcloneTest(testtools.TestCase):
                 target_storage_group_id="PyU4V_TGT_SG", _async=True)
             mock_modify.assert_called_once()
     def test_restore_clone(self):
+        """Test Restore Clone."""
         with mock.patch.object(
                 self.common, 'modify_resource') as mock_modify:
             self.clone.restore_clone(
@@ -115,6 +120,7 @@ class PyU4VcloneTest(testtools.TestCase):
                     'executionOption': 'ASYNCHRONOUS'})
 
     def test_split_clone(self):
+        """Test Split Clone."""
         with mock.patch.object(
                 self.common, 'modify_resource') as mock_modify:
             self.clone.split_clone(
