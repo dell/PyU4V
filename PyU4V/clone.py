@@ -237,8 +237,6 @@ class CloneFunctions(object):
         :param _async: if call should be async -- bool
         """
         array_id = array_id if array_id else self.array_id
-        if _async:
-            payload.update(ASYNC_UPDATE)
         payload ={
             'action': 'Establish',
             'establish': {
@@ -249,6 +247,8 @@ class CloneFunctions(object):
                 'star': star,
                 'skip': skip
             }}
+        if _async:
+            payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=(
             f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
@@ -272,12 +272,7 @@ class CloneFunctions(object):
         :param array_id: The storage array ID -- string
         :param _async: if call should be async -- bool
         """
-        if _async:
-            payload.update(ASYNC_UPDATE)
-
         array_id = array_id if array_id else self.array_id
-        if _async:
-            payload.update(ASYNC_UPDATE)
         payload = {
             'action': 'Split',
             'split': {
@@ -285,6 +280,8 @@ class CloneFunctions(object):
                 'star': star,
                 'skip': skip
             }}
+        if _async:
+            payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
                        f"/storagegroup/{storage_group_id}/clone/storagegroup/"
@@ -307,18 +304,16 @@ class CloneFunctions(object):
                      configuration -- bool
         :param _async: if call should be async -- bool
         """
-        if _async:
-            payload.update(ASYNC_UPDATE)
-
         array_id = array_id if array_id else self.array_id
-        if _async:
-            payload.update(ASYNC_UPDATE)
         payload = {
             'action': 'Restore',
             'restore': {
                 'force': force,
                 'star': star,
             }}
+        if _async:
+            payload.update(ASYNC_UPDATE)
+
         return self.common.modify_resource(
             target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
                        f"/storagegroup/{storage_group_id}/clone/storagegroup/"

@@ -893,3 +893,43 @@ class CommonData(object):
              'compliance': 'GREEN'}
         ]
     }
+# Clone Functions
+
+    clone_list = {
+        'number_of_clone_target_sgs': 2,
+        'clone_target_sg_names': [
+            'sg_1',
+            'sg_2'
+        ]
+    }
+
+    clone_target_get = {
+        'source_volume_id': '0017C',
+        'wwn': '60000970000197900256533030313743',
+        'state': 'Created',
+        'capacity_gb': 8,
+        'protected_percent': 0
+    }
+
+    clone_target_sg_list = {
+        'number_of_clone_target_sgs': 1,
+        'clone_target_sg_names': [
+            'clonetgt'
+        ]
+    }
+
+    clone_pairs_list = {
+        'clone_count': 2,
+        'clones': [
+            {
+                'source_volume_name': '00332',
+                'target_volume_name': '00334',
+                'state': 'Ready'
+            },
+            {
+                'source_volume_name': '00365',
+                'target_volume_name': '00646',
+                'state': 'Ready'
+            }
+        ]
+    }
