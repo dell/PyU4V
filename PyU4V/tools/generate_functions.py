@@ -36,7 +36,7 @@ def generate_get_functions(category, api_connection, api_version):
                     for parameter in uri_parameters:
                         param_name_list.append(parameter.get('name'))
                         param_list.append(
-                            f"param: {parameter.get('name')} "
+                            f"param {parameter.get('name')}: "
                             f"{parameter.get('description')}"
                             f" -- {parameter.get('schema').get('type')}")
                         if parameter.get('in') == 'query':
@@ -58,13 +58,17 @@ def generate_get_functions(category, api_connection, api_version):
                     function_definition = function_definition + (
                         f", {query_params_list_string}):")
                 else:
-                    function_definition = function_definition + "):"
+                    function_definition = function_definition + \
+                                          ",array_id=None ):"
                 print(function_definition)
                 print(f"    \"\"\"{function_description}.")
                 print()
                 for param in param_list:
-                    print(f"    {param}")
+                    print(f"    :{param}")
+                print("    :param array_id: The storage array ID -- string")
                 print("    \"\"\"")
+                print(f"    array_id = array_id if array_id else "
+                      f"{api_connection}.array_id")
                 print(f'    query_params = {query_params}')
                 uri_link = uri_link.replace(api_version, "{self.version}")
                 base_return = (
