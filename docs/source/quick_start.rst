@@ -85,12 +85,15 @@ If there is any functionality that is provided by the Unisphere REST API that
 is not yet implemented in PyU4V, it is possible to create a custom function
 which use the above functions to make use of that functionality. For
 information on the Unisphere REST API please consult its related documentation.
-You can get the Unisphere for PowerMax REST documentation by navigating to a
-URL in your local instance of Unisphere for PowerMax. Navigate to
-``https://{ip}:{port}/univmax/restapi/docs`` where ``{ip}`` is the IP address
-of your Unisphere server and ``{port}`` is the port it is listening on. A zip
-file will be downloaded to your computer containing complete Unisphere REST
-endpoint documentation.
+
+The Unisphere for PowerMax REST documentation is accesible directly from the
+help menu in Unipshere or you can Navigate to
+``https://developer.dell.com/apis/4458/versions/10.0/``
+
+.. literalinclude:: code/customcall.py
+    :linenos:
+    :language: python
+    :lines: 14-35
 
 To find out more information on the any PyU4V calls refer to the supporting
 function documentation in the :doc:`api` , there are also programmers
@@ -100,4 +103,4 @@ functions using PyU4V.
 
 .. Links
 
-.. _link: https://github.com/MichaelMcAleer/PyU4V/blob/master/ChangeLog
+.. _link: https://github.com/dell/PyU4V/blob/master/ChangeLog
