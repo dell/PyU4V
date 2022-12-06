@@ -177,6 +177,7 @@ class CloneFunctions(object):
                 f"/{self.version}/replication/symmetrix"
                 f"/{array_id}/storagegroup/{storage_group_id}"
                 f"/clone/storagegroup"), payload=payload)
+
     def terminate_clone(self, storage_group_id,
                         target_storage_group_id=None, array_id=None,
                         force=False,
