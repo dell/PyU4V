@@ -114,8 +114,7 @@ class U4VConn(object):
             application_type, proxies=proxies)
         self.request = self.rest_client.rest_request
         self.common = CommonFunctions(self.rest_client)
-        self.clone = CloneFunctions(self.array_id,
-                                                  self.rest_client)
+        self.clone = CloneFunctions(self.array_id,self.rest_client)
         self.provisioning = ProvisioningFunctions(self.array_id,
                                                   self.rest_client)
         self.performance = PerformanceFunctions(self.array_id,
