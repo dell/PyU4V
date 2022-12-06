@@ -66,9 +66,9 @@ class PyU4VcloneTest(testtools.TestCase):
             storage_group_id="PYU4V_SG")
         self.assertEqual(
             pcd.CommonData.clone_pairs_list, clone_pairs_list)
+
     @mock.patch.object(common.CommonFunctions, 'get_request',
                        return_value=pcd.CommonData.clone_target_get)
-
     def test_get_clone_storage_group_pair_details(self, patch_get):
         """Test get_clone_storage_group_pair_details. """
         clone_pair_details = self.clone.get_clone_storage_group_pair_details(

@@ -16,9 +16,9 @@ import testtools
 
 from PyU4V.tests.ci_tests import base
 
+
 class CITestClone(base.TestBaseTestCase, testtools.TestCase):
     """Test clone Functions."""
-
 
     def setUp(self):
         """SetUp."""
@@ -56,9 +56,9 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
                 target_storage_group_id=target_storage_group_name))
         self.assertEquals(storage_group_name, storage_group_pairs_details.get(
             'storage_group'))
-        self.assertEquals(target_storage_group_name,
-                     storage_group_pairs_details.get(
-                         'target_storage_group'))
+        self.assertEquals(
+            target_storage_group_name, storage_group_pairs_details.get(
+                'target_storage_group'))
 
     def test_create_clone(self):
         storage_group_name, target_storage_group_name = self.create_clone()
@@ -66,7 +66,6 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
             self.clone.get_clone_pairs_list(
                 storage_group_id=storage_group_name))
         self.assertEqual(1, clone_pairs_list.get('clone_count'))
-
 
     def test_terminate_clone(self):
         storage_group_name, target_storage_group_name = self.create_clone()

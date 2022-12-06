@@ -161,7 +161,7 @@ class CloneFunctions(object):
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
         :param skip: Skips the source locks action -- bool
-        
+
         """
         array_id = array_id if array_id else self.array_id
         payload = {
@@ -173,9 +173,10 @@ class CloneFunctions(object):
             "skip": skip
         }
         return self.common.create_resource(
-           target_uri=f"/{self.version}/replication/symmetrix"
-                      f"/{array_id}/storagegroup/{storage_group_id}"
-                      f"/clone/storagegroup", payload=payload)
+            target_uri=(
+                f"/{self.version}/replication/symmetrix"
+                f"/{array_id}/storagegroup/{storage_group_id}"
+                f"/clone/storagegroup"), payload=payload)
     def terminate_clone(self, storage_group_id,
                         target_storage_group_id=None, array_id=None,
                         force=False,
@@ -227,11 +228,11 @@ class CloneFunctions(object):
         :param array_id: The storage array ID -- string
         :param consistent: creates the clone crash consistent using ECA
                            technology -- bool
-        :param not_ready: sets target storage group to not ready following 
+        :param not_ready: sets target storage group to not ready following
                           establish operation -- bool
         :param vse: uses VSE close -- bool
-        :param force: Attempts to force the operation even though one or more 
-                      volumes may not be in the normal, expected state(s) for 
+        :param force: Attempts to force the operation even though one or more
+                      volumes may not be in the normal, expected state(s) for
                       the specified operation -- bool
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
