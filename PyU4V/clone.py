@@ -255,8 +255,8 @@ class CloneFunctions(object):
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(target_uri=(
             f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-            f"{storage_group_id}/clone/storagegroup/{target_storage_group_id}")
-            , resource_type=None, payload=payload)
+            f"{storage_group_id}/clone/storagegroup/"
+            f"{target_storage_group_id}"), resource_type=None, payload=payload)
 
     def split_clone(
             self, storage_group_id, target_storage_group_id, array_id=None,
