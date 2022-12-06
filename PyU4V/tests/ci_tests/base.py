@@ -915,10 +915,10 @@ class TestBaseTestCase(testtools.TestCase):
 
     def cleanup_clone(self, storage_group_name, target_storage_group_name):
         self.clone.terminate_clone(
-                        storage_group_name, target_storage_group_name)
-
+            storage_group_name, target_storage_group_name)
         self.provision.delete_storage_group(storage_group_name)
         self.provision.delete_storage_group(target_storage_group_name)
+
     @staticmethod
     def cleanup_pyu4v_zip_files_in_directory(directory):
         """Cleanup PyU4V zip archives in a given directory.

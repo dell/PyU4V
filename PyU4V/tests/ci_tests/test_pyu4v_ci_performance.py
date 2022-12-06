@@ -214,7 +214,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(start, str)
         self.assertTrue(int(start) < int(end))
 
-
     def test_format_time_input_no_start_or_end(self):
         """Test format_time_input no end time provided."""
         start, end = self.perf.format_time_input(category=pc.ARRAY)

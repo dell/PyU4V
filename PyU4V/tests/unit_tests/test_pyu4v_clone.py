@@ -18,12 +18,10 @@ import testtools
 from unittest import mock
 
 from PyU4V import common
-from PyU4V import clone
 from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
-from PyU4V.utils import exception
 
 
 class PyU4VcloneTest(testtools.TestCase):
@@ -68,6 +66,7 @@ class PyU4VcloneTest(testtools.TestCase):
             storage_group_id="PYU4V_SG")
         self.assertEqual(
             pcd.CommonData.clone_pairs_list, clone_pairs_list)
+
     @mock.patch.object(common.CommonFunctions, 'get_request',
                        return_value=pcd.CommonData.clone_target_get)
     def test_get_clone_storage_group_pair_details(self, patch_get):
@@ -91,7 +90,7 @@ class PyU4VcloneTest(testtools.TestCase):
         with mock.patch.object(
                 self.common, 'delete_resource') as mock_delete:
             self.clone.terminate_clone(storage_group_id="PyU4V_SG",
-                                   target_storage_group_id="PYU4V_SG_SG")
+                                       target_storage_group_id="PYU4V_SG_SG")
             mock_delete.assert_called_once()
 
     def test_establish_clone(self):
@@ -102,6 +101,7 @@ class PyU4VcloneTest(testtools.TestCase):
                 storage_group_id="PyU4V_SG",
                 target_storage_group_id="PyU4V_TGT_SG", _async=True)
             mock_modify.assert_called_once()
+
     def test_restore_clone(self):
         """Test Restore Clone."""
         with mock.patch.object(
@@ -132,7 +132,7 @@ class PyU4VcloneTest(testtools.TestCase):
                     'PyU4V_SG/clone/storagegroup/PyU4V_TGT_SG'),
                 resource_type=None,
                 payload={'action': 'Split',
-                         'split': {'force':
-                                       False, 'star': False,
+                         'split': {'force': False,
+                                   'star': False,
                                    'skip': False},
                          'executionOption': 'ASYNCHRONOUS'})

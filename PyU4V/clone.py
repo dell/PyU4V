@@ -18,7 +18,6 @@ import logging
 from PyU4V.common import CommonFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.utils import constants
-from PyU4V.utils import exception
 
 LOG = logging.getLogger(__name__)
 
@@ -109,7 +108,8 @@ class CloneFunctions(object):
         else:
             target_sg_names_list = []
         return target_sg_names_list
-    def get_clone_pairs_list(self,  storage_group_id, array_id=None):
+
+    def get_clone_pairs_list(self, storage_group_id, array_id=None):
         """Get Clone Pairs List.
         :param: array_id The storage array ID -- string
         :param: storage_group_id The Storage Group ID -- string
@@ -138,6 +138,7 @@ class CloneFunctions(object):
                        f"/storagegroup/{storage_group_id}/clone/storagegroup/"
                        f"{target_storage_group_id}",
             resource_type=None, params=query_params)
+
     def create_clone(
             self, storage_group_id, target_storage_group_id,
             consistent=True, establish_terminate=False,
@@ -153,28 +154,30 @@ class CloneFunctions(object):
                                     restore purposes -- bool
         :param array_id: The storage array ID -- string
         :param target_storage_group_id: name of storage group to contain
-                                          clone devices -- string
-        :param force: Attempts to force the operation even though one or more 
-                      volumes may not be in the normal, expected state(s) for 
+                                        clone devices -- string
+        :param force: Attempts to force the operation even though one or more
+                      volumes may not be in the normal, expected state(s) for
                       the specified operation -- bool
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
         :param skip: Skips the source locks action -- bool
-        
+
         """
         array_id = array_id if array_id else self.array_id
         payload = {
-                    "target_storage_group_name": target_storage_group_id,
-                    "establish_terminate": establish_terminate,
-                    "consistent": consistent,
-                    "force": force,
-                    "star": star,
-                    "skip": skip
-                  }
+            "target_storage_group_name": target_storage_group_id,
+            "establish_terminate": establish_terminate,
+            "consistent": consistent,
+            "force": force,
+            "star": star,
+            "skip": skip
+        }
         return self.common.create_resource(
-           target_uri=f"/{self.version}/replication/symmetrix"
-                      f"/{array_id}/storagegroup/{storage_group_id}"
-                      f"/clone/storagegroup", payload=payload)
+            target_uri=(
+                f"/{self.version}/replication/symmetrix"
+                f"/{array_id}/storagegroup/{storage_group_id}"
+                f"/clone/storagegroup"), payload=payload)
+
     def terminate_clone(self, storage_group_id,
                         target_storage_group_id=None, array_id=None,
                         force=False,
@@ -199,19 +202,20 @@ class CloneFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         params = {
-                    "target_storage_group": target_storage_group_id,
-                    "force": force,
-                    "star": star,
-                    "skip": skip,
-                    "symforce": symforce,
-                    "not_ready": not_ready,
-                    "restored": restored
-                  }
+            "target_storage_group": target_storage_group_id,
+            "force": force,
+            "star": star,
+            "skip": skip,
+            "symforce": symforce,
+            "not_ready": not_ready,
+            "restored": restored
+        }
         return self.common.delete_resource(
             target_uri=(f"/{self.version}/replication/symmetrix"
                         f"/{array_id}/storagegroup/{storage_group_id}"
                         f"/clone/storagegroup"),
             params=params)
+
     def establish_clone(self, storage_group_id,
                         target_storage_group_id, array_id=None,
                         consistent=True,
@@ -225,11 +229,11 @@ class CloneFunctions(object):
         :param array_id: The storage array ID -- string
         :param consistent: creates the clone crash consistent using ECA
                            technology -- bool
-        :param not_ready: sets target storage group to not ready following 
+        :param not_ready: sets target storage group to not ready following
                           establish operation -- bool
         :param vse: uses VSE close -- bool
-        :param force: Attempts to force the operation even though one or more 
-                      volumes may not be in the normal, expected state(s) for 
+        :param force: Attempts to force the operation even though one or more
+                      volumes may not be in the normal, expected state(s) for
                       the specified operation -- bool
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
@@ -237,7 +241,7 @@ class CloneFunctions(object):
         :param _async: if call should be async -- bool
         """
         array_id = array_id if array_id else self.array_id
-        payload ={
+        payload = {
             'action': 'Establish',
             'establish': {
                 'consistent': consistent,
@@ -249,11 +253,10 @@ class CloneFunctions(object):
             }}
         if _async:
             payload.update(ASYNC_UPDATE)
-        return self.common.modify_resource(
-            target_uri=(
+        return self.common.modify_resource(target_uri=(
             f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-            f"{storage_group_id}/clone/storagegroup/{target_storage_group_id}")
-            , resource_type=None, payload=payload)
+            f"{storage_group_id}/clone/storagegroup/"
+            f"{target_storage_group_id}"), resource_type=None, payload=payload)
 
     def split_clone(
             self, storage_group_id, target_storage_group_id, array_id=None,
@@ -266,8 +269,8 @@ class CloneFunctions(object):
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
         :param skip: Skips the source locks action -- bool
-        :param force: Attempts to force the operation even though one or more 
-                      volumes may not be in the normal, expected state(s) for 
+        :param force: Attempts to force the operation even though one or more
+                      volumes may not be in the normal, expected state(s) for
                       the specified operation -- bool
         :param array_id: The storage array ID -- string
         :param _async: if call should be async -- bool

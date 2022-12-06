@@ -13,9 +13,9 @@
 # limitations under the License.
 """test_pyu4v_ci_clone.py.py."""
 import testtools
-import time
 
 from PyU4V.tests.ci_tests import base
+
 
 class CITestClone(base.TestBaseTestCase, testtools.TestCase):
     """Test clone Functions."""
@@ -35,8 +35,7 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
                 storage_group_id=storage_group_name
             ))
         self.assertEquals(target_storage_group_name,
-                      target_storage_group_list[0])
-
+                          target_storage_group_list[0])
 
     def test_get_clone_pairs_list(self):
         """test_get_clone_pairs_list. """
@@ -49,7 +48,6 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('clones', clone_pairs_list)
         self.assertEqual(1, clone_pairs_list.get('clone_count'))
 
-
     def test_get_clone_storage_group_pair_details(self):
         storage_group_name, target_storage_group_name = self.create_clone()
         storage_group_pairs_details = (
@@ -58,9 +56,9 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
                 target_storage_group_id=target_storage_group_name))
         self.assertEquals(storage_group_name, storage_group_pairs_details.get(
             'storage_group'))
-        self.assertEquals(target_storage_group_name,
-                     storage_group_pairs_details.get(
-            'target_storage_group'))
+        self.assertEquals(
+            target_storage_group_name, storage_group_pairs_details.get(
+                'target_storage_group'))
 
     def test_create_clone(self):
         storage_group_name, target_storage_group_name = self.create_clone()
@@ -68,7 +66,6 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
             self.clone.get_clone_pairs_list(
                 storage_group_id=storage_group_name))
         self.assertEqual(1, clone_pairs_list.get('clone_count'))
-
 
     def test_terminate_clone(self):
         storage_group_name, target_storage_group_name = self.create_clone()
@@ -97,7 +94,6 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
             self.clone.get_clone_storage_group_pair_details(
                 storage_group_id=storage_group_name,
                 target_storage_group_id=target_storage_group_name))
-        print(pair_details)
         self.assertEquals('Copied', pair_details.get('state')[0])
 
     def test_restore_and_split_clone(self):
@@ -110,7 +106,6 @@ class CITestClone(base.TestBaseTestCase, testtools.TestCase):
             self.clone.get_clone_storage_group_pair_details(
                 storage_group_id=storage_group_name,
                 target_storage_group_id=target_storage_group_name))
-        print(pair_details)
         self.assertEquals('Restored', pair_details.get('state')[0])
         self.clone.split_clone(
             storage_group_id=storage_group_name,

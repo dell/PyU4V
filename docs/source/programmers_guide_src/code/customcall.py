@@ -6,7 +6,10 @@ conn = PyU4V.U4VConn()
 # Create a Clone Copy of a Stoage group, The Target Storage Group will be
 # created with all required volumes for the clone copy if it does not exist
 # already.
-def my_custom_api_Call(storage_group_id, target_storage_group_id,
+
+
+def my_custom_api_Call(
+        storage_group_id, target_storage_group_id,
         consistent=True, establish_terminate=False,
         array_id=None, force=False, star=False, skip=False):
     """Create Clone.
@@ -42,6 +45,7 @@ def my_custom_api_Call(storage_group_id, target_storage_group_id,
         target_uri=f"/100/replication/symmetrix"
                    f"/{array_id}/storagegroup/{storage_group_id}"
                    f"/clone/storagegroup", payload=payload)
+
 
 # Close the session
 conn.close_session()
