@@ -17,6 +17,5 @@ test.
    programmers_guide_src/basic_operations
    programmers_guide_src/provisioning
    programmers_guide_src/replication
-   programmers_guide_src/clone
    programmers_guide_src/performance
    programmers_guide_src/system

@@ -42,7 +42,6 @@ class TestBaseTestCase(testtools.TestCase):
         self.metro_dr = self.conn.metro_dr
         self.migration = self.conn.migration
         self.perf = self.conn.performance
-        self.clone = self.conn.clone
 
     def setup_credentials(self):
         """Set REST credentials."""
@@ -899,26 +898,6 @@ class TestBaseTestCase(testtools.TestCase):
         #         self.metro_dr.get_metrodr_environment_details(
         #             environment_name=environment_name))
 
-    def create_clone(self):
-        storage_group_name = self.generate_name('sg')
-        target_storage_group_name = storage_group_name + "_tgt"
-        self.provision.create_non_empty_storage_group(
-            storage_group_id=storage_group_name, service_level='Diamond',
-            num_vols=1, vol_size=1, cap_unit='GB', srp_id='SRP_1',
-            workload=None)
-        self.clone.create_clone(
-            storage_group_id=storage_group_name,
-            target_storage_group_id=target_storage_group_name)
-        self.addCleanup(self.cleanup_clone, storage_group_name,
-                        target_storage_group_name)
-        return storage_group_name, target_storage_group_name
-
-    def cleanup_clone(self, storage_group_name, target_storage_group_name):
-        self.clone.terminate_clone(
-                        storage_group_name, target_storage_group_name)
-
-        self.provision.delete_storage_group(storage_group_name)
-        self.provision.delete_storage_group(target_storage_group_name)
     @staticmethod
     def cleanup_pyu4v_zip_files_in_directory(directory):
         """Cleanup PyU4V zip archives in a given directory.

@@ -1497,8 +1497,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_create_storage_group_disable_compression_allocate_full(self):
         """Test create_storage_group disable compression allocate full."""
-        if self.is_v4:
-            self.skipTest('Function not supported on PowerMax 8500 or 2500')
         storage_group_name = self.generate_name('sg')
         storage_group_details = self.provisioning.create_storage_group(
             self.SRP, storage_group_name, self.SLO,

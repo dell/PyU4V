@@ -26,7 +26,7 @@ author = 'Dell'
 # The short X.Y version.
 version = u'10.0'
 # The full version, including alpha/beta/rc tags
-release = '10.0.0.18'
+release = '10.0.0.17'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

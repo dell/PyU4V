@@ -214,6 +214,14 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(start, str)
         self.assertTrue(int(start) < int(end))
 
+    def test_format_time_input_no_end(self):
+        """Test format_time_input no end time provided."""
+        start_time = self.time_now - (pc.ONE_MINUTE * 20)
+        start, end = self.perf.format_time_input(category=pc.ARRAY,
+                                                 start_time=start_time)
+        self.assertTrue(end)
+        self.assertIsInstance(end, str)
+        self.assertTrue(int(start) < int(end))
 
     def test_format_time_input_no_start_or_end(self):
         """Test format_time_input no end time provided."""
@@ -426,7 +434,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         """Test array performance function."""
         # Test get_array_keys.
         array_keys = self.perf.get_array_keys()
-        print(f"array keys {array_keys}")
         found_array = False
         for array in array_keys:
             self.assertIn(pc.SYMM_ID, array.keys())
