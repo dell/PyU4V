@@ -357,6 +357,8 @@ class CommonFunctions(object):
         :returns: resource object -- dict
         """
         target_uri = self._build_uri(**kwargs)
+        if kwargs.get('target_uri'):
+            target_uri = (kwargs.get('target_uri'))
         message, status_code = self.request(
             target_uri, POST, request_object=kwargs.get('payload'))
         resource_type = None
@@ -387,6 +389,8 @@ class CommonFunctions(object):
         :returns: resource object -- dict
         """
         target_uri = self._build_uri(**kwargs)
+        if kwargs.get('target_uri'):
+            target_uri = (kwargs.get('target_uri'))
         message, status_code = self.request(
             target_uri, PUT, request_object=kwargs.get('payload'))
         resource_type = None
@@ -416,9 +420,11 @@ class CommonFunctions(object):
         :key payload: query parameters
         """
         target_uri = self._build_uri(**kwargs)
+        if kwargs.get('target_uri'):
+            target_uri = (kwargs.get('target_uri'))
         message, status_code = self.request(
             target_uri, DELETE, request_object=kwargs.get('payload'),
-            params=kwargs.get('payload'))
+            params=kwargs.get('params'))
         resource_type = None
         if args:
             resource_type = args[2]

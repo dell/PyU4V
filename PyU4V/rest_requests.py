@@ -51,7 +51,7 @@ class RestRequests(object):
     """RestRequests."""
 
     def __init__(self, username, password, verify, base_url, interval, retries,
-                 application_type=None):
+                 application_type=None, proxies=None):
         """__init__."""
         self.username = username
         self.password = password
@@ -63,6 +63,7 @@ class RestRequests(object):
                         APP_TYPE: application_type}
         self.timeout = 120
         self.interval = interval
+        self.proxies = proxies
         self.retries = retries
         self.session = self.establish_rest_session()
 
@@ -75,6 +76,7 @@ class RestRequests(object):
         session.headers = self.headers if not headers else headers
         session.auth = HTTPBasicAuth(self.username, self.password)
         session.verify = self.verify_ssl
+        session.proxies = self.proxies
         return session
 
     def rest_request(self, target_url, method,
