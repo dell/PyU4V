@@ -35,9 +35,9 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 9.2.1.6                                |
+| **PyU4V Version**             | 10.0.0.18                              |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 9.2.0.1                                |
+| **Minimum Unisphere Version** | 10.0                                   |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -55,21 +55,18 @@ Supported PyU4V Versions
 
 .. note::
     If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
-    need to remain on PyU4V 3.1.x. There is no support for PyU4V 9.x with any
-    version of Unisphere older than 9.1.x
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V 10.x with any
+    version of Unisphere older than 10.x
 
 .. note::
     PyU4V officially supports Python 3.6, 3.7, 3.8, & 3.9. Python 2.x support
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 9.x is compatible with scripts written for PyU4V versions
+    PyU4V version 10.x is compatible with scripts written for PyU4V versions
     >= 3.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
-    scripts in later versions of PyU4V. If you have scripts written which
-    specifically target Unisphere REST 8.4, 9.0 or 9.1 endpoints these are
-    still accessible via PyU4V 9.2.x however you will need to ensure you are
-    passing the version required when performing these calls as PyU4V 9.2 will
-    default to using 9.2 endpoints exclusively. You will also need to pay
+    scripts in later versions of PyU4V. PyU4V 10.0 will
+    default to using v100 endpoints exclusively. You will also need to pay
     special attention to any REST JSON payloads in custom scripts as payloads
     are subject to change between major Unisphere REST releases.
 
