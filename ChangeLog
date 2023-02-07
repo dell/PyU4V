@@ -1,5 +1,8 @@
 PyU4V Change Log
 ================
+version 9.2.1.6
+- Added Proxy Support
+
 version 9.2.1.5
 - Allow for the use of 92 endpoint in the U4V10.0 and greater.
 
