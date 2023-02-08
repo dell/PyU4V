@@ -19,10 +19,10 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='PyU4V',
-    version='9.2.1.5',
+    version='9.2.1.6',
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
-    author_email='Michael.Mcaleer@dell.com',
+    author_email='paule.martin@dell.com',
     description="A Python library for use with Dell EMC's Unisphere for "
                 "PowerMax REST API.",
     long_description=long_description,
