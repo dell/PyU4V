@@ -1,6 +1,11 @@
 PyU4V Change Log
 ================
 
+Version 10.0.0.19
+====================================
+Updated Error Messages and changed strings to fstring in rest_requests
+Implemented contant versioning for development ease
+
 Version 10.0.0.18
 ====================================
 added clone functions
