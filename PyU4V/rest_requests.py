@@ -30,7 +30,7 @@ __python_version__ = platform.python_version()
 __platform__ = platform.system()
 __platform_release__ = platform.release()
 ua_details = (
-    f'PyU4V/{__pyu4v_version__} ({__python_version__}; version '
+    f'PyU4V/{__pyu4v_version__} ({__platform__}; version '
     f'{__platform_release__}) Python {__python_version__}')
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -140,15 +140,16 @@ class RestRequests(object):
 
         except r_exc.SSLError as error:
             msg = (
-                f'The connection to {base} has encountered an SSL error. '
-                f'Please check your SSL config or supplied SSL cert in Cinder '
+                f'The connection to {self.base_url} has encountered an SSL '
+                f'error. Please check your SSL config or supplied SSL cert in'
                 f'configuration. SSL Exception message: {error}')
             raise r_exc.SSLError(msg) from error
 
         except (r_exc.ConnectionError, r_exc.HTTPError) as error:
             exc_class, __, __ = sys.exc_info()
             msg = (
-                f'The {method} to Unisphere server {base} has experienced a '
+                f'The {method} to Unisphere server {self.base_url} has '
+                f'experienced a '
                 f'{error.__class__.__name__} '
                 f'error. Please check your Unisphere server connection and '
                 f'availability. Exception message: {error}')

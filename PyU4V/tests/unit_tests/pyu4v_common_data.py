@@ -13,9 +13,9 @@
 # limitations under the License.
 """pyu4v_common_data.py."""
 
-from PyU4V.utils import constants
+from PyU4V import utils
 
-PYU4V_VERSION = PyU4V.utils.constants.PYU4V_VERSION
+PYU4V_VERSION = utils.constants.PYU4V_VERSION
 class CommonData(object):
     """Common array data."""
     U4P_VERSION = '100'
