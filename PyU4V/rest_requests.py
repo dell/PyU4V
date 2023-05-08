@@ -30,9 +30,8 @@ __python_version__ = platform.python_version()
 __platform__ = platform.system()
 __platform_release__ = platform.release()
 ua_details = (
-    'PyU4V/{pv} ({platform}; version {release}) Python {python}'.format(
-        pv=__pyu4v_version__, platform=__platform__,
-        release=__platform_release__, python=__python_version__))
+    f'PyU4V/{__pyu4v_version__} ({__platform__}; version '
+    f'{__platform_release__}) Python {__python_version__}')
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 LOG = logging.getLogger(__name__)
@@ -98,8 +97,7 @@ class RestRequests(object):
             timeout_val = self.timeout
         if not self.session:
             self.session = self.establish_rest_session()
-        url = '{base_url}{target_url}'.format(
-            base_url=self.base_url, target_url=target_url)
+        url = f'{self.base_url}{target_url}'
         try:
             if request_object:
                 response = self.session.request(
@@ -120,43 +118,47 @@ class RestRequests(object):
                 response = None
                 if not status_code:
                     status_code = None
-                LOG.debug('No response received from API. Status code '
-                          'received is: {sc}.'.format(sc=status_code))
+                LOG.debug(f'No response received from API. Status code '
+                          f'received is: {status_code}.')
 
-            LOG.debug('{method} request to {url} has returned with a status '
-                      'code of: {sc}.'.format(method=method, url=url,
-                                              sc=status_code))
+            LOG.debug(f'{method} request to {url} has returned with a status '
+                      f'code of: {status_code}.')
             return response, status_code
 
         except requests.Timeout as error:
             LOG.error(
-                'The {method} request to URL {url} timed-out, but may have '
-                'been successful. Please check the array. Exception received: '
-                '{exc}.'.format(method=method, url=url, exc=error))
+                f'The {method} request to URL {url} timed-out, but may have '
+                f'been successful. Please check Unipshere Server for any '
+                f'slowness,  long running API calls are a symptom of '
+                f'unisphere Server limits being reached. {error}. See '
+                f'https://developer.dell.com/apis/4458/versions/10.0/docs'
+                f'/Getting%20Started/4.concurrent_operations.md, To ensure '
+                f'limits are not being exceeded verify the number of '
+                f'connections and calls in Uniphsere for PowerMax under '
+                f'Support > Management Server Resources')
             return None, None
 
         except r_exc.SSLError as error:
             msg = (
-                'The connection to {base} has encountered an SSL error. '
-                'Please check your SSL config or supplied SSL cert in Cinder '
-                'configuration. SSL Exception message: {m}'.format(
-                    base=self.base_url, m=error))
+                f'The connection to {self.base_url} has encountered an SSL '
+                f'error. Please check your SSL config or supplied SSL cert in'
+                f'configuration. SSL Exception message: {error}')
             raise r_exc.SSLError(msg) from error
 
         except (r_exc.ConnectionError, r_exc.HTTPError) as error:
             exc_class, __, __ = sys.exc_info()
             msg = (
-                'The {met} to Unisphere server {base} has experienced a {exc} '
-                'error. Please check your Unisphere server connection and '
-                'availability. Exception message: {msg}'.format(
-                    met=method, base=self.base_url,
-                    exc=error.__class__.__name__, msg=error))
+                f'The {method} to Unisphere server {self.base_url} has '
+                f'experienced a '
+                f'{error.__class__.__name__} '
+                f'error. Please check your Unisphere server connection and '
+                f'availability. Exception message: {error}')
             raise exc_class(msg) from error
 
         except Exception as error:
             exp_message = (
-                'The {method} request to URL {url} failed with exception: '
-                '{e}.'.format(method=method, url=url, e=error))
+                f'The {method} request to URL {url} failed with exception: '
+                f'{error}.')
             raise exception.VolumeBackendAPIException(
                 data=exp_message) from error
 
@@ -196,7 +198,7 @@ class RestRequests(object):
 
         timeout_val = self.timeout if not timeout else timeout
         data = json.dumps(r_obj, sort_keys=True, indent=4) if r_obj else None
-        url = '{base_url}{uri}'.format(base_url=self.base_url, uri=uri)
+        url = f'{self.base_url}{uri}'
 
         try:
             ft_session = self.establish_rest_session(headers=headers)
@@ -205,40 +207,37 @@ class RestRequests(object):
                 stream=download, data=data, files=form_data)
             ft_session.close()
             status_code = response.status_code
-            LOG.debug('{method} request to {url} has returned with a status '
-                      'code of: {sc}.'.format(method=method, url=url,
-                                              sc=status_code))
+            LOG.debug(f'{method} request to {url} has returned with a status '
+                      f'code of: {status_code}.')
             return response, status_code
 
         except requests.Timeout as error:
             LOG.error(
-                'The {method} request to URL {url} timed-out, but may have '
-                'been successful. Please check the array. Exception received: '
-                '{exc}.'.format(method=method, url=url, exc=error))
+                f'The {method} request to URL {url} timed-out, but may have '
+                f'been successful. Please check the array. Exception '
+                f'received: {error}.')
             return None, None
 
         except r_exc.SSLError as error:
             msg = (
-                'The connection to {base} has encountered an SSL error. '
-                'Please check your SSL config or supplied SSL cert in Cinder '
-                'configuration. SSL Exception message: {m}'.format(
-                    base=self.base_url, m=error))
+                f'The connection to {self.base_url} has encountered an SSL '
+                f'error. Please check your SSL config or supplied SSL cert '
+                f'configuration. SSL Exception message: {error}')
             raise r_exc.SSLError(msg) from error
 
         except (r_exc.ConnectionError, r_exc.HTTPError) as error:
             exc_class, __, __ = sys.exc_info()
             msg = (
-                'The {met} to Unisphere server {base} has experienced a {exc} '
-                'error. Please check your Unisphere server connection and '
-                'availability. Exception message: {msg}'.format(
-                    met=method, base=self.base_url,
-                    exc=error.__class__.__name__, msg=error))
+                f'The {method} to Unisphere server {self.base_url} has '
+                f'experienced a {error.__class__.__name__} '
+                f'error. Please check your Unisphere server connection and '
+                f'availability. Exception message: {error}')
             raise exc_class(msg) from error
 
         except Exception as error:
             exp_message = (
-                'The {method} request to URL {url} failed with exception: '
-                '{e}.'.format(method=method, url=url, e=error))
+                f'The {method} request to URL {url} failed with exception: '
+                f'{error}.')
             raise exception.VolumeBackendAPIException(data=exp_message)
 
     def close_session(self):

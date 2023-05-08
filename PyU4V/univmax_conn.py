@@ -106,8 +106,7 @@ class U4VConn(object):
         if None in [username, password, server_ip, port]:
             raise exception.MissingConfigurationException
         # Initialise REST session
-        base_url = 'https://{server_ip}:{port}/univmax/restapi'.format(
-            server_ip=server_ip, port=port)
+        base_url = f'https://{server_ip}:{port}/univmax/restapi'
 
         self.rest_client = RestRequests(
             username, password, verify, base_url, interval, retries,
@@ -135,7 +134,7 @@ class U4VConn(object):
         """Close the current rest session."""
         self.rest_client.close_session()
 
-    def set_requests_timeout(self, timeout_value):
+    def set_requests_timeout(self, timeout_value: object) -> object:
         """Set the requests timeout.
 
         :param timeout_value: the new timeout value -- int
@@ -165,10 +164,11 @@ class U4VConn(object):
         """
         uni_ver, major_ver = self.common.get_uni_version()
         if int(major_ver) < int(constants.UNISPHERE_VERSION):
-            msg = ('Unisphere version {uv} does not meet the minimum '
-                   'requirement of v9.2.0.x Please upgrade your version of '
-                   'Unisphere to use this SDK. Exiting...'.format(uv=uni_ver))
+            msg = (f'Unisphere version {uni_ver} does not meet the minimum '
+                   f'requirement of {constants.UNISPHERE_PACKAGE_MIN_VERSION} '
+                   f'Please upgrade your version of '
+                   f'Unisphere to use this SDK. Exiting...')
             sys.exit(msg)
         else:
-            LOG.debug('Unisphere version {uv} passes minimum requirement '
-                      'check.'.format(uv=uni_ver))
+            LOG.debug(f'Unisphere version {uni_ver} passes minimum requirement'
+                      ' check.')

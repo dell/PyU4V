@@ -21,9 +21,12 @@
 """__init__.py."""
 
 from .univmax_conn import U4VConn  # noqa: F401
+import PyU4V.utils.constants
+
+PYU4V_VERSION = PyU4V.utils.constants.PYU4V_VERSION
 
 __title__ = 'pyu4v'
-__version__ = '10.0.0.18'
+__version__ = PYU4V_VERSION
 __author__ = 'Dell EMC or its subsidiaries'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2021 Dell EMC Inc'
