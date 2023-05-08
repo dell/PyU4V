@@ -16,11 +16,12 @@
 from PyU4V import utils
 
 PYU4V_VERSION = utils.constants.PYU4V_VERSION
+
+
 class CommonData(object):
     """Common array data."""
     U4P_VERSION = '100'
     server_version = {'version': f'V{PYU4V_VERSION}'}
-
     array = '000197800123'
     remote_array = '000197800124'
     remote_array2 = '000197800125'
