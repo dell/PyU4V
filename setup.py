@@ -22,7 +22,7 @@ setuptools.setup(
     version='10.0.0.19',
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
-    author_email='helen.walsh@dell.com',
+    author_email='paule.martin@dell.com',
     description="A Python library for use with Dell EMC's Unisphere for "
                 "PowerMax REST API.",
     long_description=long_description,
