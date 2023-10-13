@@ -45,11 +45,6 @@ class PyU4VStorageGroupsTest(testtools.TestCase):
         pf.FakeConfigFile.delete_fake_config_file(
             self.conf_file, self.conf_dir)
 
-    def test_get_StorageGroups_meta_data(self):
-        with mock.patch.object(
-                self.common, 'get_request') as mock_get:
-            self.storage_groups.get_storage_groups_meta_data()
-        mock_get.assert_called_once()
 
     def test_get_StorageGroups_detail(self):
         with mock.patch.object(

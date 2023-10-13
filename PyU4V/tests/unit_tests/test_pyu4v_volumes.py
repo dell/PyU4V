@@ -43,12 +43,6 @@ class PyU4VvolumesTest(testtools.TestCase):
         pf.FakeConfigFile.delete_fake_config_file(
             self.conf_file, self.conf_dir)
 
-    def test_get_volumes_meta_data(self):
-        with mock.patch.object(
-                self.common, 'get_request') as mock_get:
-            self.volumes.get_volumes_meta_data()
-        mock_get.assert_called_once()
-
     def test_get_volumes_detail(self):
         with mock.patch.object(
                 self.common, 'get_request') as mock_get:
