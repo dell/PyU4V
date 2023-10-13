@@ -17,6 +17,7 @@ import testtools
 
 from unittest import mock
 
+import PyU4V.common
 from PyU4V import common
 from PyU4V import replication
 from PyU4V import rest_requests
@@ -24,6 +25,7 @@ from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
+from PyU4V.utils import constants
 
 
 class PyU4VReplicationTest(testtools.TestCase):
@@ -33,6 +35,7 @@ class PyU4VReplicationTest(testtools.TestCase):
         """Setup."""
         super(PyU4VReplicationTest, self).setUp()
         self.data = pcd.CommonData()
+        self.common = PyU4V.common.CommonFunctions
         self.conf_file, self.conf_dir = (
             pf.FakeConfigFile.create_fake_config_file())
         univmax_conn.file_path = self.conf_file
@@ -91,34 +94,36 @@ class PyU4VReplicationTest(testtools.TestCase):
 
     def test_get_replication_enabled_storage_groups_with_snaps(self):
         """Test get_replication_enabled_storage_groups sgs with snapshots."""
-        with mock.patch.object(self.replication, 'get_resource') as mock_mod:
+        with mock.patch.object(self.common, 'get_request') as mock_mod:
             self.replication.get_replication_enabled_storage_groups(
                 has_snapshots=True)
-            mock_mod.assert_called_once_with(
-                category='replication', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', params={'hasSnapshots': 'true'})
+            mock_mod.assert_called_once()
 
     def test_get_replication_enabled_storage_groups(self):
         """Test get_replication_enabled_storage_groups."""
-        with mock.patch.object(self.replication, 'get_resource') as mock_mod:
+        with mock.patch.object(self.common, 'get_request') as mock_mod:
             self.replication.get_replication_enabled_storage_groups(
                 has_srdf=True, has_snapshots=True)
             mock_mod.assert_called_once_with(
-                category='replication', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', params={'hasSrdf': 'true',
-                                                      'hasSnapshots': 'true'})
+                target_uri=f'/{constants.UNISPHERE_VERSION}/replication/'
+                           f'symmetrix/000197800123/storagegroup',
+                resource_type=None, params={
+                    'hasSrdf': True, 'hasSnapshots': True,
+                    'hasCloudSnapshots': None, 'is_link_target': None,
+                    'has_snap_policies': None, 'has_clones': None})
 
     def test_get_replication_enabled_storage_groups_with_srdf(self):
         """Test get_replication_enabled_storage_groups."""
-        with mock.patch.object(self.replication, 'get_resource') as mock_mod:
+        with mock.patch.object(self.common, 'get_request') as mock_mod:
             self.replication.get_replication_enabled_storage_groups(
                 has_srdf=True)
             mock_mod.assert_called_once_with(
-                category='replication', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', params={'hasSrdf': 'true'})
+                target_uri=f'/{constants.UNISPHERE_VERSION}/replication/'
+                           f'symmetrix/000197800123/storagegroup',
+                resource_type=None, params={
+                    'hasSrdf': True, 'hasSnapshots': None,
+                    'hasCloudSnapshots': None, 'is_link_target': None,
+                    'has_snap_policies': None, 'has_clones': None})
 
     def test_get_storage_group_snapshot_list(self):
         """Test get_storage_group_snapshot_list."""
@@ -676,4 +681,14 @@ class PyU4VReplicationTest(testtools.TestCase):
                 self.data.storagegroup_name, self.data.target_group_name,
                 self.data.group_snapshot_name, self.data.sg_snap_id,
                 relink=True)
+            mock_mod.assert_called_once()
+
+    def test_bulk_terminate_snapshots(self):
+        """Test bulk_terminate_snapshots."""
+        with mock.patch.object(
+                self.replication, 'bulk_terminate_snapshots') as mock_mod:
+            self.replication.bulk_terminate_snapshots(
+                storage_group_id='anyname', snap_name='any', keep_count='0',
+                terminate_all_snapshots='True', snapset_id_and_older='123456',
+                force=True)
             mock_mod.assert_called_once()

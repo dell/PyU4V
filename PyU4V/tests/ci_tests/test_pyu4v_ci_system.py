@@ -945,7 +945,8 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
     def test_set_director_port_online(self):
         """test_set_director_port_online."""
-        self.skipTest('Skipping Test as disruptive, please run test manually')
+        self.skipTest('Skipping Test as it is disruptive to normal '
+                      'operations, please run test manually')
         port_details = self.system.get_director_port(
             director='OR-1C', port_no='3').get('symmetrixPort')
         if port_details.get('port_status') == 'ON':
@@ -957,3 +958,59 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
                 director='OR-1C', port_no='3', port_online=True).get(
                 'symmetrixPort')
             self.assertEqual('ON', port_details.get('port_status'))
+
+    def test_get_management_server_resources(self):
+        resource_usage = self.system.get_management_server_resources()
+        self.assertIsInstance(resource_usage, dict)
+
+    def test_refresh_array_details(self):
+        refresh = self.system.refresh_array_details()
+        self.assertEqual(refresh, None)
+
+    def test_get_server_logging_level(self):
+        log_level = self.system.get_server_logging_level()
+        self.assertIn('server_logging_level', log_level)
+        self.assertIn('restapi_logging_enabled', log_level)
+
+    def test_set_server_logging_level(self):
+        initial_log_level = self.system.get_server_logging_level()
+        if initial_log_level['server_logging_level'] == 'INFO':
+            server_log_level = 'WARN'
+        else:
+            server_log_level = 'INFO'
+        changed_log_level = self.system.set_server_logging_level(
+            server_log_level=server_log_level, restapi_logging_enabled=True)
+        self.assertEqual(True, changed_log_level['restapi_logging_enabled'])
+        self.assertEqual(server_log_level, changed_log_level['server_logging_level'])
+        reset = self.system.set_server_logging_level()
+        self.assertEqual(initial_log_level, reset)
+
+    def test_get_snmp_trap_configuration(self):
+        snmp_config = self.system.get_snmp_trap_configuration()
+        self.assertIn('engine_id', snmp_config)
+        self.assertIn('snmp_traps', snmp_config)
+
+    def test_set_snmp_trap_destination(self):
+        self.skipTest(reason="Test Run manually")
+        new_config = self.system.set_snmp_trap_destination(
+            name='pyu4vunilinux2.crk.lab.emc.com', port=52)
+        self.assertEquals('pyu4vunilinux2.crk.lab.emc.com', new_config['name'])
+        self.system.delete_snmp_trap_destination(snmp_id=new_config['id'])
+
+    def test_delete_snmp_trap_destination(self):
+        snmp_id = self.system.set_snmp_trap_destination(
+            name='10.60.156.28', port=52)['id']
+        self.system.delete_snmp_trap_destination(snmp_id=snmp_id)
+        config_after_delete = self.system.get_snmp_trap_configuration()
+        self.assertNotIn(snmp_id, config_after_delete['snmp_traps'])
+
+    def test_update_snmp_trap_destination(self):
+        snmp_details = self.system.set_snmp_trap_destination(
+            name='10.60.156.28', port=52)
+        snmp_id = snmp_details['id']
+        updated_snmp_destination = self.system.update_snmp_trap_destination(
+            snmp_id=snmp_id, port=234)
+        updated_port = updated_snmp_destination['port']
+        updated_snmp_id = updated_snmp_destination['id']
+        self.assertIs(234, updated_port)
+        self.system.delete_snmp_trap_destination(snmp_id=updated_snmp_id)

@@ -86,6 +86,32 @@ class FakeRequestsSession(object):
             elif 'system' in url and 'exportfile' in url:
                 return_object = {'success': True}
                 raw_reason = "OK"
+            elif 'serviceability' in url and 'ntp_server' in data:
+                return_object = self.data.ntp_server
+                raw_reason = "OK"
+            elif 'serviceability' in url and 'self_signed_certificate' in url:
+                return_object = self.data.self_signed_cert_response
+                raw_reason = "OK"
+            elif 'serviceability' in url and 'unisphere' in url \
+                    and 'system' in url:
+                return_object = self.data.available_symms_response
+                raw_reason = "OK"
+            elif 'serviceability' in url and 'unisphere' in url \
+                    and 'configuration' in url:
+                return_object = self.data.unisphere_configuration
+                raw_reason = "OK"
+            elif 'serviceability' in url and 'unisphere' in url:
+                return_object = self.data.unisphere_application
+                raw_reason = "OK"
+            elif 'serviceability' in url and 'solutions_enabler' in url:
+                return_object = self.data.unisphere_application
+            elif 'serviceability' in url and 'custom_certificate' in url:
+                return_object = self.data.import_certs_response
+                raw_reason = "OK"
+            elif 'serviceability' in url and (
+                    '/application/unisphere/system') in url:
+                return_object = self.data.unisphere_application
+                raw_reason = "OK"
             else:
                 status_code, return_object = self._post_or_put(url, data)
 
@@ -152,7 +178,7 @@ class FakeRequestsSession(object):
         elif 'replication' in url:
             return_object = self._replication(url)
 
-        elif 'migration' in url:
+        elif 'mobility' in url:
             return_object = self._migration(url)
 
         if 'alert' in url:
@@ -181,9 +207,40 @@ class FakeRequestsSession(object):
                         return_object = self.data.audit_log_list
                     else:
                         return_object = self.data.audit_record
+            elif 'serviceability' in url:
+                return_object = self.data.available_symms_response
             else:
                 return_object = self._system(url)
-
+        elif 'serviceability' in url:
+            if 'symmetrix/{}/ip_configuration'.format(self.data.array) in url:
+                return_object = self.data.ip_configuration
+            elif 'symmetrix/{}/application/unisphere/configuration'\
+                    .format(self.data.array) in url:
+                return_object = self.data.unisphere_configuration
+            elif 'symmetrix/{}/application/unisphere'\
+                    .format(self.data.array) in url:
+                return_object = self.data.unisphere_application
+            elif 'symmetrix/{}/application/vasa/{}'\
+                    .format(self.data.array, self.data.vasa_0) in url:
+                return_object = self.data.vasa_provider
+            elif 'symmetrix/{}/application/vasa/configuration'\
+                    .format(self.data.array) in url:
+                return_object = self.data.unisphere_configuration
+            elif 'symmetrix/{}/application/vasa'\
+                    .format(self.data.array) in url:
+                return_object = self.data.vasa_application
+            elif 'symmetrix/{}/application/solutions_enabler/configuration'\
+                    .format(self.data.array) in url:
+                return_object = self.data.solutions_enabler_configuration
+            elif 'symmetrix/{}/application/solutions_enabler'\
+                    .format(self.data.array) in url:
+                return_object = self.data.solutions_enabler_application
+            elif 'symmetrix/{}/application'.format(self.data.array) in url:
+                return_object = self.data.applications
+            elif 'symmetrix/{}'.format(self.data.array) in url:
+                return_object = self.data.ntp_server
+            else:
+                return_object = self.data.serviceability_symmetrix
         elif 'headroom' in url:
             return_object = self.data.headroom_array
 

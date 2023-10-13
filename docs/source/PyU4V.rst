@@ -87,6 +87,46 @@ PyU4V\.system
     :undoc-members:
     :show-inheritance:
 
+PyU4V\.serviceability
+---------------------
+
+.. automodule:: PyU4V.serviceability
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.clone
+-------------
+
+.. automodule:: PyU4V.clone
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.volumes
+--------------
+
+.. automodule:: PyU4V.volumes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.storage_groups
+---------------------
+
+.. automodule:: PyU4V.storage_groups
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.performance_enhanced
+---------------------------
+
+.. automodule:: PyU4V.performance_enhanced
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PyU4V\.workload\_planner
 ------------------------
 

@@ -15,7 +15,7 @@ def generate_get_functions(category, api_connection, api_version):
     returns: whole bunch of functions in a file eventually.
     """
     for uri_link in keys:
-        if f'100/{category}' in uri_link:
+        if f'101/{category}' in uri_link:
             if 'get' in data.get(f'{uri_link}').keys():
                 uri_detail = data.get(f'{uri_link}')
                 function_name = (
@@ -30,7 +30,7 @@ def generate_get_functions(category, api_connection, api_version):
                 query_params = "{"
                 uri_parameters = (uri_detail.get('get').get(
                     'parameters'))
-                if uri_parameters == None:
+                if uri_parameters is None:
                     uri_parameters = []
                 if len(uri_parameters) > 0:
                     for parameter in uri_parameters:
@@ -43,8 +43,8 @@ def generate_get_functions(category, api_connection, api_version):
                             query_params_list.append(parameter.get('name'))
                             query_params = (
                                     query_params + (
-                                f"\'{parameter.get('name')}\': "
-                                f"{parameter.get('name')},"))
+                                        f"\'{parameter.get('name')}\': "
+                                        f"{parameter.get('name')},"))
                         elif parameter.get('in') == 'path':
                             path_params_list.append(parameter.get('name'))
                 query_params = query_params + '}'
@@ -79,5 +79,6 @@ def generate_get_functions(category, api_connection, api_version):
                 print(base_return)
                 print()
 
+
 generate_get_functions(category='replication', api_connection='self',
-                       api_version='100')
+                       api_version='101')

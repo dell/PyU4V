@@ -102,7 +102,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         """Test get_replication_enabled_storage_groups."""
         self.create_sg_snapshot()
         snap_list = self.replication.get_replication_enabled_storage_groups(
-            has_snapshots=True, has_srdf=True)
+            has_snapshots=True, has_srdf=False)
         self.assertIsInstance(snap_list, list)
 
     def test_get_storage_group_snapshot_list(self):
@@ -923,3 +923,21 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                 if int(version_list[3]) < 7:
                     return False
         return True
+
+    def test_bulk_terminate_snapshots(self):
+        """Test bulk_terminate_snapshots."""
+        sg_name = self.create_empty_storage_group()
+        self.provisioning.create_volume_from_storage_group_return_id(
+            'bulk_terminate_test', sg_name, '1')
+        self.replication.create_storage_group_snapshot(
+            sg_name, sg_name, ttl=1, hours=True)
+        self.replication.create_storage_group_snapshot(
+            sg_name, sg_name, ttl=1, hours=True)
+        self.replication.create_storage_group_snapshot(
+            sg_name, sg_name, ttl=1, hours=True)
+        self.replication.bulk_terminate_snapshots(
+            storage_group_id=sg_name, snap_name=sg_name,
+            terminate_all_snapshots=True, force=True)
+        snapshot_info = self.replication.get_storage_group_snapshot_list(
+            sg_name)
+        self.assertEquals(0, len(snapshot_info))

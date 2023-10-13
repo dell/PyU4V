@@ -453,6 +453,8 @@ class CommonFunctions(object):
         :raises: ValueError
         """
         target_uri = self._build_uri(**kwargs)
+        if kwargs.get('target_uri'):
+            target_uri = (kwargs.get('target_uri'))
         response, status_code = self.rest_client.file_transfer_request(
             method=POST, download=True, uri=target_uri,
             timeout=kwargs.get('timeout'), r_obj=kwargs.get('payload'))
@@ -488,6 +490,8 @@ class CommonFunctions(object):
         """
         response_content = dict()
         target_uri = self._build_uri(**kwargs)
+        if kwargs.get('target_uri'):
+            target_uri = (kwargs.get('target_uri'))
         response, status_code = self.rest_client.file_transfer_request(
             method=POST, upload=True, uri=target_uri,
             form_data=kwargs.get('form_data'))
@@ -522,6 +526,16 @@ class CommonFunctions(object):
             version_list = version.split('.')
             major_version = version_list[0][1:] + version_list[1]
         return version, major_version
+
+    def get_uni_version_info(self):
+        """Get the unisphere version from the server.
+
+        :returns: {'version': 'T10.1.0.468', 'api_version': '101',
+                  'supported_api_versions': ['101', '100', '92']} -- dict
+        """
+        response = self.get_resource(category=VERSION, no_version=True)
+
+        return response
 
     def get_array_list(self, filters=None):
         """Return a list of arrays.
