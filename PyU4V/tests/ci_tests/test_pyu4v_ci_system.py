@@ -981,7 +981,8 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         changed_log_level = self.system.set_server_logging_level(
             server_log_level=server_log_level, restapi_logging_enabled=True)
         self.assertEqual(True, changed_log_level['restapi_logging_enabled'])
-        self.assertEqual(server_log_level, changed_log_level['server_logging_level'])
+        self.assertEqual(server_log_level,
+                         changed_log_level['server_logging_level'])
         reset = self.system.set_server_logging_level()
         self.assertEqual(initial_log_level, reset)
 
