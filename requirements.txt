@@ -1,0 +1,7 @@
+#Requirements.txt added for sphinx in version 10.1
+six
+requests
+six
+urllib3
+prettytable
+sphinx_rtd_theme
