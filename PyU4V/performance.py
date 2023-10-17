@@ -202,45 +202,35 @@ class PerformanceFunctions(object):
             LOG.info('Array {arr} is already disabled for diagnostic '
                      'performance data.'.format(arr=array_id))
 
-    def enable_real_time_data_collection(self, array_id=None):
+    def enable_real_time_data_collection(
+            self, array_id=None, storage_group_list=None, file=False):
         """Register an array for real-time performance data gathering.
 
         Note: Real-time performance data is not supported for arrays
         running HyperMax OS.
 
         :param array_id: array id -- str
+        :param storage_group_list: comma separated list of storage groups
+                                   to be registered for real time stats
+                                   collection e.g. 'sg1, sg2' -- str
+        :param file: register file collection for performance --bool
         :raises: VolumeBackendAPIException
         """
         array_id = self.array_id if not array_id else array_id
 
-        if not self.is_array_real_time_performance_registered(array_id):
-            LOG.info('Enabling real-time performance data will enable '
-                     'diagnostic performance data at the same time, if '
-                     'not already enabled.')
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
-                                                    pc.REG_DIAGNOSTIC: True,
-                                                    pc.REAL_TIME: True})
+        payload = {'symmetrixId': array_id,
+                   'diagnostic': True,
+                   'realtime': True,
+                   'file': False}
 
-            response_message = response.get('message', list())
-            if response_message:
-                msg = response_message[0]
-                if 'Successfully' in msg:
-                    LOG.info(msg)
-                else:
-                    LOG.error(msg)
-                    raise exception.VolumeBackendAPIException(message=msg)
-            else:
-                msg = ('There has been an issue registering array {arr} for '
-                       'real-time performance data. It was not possible '
-                       'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
-                LOG.error(msg)
-                raise exception.VolumeBackendAPIException(message=msg)
-        else:
-            LOG.info('Array {arr} is already enabled for real-time '
-                     'performance data.'.format(arr=array_id))
+        if storage_group_list:
+            payload.update({'selectedSGs': storage_group_list})
+
+        response = self.post_request(
+            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
+            resource_type=pc.REGISTER, payload=payload)
+
+        return response
 
     def disable_real_time_data_collection(self, array_id=None):
         """Disable an array from real-time performance data gathering.
@@ -925,6 +915,7 @@ class PerformanceFunctions(object):
         for category in category_list:
             metric_setting = self.get_threshold_category_settings(category)
             threshold_settings = metric_setting.get(pc.PERF_THRESH)
+            print(threshold_settings)
             for threshold in threshold_settings:
                 data_for_csv.append([
                     category, threshold.get(pc.METRIC),
@@ -2471,7 +2462,7 @@ class PerformanceFunctions(object):
 
             }
         else:
-            if type(storage_group_list) == list:
+            if type(storage_group_list) is list:
                 storage_group_list = ",".join(storage_group_list)
             request_body = {
                 "systemId": array_id,

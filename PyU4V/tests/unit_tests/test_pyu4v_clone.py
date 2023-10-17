@@ -22,6 +22,7 @@ from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
+from PyU4V.utils import constants
 
 
 class PyU4VcloneTest(testtools.TestCase):
@@ -112,7 +113,8 @@ class PyU4VcloneTest(testtools.TestCase):
 
             mock_modify.assert_called_with(
                 target_uri=(
-                    '/100/replication/symmetrix/000197800123/storagegroup/'
+                    f'/{constants.UNISPHERE_VERSION}/replication/symmetrix/'
+                    f'000197800123/storagegroup/'
                     'PyU4V_SG/clone/storagegroup/PyU4V_TGT_SG'),
                 resource_type=None, payload={
                     'action': 'Restore',
@@ -128,8 +130,9 @@ class PyU4VcloneTest(testtools.TestCase):
                 target_storage_group_id="PyU4V_TGT_SG", _async=True)
             mock_modify.assert_called_with(
                 target_uri=(
-                    '/100/replication/symmetrix/000197800123/storagegroup/'
-                    'PyU4V_SG/clone/storagegroup/PyU4V_TGT_SG'),
+                    f'/{constants.UNISPHERE_VERSION}/replication/symmetrix'
+                    f'/000197800123/storagegroup/PyU4V_SG/clone/storagegroup'
+                    f'/PyU4V_TGT_SG'),
                 resource_type=None,
                 payload={'action': 'Split',
                          'split': {'force': False,

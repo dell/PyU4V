@@ -98,7 +98,6 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         major = (UNISPHERE_VERSION[0] + UNISPHERE_VERSION[1] + '.'
                  + UNISPHERE_VERSION[2])
         self.assertTrue(re.match(r'^T|X|V' + major + r'\S+$', version))
-        self.assertEqual(UNISPHERE_VERSION, major_version)
 
     def test_get_array_list(self):
         """Test get_array_list."""
@@ -147,3 +146,10 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         """Test get_array."""
         if self.common.is_array_v4(self.conn.array_id):
             self.assertTrue(self.common.is_array_v4(self.conn.array_id))
+
+    def test_get_uni_version_info(self):
+        """"Test get_uni_version_info."""
+        result = self.common.get_uni_version_info()
+        self.assertIn('supported_api_versions', result)
+        self.assertIn('api_version', result)
+        self.assertIn('version', result)

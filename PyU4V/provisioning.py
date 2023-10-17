@@ -38,6 +38,7 @@ PORT = constants.PORT
 HOST = constants.HOST
 HOSTGROUP = constants.HOSTGROUP
 INITIATOR = constants.INITIATOR
+MAINFRAME = constants.MAINFRAME
 MASKINGVIEW = constants.MASKINGVIEW
 CONNECTIONS = constants.CONNECTIONS
 PORTGROUP = constants.PORTGROUP
@@ -541,7 +542,7 @@ class ProvisioningFunctions(object):
     def create_masking_view_existing_components(
             self, port_group_name, masking_view_name,
             storage_group_name, host_name=None,
-            host_group_name=None, _async=False):
+            host_group_name=None, _async=False, starting_lun_address=None):
         """Create a new masking view using existing groups.
 
         Must enter either a host name or a host group name, but not both.
@@ -552,6 +553,8 @@ class ProvisioningFunctions(object):
         :param host_name: name of the host (initiator group) -- str
         :param host_group_name: name of host group -- str
         :param _async: if command should be run asynchronously -- bool
+        :param starting_lun_address: HLU address of starting lun for volumes
+                                     -- int
         :returns: masking view details -- dict
         :raises: InvalidInputException
         """
@@ -574,6 +577,9 @@ class ProvisioningFunctions(object):
                     'storageGroupId': storage_group_name}}})
         if _async:
             payload.update(ASYNC_UPDATE)
+
+        if starting_lun_address:
+            payload.update({'starting_lun_address': starting_lun_address})
 
         return self.create_resource(
             category=SLOPROVISIONING,
@@ -894,9 +900,10 @@ class ProvisioningFunctions(object):
     def create_empty_port_group(
             self, port_group_id, port_group_protocol=None, _async=None):
         """Create an empty port group.
+
         :param port_group_id: name of the new port group -- str
-        :param port_group_protocol: required for V4 only.
-                                    one of [SCSI_FC, iSCSI, NVMe_TCP]
+        :param port_group_protocol: required for V4 only one of [SCSI_FC, iSCSI
+                                    , NVMe_TCP] -- str
         :param _async: if call should be async -- bool
         :returns: new port group details -- dict
         """
@@ -1352,7 +1359,8 @@ class ProvisioningFunctions(object):
     def add_existing_volume_to_storage_group(
             self, storage_group_id, vol_ids, _async=False,
             remote_array_1_id=None, remote_array_1_sgs=None,
-            remote_array_2_id=None, remote_array_2_sgs=None):
+            remote_array_2_id=None, remote_array_2_sgs=None,
+            starting_lun_address=None):
         """Expand an existing storage group by adding existing volumes.
 
         :param storage_group_id: storage group id -- str
@@ -1370,6 +1378,8 @@ class ProvisioningFunctions(object):
                                   R1 - R21 - R2 optional -- str
         :param remote_array_2_sgs: storage groups on remote array, optional
                                    -- str or list
+        :param starting_lun_address: HLU address of starting lun for volumes
+                                     -- int
         :returns: storage group details -- dict
         """
         if not isinstance(vol_ids, list):
@@ -1380,6 +1390,8 @@ class ProvisioningFunctions(object):
                     'volumeId': vol_ids}}}}
         if _async:
             add_vol_data.update(ASYNC_UPDATE)
+        if starting_lun_address:
+            add_vol_data.update({'starting_lun_address': starting_lun_address})
         if remote_array_1_id and remote_array_1_sgs:
             if not isinstance(remote_array_1_sgs, list):
                 remote_array_1_sgs = [remote_array_1_sgs]
@@ -1407,7 +1419,7 @@ class ProvisioningFunctions(object):
             remote_array_1_id=None, remote_array_1_sgs=None,
             remote_array_2_id=None, remote_array_2_sgs=None,
             enable_mobility_id=False, emulation_type='FBA',
-            append_vol_id=False):
+            append_vol_id=False, starting_lun_address=None):
         """Expand an existing storage group by adding new volumes.
 
         :param storage_group_id: storage group id -- str
@@ -1434,12 +1446,17 @@ class ProvisioningFunctions(object):
         :param emulation_type: device emulation type (CKD, FBA) -- str
         :param append_vol_id: append volume id to the volume name,
                               optional -- bool
+        :param starting_lun_address: HLU address of starting lun for volumes
+                                     -- int
         :returns: storage group details -- dict
         """
         add_volume_param = {'emulation': emulation_type}
 
         if not create_new_volumes:
             add_volume_param.update({'create_new_volumes': False})
+        if starting_lun_address:
+            add_volume_param.update(
+                {'starting_lun_address': starting_lun_address})
 
         volume_attributes = ({
             'num_of_vols': num_vols,
@@ -1483,7 +1500,8 @@ class ProvisioningFunctions(object):
     def remove_volume_from_storage_group(
             self, storage_group_id, vol_id, _async=False,
             remote_array_1_id=None, remote_array_1_sgs=None,
-            remote_array_2_id=None, remote_array_2_sgs=None):
+            remote_array_2_id=None, remote_array_2_sgs=None,
+            terminate_snapshots=False):
         """Remove a volume from a given storage group.
 
         :param storage_group_id: storage group id -- str
@@ -1500,6 +1518,8 @@ class ProvisioningFunctions(object):
                -- str
         :param remote_array_2_sgs: storage groups on remote array, optional
                -- str or list
+        :param terminate_snapshots: terminate any snapshots on volume when
+                                    removing from storage group -- bool
         :returns: storage group details -- dict
         """
         if not isinstance(vol_id, list):
@@ -1530,6 +1550,9 @@ class ProvisioningFunctions(object):
                             'remote_symmetrix_2_sgs': remote_array_2_sgs}}}})
         if _async:
             payload.update(ASYNC_UPDATE)
+        if terminate_snapshots:
+            payload['editStorageGroupActionParam']['removeVolumeParam'][
+                'terminate_snapshots'] = terminate_snapshots
         return self.modify_storage_group(storage_group_id, payload)
 
     def move_volumes_between_storage_groups(
@@ -1889,8 +1912,13 @@ class ProvisioningFunctions(object):
     def _modify_volume(self, device_id, payload):
         """Modify a volume.
 
+        Additional Payloads can be provided, check out documentation at
+        https://dell.to/3HpzlJv for all supported volume operations.
+
         :param device_id: device id -- str
-        :param payload: request payload -- dict
+        :param payload: request payload e.g. {"editVolumeActionParam": {
+                        "enable_mobility_id_param": {
+                            "enable_mobility_id": "true"}}} -- dict
         :returns: volume details -- dict
         """
         return self.modify_resource(
@@ -2193,7 +2221,7 @@ class ProvisioningFunctions(object):
         :returns: split ids -- list
         """
         split_id_list = list()
-        response = self.common.get_resource(category=SLOPROVISIONING,
+        response = self.common.get_resource(category=MAINFRAME,
                                             resource_level=SYMMETRIX,
                                             resource_level_id=self.array_id,
                                             resource_type=FICON_SPLIT)
@@ -2206,7 +2234,7 @@ class ProvisioningFunctions(object):
         :param split_id: split id -- str
         :returns: split details -- dict
         """
-        return self.common.get_resource(category=SLOPROVISIONING,
+        return self.common.get_resource(category=MAINFRAME,
                                         resource_level=SYMMETRIX,
                                         resource_level_id=self.array_id,
                                         resource_type=FICON_SPLIT,
@@ -2218,7 +2246,7 @@ class ProvisioningFunctions(object):
         :returns: CU Image ssids -- list
         """
         cu_image_ssid_list = list()
-        response = self.common.get_resource(category=SLOPROVISIONING,
+        response = self.common.get_resource(category=MAINFRAME,
                                             resource_level=SYMMETRIX,
                                             resource_level_id=self.array_id,
                                             resource_type=FICON_SPLIT,
@@ -2234,7 +2262,7 @@ class ProvisioningFunctions(object):
         :param cu_ssid: cu image ssid -- str
         :returns: CU Image details -- dict
         """
-        return self.common.get_resource(category=SLOPROVISIONING,
+        return self.common.get_resource(category=MAINFRAME,
                                         resource_level=SYMMETRIX,
                                         resource_level_id=self.array_id,
                                         resource_type=FICON_SPLIT,
@@ -2258,12 +2286,11 @@ class ProvisioningFunctions(object):
                        "startBaseAddress": cu_base_address,
                        "volumeId": [vol_id]
                        }
-        # FIXME This call takes over 5 minutes on my powermax 8000 -
-        # so need to force async call
+
         new_cu_data.update(ASYNC_UPDATE)
 
         create_cu_async_job = (
-            self.common.create_resource(category=SLOPROVISIONING,
+            self.common.create_resource(category=MAINFRAME,
                                         resource_level=SYMMETRIX,
                                         resource_level_id=self.array_id,
                                         resource_type=FICON_SPLIT,
@@ -2282,7 +2309,7 @@ class ProvisioningFunctions(object):
         :returns: Volume ids -- list
         """
         volume_id_list = list()
-        response = self.common.get_resource(category=SLOPROVISIONING,
+        response = self.common.get_resource(category=MAINFRAME,
                                             resource_level=SYMMETRIX,
                                             resource_level_id=self.array_id,
                                             resource_type=FICON_SPLIT,
@@ -2301,7 +2328,7 @@ class ProvisioningFunctions(object):
         :pamam vol_id volume device id to be mapped to the cu -- str
         :returns: volume details -- dict
         """
-        return self.common.get_resource(category=SLOPROVISIONING,
+        return self.common.get_resource(category=MAINFRAME,
                                         resource_level=SYMMETRIX,
                                         resource_level_id=self.array_id,
                                         resource_type=FICON_SPLIT,
@@ -2365,12 +2392,10 @@ class ProvisioningFunctions(object):
                    'remove_alias_dict, map_volume_list, or unmap_volume_list.')
             raise exception.InvalidInputException(data=msg)
 
-        # FIXME This call takes over 5 minutes on my powermax 8000
-        #  - so need to force async call
         edit_cu_data.update(ASYNC_UPDATE)
 
         edit_cu_async_job = (
-            self.common.modify_resource(category=SLOPROVISIONING,
+            self.common.modify_resource(category=MAINFRAME,
                                         resource_level=SYMMETRIX,
                                         resource_level_id=self.array_id,
                                         resource_type=FICON_SPLIT,

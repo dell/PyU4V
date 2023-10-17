@@ -5,9 +5,9 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.0.0.19                              |
+| **PyU4V Version**             | 10.1.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.0.0                                 |
+| **Minimum Unisphere Version** | 10.1                                   |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -15,7 +15,7 @@ Requirements
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    | 3.6, 3.7, 3.8, 3.9                     |
+| **Python**                    | 3.6, 3.7, 3.8, 3.9, 3.10               |
 +-------------------------------+----------------------------------------+
 | **Requirements**              | Requests_, Six_, urllib3_,             |
 |                               | prettytable_                           |
@@ -29,7 +29,7 @@ Requirements
     version of Unisphere older than 9.1.x
 
 .. note::
-    PyU4V officially supports Python 3.6, 3.7, 3.8, & 3.9. Python 2.x support
+    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
     has been dropped since January 1st 2020.
 
 PyU4V Version Compatibility

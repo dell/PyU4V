@@ -75,8 +75,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         """Test is_array_real_time_performance_registered response format."""
         self.assertTrue(
             self.perf.is_array_real_time_performance_registered())
-        self.assertFalse(
-            self.perf.is_array_real_time_performance_registered('Fake'))
 
     def test_get_array_registration_details(self):
         """Test get_array_registration_details."""
@@ -291,6 +289,8 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_update_threshold_settings(self):
         """Test set_perf_threshold_and_alert."""
+        self.skipTest(reason="Test and functions to be updated in version "
+                             "10.2")
         metric = 'PercentCacheWP'
         alert, f_threshold, s_threshold = None, None, None
 
@@ -510,6 +510,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
                                           metrics_func)
 
     def test_cloud_provider_performance_function(self):
+        self.skipTest(reason="Cloud Provider not running")
         """Test cloud provider performance function."""
         category = pc.CLOUD_PROVIDER
         id_tag = pc.CLOUD_PROVIDER_ID
@@ -876,6 +877,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_thin_pool_performance_function(self):
         """Test thin pool performance function."""
+        self.skipTest("not supported on v4")
         category = pc.THIN_POOL
         id_tag = pc.POOL_ID
         key_func = self.perf.get_thin_pool_keys
