@@ -36,6 +36,7 @@ class CITestWLP(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_headroom_info_array(self):
         """Test get_headroom array details."""
+        self.skipTest(reason="not supported in 10.1")
         headroom_stats = self.conn.wlp.get_headroom(self.conn.array_id)
         self.assertTrue(headroom_stats)
         for stats in headroom_stats:
@@ -45,6 +46,7 @@ class CITestWLP(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_headroom_info_srp(self):
         """Test get_headroom SRP details."""
+        self.skipTest(reason="Not supported in 10.1")
         srp_headroom_stats = self.conn.wlp.get_headroom(self.conn.array_id,
                                                         srp='SRP_1')
         for stats in srp_headroom_stats:

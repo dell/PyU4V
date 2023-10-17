@@ -1,12 +1,78 @@
 PyU4V Change Log
 ================
+Version 10.1.0.0
+Documentation updates
+Changed constants file to reflect migration resource changed to mobility.
+Added volumes.py
+Added storage
+Added performance_enhanced
+
+system.py
+new functions added
+get_management_server_resources
+refresh_array_details
+set_server_logging_level
+get_server_logging_level
+update_snmp_trap_destination
+delete_snmp_trap_destination
+set_snmp_trap_destination
+get_snmp_trap_configuration
+update_snmp_trap_destination
+
+replication.py
+added force options to delete snapshot functions
+New functions added.
+bulk_terminate_snapshots
+added new query filters to get_replication_enabled_storage_groups, now returns
+cloud snapshots or linked sg in list if specified
+
+
+
+provisioning.py
+added starting_lun_address param to specify the LUN address to use as a
+starting point for volumes in a SG when creating a Masking View
+added to functions -
+    - add_new_volume_to_storage_group
+    - add_existing_volume_to_storage_group
+    - create_masking_view_existing_components
+
+added terminate snapshots option to remove_volume_from_storage_group
+
+serviceability.py
+added functions
+    - get_local_symmetrix
+    - get_symmetrix_ntp_server
+    - modify_ntp_server
+    - download_serviceability_log
+    - get_ip_configuration
+    - update_ip_configuration
+    - get_application
+    - get_unisphere_application
+    - modify_unisphere_application
+    - restart_unisphere_application
+    - get_unisphere_configuration
+    - modify_unisphere_configuration
+    - get_symavoid_settings
+    - update_symavoid_settings
+    - get_solutions_enabler_application
+    - get_solutions_enabler_configuration
+    - get_solutions_enabler_system
+    - import_custom_certificate
+    - replace_self_signed_certificate
+
+Performance
+    - added to enable_real_time_data_collection to be able to register for
+    file, and storage groups for realtime collection.
+
+
+
 
 Version 10.0.0.19
 ====================================
-Updated Error Messages and changed strings to fstring in rest_requests.py
-Implemented contant versioning for development ease
+Documentation update to include additional examples
+system.py
+added set_port_protocol
 
-Version 10.0.0.18
 ====================================
 added clone functions
 Added proxy Support

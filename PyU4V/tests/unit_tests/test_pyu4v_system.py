@@ -643,7 +643,7 @@ class PyU4VSystemTest(testtools.TestCase):
         """Test get_any_director_port."""
         return_val = [{constants.PORT_ID: self.data.port_id1}]
         with mock.patch.object(
-            self.system, 'get_director_port_list',
+                self.system, 'get_director_port_list',
                 return_value=return_val) as mck_get_dir_port:
             port = self.system.get_any_director_port(
                 self.data.director_id1)
@@ -678,3 +678,63 @@ class PyU4VSystemTest(testtools.TestCase):
             resource_level_id=self.data.array,
             resource_type=DIRECTOR, resource_type_id=self.data.or_director_id,
             resource=PORT, resource_id=self.data.port_id1, payload=payload)
+
+    def test_get_management_server_resources(self):
+        with mock.patch.object(self.system,
+                               'get_management_server_resources',
+                               return_value=self.data.management_server_data):
+            resource_usage = self.system.get_management_server_resources()
+        self.assertIsInstance(resource_usage, dict)
+        self.assertEqual(self.data.management_server_data, resource_usage)
+
+    def test_refresh_array_details(self):
+        with mock.patch.object(self.system,
+                               'refresh_array_details',
+                               return_value=None):
+            refresh = self.system.refresh_array_details()
+        self.assertEqual(refresh, None)
+
+    def test_get_server_logging_level(self):
+        with mock.patch.object(
+                self.system, 'get_server_logging_level',
+                return_value=self.data.server_log_level):
+            log_level = self.system.get_server_logging_level()
+        self.assertEqual(self.data.server_log_level, log_level)
+
+    def test_set_server_logging_level(self):
+        with mock.patch.object(
+                self.system, 'set_server_logging_level',
+                return_value=self.data.server_log_level):
+            log_level = self.system.set_server_logging_level(
+                server_log_level='Info', restapi_logging_enabled=True)
+        self.assertEqual(self.data.server_log_level, log_level)
+
+    def test_get_snmp_trap_configuration(self):
+        with mock.patch.object(
+                self.system, 'get_snmp_trap_configuration',
+                return_value=self.data.snmp):
+            snmp_config = self.system.get_snmp_trap_configuration()
+        self.assertIn('engine_id', snmp_config)
+        self.assertIn('snmp_traps', snmp_config)
+
+    def test_set_snmp_trap_destination(self):
+        with mock.patch.object(
+                self.system, 'set_snmp_trap_destination',
+                return_value=self.data.snmp):
+            new_config = self.system.set_snmp_trap_destination(
+                name='10.60.1.1', port=162)
+        self.assertEquals('10.60.1.1', new_config['snmp_traps'][0]['name'])
+
+    def test_delete_snmp_trap_destination(self):
+        with mock.patch.object(
+                self.system, 'delete_snmp_trap_destination') as mock_delete:
+            self.system.delete_snmp_trap_destination(
+                snmp_id="56910fe4-9c69-3100-a493-ff9455acc02d")
+            mock_delete.assert_called_once()
+
+    def test_update_snmp_trap_destination(self):
+        with mock.patch.object(
+                self.system, 'update_snmp_trap_destination') as mock_update:
+            self.system.update_snmp_trap_destination(
+                snmp_id="56910fe4-9c69-3100-a493-ff9455acc02d", port=431)
+            mock_update.assert_called_once()

@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Dell Inc. or its subsidiaries.
+# Copyright (c) 2023 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -55,37 +55,42 @@ class CloneFunctions(object):
             src_modified_tracks=None, background_copy=None,
             differential=None, precopy=None, vse=None):
         """Get Clone target storage group list.
-        :param storage_group_id The Storage Group ID -- string
-        :param array_id The storage array ID -- string
-        :param target_storage_group Value that filters returned list to include
-               target storage groups equal to or like the provided
-               name -- string
-        :param target_storage_group_volume_count Value that filters returned
-               list to include target storage groups with the specified
-               number of volumes -- string
-        :param volume_pair_count Value that filters returned list to include
+
+        :param storage_group_id: The Storage Group ID -- string
+        :param array_id: The storage array ID -- string
+        :param target_storage_group: Value that filters returned list to
+                                     include target storage groups equal to
+                                     or like the provided name -- string
+        :param target_storage_group_volume_count: Value that filters returned
+                                                  list to include target
+                                                  storage groups with the
+                                                  specified number of volumes
+                                                  -- string
+        :param volume_pair_count: Value that filters returned list to include
                target storage groups with the specified number of volume
                pairs -- string
-        :param state Value that filters returned list to include target storage
-               groups with pairs in the specified states -- array
-        :param modified_tracks Value that filters returned list to include
-               target storage groups with the specified modified
-               tracks -- string
-        :param src_protected_tracks Value that filters returned list to include
-               target storage groups with the specified src protected tracks
-               -- string
-        :param src_modified_tracks Value that filters returned list to
-               include target storage groups with the specified src modified
-               tracks -- string
-        :param background_copy Value that filters returned list to include
-               target storage groups with background copy flag -- boolean
-        :param differential Value that filters returned list to include target
-               storage groups with differential flag -- boolean
-        :param precopy Value that filters returned list to include target
-               storage groups with the precopy flag -- boolean
-        :param vse Value that filters returned list to include target storage
-               groups with the vse -- boolean
-        :returns a list of target storage groups -- list
+        :param state: Value that filters returned list to include target
+                      storage groups with pairs in the specified states
+                      -- array
+        :param modified_tracks: Value that filters returned list to include
+                                target storage groups with the specified
+                                modified tracks -- string
+        :param src_protected_tracks: Value that filters returned list to
+                                     include target storage groups with the
+                                     specified src protected tracks -- str
+        :param src_modified_tracks: Value that filters returned list to
+                                    include target storage groups with the
+                                    specified src modified tracks -- string
+        :param background_copy: Value that filters returned list to include
+                                target storage groups with background copy
+                                flag -- boolean
+        :param differential: Value that filters returned list to include target
+                             storage groups with differential flag -- boolean
+        :param precopy: Value that filters returned list to include target
+                        storage groups with the precopy flag -- boolean
+        :param vse: Value that filters returned list to include target
+                    storage groups with the vse -- boolean
+        :returns: a list of target storage groups -- list
         """
         query_params = {
             'target_storage_group': target_storage_group,
@@ -144,6 +149,7 @@ class CloneFunctions(object):
             consistent=True, establish_terminate=False,
             array_id=None, force=False, star=False, skip=False):
         """Create Clone.
+
         :param storage_group_id: The Storage Group ID -- string
         :param consistent: creates the clone crash consistent using ECA
                            technology -- bool
@@ -161,7 +167,7 @@ class CloneFunctions(object):
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
         :param skip: Skips the source locks action -- bool
-
+        :returns: dict
         """
         array_id = array_id if array_id else self.array_id
         payload = {
@@ -184,6 +190,7 @@ class CloneFunctions(object):
                         symforce=False, star=False, skip=False,
                         not_ready=False, restored=None):
         """Terminate Clone Session.
+
         :param array_id: The storage array ID -- string
         :param storage_group_id: The Storage Group ID -- string
         :param target_storage_group_id: name of storage group to contain
@@ -199,6 +206,7 @@ class CloneFunctions(object):
         :param restored: removes the restore flag from clone session,
                          leaves clone session intact for incremental clone
                          operations.  Used following restore session -- bool
+        :returns: dict
         """
         array_id = array_id if array_id else self.array_id
         params = {
@@ -223,6 +231,7 @@ class CloneFunctions(object):
                         force=False, star=False, skip=False,
                         _async=False):
         """Perform establish against a clone storage group.
+
         :param storage_group_id: The Storage Group ID -- string
         :param target_storage_group_id: name of storage group to contain
                                           clone devices -- string
@@ -239,6 +248,7 @@ class CloneFunctions(object):
                      configuration -- bool
         :param skip: Skips the source locks action -- bool
         :param _async: if call should be async -- bool
+        :returns: dict
         """
         array_id = array_id if array_id else self.array_id
         payload = {
@@ -263,9 +273,10 @@ class CloneFunctions(object):
             star=False, skip=False, force=False, _async=False):
         """Perform split actions against a clone storage group that is in
         the restored state.
+
         :param storage_group_id: The Storage Group ID -- string
-        :param target_storage_group_id:The Storage Group ID of Target
-               storage group -- string
+        :param target_storage_group_id: The Storage Group ID of Target
+                                       storage group -- string
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
         :param skip: Skips the source locks action -- bool
@@ -274,6 +285,7 @@ class CloneFunctions(object):
                       the specified operation -- bool
         :param array_id: The storage array ID -- string
         :param _async: if call should be async -- bool
+        :returns: dict
         """
         array_id = array_id if array_id else self.array_id
         payload = {
@@ -296,8 +308,9 @@ class CloneFunctions(object):
             star=False, force=False, _async=False):
         """Perform split actions against a clone storage group that is in
         the restored state.
+
         :param storage_group_id: The Storage Group ID -- string
-        :param target_storage_group_id:The Storage Group ID of Target
+        :param target_storage_group_id: The Storage Group ID of Target
                storage group -- string
         :param array_id: The storage array ID -- string
         :param force: Attempts to force the operation even though one or more
@@ -306,6 +319,7 @@ class CloneFunctions(object):
         :param star: Acknowledge the volumes are in an SRDF/Star
                      configuration -- bool
         :param _async: if call should be async -- bool
+        :returns: dict
         """
         array_id = array_id if array_id else self.array_id
         payload = {

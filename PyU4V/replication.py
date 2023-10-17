@@ -65,6 +65,7 @@ class ReplicationFunctions(object):
         self.modify_resource = self.common.modify_resource
         self.delete_resource = self.common.delete_resource
         self.array_id = array_id
+        self.version = constants.UNISPHERE_VERSION
 
     def get_replication_info(self):
         """Return replication information for an array.
@@ -134,23 +135,36 @@ class ReplicationFunctions(object):
             resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
             params=filters)
 
-    def get_replication_enabled_storage_groups(self, has_snapshots=False,
-                                               has_srdf=False):
+    def get_replication_enabled_storage_groups(
+            self, array_id=None, has_srdf=None, has_snapshots=None,
+            has_cloud_snapshots=None, is_link_target=None,
+            has_snap_policies=None, has_clones=None):
         """Return list of storage groups with replication.
 
         :param has_snapshots: return only storage groups with snapshots
         :param has_srdf: return only storage groups with SRDF
+        :param has_cloud_snapshots: Value that filters returned list to display
+                                  Storage Groups that have Cloud Snapshots
+                                  -- bool
+        :param is_link_target: Value that filters returned list to display
+                               Storage Groups that are Link Targets -- bool
+        :param has_snap_policies: Value that filters returned list to display
+                                  Storage Groups that have Snapshot Policies
+                                  -- bool
+        :param has_clones: Value that filters returned list to display Storage
+                           Groups that have Clones -- bool
         :returns: list of storage groups with associated replication
         """
-        filters = dict()
-        if has_snapshots:
-            filters.update({'hasSnapshots': 'true'})
-        if has_srdf:
-            filters.update({'hasSrdf': 'true'})
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, params=filters)
+        array_id = array_id if array_id else self.array_id
+        query_params = {'hasSrdf': has_srdf, 'hasSnapshots': has_snapshots,
+                        'hasCloudSnapshots': has_cloud_snapshots,
+                        'is_link_target': is_link_target,
+                        'has_snap_policies': has_snap_policies,
+                        'has_clones': has_clones}
+        response = self.common.get_request(
+            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/"
+                       f"storagegroup",
+            resource_type=None, params=query_params)
         storage_group_list = (
             response.get('name', list()) if response else list())
         return storage_group_list
@@ -654,8 +668,9 @@ class ReplicationFunctions(object):
             object_type=GENERATION, object_type_id=str(gen))
 
     def delete_storage_group_snapshot_by_snap_id(
-            self, storage_group_id, snap_name, snap_id):
-        """Delete the snapshot of a storage group using it's snap id.
+            self, storage_group_id, snap_name, snap_id, force=False,
+            array_id=None, symforce=False):
+        """Delete the snapshot of a storage group using the snap id.
 
         Snap ids are only available on microcode 5978.669.669
         and greater.
@@ -663,13 +678,60 @@ class ReplicationFunctions(object):
         :param storage_group_id: storage group id -- str
         :param snap_name: snapshot name -- str
         :param snap_id: snapshot snap id -- int
+        :param force: sets force flag -- bool
+        :param array_id: 12 digit array id -- int
+        :param symforce: sets symforce flag -- bool
+        :returns: dict
         """
+        params = {}
+        if force:
+            params.update({'force': force})
+        if force:
+            params.update({'symforce': symforce})
+        array_id = self.array_id if not array_id else array_id
         self.delete_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=SNAP_ID, object_type_id=snap_id)
+            target_uri=f'/{self.version}/replication/symmetrix'
+                       f'/{array_id}/storagegroup/'
+                       f'{storage_group_id}/snapshot/{snap_name}/'
+                       f'snapid/{snap_id}',
+            params=params)
+
+    def bulk_terminate_snapshots(
+            self, storage_group_id, snap_name,
+            keep_count=None, terminate_all_snapshots=False,
+            snapset_id_and_older=None, force=False, array_id=None):
+        """Terminate Multiple snapshots in a bulk operation.
+
+        :param storage_group_id: Name of the storage group with snapshots --str
+        :param snap_name: optional name of snapshot to be terminated -- str
+        :param terminate_all_snapshots: Value that terminates all snapshots
+                                        -- bool
+        :param keep_count: Value that terminates a number of snapshots so
+                           that there is only the specified number of most
+                           recent snapshots retained -- int
+        :param snapset_id_and_older: Value that terminates all snapshots with
+                                     the snapset id or older --str
+        :param force: Value that sets the force flag -- bool
+        :param array_id: 12 digit array id -- int
+        """
+        params = {
+            'terminate_all_snapshots': terminate_all_snapshots,
+            'snapshot_name': snap_name
+        }
+        if force:
+            params.update({'force': force})
+
+        if keep_count:
+            params.update({'keep_count': keep_count})
+
+        if snapset_id_and_older:
+            params.update({'snapset_id_and_older': snapset_id_and_older})
+
+        array_id = array_id if array_id else self.array_id
+        self.common.delete_resource(
+            target_uri=f'/{self.version}/replication/symmetrix/'
+                       f'{array_id}/storagegroup/{storage_group_id}/snapshot',
+            params=params)
 
     def is_volume_in_replication_session(self, device_id):
         """Check if a volume is in a replication session.

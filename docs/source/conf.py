@@ -13,23 +13,20 @@
 
 import os
 import sys
-import PyU4V.utils.constants
 
-PYU4V_VERSION = PyU4V.utils.constants.PYU4V_VERSION
-SERVER_VERSION = PyU4V.utils.constants.UNISPHERE_PACKAGE_MIN_VERSION
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'PyU4V'
-copyright = '2021 Dell Inc. or its subsidiaries.'
+copyright = '2022 Dell Inc. or its subsidiaries.'
 author = 'Dell'
 
 # The short X.Y version.
-version = f'{SERVER_VERSION}'
+version = u'10.1'
 # The full version, including alpha/beta/rc tags
-release = PYU4V_VERSION
+release = '10.1.0.0'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

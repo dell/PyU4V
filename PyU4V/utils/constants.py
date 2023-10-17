@@ -39,9 +39,9 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '10.0.0.19'
-UNISPHERE_VERSION = '100'
-UNISPHERE_PACKAGE_MIN_VERSION = '10.0'
+PYU4V_VERSION = '10.1.0.0'
+UNISPHERE_VERSION = '101'
+ENHANCED_API_VERSION = 'v1'
 UCODE_6079 = '6079'
 VERSION = 'version'
 ITERATOR = 'Iterator'
@@ -52,9 +52,10 @@ SLOPROVISIONING = 'sloprovisioning'
 PROVISIONING = 'provisioning'
 STORAGEGROUP = 'storagegroup'
 REPLICATION = 'replication'
+MAINFRAME = 'mainframe'
 METRO_DR = 'metrodr'
 WLP = 'wlp'
-MIGRATION = 'migration'
+MIGRATION = 'mobility'
 DSA = 'dsa'
 SYSTEM = 'system'
 LOCAL_USER = 'local_user'
@@ -89,6 +90,9 @@ ALERT_SUMMARY = 'alert_summary'
 COMPLIANCE = 'compliance'
 FICON_SPLIT = 'split'
 CU_IMAGE = 'cuimage'
+SERVICEABILITY = 'serviceability'
+NTP_SERVER = "ntp_server"
+SYMMETRIX_ID = "symmetrix_id"
 
 # Status Codes
 STATUS_200 = 200
@@ -160,8 +164,8 @@ NUM_OF_INITIATORS = 'num_of_initiators'
 HOST_LUN_ADDRESS = 'host_lun_address'
 OVERRIDE = 'override'
 ENABLED = 'enabled'
-TRUE = 'true'
-FALSE = 'false'
+TRUE = 'True'
+FALSE = 'False'
 SPC2_PROTOCOL_VERSION = 'spc2_protocol_version'
 SPC2_PROTOCOL_VERSION_FLAG = 'SPC2_Protocol_Version(SPC2)'
 SCSI_3 = 'scsi_3'
@@ -173,22 +177,22 @@ AVOID_RESET_BROADCAST_FLAG = 'Avoid_Reset_Broadcast(ARB)'
 VOLUME_SET_ADDRESSING = 'volume_set_addressing'
 HOST_FLAGS = {
     'disable_q_reset_on_ua': {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     'environ_set': {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     VOLUME_SET_ADDRESSING: {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     'spc2_protocol_version': {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     'scsi_support1': {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     OPENVMS: {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     AVOID_RESET_BROADCAST: {
-        OVERRIDE: FALSE, ENABLED: FALSE},
+        OVERRIDE: False, ENABLED: False},
     SCSI_3: {
         OVERRIDE: TRUE, ENABLED: TRUE},
-    CONSISTENT_LUN: FALSE}
+    CONSISTENT_LUN: False}
 
 # Host Group constants
 NUM_OF_HOSTS = 'num_of_hosts'
@@ -432,4 +436,1604 @@ STR_TIME_FORMAT = '%Y%m%d%H%M%S'
 PORT_STRUCTURE = [{
     'directorId': str,
     'portId': str}
+]
+
+# Serviceability Constants
+SERVICEABILITY_LOG_FILENAME_TEMPLATE = 'PyU4V-ServiceabilityLogRecord'
+SERVICEABILITY_LOG_FILENAME = 'serviceabilitylogfilename'
+SERVICEABILITY_LOG_RECORD = 'serviceability_log_record'
+SERVICEABILITY_RECORD_PATH = 'serviceability_record_path'
+SERVICEABILITY_RECORD_TIME = 'serviceability_record_time'
+SERVICEABILITY_EXPORT_FILE = 'export'
+DEFAULT_NODE_NAME = 'Unisphere'
+IP_CONFIGURATION = 'ip_configuration'
+NATONE_IP_ADDRESS_IPV4 = 'natone_ip_address_ipv4'
+NATONE_NETMASK_IPV4 = 'natone_netmask_ipv4'
+NATONE_GATEWAY_IPV4 = 'natone_gateway_ipv4'
+NATTWO_IP_ADDRESS_IPV4 = 'nattwo_ip_address_ipv4'
+NATTWO_NETMASK_IPV4 = 'nattwo_netmask_ipv4'
+NATTWO_GATEWAY_IPV4 = 'nattwo_gateway_ipv4'
+NATONE_IP_ADDRESS_IPV6 = 'natone_ip_address_ipv6'
+NATONE_PREFIX_IPV6 = 'natone_prefix_ipv6'
+NATONE_GATEWAY_IPV6 = 'natone_gateway_ipv6'
+NATTWO_IP_ADDRESS_IPV6 = 'nattwo_ip_address_ipv6'
+NATTWO_PREFIX_IPV6 = 'nattwo_prefix_ipv6'
+NATTWO_GATEWAY_IPV6 = 'natone_gateway_ipv6'
+UPDATEIPV4 = 'UpdateIPV4'
+UPDATEIPV6 = 'UpdateIPV6'
+APPLICATION = 'application'
+APPLICATIONS = 'applications'
+UNISPHERE = 'unisphere'
+CONFIGURATION = 'configuration'
+VASA = 'vasa'
+DEFAULT_VASA = 'VASA-0'
+SOLUTIONS_ENABLER = 'solutions_enabler'
+GUEST_NAME = 'guest_name'
+NODE_NAME = 'node_name'
+ACCESS_ID = 'access_id'
+SERVER_ACCESS = 'server_access'
+SE_BASE_CONFIGURATION = 'se_base_configuration'
+SE_SERVICE_CONFIGURATION = 'se_service_configuration'
+SYMM_LIST = 'symm_list'
+SYMM_AVOID_LIST = 'symm_avoid_list'
+VASA_APPLICATIONS = 'vasa_applications'
+RUNNING_STATUS = 'running_status'
+VP_LOG_FILE_SIZE_MB = 'vp_log_file_size_mb'
+VP_LOG_LEVEL = 'vp_log_level'
+VP_NUM_OF_FILES_TO_BE_RETAINED = 'vp_num_of_files_to_be_retained'
+VP_MAX_CONNECTION_PER_SESSION = 'vp_max_connection_per_session'
+RETAIN_VP_CERT = 'retain_vp_cert'
+SYMAPI_DEBUG_LOG = 'symapi_debug_log'
+SE_APPLICATIONS = 'se_applications'
+SE_NETHOST = 'se_nethost'
+ALLOW_SERVICE_ACCESS = 'AllowServerAccess'
+CUSTOM_CERTIFICATE = 'custom_certificate'
+IMPORT = 'import'
+SELF_SIGNED_CERTIFICATE = 'self_signed_certificate'
+NODE_DISPLAYNAME = 'node_displayname'
+STORAGEGROUP_META_DATA = [
+    {
+        "name": "id",
+        "type": "String",
+        "required": True
+    },
+    {
+        "name": "resource_type",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "type",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "uuid",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "system",
+        "type": "StorageGroup_System",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "volume_emulation",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "srp",
+        "type": "StorageGroup_Srp",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_volumes",
+        "type": "Integer",
+        "required": False
+    },
+    {
+        "name": "volumes",
+        "type": "List<StorageGroup_Volume>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "wwn",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "effective_wwn",
+                "type": "String",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_non_gk_volumes",
+        "type": "Integer",
+        "required": False
+    },
+    {
+        "name": "non_gk_volumes",
+        "type": "List<StorageGroup_GateKeeperVolume>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "wwn",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "effective_wwn",
+                "type": "String",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_child_storage_groups",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "child_storage_groups",
+        "type": "List<StorageGroup_ChildStorageGroup>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_parent_storage_groups",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "parent_storage_groups",
+        "type": "List<StorageGroup_ParentStorageGroup>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_masking_views",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "masking_views",
+        "type": "List<StorageGroup_MaskingView>",
+        "attributes": [
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "host",
+                "type": "StorageGroup_MaskingView_Host",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "port_group",
+                "type": "StorageGroup_MaskingView_PortGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "storage_group",
+                "type": "StorageGroup_MaskingView_StorageGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "uuid",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "last_update_time_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "masking_view_last_update_time_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "num_of_initiators",
+                "type": "Long",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_snapshots",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "snapshots",
+        "type": "List<StorageGroup_Snapshot>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "name",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "timestamp_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "generation",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "linked",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "restored",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "expired",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "secured",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "persistent",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "num_of_volumes",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "volumes",
+                "type": "List<StorageGroup_Snapshot_Volume>",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "cap_gb",
+                "type": "Double",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_snapshot_policies",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "snapshot_policies",
+        "type": "List<StorageGroup_SnapshotPolicy>",
+        "attributes": [
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "association_time_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "resumed",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "suspended",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "inherited",
+                "type": "Boolean",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_clones",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "clones",
+        "type": "List<StorageGroup_Clone>",
+        "attributes": [
+            {
+                "name": "target_storage_group",
+                "type": "StorageGroup_Clone_StorageGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": True
+            },
+            {
+                "name": "source_storage_group",
+                "type": "StorageGroup_Clone_StorageGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": True
+            },
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "states",
+                "type": "List<String>",
+                "required": False
+            },
+            {
+                "name": "flags",
+                "type": "List<String>",
+                "required": False
+            },
+            {
+                "name": "modified_tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "source_modified_tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "source_protected_tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "fully_cloned",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "last_action_timestamp_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "num_of_pairs",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "pairs",
+                "type": "List<StorageGroup_Clone_PairInfo>",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "source_volume",
+                        "type": "StorageGroup_Clone_PairInfo_Volume",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": False
+                    },
+                    {
+                        "name": "target_volume",
+                        "type": "StorageGroup_Clone_PairInfo_Volume",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": False
+                    },
+                    {
+                        "name": "state",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "flags",
+                        "type": "List<String>",
+                        "required": False
+                    },
+                    {
+                        "name": "modified_tracks",
+                        "type": "Long",
+                        "required": False
+                    },
+                    {
+                        "name": "source_modified_tracks",
+                        "type": "Long",
+                        "required": False
+                    },
+                    {
+                        "name": "source_protected_tracks",
+                        "type": "Long",
+                        "required": False
+                    },
+                    {
+                        "name": "last_action_timestamp_ms",
+                        "type": "Long",
+                        "required": False
+                    },
+                    {
+                        "name": "percent_complete",
+                        "type": "Long",
+                        "required": False
+                    },
+                    {
+                        "name": "system",
+                        "type": "StorageGroup_Clone_PairInfo_System",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": False
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "system",
+                "type": "StorageGroup_Clone_System",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_rdf_infos",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "rdf_infos",
+        "type": "List<StorageGroup_RdfInfo>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "states",
+                "type": "List<String>",
+                "required": False
+            },
+            {
+                "name": "types",
+                "type": "List<String>",
+                "required": False
+            },
+            {
+                "name": "modes",
+                "type": "List<String>",
+                "required": False
+            },
+            {
+                "name": "cap_gb",
+                "type": "Double",
+                "required": False
+            },
+            {
+                "name": "cap_mb",
+                "type": "Double",
+                "required": False
+            },
+            {
+                "name": "async",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "metro",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "num_of_pairs",
+                "type": "Integer",
+                "required": False
+            },
+            {
+                "name": "pairs",
+                "type": "List<StorageGroup_RdfPair>",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "local_volume",
+                        "type": "StorageGroup_RdfPair_Volume",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": True
+                    },
+                    {
+                        "name": "remote_volume",
+                        "type": "StorageGroup_RdfPair_Volume",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": True
+                    },
+                    {
+                        "name": "link_status",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "state",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "mode",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "adaptive_copy_state",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "consistency_state",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "suspend_state",
+                        "type": "String",
+                        "required": False
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "local_rdf_group",
+                "type": "StorageGroup_RdfGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    },
+                    {
+                        "name": "system",
+                        "type": "StorageGroup_Rdf_Group_System",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": False
+                            }
+                        ],
+                        "required": False
+                    },
+                    {
+                        "name": "ucode",
+                        "type": "String",
+                        "required": False
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "remote_rdf_group",
+                "type": "StorageGroup_RdfGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    },
+                    {
+                        "name": "system",
+                        "type": "StorageGroup_Rdf_Group_System",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": False
+                            }
+                        ],
+                        "required": False
+                    },
+                    {
+                        "name": "ucode",
+                        "type": "String",
+                        "required": False
+                    }
+                ],
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "host_io_limit_info",
+        "type": "StorageGroup_HostIoInfo",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "host_io_limit_mb_sec",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "host_io_limit_io_sec",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "dynamic_distribution",
+                "type": "String",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "service_level",
+        "type": "StorageGroup_ServiceLevel",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "base_id",
+                "type": "String",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "tags",
+        "type": "List<StorageGroup_Tag>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "tagged_objects",
+                "type": "List<StorageGroup_Tag_Tagged_Object>",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    },
+                    {
+                        "name": "type",
+                        "type": "String",
+                        "required": False
+                    }
+                ],
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_tags",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "last_modified_time_ms",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "group_last_modified_time_ms",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "timestamp_ms",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "effective_used_capacity_gb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "data_reduction_enabled",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "data_reduction_ratio_to_one",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "unreducible_data_gb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "cap_gb",
+        "type": "Double",
+        "required": False
+    }
+]
+VOLUMES_METADATA = [
+    {
+        "name": "id",
+        "type": "String",
+        "required": True
+    },
+    {
+        "name": "resource_type",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "type",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "system",
+        "type": "Volume_System",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "emulation",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "status",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "identifier",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "ssid",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "nguid",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "wwn",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "effective_wwn",
+        "type": "String",
+        "required": False
+    },
+    {
+        "name": "has_effective_wwn",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "mobility_id_enabled",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "encapsulated",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "snapvx_source",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "snapvx_target",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "num_of_storage_groups",
+        "type": "Integer",
+        "required": False
+    },
+    {
+        "name": "storage_groups",
+        "type": "List<Volume_StorageGroup>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_masking_views",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "masking_views",
+        "type": "List<Volume_MaskingView>",
+        "attributes": [
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "host",
+                "type": "Volume_MaskingView_Host",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "port_group",
+                "type": "Volume_MaskingView_PortGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "storage_group",
+                "type": "Volume_MaskingView_StorageGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "uuid",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "last_update_time_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "masking_view_last_update_time_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "num_of_initiators",
+                "type": "Long",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_snapshots",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "snapshots",
+        "type": "List<Volume_Snapshot>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            },
+            {
+                "name": "name",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "timestamp_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "generation",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "linked",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "restored",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "expired",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "expiry_date",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "secured",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "failed",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "persistent",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "cap_gb",
+                "type": "Double",
+                "required": False
+            },
+            {
+                "name": "tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "track_size",
+                "type": "Long",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_clones",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "clones",
+        "type": "List<Volume_Clone_PairInfo>",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "source_volume",
+                "type": "Volume_Clone_PairInfo_Volume",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "target_volume",
+                "type": "Volume_Clone_PairInfo_Volume",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "state",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "flags",
+                "type": "List<String>",
+                "required": False
+            },
+            {
+                "name": "modified_tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "source_modified_tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "source_protected_tracks",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "last_action_timestamp_ms",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "percent_complete",
+                "type": "Long",
+                "required": False
+            },
+            {
+                "name": "system",
+                "type": "Volume_Clone_System",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "num_of_rdf_infos",
+        "type": "Long",
+        "required": False
+    },
+    {
+        "name": "rdf_infos",
+        "type": "List<Volume_RdfInfo>",
+        "attributes": [
+            {
+                "name": "remote_volume",
+                "type": "Volume_RdfInfo_Volume",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    }
+                ],
+                "required": True
+            },
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "local_rdf_group",
+                "type": "Volume_RdfGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    },
+                    {
+                        "name": "system",
+                        "type": "Volume_Rdf_Group_System",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": False
+                    },
+                    {
+                        "name": "ucode",
+                        "type": "String",
+                        "required": False
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "remote_rdf_group",
+                "type": "Volume_RdfGroup",
+                "attributes": [
+                    {
+                        "name": "resource_type",
+                        "type": "String",
+                        "required": False
+                    },
+                    {
+                        "name": "id",
+                        "type": "String",
+                        "required": True
+                    },
+                    {
+                        "name": "system",
+                        "type": "Volume_Rdf_Group_System",
+                        "attributes": [
+                            {
+                                "name": "resource_type",
+                                "type": "String",
+                                "required": False
+                            },
+                            {
+                                "name": "id",
+                                "type": "String",
+                                "required": True
+                            }
+                        ],
+                        "required": False
+                    },
+                    {
+                        "name": "ucode",
+                        "type": "String",
+                        "required": False
+                    }
+                ],
+                "required": False
+            },
+            {
+                "name": "state",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "mode",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "async",
+                "type": "Boolean",
+                "required": False
+            },
+            {
+                "name": "metro",
+                "type": "Boolean",
+                "required": False
+            }
+        ],
+        "required": False
+    },
+    {
+        "name": "cap_tb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "cap_gb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "cap_mb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "cap_cyl",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "unreducible_data_gb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "data_reduction_ratio_to_one",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "data_reduction_enabled",
+        "type": "Boolean",
+        "required": False
+    },
+    {
+        "name": "effective_used_capacity_gb",
+        "type": "Double",
+        "required": False
+    },
+    {
+        "name": "srp",
+        "type": "Volume_Srp",
+        "attributes": [
+            {
+                "name": "resource_type",
+                "type": "String",
+                "required": False
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "required": True
+            }
+        ],
+        "required": False
+    }
 ]

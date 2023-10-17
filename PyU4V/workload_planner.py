@@ -17,6 +17,7 @@ import logging
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
+from PyU4V.utils import decorators
 
 LOG = logging.getLogger(__name__)
 
@@ -38,6 +39,8 @@ class WLPFunctions(object):
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
 
+    @decorators.deprecation_notice(
+        'get_wlp_information', 10.1, 10.3)
     def get_wlp_information(self, array_id):
         """Get the latest timestamp from WLP for processing New Workloads.
 
@@ -49,6 +52,8 @@ class WLPFunctions(object):
             resource_level_id=array_id)
         return response if response else dict()
 
+    @decorators.deprecation_notice(
+        'get_headroom', 10.1, 10.3)
     def get_headroom(self, array_id, workload=None, srp=None, slo=None):
         """Get the Remaining Headroom Capacity.
 
@@ -74,6 +79,8 @@ class WLPFunctions(object):
             resource_type=HEADROOM, params=params)
         return response.get(GB_HEADROOM, list()) if response else list()
 
+    @decorators.deprecation_notice(
+        'get_capabilities', 10.1, 10.3)
     def get_capabilities(self, array_id=None):
         """Generate WLP capability list for each WLP authorized array.
 

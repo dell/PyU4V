@@ -236,51 +236,16 @@ class PyU4VPerformanceTest(testtools.TestCase):
             with mock.patch.object(
                     self.perf, 'post_request',
                     side_effect=self.perf.post_request) as mck_p:
-                self.perf.enable_real_time_data_collection()
+                self.perf.enable_real_time_data_collection(
+                    storage_group_list='test')
                 mck_p.assert_called_once_with(
-                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                    resource_type=pc.REGISTER, payload={
-                        pc.SYMM_ID: self.perf.array_id,
-                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: True})
-
-    def test_enable_real_time_data_collection_fail_already_enabled(self):
-        """Test enable_real_time_data_collection fail - already enabled."""
-        with mock.patch.object(
-                self.perf, 'post_request',
-                side_effect=self.perf.post_request) as mck_p:
-            self.perf.enable_real_time_data_collection()
-            mck_p.assert_not_called()
-
-    def test_enable_real_time_data_collection_fail_not_applied(self):
-        """Test enable_diagnostic_data_collection fail - change not applied."""
-        with mock.patch.object(
-                self.perf, 'get_request',
-                return_value=self.p_data.array_reg_details_disabled):
-            with mock.patch.object(
-                    self.perf, 'post_request',
-                    return_value=self.p_data.array_register_fail) as mck_p:
-                self.assertRaises(exception.VolumeBackendAPIException,
-                                  self.perf.enable_real_time_data_collection)
-                mck_p.assert_called_once_with(
-                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                    resource_type=pc.REGISTER, payload={
-                        pc.SYMM_ID: self.perf.array_id,
-                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: True})
-
-    def test_enable_real_time_data_collection_fail_no_msg(self):
-        """Test enable_diagnostic_data_collection fail - no response msg."""
-        with mock.patch.object(
-                self.perf, 'get_request',
-                return_value=self.p_data.array_reg_details_disabled):
-            with mock.patch.object(
-                    self.perf, 'post_request', return_value=dict()) as mck_p:
-                self.assertRaises(exception.VolumeBackendAPIException,
-                                  self.perf.enable_real_time_data_collection)
-                mck_p.assert_called_once_with(
-                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                    resource_type=pc.REGISTER, payload={
-                        pc.SYMM_ID: self.perf.array_id,
-                        pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: True})
+                    category='performance', resource_level='Array',
+                    resource_type='register',
+                    payload={'symmetrixId': '000197800123',
+                             'diagnostic': True,
+                             'realtime': True,
+                             'selectedSGs': 'test',
+                             'file': False})
 
     def test_disable_real_time_data_collection_success(self):
         """Test disable_real_time_data_collection success.

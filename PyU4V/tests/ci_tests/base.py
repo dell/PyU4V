@@ -43,6 +43,7 @@ class TestBaseTestCase(testtools.TestCase):
         self.migration = self.conn.migration
         self.perf = self.conn.performance
         self.clone = self.conn.clone
+        self.system = self.conn.system
 
     def setup_credentials(self):
         """Set REST credentials."""
@@ -147,11 +148,13 @@ class TestBaseTestCase(testtools.TestCase):
         if 'Restored' in snap_details.get('state'):
             try:
                 self.replication.delete_storage_group_snapshot_by_snap_id(
-                    sg_name, snap_name, snap_id)
+                    storage_group_id=sg_name, snap_name=snap_name,
+                    snap_id=snap_id, force=True)
             except Exception:
                 pass
         self.replication.delete_storage_group_snapshot_by_snap_id(
-            sg_name, snap_name, snap_id)
+            storage_group_id=sg_name, snap_name=snap_name,
+            snap_id=snap_id, force=True)
 
     def create_rdf_sg(self):
         """set up and tear down srdf pairings.
@@ -930,3 +933,11 @@ class TestBaseTestCase(testtools.TestCase):
         files = [x for x in p if x.is_file()]
         for file in files:
             file.unlink()
+
+    def cleanup_snmp_config(self):
+        snmp_ids = self.system.get_snmp_trap_configuration()
+        for id in snmp_ids['snmp_traps']:
+            try:
+                self.system.delete_snmp_trap_destination(snmp_id=id['id'])
+            except exception.ResourceNotFoundException:
+                pass

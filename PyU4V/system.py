@@ -81,6 +81,7 @@ DIRECTOR_ID = constants.DIRECTOR_ID
 PORT = constants.PORT
 IP_INTERFACE = constants.IP_INTERFACE
 IP_INTERFACE_ID = constants.IP_INTERFACE_ID
+ASYNC_UPDATE = constants.ASYNC_UPDATE
 
 
 class SystemFunctions(object):
@@ -91,6 +92,7 @@ class SystemFunctions(object):
         self.common = CommonFunctions(rest_client)
         self.is_v4 = self.common.is_array_v4(array_id)
         self.array_id = array_id
+        self.version = constants.UNISPHERE_VERSION
 
     def get_system_health(self, array_id=None):
         """Query for system health information.
@@ -1200,8 +1202,8 @@ class SystemFunctions(object):
 
         :param director: the director ID e.g. FA-1D -- str
         :param port_no: the port number e.g. 1 -- str
-        :param port_online: True will attempt to online port, false wll offline
-                            --bool
+        :param port_online: True will attempt to online port, false will
+                            offline port -- bool
         :returns: director port details -- dict
         """
         payload = {
@@ -1213,3 +1215,148 @@ class SystemFunctions(object):
             resource_level_id=self.array_id, resource_type=DIRECTOR,
             resource_type_id=director, resource=PORT,
             resource_id=port_no, payload=payload)
+
+    def set_port_protocol(self, director, port_number, protocol, enable=True,
+                          array_id=None, _async=None):
+        """Enable or disable protocol on OR director ports.
+
+
+        :param director: Director Id e.g. OR-1C -- str
+        :param port_number: Director Port Number -- int
+        :param protocol:
+        :param enable:
+        :param array_id:
+        :return:
+        """
+
+        array_id = array_id if array_id else self.array_id
+        payload = {
+            'editPortActionParamType': {
+                'setPortAttributesActionParamType': {
+                    'setProtocolParamType': {
+                        'protocol': protocol,
+                        'enable': enable}}}}
+        if _async:
+            payload.update(ASYNC_UPDATE)
+        return self.common.modify_resource(
+            target_uri=f"/{self.version}/system/symmetrix/"
+                       f"{array_id}/director/{director}/port/{port_number}",
+            resource_type=None, payload=payload)
+
+    def get_management_server_resources(self):
+        """Get Details on Server Resources and REST Utilization.
+
+        returns: dictionary with details on server utilization --dict
+        """
+        return self.common.get_request(
+            target_uri=f"/{self.version}/system/management_server_resources",
+            resource_type=None)
+
+    def refresh_array_details(self, array_id=None):
+        """Refresh Unisphere object model for specified array with latest
+        configuration information.
+
+        Note, the usage of this call is restricted to run once every 5
+        minutes to avoid excessive usage. Usage if changes have been made
+        from another Unipshere instance this call can be run to ensure
+        systems are in sync.
+
+        :param array_id: The storage array ID -- string
+
+        returns: None or Status Code 429 with message
+        """
+
+        array_id = array_id if array_id else self.array_id
+        return self.common.create_resource(
+            target_uri=f"/{self.version}/system/symmetrix/"
+                       f"{array_id}/refresh")
+
+    def get_server_logging_level(self):
+        """Get Server logging level for Unisphere Server.
+        returns: dict
+        """
+        return self.common.get_request(
+            target_uri=f"/{self.version}/system/logging",
+            resource_type=None)
+
+    def set_server_logging_level(
+            self, server_log_level='WARN', restapi_logging_enabled=False):
+        """Get Server logging level for Unisphere Server.
+        :param server_log_level - INFO, WARN, DEBUG -- string
+        :param restapi_logging_enabled - bool
+        returns: dict
+        """
+        payload = {
+            "server_logging_level": server_log_level,
+            "restapi_logging_enabled": restapi_logging_enabled
+        }
+
+        return self.common.modify_resource(
+            target_uri=f"/{self.version}/system/logging",
+            resource_type=None, payload=payload)
+
+    def get_snmp_trap_configuration(self):
+        """Returns the details of SNMP Trap Receivers.
+
+        :returns SNMP configuration information--dict
+        """
+        return self.common.get_request(
+            target_uri=f"/{self.version}/system/snmp",
+            resource_type=None)
+
+    def set_snmp_trap_destination(
+            self, name, port, username=None, password=None,
+            passphrase=None):
+        """Add new SNMP trap receiver to configuration.
+
+        :param name: Ipdaddress or DNS Name -- str
+        :param port: port SNMP server recieves trap on --int
+        :param username: Username for SNMP v3Username for SNMP v3 --str
+        :param password: Password for SNMP v3 --str
+        :param passphrase: Passphrase for SNMP v3 --str
+        :returns:
+        """
+        payload = {
+            'name': name,
+            'port': port,
+            'username': username,
+            'password': password,
+            'passphrase': passphrase
+        }
+        return self.common.create_resource(
+            target_uri=f"/{self.version}/system/snmp",
+            resource_type=None, payload=payload)
+
+    def delete_snmp_trap_destination(self, snmp_id):
+        """Deletes specified SNMP trap receiver from configuration.
+
+        :param snmp_id unique identifier for snmp trap destination - str
+        """
+        return self.common.delete_resource(
+            target_uri=f"/{self.version}/system/snmp/{snmp_id}",
+            resource_type=None)
+
+    def update_snmp_trap_destination(
+            self, snmp_id, name=None, port=None, username=None,
+            password=None, passphrase=None):
+        """Update existing SNMP configuration item.
+
+        :param snmp_id: an id generated for a specific SNMP trap, use
+                        get_snmp_trap_configuration to find values -- str
+        :param name: New IP address/hostname for the SNMP trap -- str
+        :param port: New port number for the SNMP trap  --str
+        :param username: Updated username for the SNMP trap  --str
+        :param password: Updated password for SNMP trap  --str
+        :param passphrase:  Updated passphrase for SNMP trap  --str
+        :returns: dict
+        """
+        payload = {
+            'name': name,
+            'port': port,
+            'username': username,
+            'password': password,
+            'passphrase': passphrase
+        }
+        return self.common.modify_resource(
+            target_uri=f"/{self.version}/system/snmp/{snmp_id}",
+            resource_type=None, payload=payload)
