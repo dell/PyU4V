@@ -39,7 +39,7 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = '10.1.0.0'
+PYU4V_VERSION = '10.1.0.1'
 UNISPHERE_VERSION = '101'
 ENHANCED_API_VERSION = 'v1'
 UCODE_6079 = '6079'

@@ -19,7 +19,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='PyU4V',
-    version='10.1.0.0',
+    version='10.1.0.1',
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
     author_email='helen.walsh@dell.com',
