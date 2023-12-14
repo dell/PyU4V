@@ -284,7 +284,7 @@ class ServiceabilityFunctions(object):
         :returns: will not return as Unisphere server restarts.
 
         """
-        payload = {'action': 'Restart'}
+        payload = {'action': 'RestartUnisphere'}
         array_id = self.array_id if not array_id else array_id
         return self.common.create_resource(
             target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"

@@ -1,6 +1,12 @@
 PyU4V Change Log
 ================
+
+Version 10.1.0.1
+====================================
+Bug fix for Github Issue #174 restart_unisphere_application has wrong payload.
+
 Version 10.1.0.0
+====================================
 Documentation updates
 Changed constants file to reflect migration resource changed to mobility.
 Added volumes.py
