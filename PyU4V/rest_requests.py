@@ -51,7 +51,7 @@ class RestRequests(object):
     """RestRequests."""
 
     def __init__(self, username, password, verify, base_url, interval, retries,
-                 application_type=None, proxies=None):
+                 application_type=None, proxies=None, timeout=None):
         """__init__."""
         self.username = username
         self.password = password
@@ -61,11 +61,14 @@ class RestRequests(object):
                         ACCEPT: APP_JSON,
                         USER_AGENT: ua_details,
                         APP_TYPE: application_type}
-        self.timeout = 120
+        # if timeout is not none set self.timeout to timeout
+        # value or set to 120
+        self.timeout = timeout or 120
         self.interval = interval
         self.proxies = proxies
         self.retries = retries
         self.session = self.establish_rest_session()
+
 
     def establish_rest_session(self, headers=None):
         """Establish a REST session.
