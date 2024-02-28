@@ -69,7 +69,6 @@ class RestRequests(object):
         self.retries = retries
         self.session = self.establish_rest_session()
 
-
     def establish_rest_session(self, headers=None):
         """Establish a REST session.
 
