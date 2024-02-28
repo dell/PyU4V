@@ -100,7 +100,6 @@ class U4VConn(object):
             if config.has_option(SETUP, 'timeout') and timeout is None:
                 self.timeout = int(config.get(SETUP, 'timeout'))
 
-
         # Set verification
         if verify is None:
             try:
