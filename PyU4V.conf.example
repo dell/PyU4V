@@ -9,7 +9,8 @@ array=00012345678
 ; remote_array=00012345679
 ; verify=True
 verify=/path-to-file/server_hostname.pem
-
+;overrides default timeout on REST calls for specificed value in seconds
+;timeout=500
 ; log configuration
 [loggers]
 keys=root,PyU4V

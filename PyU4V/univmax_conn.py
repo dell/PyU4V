@@ -61,12 +61,13 @@ class U4VConn(object):
                  u4v_version=constants.UNISPHERE_VERSION,
                  interval=5, retries=200, array_id=None,
                  application_type=app_type, remote_array=None,
-                 remote_array_2=None, proxies=None):
+                 remote_array_2=None, proxies=None, timeout=None):
         """__init__."""
         config = config_handler.set_logger_and_config(file_path)
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = array_id
+        self.timeout = timeout if timeout is not None else 120
         # Set array ID
         if not self.array_id:
             try:
@@ -96,6 +97,8 @@ class U4VConn(object):
                     self.remote_array_2 = config.get(SETUP, R_ARRAY_2)
             else:
                 self.remote_array_2 = None
+            if config.has_option(SETUP, 'timeout') and timeout is None:
+                self.timeout = int(config.get(SETUP, 'timeout'))
 
         # Set verification
         if verify is None:
@@ -112,13 +115,12 @@ class U4VConn(object):
         # Initialise REST session
         base_url = f'https://{server_ip}:{port}/univmax/restapi'
         enhanced_api_url = f'https://{server_ip}:{port}/univmax/rest'
-
         self.rest_client = RestRequests(
             username, password, verify, base_url, interval, retries,
-            application_type, proxies=proxies)
+            application_type, proxies=proxies, timeout=self.timeout)
         self.enhanced_rest_client = RestRequests(
             username, password, verify, enhanced_api_url, interval, retries,
-            application_type, proxies=proxies)
+            application_type, proxies=proxies, timeout=self.timeout)
         self.request = self.rest_client.rest_request
         self.common = CommonFunctions(self.rest_client)
         self.validate_unisphere()

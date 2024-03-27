@@ -1,6 +1,11 @@
 PyU4V Change Log
 ================
 
+Version 10.1.0.2 and backport to Version 10.0.0.20
+====================================
+added timeout parameter to connection to make configurable.  PyU4V.conf also
+can take new setup value for timeout to override 120s value.
+
 Version 10.1.0.1
 ====================================
 Bug fix for Github Issue #174 restart_unisphere_application has wrong payload.
