@@ -18,7 +18,7 @@ import logging
 import re
 import socket
 import time
-
+from PyU4V.utils import decorators
 from PyU4V import common
 from PyU4V import real_time
 from PyU4V.utils import exception
