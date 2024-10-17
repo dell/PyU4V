@@ -16,8 +16,8 @@
 
 class CommonData(object):
     """Common array data."""
-    U4P_VERSION = '101'
-    server_version = {'version': 'V10.1.0.0'}
+    U4P_VERSION = '102'
+    server_version = {'version': 'V10.2.0.0'}
 
     array = '000197800123'
     remote_array = '000197800124'

@@ -18,10 +18,8 @@ import logging
 import re
 import socket
 import time
-
 from PyU4V import common
 from PyU4V import real_time
-from PyU4V.utils import decorators
 from PyU4V.utils import exception
 from PyU4V.utils import file_handler
 from PyU4V.utils import performance_constants as pc
@@ -65,25 +63,6 @@ class PerformanceFunctions(object):
         :param minutes: recency minutes -- int
         """
         self.recency = minutes
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance',
-        'PyU4V.performance.is_array_diagnostic_performance_registered',
-        9.2, 10.1)
-    def is_array_performance_registered(self, array_id=None):
-        """Check if an array is registered for diagnostic performance data.
-
-        DEPRECATION NOTICE:
-        PerformanceFunctions.is_array_performance_registered() will be
-        refactored in PyU4V version 10.1 in favour of
-        PerformanceFunctions.is_array_diagnostic_performance_registered().
-        For further information please consult PyU4V 9.2 release notes.
-
-        :param array_id: array id -- str
-        :returns: is diagnostic registered -- bool
-        """
-        array_id = self.array_id if not array_id else array_id
-        return self.is_array_diagnostic_performance_registered(array_id)
 
     def is_array_diagnostic_performance_registered(self, array_id=None):
         """Check if an array is registered for diagnostic performance data.
@@ -242,7 +221,8 @@ class PerformanceFunctions(object):
 
         if self.is_array_real_time_performance_registered(array_id):
             # Retain the existing diagnostic performance setting
-            diag_reg = self.is_array_performance_registered(array_id)
+            diag_reg = self.is_array_diagnostic_performance_registered(
+                array_id)
 
             response = self.post_request(
                 category=pc.PERFORMANCE, resource_level=pc.ARRAY,
@@ -860,7 +840,8 @@ class PerformanceFunctions(object):
             first_threshold_samples=5,
             first_threshold_severity=pc.WARN_LVL,
             second_threshold_occurrences=3, second_threshold_samples=5,
-            second_threshold_severity=pc.CRIT_LVL):
+            second_threshold_severity=pc.CRIT_LVL,
+            include_realtime_trace=False):
         """Edit an existing global threshold across all arrays.
 
         :param category: category id -- str
@@ -878,19 +859,23 @@ class PerformanceFunctions(object):
         :param second_threshold_severity: error severity, valid values are
                                           'INFORMATION', 'WARNING', and
                                           'CRITICAL' -- str
+        :param include_realtime_trace: if threshold is breached in addition
+                                       to alert a performance
         :returns: operation success details -- dict
         """
-        payload = dict()
-        payload[pc.METRIC] = metric
-        payload[pc.ALERT] = alert
-        payload[pc.FIRST_THRESH] = str(first_threshold)
-        payload[pc.FIRST_THRESH_OCC] = str(first_threshold_occurrences)
-        payload[pc.FIRST_THRESH_SAMP] = str(first_threshold_samples)
-        payload[pc.FIRST_THRESH_SEV] = first_threshold_severity
-        payload[pc.SEC_THRESH] = str(second_threshold)
-        payload[pc.SEC_THRESH_OCC] = str(second_threshold_occurrences)
-        payload[pc.SEC_THRESH_SAMP] = str(second_threshold_samples)
-        payload[pc.SEC_THRESH_SEV] = second_threshold_severity
+        payload = {
+            "metric": metric,
+            "firstThreshold": str(first_threshold),
+            "secondThreshold": str(second_threshold),
+            "alert": alert,
+            "firstThresholdOccurrrences": str(first_threshold_occurrences),
+            "firstThresholdSamples": str(first_threshold_samples),
+            "firstThresholdSeverity": str(first_threshold_severity),
+            "secondThresholdOccurrrences": str(second_threshold_occurrences),
+            "secondThresholdSamples": str(second_threshold_samples),
+            "secondThresholdSeverity": str(second_threshold_severity),
+            "includeRealTimeTraceOnCritical": include_realtime_trace
+        }
 
         return self.put_request(
             category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
@@ -964,7 +949,8 @@ class PerformanceFunctions(object):
             self.update_threshold_settings(
                 category=category_list[i], metric=metric_list[i],
                 alert=notify_list[i], first_threshold=f_threshold_list[i],
-                second_threshold=s_threshold_list[i])
+                second_threshold=s_threshold_list[i],
+                include_realtime_trace=False)
 
     def get_array_keys(self):
         """List Arrays registered for performance data collection.
@@ -1157,41 +1143,6 @@ class PerformanceFunctions(object):
         request_body = {pc.CACHE_PART_ID: cache_partition_id}
         return self.get_performance_stats(
             array_id=array_id, category=pc.CACHE_PART, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
-
-    def get_cloud_provider_keys(self, array_id=None):
-        """List cache partitions for the given array.
-
-        :param array_id: array id -- str
-        :returns: cache partition info with first and last available
-                  dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.CLOUD_PROVIDER,
-                                                 array_id=array_id)
-        return key_list.get(
-            pc.CLOUD_PROVIDER_INFO, list()) if key_list else list()
-
-    def get_cloud_provider_stats(
-            self, cloud_provider_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given cache partition.
-
-        :param cloud_provider_id: cache partition id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.CLOUD_PROVIDER_ID: cloud_provider_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.CLOUD_PROVIDER, metrics=metrics,
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
@@ -1793,26 +1744,6 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'get_endpoint_keys', 10.0, 10.2)
-    def get_iscsi_target_keys(self, array_id=None):
-        """List iSCSI targets for the given array.
-
-        DEPRECATION NOTICE:
-        PerformanceFunctions.get_iscsi_target_keys() will be
-        refactored in PyU4V version 10.2 in favour of
-        PerformanceFunctions.get_endpoint_keys().
-        For further information please consult PyU4V 10.0 release notes.
-
-        :param array_id: array_id: array id -- str
-        :returns: iSCSI interfaces info with first and last available
-                  dates -- list
-        """
-        array_id = self.array_id if not array_id else array_id
-        key_list = self.get_performance_key_list(category=pc.ENDPOINT,
-                                                 array_id=array_id)
-        return key_list.get(pc.ENDPOINT_INFO, list()) if key_list else list()
-
     def get_endpoint_keys(self, array_id=None):
         """List endpoints for the given array.
 
@@ -1824,36 +1755,6 @@ class PerformanceFunctions(object):
         key_list = self.get_performance_key_list(category=pc.ENDPOINT,
                                                  array_id=array_id)
         return key_list.get(pc.ENDPOINT_INFO, list()) if key_list else list()
-
-    @decorators.refactoring_notice(
-        'PyU4V.performance', 'get_endpoint_stats', 10.0, 10.2)
-    def get_iscsi_target_stats(
-            self, iscsi_target_id, metrics, array_id=None,
-            data_format=pc.AVERAGE, start_time=None, end_time=None,
-            recency=None):
-        """List time range performance data for given iSCSI target.
-
-        DEPRECATION NOTICE:
-        PerformanceFunctions.get_iscsi_target_keys() will be
-        refactored in PyU4V version 10.2 in favour of
-        PerformanceFunctions.get_endpoint_stats().
-        For further information please consult PyU4V 10.0 release notes.
-
-        :param iscsi_target_id: iSCSI target id -- str
-        :param metrics: performance metrics to retrieve -- str or list
-        :param array_id: array id -- str
-        :param data_format: response data format 'Average' or 'Maximum' -- str
-        :param start_time: timestamp in milliseconds since epoch -- str
-        :param end_time: timestamp in milliseconds since epoch -- str
-        :param recency: check recency of timestamp in minutes -- int
-        :returns: performance metrics -- dict
-        """
-        array_id = self.array_id if not array_id else array_id
-        request_body = {pc.ENDPOINT_ID_METRICS: iscsi_target_id}
-        return self.get_performance_stats(
-            array_id=array_id, category=pc.ENDPOINT, metrics=metrics,
-            data_format=data_format, request_body=request_body,
-            start_time=start_time, end_time=end_time, recency=recency)
 
     def get_endpoint_stats(
             self, endpoint_id, metrics, array_id=None,

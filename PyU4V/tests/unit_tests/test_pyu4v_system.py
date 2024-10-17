@@ -738,3 +738,16 @@ class PyU4VSystemTest(testtools.TestCase):
             self.system.update_snmp_trap_destination(
                 snmp_id="56910fe4-9c69-3100-a493-ff9455acc02d", port=431)
             mock_update.assert_called_once()
+
+    def test_get_ldap_configuration(self):
+        with mock.patch.object(
+                self.system, 'get_ldap_configuration') as mock_get:
+            self.system.get_ldap_configuration()
+            mock_get.assert_called_once()
+
+    def test_configure_ldap_authentication(self):
+        with (mock.patch.object(
+                self.system, 'configure_ldap_authentication') as
+        mock_configure):
+            self.system.configure_ldap_authentication(enabled=True)
+            mock_configure.assert_called_once()

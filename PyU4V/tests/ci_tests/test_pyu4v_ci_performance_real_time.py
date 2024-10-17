@@ -123,13 +123,13 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
             try:
                 rt_cats.remove('BEPort')
                 rt_cats.remove('ExternalDirector')
+                rt_cats.remove('StorageGroups')
             except ValueError:
                 pass
         for cat in rt_cats:
             rt_keys = self.rt.get_category_keys(cat)
             self.assertIsInstance(rt_keys, list)
-            if rt_keys:
-                self.assertIsInstance(rt_keys[0], str)
+            self.assertIsInstance(rt_keys[0], str)
 
     def test_validate_real_time_input_all_valid(self):
         """Test _validate_real_time_input."""

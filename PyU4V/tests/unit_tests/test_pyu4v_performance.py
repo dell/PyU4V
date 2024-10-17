@@ -70,17 +70,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.perf.set_recency(recency)
         self.assertEqual(self.perf.recency, recency)
 
-    def test_is_array_performance_registered_enabled(self):
-        """Test is_array_performance_registered True."""
-        self.assertTrue(self.perf.is_array_performance_registered())
-
-    def test_is_array_performance_registered_disabled(self):
-        """Test is_array_performance_registered False."""
-        with mock.patch.object(
-                self.perf, 'get_request',
-                return_value=self.p_data.array_is_registered_false):
-            self.assertFalse(self.perf.is_array_performance_registered())
-
     def test_is_array_diagnostic_performance_registered_true(self):
         """Test is_array_diagnostic_performance_registered True."""
         self.assertTrue(self.perf.is_array_diagnostic_performance_registered())
@@ -90,7 +79,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(
                 self.perf, 'get_request',
                 return_value=self.p_data.array_is_registered_false):
-            self.assertFalse(self.perf.is_array_performance_registered())
+            self.assertFalse(
+                self.perf.is_array_diagnostic_performance_registered())
 
     def test_is_array_real_time_performance_registered_true(self):
         """Test is_array_real_time_performance_registered True."""
@@ -837,7 +827,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
             pc.SEC_THRESH: str(second_threshold),
             pc.SEC_THRESH_OCC: str(second_threshold_occurrences),
             pc.SEC_THRESH_SAMP: str(second_threshold_samples),
-            pc.SEC_THRESH_SEV: second_threshold_severity}
+            pc.SEC_THRESH_SEV: second_threshold_severity,
+            "includeRealTimeTraceOnCritical": False}
 
         with mock.patch.object(self.perf, 'put_request') as mck_request:
             self.perf.update_threshold_settings(
@@ -1012,21 +1003,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.CACHE_PART))
-
-    def test_get_cloud_provider_keys(self):
-        """Test get_cloud_provider_keys."""
-        response = self.perf.get_cloud_provider_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.CLOUD_PROVIDER_ID))
-
-    def test_get_cloud_provider_stats(self):
-        """Test get_cloud_provider_stats."""
-        response = self.perf.get_cloud_provider_stats(
-            cloud_provider_id=self.p_data.cloud_provider_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.CLOUD_PROVIDER))
 
     def test_get_device_group_keys(self):
         """Test get_device_group_keys."""
@@ -1286,21 +1262,6 @@ class PyU4VPerformanceTest(testtools.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual(response.get('reporting_level'),
                          self.common.convert_to_snake_case(pc.IP_INT))
-
-    def test_get_iscsi_target_keys(self):
-        """Test get_iscsi_target_keys."""
-        response = self.perf.get_iscsi_target_keys()
-        self.assertIsInstance(response, list)
-        self.assertTrue(response[0].get(pc.ENDPOINT_ID_METRICS))
-
-    def test_get_iscsi_target_stats(self):
-        """Test get_iscsi_target_stats."""
-        response = self.perf.get_iscsi_target_stats(
-            iscsi_target_id=self.p_data.iscsi_target_id, metrics=pc.KPI,
-            start_time=self.time_now, end_time=self.time_now)
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response.get('reporting_level'),
-                         self.common.convert_to_snake_case(pc.ENDPOINT))
 
     def test_get_masking_view_keys(self):
         """Test get_masking_view_keys."""

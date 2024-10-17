@@ -14,6 +14,28 @@ or volume_identifier. When you search for a volume device_id based on its
 volume_name, it is preferable to receive a single device id rather than a list
 of device ids, of which any could be the device that you just created.
 
+Enhanced Performance Monitoring
+-------------------------------
+
+If you are new to PyU4V it's recommended rather than use the extensive list of
+functions in performance.py to use the Enhanced Performance monitoring
+functions in performance_enhanced.py. The enhanced performance functions
+provide the  latest 5 minute diagnostic Key Performance Metrics for all
+components for the specified categories. These functions are simpler to use
+executing GET calls and don't require input from the user for timestamps, t
+hey also provide bulk information on all components removing the need to
+perform lookup calls and execute loops to execute calls for each component
+object to retrieve metrics.
+
+Enhanced Array Functions Bulk Data Retrieval
+--------------------------------------------
+
+With PyU4V 10.0 and higher new functions for gathering filtering and
+selecting data for multiple objects such as storage groups and volumes.
+Using these calls reduces the number of API calls you need to get
+information on a number of objects and the amount of code needed to gather
+information on storage resources.
+
 Performance Monitoring
 ----------------------
 
@@ -49,6 +71,7 @@ practices that you should follow:
   data at a time. This is a hard restriction enforced by Unisphere. If you need
   more than one hour of data then consider if diagnostic performance data is
   more suitable.
+
 
 Lastly, and most importantly, with great power comes great responsibility,
 PyU4V provides you with the ability to query every performance metric for every

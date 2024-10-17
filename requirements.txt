@@ -1,4 +1,4 @@
-#Requirements.txt added for sphinx in version 10.1
+#Requirements.txt added for sphinx in version 10.2
 six
 requests
 six

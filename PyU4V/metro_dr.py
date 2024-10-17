@@ -233,7 +233,7 @@ class MetroDRFunctions(object):
     def modify_metrodr_environment(
             self, environment_name, action, metro=False,
             dr=False, keep_r2=False, force=False, symforce=False,
-            _async=False, dr_replication_mode=None):
+            _async=False, dr_replication_mode=None, reverse=False):
         """Performs Functions to modify state of MetroDR environment.
 
         :param environment_name: name of Metro Dr Environment up to 16
@@ -258,6 +258,7 @@ class MetroDRFunctions(object):
                        synchronously  -- bool
         :param dr_replication_mode: set mode of DR link, AdaptiveCopyDisk or
                                     Asynchronous -- str
+        :param reverse: reverse the direction of the link -- bool
         :returns: details of metro dr environment and state -- dict
         """
         metro_dr_action = constants.METRO_DR_ACTIONS.get(action.upper())
@@ -292,10 +293,14 @@ class MetroDRFunctions(object):
                     'SRDF leg, please choice either Metro or DR not both')
                 LOG.exception(msg)
                 raise exception.InvalidInputException(message=msg)
-
-            payload.update({action_params: {
-                'metro': metro, 'force': force, 'dr': dr,
-                'symforce': symforce}})
+            if metro and not dr and metro_dr_action == 'Establish':
+                payload.update({action_params: {
+                    'metro': metro, 'force': force, 'dr': dr,
+                    'symforce': symforce, 'reverse': reverse}})
+            else:
+                payload.update({action_params: {
+                    'metro': metro, 'force': force, 'dr': dr,
+                    'symforce': symforce}})
         elif metro_dr_action == 'SetMode':
             payload.update({
                 action_params: {

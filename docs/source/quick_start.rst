@@ -25,7 +25,7 @@ queries to validate the successful connection.
 .. code-block:: python
 
     conn.common.get_unisphere_version()
-    ('V10.1.0.0', '101')
+    ('V10.2.0.0', '101')
     conn.common.get_array_list()
     ["000197900123", "000197900124", "000197900125", "000197900126"]
 
@@ -90,7 +90,7 @@ information on the Unisphere REST API please consult its related documentation.
 
 The Unisphere for PowerMax REST documentation is accessible directly from the
 help menu in Unipshere or you can Navigate to
-``https://developer.dell.com/apis/4458/versions/10.1/``
+``https://developer.dell.com/apis/4458/versions/10.2/``
 
 .. literalinclude:: programmers_guide_src/code/custom_call.py
     :linenos:
