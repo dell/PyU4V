@@ -745,7 +745,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         outer_tag = pc.DIR_ID
         inner_tag = pc.PORT_ID
         inner_keys_func = self.perf.get_rdf_director_keys
-        outer_key_func = self.perf.get_rdf_port_kys
+        outer_key_func = self.perf.get_rdf_port_keys
         outer_metrics_func = self.perf.get_rdf_port_stats
         self.run_extended_input_performance_test_asserts(
             category, outer_tag, inner_tag, inner_keys_func, outer_key_func,
