@@ -19,18 +19,17 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='PyU4V',
-    version='10.1.0.2',
+    version='10.2.0.0',
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
-    author_email='helen.walsh@dell.com',
+    author_email='paule.martin@dell.com',
     description="A Python library for use with Dell EMC's Unisphere for "
                 "PowerMax REST API.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     license='Apache 2.0',
     packages=setuptools.find_packages(),
-    install_requires=['requests', 'six', 'urllib3', 'prettytable',
-                      'sphinx_rtd_theme'],
+    install_requires=['requests', 'six', 'urllib3', 'prettytable'],
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',

@@ -119,10 +119,14 @@ class RealTimeFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         request_params = {pc.SYMM_ID: array_id, pc.CATEGORY: category}
-        response = self.post_request(
-            no_version=True, category=pc.PERFORMANCE,
-            resource_level=pc.REAL_TIME, resource_type=pc.KEYS,
-            payload=request_params)
+        try:
+            response = self.post_request(
+                no_version=True, category=pc.PERFORMANCE,
+                resource_level=pc.REAL_TIME, resource_type=pc.KEYS,
+                payload=request_params)
+        except Exception as e:
+            logging.error(f"Error in get_category_keys: {e}")
+            return list()
         return response.get(pc.KEYS, list()) if response else list()
 
     def _validate_real_time_input(
@@ -410,7 +414,7 @@ class RealTimeFunctions(object):
         :param end_date: timestamp in milliseconds since epoch -- int
         :param metrics: performance metrics, options are individual metrics,
                         a list of metrics, or 'ALL' for all metrics -- str/list
-        :param instance_id: backend director id -- str
+        :param instance_id: frontend director id -- str
         :param array_id: array serial number -- str
         :returns: real-time performance data -- dict
         """
@@ -442,7 +446,7 @@ class RealTimeFunctions(object):
         :param end_date: timestamp in milliseconds since epoch -- int
         :param metrics: performance metrics, options are individual metrics,
                         a list of metrics, or 'ALL' for all metrics -- str/list
-        :param instance_id: backend dir/port id -- str
+        :param instance_id: frontend dir/port id -- str
         :param array_id: array serial number -- str
         :returns: real-time performance data -- dict
         """

@@ -24,8 +24,8 @@ PowerMax REST API.  It wraps REST calls with simple APIs that abstract the HTTP
 request and response handling.
 
 .. note::
-   You can get the Unisphere for PowerMax REST documentation by
-   navigating to https://developer.dell.com/apis/4458/ An OpenApi.json file
+   All official documentation for Unipshere for PowerMax API
+   is available at https://developer.dell.com/apis/4458. An OpenApi.json file
    can be download from this site for use with tools like PostMan or for
    interfacing with PyU4V custom API call mechanism.  Please refer to this
    documentation when looking for information about query path parameters
@@ -35,9 +35,9 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.1.0.2                               |
+| **PyU4V Version**             | 10.2.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.1                                   |
+| **Minimum Unisphere Version** | 10.2                                   |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -59,7 +59,7 @@ Supported PyU4V Versions
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.1.x is compatible with scripts written for PyU4V versions
+    PyU4V version 10.2.x is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
@@ -116,7 +116,7 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10 is distributed under the Apache 2.0 License. Unless required by
+PyU4V 10.2 is distributed under the Apache 2.0 License. Unless required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
 **conditions of any kind**, either express or implied. See the License for the

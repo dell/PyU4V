@@ -1223,9 +1223,9 @@ class SystemFunctions(object):
 
         :param director: Director Id e.g. OR-1C -- str
         :param port_number: Director Port Number -- int
-        :param protocol:
-        :param enable:
-        :param array_id:
+        :param protocol: NVMe_TCP,SCSI_FC,NVMe_FC,RDF_FC,iSCSI,RDF_GigE -- str
+        :param enable: --bool
+        :param array_id: 12 digit Array ID--str
         :return:
         """
 
@@ -1359,4 +1359,66 @@ class SystemFunctions(object):
         }
         return self.common.modify_resource(
             target_uri=f"/{self.version}/system/snmp/{snmp_id}",
+            resource_type=None, payload=payload)
+
+    def get_ldap_configuration(self):
+        """Get Current LDAP configuration for Unisphere Server.
+
+        :returns: dict
+        """
+        return self.common.get_request(
+            target_uri=f"/{self.version}/system/authorization/ldap",
+            resource_type=None)
+
+    def configure_ldap_authentication(
+            self,action, ldap_server, ldap_port, bind_dn,bind_password,
+            user_search_path,group_name_attribute,group_member_attribute,
+            group_object_class, ssl_certificate,
+            limit_authentication_to_ldap_group_members, ldap_group_names=None):
+        """Enable or disable LDAP authentication.
+        :param action: Enable or Disable, Enable requires additional payload
+                       parameters  -- Bool
+        :param ldap_server: LDAP Server IP address or DNS Name --str
+        :param ldap_port: TCP port number --int
+        :param bind_dn: Distinguished name of the privileged account used to
+                        perform operations, such as searching users and
+                        groups, on the LDAP directory --str
+        :param bind_password: Password of the privileged account --str
+        :param user_search_path: name of the node at which to begin user
+                                 searches --str
+        :param group_name_attribute: --str
+        :param group_member_attribute: --str
+        :param group_object_class: --str
+        :param ssl_certificate -- base64 encoded SSL certificate, obtained
+                                  from server or contents of .cer file
+                                  All text in file required including begin
+                                  and end markers for file
+                                  -----BEGIN CERTIFICATE----- to
+                                  -----END CERTIFICATE----- --str
+        :param limit_authentication_to_ldap_group_members --bool
+        :param ldap_group_names: LDAP groups separated by commas --str
+        :returns: dict
+        """
+
+        payload = {"action": action}
+        if action:
+            payload["enable_ldap_authority"] = {
+                "server": ldap_server,
+                "port": ldap_port,
+                "bind_dn": bind_dn,
+                "bind_password": bind_password,
+                "user_search_path": user_search_path,
+                "user_object_class": user_object_class,
+                "user_id_attribute": user_id_attribute,
+                "group_search_path": user_search_path,
+                "group_name_attribute": group_name_attribute,
+                "group_member_attribute": group_member_attribute,
+                "group_object_class": group_object_class,
+                "ssl_certificate": ssl_certificate,
+                "limit_authentication_to_ldap_group_members":
+                    limit_authentication_to_ldap_group_members,
+                "ldap_group_names": ldap_group_names
+            }
+        return self.common.modify_resource(
+            target_uri=f"/{self.version}/system/authorization/ldap",
             resource_type=None, payload=payload)

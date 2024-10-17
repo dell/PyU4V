@@ -40,117 +40,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(response.get('symmetrixId'), self.conn.array_id)
         self.assertTrue(response.get('local'))
 
-    def test_get_director(self):
-        """Test get_director."""
-        if self.is_v4:
-            self.skipTest(
-                'Skipping test_get_director for V4. '
-                'It is recommended to use system.SystemFunctions.get_director '
-                'instead.')
-        availability = 'availability'
-        director_number = 'director_number'
-        director_slot_number = 'director_slot_number'
-        director_list = self.provisioning.get_director_list()
-        for director in director_list:
-            director_details = self.provisioning.get_director(director)
-            self.assertIsInstance(director_details, dict)
-            self.assertIn(availability, director_details)
-            self.assertIn(director_number, director_details)
-            self.assertIn(director_slot_number, director_details)
-            self.assertIn(constants.DIRECTOR_ID, director_details)
-            self.assertIn(constants.NUM_OF_PORTS, director_details)
-            if not self.is_v4:
-                self.assertIn(constants.NUM_OF_CORES, director_details)
-                self.assertIsInstance(
-                    director_details[constants.NUM_OF_CORES], int)
-            self.assertIsInstance(director_details[availability], str)
-            self.assertIsInstance(director_details[director_number], int)
-            self.assertIsInstance(director_details[director_slot_number], int)
-            director_id = director_details[constants.DIRECTOR_ID]
-            self.assertIsInstance(director_id, str)
-            self.assertIsInstance(
-                director_details[constants.NUM_OF_PORTS], int)
-            self.assertIsNotNone(re.match(constants.DIRECTOR_SEARCH_PATTERN,
-                                          director_id))
-
-    def test_get_director_list(self):
-        """Test get_director_list."""
-        if self.is_v4:
-            self.skipTest(
-                'Skipping test_get_director_list for V4. '
-                'It is recommended to use '
-                'system.SystemFunctions.get_director_list instead.')
-        director_list = self.provisioning.get_director_list()
-        self.assertTrue(len(director_list) > 0)
-        self.assertIsInstance(director_list, list)
-        for director in director_list:
-            self.assertIsInstance(director, str)
-            self.assertIsNotNone(re.match(constants.DIRECTOR_SEARCH_PATTERN,
-                                          director))
-
-    def test_get_director_port(self):
-        """Test get_director_port."""
-        if self.is_v4:
-            self.skipTest(
-                'Skipping test_get_director_port for V4. '
-                'It is recommended to use '
-                'system.SystemFunctions.get_director_port instead.')
-        director_port_list = self.provisioning.get_port_list()
-        for director_port in director_port_list:
-            director = director_port[constants.DIRECTOR_ID]
-            port = director_port[constants.PORT_ID]
-            port_details = self.provisioning.get_director_port(
-                director, port)
-            self._validate_director_port(port_details)
-            break
-
-    def test_get_director_port_list(self):
-        """Test get_director_port_list."""
-        if self.is_v4:
-            self.skipTest(
-                'Skipping test_get_director_port_list for V4. '
-                'It is recommended to use '
-                'system.SystemFunctions.get_director_port_list instead.')
-        director_list = self.provisioning.get_director_list()
-        director = director_list[0]
-        director_port_list = self.provisioning.get_director_port_list(
-            director)
-        self.assertIsInstance(director_port_list, list)
-        for director_port in director_port_list:
-            self.assertIsInstance(director_port, dict)
-            self.assertIn(constants.DIRECTOR_ID, director_port)
-            self.assertIn(constants.PORT_ID, director_port)
-            director_id = director_port[constants.DIRECTOR_ID]
-            port_id = director_port[constants.PORT_ID]
-            self.assertIsInstance(director_id, str)
-            self.assertIsInstance(port_id, str)
-            self.assertIsNotNone(
-                re.match(constants.DIRECTOR_SEARCH_PATTERN, director_id))
-            self.assertIsNotNone(
-                re.match(constants.PORT_SEARCH_PATTERN, port_id))
-
-    def test_get_port_identifier(self):
-        """Test get_port_identifier."""
-        if self.is_v4:
-            self.skipTest(
-                'Skipping test_get_port_identifier for V4. '
-                'It is recommended to use '
-                'system.SystemFunctions.get_port_identifier instead.')
-        director_port_list = self.provisioning.get_port_list()
-        for director_port in director_port_list:
-            director = director_port[constants.DIRECTOR_ID]
-            port = director_port[constants.PORT_ID]
-            port_identifier = self.provisioning.get_port_identifier(
-                director, port)
-            if port_identifier is not None:
-                self.assertIsInstance(port_identifier, str)
-                # search_pattern = '{wwn}|{iqn}'.format(
-                #     wwn=constants.WWN_SEARCH_PATTERN_16,
-                #     iqn=constants.ISCSI_IQN_SEARCH_PATTERN)
-                # self.assertIsNotNone(
-                #     re.match(search_pattern, port_identifier))
-                # break
-
     def test_create_empty_host(self):
         """Test create_host create empty host."""
         host_name = self.create_empty_host()
@@ -989,50 +878,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsNotNone(
             re.match(constants.PORT_SEARCH_PATTERN, result_port))
 
-    def test_get_target_wwns_from_port_group(self):
-        """Test get_target_wwns_from_port_group."""
-        port_group_name, port_group_details = self.create_port_group()
-        # Model update delay
-        time.sleep(1)
-        target_wwns = self.provisioning.get_target_wwns_from_port_group(
-            port_group_name)
-        self.assertIsNotNone(target_wwns)
-        self.assertIsInstance(target_wwns, list)
-        for wwn in target_wwns:
-            self.assertIsInstance(wwn, str)
-            self.assertIsNotNone(
-                re.match(constants.WWN_SEARCH_PATTERN_16, wwn))
-
-    def test_get_iscsi_ip_address_and_iqn(self):
-        """Test get_iscsi_ip_address_and_iqn."""
-        if self.is_v4:
-            self.skipTest(
-                'Skipping test_get_iscsi_ip_address_and_iqn for V4. '
-                'It is recommended to use '
-                'system.SystemFunctions.get_iscsi_ip_address_and_iqn instead.')
-        port_list = self.provisioning.get_port_list()
-        se_director_ports = [p for p in port_list if 'SE-' in p[
-            constants.DIRECTOR_ID]]
-        for se_director_port in se_director_ports:
-            director_id = se_director_port[constants.DIRECTOR_ID]
-            port_id = se_director_port[constants.PORT_ID]
-            iscsi_id = self.provisioning.format_director_port(
-                director_id, port_id)
-            ip_addresses, iqn = (
-                self.provisioning.get_iscsi_ip_address_and_iqn(iscsi_id))
-            if ip_addresses:
-                self.assertIsInstance(ip_addresses, list)
-                for ip in ip_addresses:
-                    valid_ip = (
-                        self.common.check_ipv4(
-                            ip) or self.common.check_ipv6(ip))
-                    self.assertIsInstance(ip, str)
-                    self.assertTrue(valid_ip)
-            if iqn:
-                self.assertIsInstance(iqn, str)
-                # self.assertIsNotNone(
-                #     re.match(constants.ISCSI_IQN_SEARCH_PATTERN, iqn))
-
     def test_empty_create_port_group(self):
         """Test create_empty_port_group."""
         if not self.is_v4:
@@ -1043,64 +888,6 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         self.addCleanup(self.delete_port_group, port_group_name)
         port_group_list = self.conn.provisioning.get_port_group_list()
         self.assertIn(port_group_name, port_group_list)
-
-    def test_create_port_group(self):
-        """Test create_port_group."""
-        port = None
-        ports, director, port_group_protocol = self.create_port_group_helper(
-            'test_create_port_group')
-
-        if ports:
-            port = ports[0][constants.PORT_ID]
-        if director and port:
-            port_group_name = self.generate_name(constants.PORT_GROUP)
-            formatted_director_port = self.provisioning.format_director_port(
-                director, port)
-            port_group_details = self.conn.provisioning.create_port_group(
-                port_group_name, director, port,
-                port_group_protocol=port_group_protocol)
-            self.addCleanup(self.delete_port_group, port_group_name)
-            self._validate_port_group_details(
-                port_group_name, port_group_details, [formatted_director_port])
-        else:
-            self.skipTest(
-                'test_create_port_group - Could not get director and port'
-                'for test.')
-
-    def test_create_multiport_port_group(self):
-        """Test create_multiport_port_group."""
-        selected_director_ports = list()
-        ports, director, port_group_protocol = self.create_port_group_helper(
-            'test_create_multiport_port_group')
-
-        if ports and len(ports) >= 2:
-            selected_director_ports.append(ports[0])
-            selected_director_ports.append(ports[1])
-        else:
-            self.skipTest(
-                'test_create_multiport_port_group - Not enough ports for '
-                'this test.')
-        if selected_director_ports:
-            reference_director_ports = list()
-            port_group_name = self.generate_name(constants.PORT_GROUP)
-            for director_port in selected_director_ports:
-                director_id = director_port[constants.DIRECTOR_ID]
-                port_id = director_port[constants.PORT_ID]
-                formatted_director_port = (
-                    self.provisioning.format_director_port(
-                        director_id, port_id))
-                reference_director_ports.append(formatted_director_port)
-            port_group_details = self.provisioning.create_multiport_port_group(
-                port_group_name, selected_director_ports,
-                port_group_protocol=port_group_protocol)
-            self.addCleanup(self.delete_port_group, port_group_name)
-            self._validate_port_group_details(
-                port_group_name, port_group_details, reference_director_ports,
-                2)
-        else:
-            self.skipTest(
-                'test_create_multiport_port_group - selected_director_ports '
-                'not populated.')
 
     def test_create_port_group_from_file(self):
         """Test create_port_group_from_file."""
@@ -2059,11 +1846,11 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_format_director_port(self):
         """Test format_director_port."""
-        fa_directors = self.provisioning.get_fa_directors()
+        fa_directors = self.system.get_fa_directors()
         if fa_directors:
             fa_director = fa_directors[0]
-            port = self.provisioning.get_any_director_port(fa_director)
-            result = self.provisioning.format_director_port(fa_director, port)
+            port = self.system.get_any_director_port(fa_director)
+            result = self.system.format_director_port(fa_director, port)
             formatted_director_port = '{d}:{p}'.format(d=fa_director, p=port)
             self.assertEqual(result, formatted_director_port)
 
@@ -2080,7 +1867,7 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_fa_directors(self):
         """Test get_fa_directors."""
-        fa_directors = self.provisioning.get_fa_directors()
+        fa_directors = self.system.get_fa_directors()
         self.assertIsNotNone(fa_directors)
         self.assertIsInstance(fa_directors, list)
         for fa_director in fa_directors:

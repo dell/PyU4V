@@ -16,7 +16,6 @@ import csv
 import os
 import tempfile
 import testtools
-
 from unittest import mock
 
 from PyU4V import common
@@ -58,44 +57,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
         array_id = self.data.array
         array_details = self.provisioning.get_array(array_id=array_id)
         self.assertEqual(self.data.array_slo_details, array_details)
-
-    def test_get_director(self):
-        """Test get_director."""
-        dir_details = self.provisioning.get_director(self.data.director_id1)
-        self.assertEqual(self.data.director_info, dir_details)
-
-    def test_get_director_list(self):
-        """Test get_director_list."""
-        dir_list = self.provisioning.get_director_list()
-        self.assertEqual(self.data.director_list['directorId'], dir_list)
-
-    def test_get_director_port(self):
-        """Test get_director_port."""
-        port_details = self.provisioning.get_director_port(
-            self.data.director_id1, self.data.port_id1)
-        self.assertEqual(self.data.port_list[0], port_details)
-
-    def test_get_director_port_list(self):
-        """Test get_director_port_list."""
-        port_key_list = self.provisioning.get_director_port_list(
-            self.data.director_id1)
-        self.assertEqual(
-            self.data.port_key_list['symmetrixPortKey'], port_key_list)
-
-    def test_get_port_identifier(self):
-        """Test get_port_identifier."""
-        wwn = self.provisioning.get_port_identifier(
-            self.data.director_id1, self.data.port_id1)
-        self.assertEqual(self.data.wwnn1, wwn)
-
-    def test_get_port_identifier_key_exception(self):
-        """Test get_port_identifier with key exception."""
-        with mock.patch.object(self.provisioning,
-                               'get_director_port',
-                               return_value={'test': 'data'}):
-            wwn = self.provisioning.get_port_identifier(
-                self.data.director_id1, self.data.port_id1)
-            self.assertEqual(None, wwn)
 
     def test_get_host(self):
         """Test get_host."""
@@ -779,63 +740,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.data.port_group_name_f)
         self.assertEqual(['FA-1D:4'], port_list)
 
-    def test_get_target_wwns_from_port_group(self):
-        """Test get_target_wwns_from_port_group."""
-        with mock.patch.object(
-                self.provisioning, 'get_port_group', return_value={
-                    'symmetrixPortKey': [{
-                        'directorId': self.data.director_id1,
-                        'portId': self.data.port_id1}]}) as mck_get_grp:
-            target_wwns = self.provisioning.get_target_wwns_from_port_group(
-                self.data.port_group_name_f)
-            self.assertEqual([self.data.wwnn1], target_wwns)
-            mck_get_grp.assert_called_once_with(self.data.port_group_name_f)
-
-    def test_get_iscsi_ip_address_and_iqn(self):
-        """Test get_iscsi_ip_address_and_iqn."""
-        ip_addresses, iqn = self.provisioning.get_iscsi_ip_address_and_iqn(
-            'SE-4E:0')
-        self.assertEqual([self.data.ip], ip_addresses)
-        self.assertEqual(self.data.initiator, iqn)
-
-    def test_get_iscsi_ip_address_and_iqn_exception(self):
-        """Test exception in get_iscsi_ip_address_and_iqn."""
-        with mock.patch.object(
-                self.provisioning, 'get_director_port',
-                return_value={'test': 'data'}):
-            ip, iqn = (self.provisioning.
-                       get_iscsi_ip_address_and_iqn('SE-4E:0'))
-            self.assertEqual(ip, list())
-            self.assertIsNone(iqn)
-
     def test_get_storage_group_demand_report(self):
         """Test get_storage_group_demand_report."""
         ref_storage_group_details = self.data.srp_details
         act_storage_group_details = (self.provisioning.
                                      get_storage_group_demand_report())
         self.assertEqual(act_storage_group_details, ref_storage_group_details)
-
-    @mock.patch.object(
-        provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
-    def test_create_port_group(self, mck_update):
-        """Test create_port_group."""
-        port_group_id = self.data.port_group_name_f
-        director_id = self.data.director_id1
-        port_id = self.data.port_id1
-        payload = ({'portGroupId': port_group_id,
-                    'symmetrixPortKey': [{'directorId': director_id,
-                                          'portId': port_id}]})
-        with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_port_group(
-                port_group_id, director_id, port_id)
-        mock_create.assert_called_once_with(
-            category=constants.SLOPROVISIONING,
-            resource_level=constants.SYMMETRIX,
-            resource_level_id=self.data.array,
-            resource_type=constants.PORTGROUP,
-            payload=payload)
-        mck_update.assert_called_once()
 
     def test_empty_create_port_group(self):
         """Test create_empty_port_group."""
@@ -931,30 +841,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
             exception.InvalidInputException,
             self.provisioning.create_new_port_group, port_group_id,
             port_dict_list)
-
-    @mock.patch.object(
-        provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
-    def test_create_multiport_port_group(self, mck_update):
-        """Test create_multiport_port_group."""
-        port_group_id = self.data.port_group_name_f
-        port_dict_list = [{'directorId': self.data.director_id1,
-                           'portId': self.data.port_id1},
-                          {'directorId': self.data.director_id2,
-                           'portId': self.data.port_id2}, ]
-
-        payload = {'portGroupId': port_group_id,
-                   'symmetrixPortKey': port_dict_list}
-        with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
-            self.provisioning.create_multiport_port_group(
-                port_group_id, port_dict_list)
-        mock_create.assert_called_once_with(
-            category=constants.SLOPROVISIONING,
-            resource_level=constants.SYMMETRIX,
-            resource_level_id=self.data.array,
-            resource_type=constants.PORTGROUP,
-            payload=payload)
-        mck_update.assert_called_once()
 
     @mock.patch.object(file_handler, 'create_list_from_file',
                        return_value=['FA-1D:4', 'SE-4E:0'])
@@ -2277,18 +2163,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
             constants.SYMMETRIX_PORT_KEY][0][constants.PORT_ID]
         self.assertEqual(self.data.port_id1, corrected_port_id)
 
-    def test_get_any_director_port(self):
-        """Test get_any_director_port."""
-        return_val = [{constants.PORT_ID: self.data.port_id1}]
-        with mock.patch.object(
-            self.provisioning, 'get_director_port_list',
-                return_value=return_val) as mck_get_dir_port:
-            port = self.provisioning.get_any_director_port(
-                self.data.director_id1)
-            self.assertEqual(port, self.data.port_id1)
-            mck_get_dir_port.assert_called_once_with(
-                self.data.director_id1, filters=None)
-
     def test_format_director_port(self):
         """Test format_director_port."""
         director = self.data.director_id1
@@ -2311,17 +2185,6 @@ class PyU4VProvisioningTest(testtools.TestCase):
             self.assertIsInstance(masking_view, str)
             mck_get_conn.assert_called_once_with('masking_view')
         mck_get_mv.assert_called_once()
-
-    def test_get_fa_directors(self):
-        """Test get_fa_directors."""
-        fa_director = self.data.director_id1
-        se_director = self.data.director_id2
-        directors = [fa_director, se_director]
-        with mock.patch.object(self.provisioning, 'get_director_list',
-                               return_value=directors) as mck_get_dir:
-            fa_directors = self.provisioning.get_fa_directors()
-            self.assertEqual([fa_director], fa_directors)
-            mck_get_dir.assert_called_once()
 
     @mock.patch.object(
         provisioning.ProvisioningFunctions, 'get_initiator_list',
@@ -2550,3 +2413,22 @@ class PyU4VProvisioningTest(testtools.TestCase):
             valid_split_id, valid_cu_ssid, unmap_volume_list=vol_list)
         mck_modify_cu_image_unmap_volume.assert_called_once_with(
             valid_split_id, valid_cu_ssid, unmap_volume_list=vol_list)
+
+    def test_reset_volume_wwn_valid_device_id_no_array_id(self):
+        # include any necessary include statements for test class
+        device_id = 12345
+        array_id = None
+        with mock.patch.object(
+                self.provisioning.common,
+                'modify_resource') as mock_modify:
+            self.provisioning.reset_volume_wwn(device_id, array_id)
+            payload = {
+                "editVolumeActionParam": {
+                    "reset_wwn_param": {
+                        "reset_wwn": "true"
+                    }}}
+            mock_modify.assert_called_once_with(
+                target_uri=f"/{self.provisioning.version}/"
+                           f"sloprovisioning/symmetrix/"
+                           f"{self.provisioning.array_id}/volume/{device_id}",
+                resource_type=None, payload=payload)

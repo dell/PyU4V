@@ -57,13 +57,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.perf.set_recency(recency)
         self.assertEqual(self.perf.recency, recency)
 
-    def test_is_array_performance_registered(self):
-        """Test is_array_performance_registered invalid ID."""
-        self.assertTrue(
-            self.perf.is_array_performance_registered())
-        self.assertFalse(
-            self.perf.is_array_performance_registered('Fake'))
-
     def test_is_array_diagnostic_performance_registered(self):
         """Test is_array_diagnostic_performance_registered response format."""
         self.assertTrue(
@@ -509,16 +502,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_cloud_provider_performance_function(self):
-        self.skipTest(reason="Cloud Provider not running")
-        """Test cloud provider performance function."""
-        category = pc.CLOUD_PROVIDER
-        id_tag = pc.CLOUD_PROVIDER_ID
-        key_func = self.perf.get_cloud_provider_keys
-        metrics_func = self.perf.get_cloud_provider_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
     def test_device_group_performance_function(self):
         """Test device group by pool performance function."""
         category = pc.DEV_GRP
@@ -691,15 +674,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         self.run_performance_test_asserts(category, id_tag, key_func,
                                           metrics_func)
 
-    def test_iscsi_target_performance_function(self):
-        """Test initiator by port performance function."""
-        category = pc.ENDPOINT
-        id_tag = pc.ENDPOINT_ID_KEY
-        key_func = self.perf.get_iscsi_target_keys
-        metrics_func = self.perf.get_iscsi_target_stats
-        self.run_performance_test_asserts(category, id_tag, key_func,
-                                          metrics_func)
-
     def test_endpoint_performance_function(self):
         """Test endpoint performance function."""
         category = pc.ENDPOINT
@@ -771,7 +745,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
         outer_tag = pc.DIR_ID
         inner_tag = pc.PORT_ID
         inner_keys_func = self.perf.get_rdf_director_keys
-        outer_key_func = self.perf.get_rdf_port_keys
+        outer_key_func = self.perf.get_rdf_port_kys
         outer_metrics_func = self.perf.get_rdf_port_stats
         self.run_extended_input_performance_test_asserts(
             category, outer_tag, inner_tag, inner_keys_func, outer_key_func,

@@ -65,6 +65,7 @@ class ProvisioningFunctions(object):
         self.create_resource = self.common.create_resource
         self.modify_resource = self.common.modify_resource
         self.delete_resource = self.common.delete_resource
+        self.version = constants.UNISPHERE_VERSION
 
     def get_array(self, array_id=None):
         """Query for details of an array from SLOPROVISIONING endpoint.
@@ -77,120 +78,6 @@ class ProvisioningFunctions(object):
             category=SLOPROVISIONING, resource_level=SYMMETRIX,
             resource_level_id=array_id)
         return response if response else dict()
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_director', 10.0, 10.2)
-    def get_director(self, director):
-        """Query for details of a director for a symmetrix.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.get_director()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_director(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_director()
-
-        :param director: the director ID e.g. FA-1D -- str
-        :returns: director details -- dict
-        """
-        return self.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=DIRECTOR, resource_type_id=director)
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_director_list', 10.0, 10.2)
-    def get_director_list(self):
-        """Query for details of Symmetrix directors for a symmetrix.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.get_director()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_director_list(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_director_list()
-
-        :returns: directors -- list
-        """
-        response = self.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=DIRECTOR)
-        return response.get('directorId', list()) if response else list()
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_director_port', 10.0, 10.2)
-    def get_director_port(self, director, port_no):
-        """Get details of the symmetrix director port.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.get_director()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_director_port(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_director_port()
-
-        :param director: the director ID e.g. FA-1D -- str
-        :param port_no: the port number e.g. 1 -- str
-        :returns: director port details -- dict
-        """
-        return self.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=DIRECTOR, resource_type_id=director,
-            resource=PORT, resource_id=port_no)
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_director_port_list', 10.0, 10.2)
-    def get_director_port_list(self, director, filters=None):
-        """Get list of the ports on a particular director.
-
-        Can be filtered by optional parameters, please see documentation.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.get_director()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_director_port_list(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_director_port_list()
-
-        :param director: the director ID e.g. FA-1D -- str
-        :param filters: optional filters - dict
-        :returns: port key dicts -- list
-        """
-        response = self.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=DIRECTOR, resource_type_id=director,
-            resource=PORT, params=filters)
-        port_key_list = (
-            response.get('symmetrixPortKey', list()) if response else list())
-        return port_key_list
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_port_identifier', 10.0, 10.2)
-    def get_port_identifier(self, director, port_no):
-        """Get the identifier (wwn) of the physical port.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.get_director()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_port_identifier(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_port_identifier()
-
-        :param director: the id of the director -- str
-        :param port_no: the number of the port -- str
-        :returns: wwn (FC) or iqn (iscsi) -- str or None
-        """
-        wwn = None
-        port_info = self.get_director_port(director, port_no)
-        if port_info:
-            try:
-                wwn = port_info['symmetrixPort']['identifier']
-            except KeyError:
-                LOG.error('Cannot retrieve port information.')
-        return wwn
 
     def get_host(self, host_id):
         """Get details on a host on the array.
@@ -796,106 +683,6 @@ class ProvisioningFunctions(object):
                 port = key['portId']
                 port_list.append(port)
         return port_list
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_target_wwns_from_port_group', 10.0, 10.2)
-    def get_target_wwns_from_port_group(self, port_group_id):
-        """Get the director ports' WWNs.
-
-        DEPRECATION NOTICE:
-        ProvisioningFunctions.get_target_wwns_from_port_group()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_target_wwns_from_port_group(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_target_wwns_from_port_group()
-
-        :param port_group_id: the name of the port group -- str
-        :returns: target_wwns -- target wwns for the port group -- list
-        """
-        target_wwns = list()
-        port_group_details = self.get_port_group(port_group_id)
-        dir_port_list = port_group_details['symmetrixPortKey']
-        for dir_port in dir_port_list:
-            dir_id = dir_port['directorId']
-            port_no = dir_port['portId']
-            wwn = self.get_port_identifier(dir_id, port_no)
-            target_wwns.append(wwn)
-        return target_wwns
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_iscsi_ip_address_and_iqn', 10.0, 10.2)
-    def get_iscsi_ip_address_and_iqn(self, port_id):
-        """Get the ip addresses from the director port.
-
-        DEPRECATION NOTICE:
-        ProvisioningFunctions.get_iscsi_ip_address_and_iqn()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_iscsi_ip_address_and_iqn(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        For V4 you must use SystemFunctions.get_iscsi_ip_address_and_iqn()
-
-        :param port_id: director port identifier -- str
-        :returns: ip addresses, iqn --  list, str
-        """
-        ip_addresses, iqn = list(), None
-        dir_id = port_id.split(':')[0]
-        port_no = port_id.split(':')[1]
-        port_details = self.get_director_port(dir_id, port_no)
-        if port_details:
-            try:
-                ip_addresses = port_details['symmetrixPort']['ip_addresses']
-                iqn = port_details['symmetrixPort']['identifier']
-            except (KeyError, TypeError):
-                LOG.info('Could not get IP address from director port')
-        return ip_addresses, iqn
-
-    @decorators.refactoring_notice(
-        'ProvisioningFunctions', 'create_new_port_group', 10.0, 10.2)
-    def create_port_group(self, port_group_id, director_id, port_id,
-                          port_group_protocol=None):
-        """Create a new port group.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.create_port_group()
-        will be removed in PyU4V version 10.2 in favour of
-        ProvisioningFunctions.create_new_port_group(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        :param port_group_id: name of the new port group - str
-        :param director_id: director id -- str
-        :param port_id: port id -- str
-        :param port_group_protocol: required for V4 only.
-                                    one of [SCSI_FC, iSCSI, NVMe_TCP] -- str
-
-        :returns: new port group details -- dict
-        """
-        dir_port_list = [{'directorId': director_id,
-                          'portId': port_id}]
-        return self.create_new_port_group(
-            port_group_id, dir_port_list, port_group_protocol)
-
-    @decorators.refactoring_notice(
-        'ProvisioningFunctions', 'create_new_port_group', 10.0, 10.2)
-    def create_multiport_port_group(self, port_group_id, ports,
-                                    port_group_protocol=None):
-        """Create a new port group.
-
-        DEPRECATION NOTICE:
-        ProvisioningFunctions.create_multiport_port_group()
-        will be removed in PyU4V version 10.2 in favour of
-        ProvisioningFunctions.create_new_port_group(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        :param port_group_id: name of the new port group -- str
-        :param ports: port dicts Example:
-                      [{'directorId': director_id, 'portId': port_id}] -- list
-        :param port_group_protocol: required for V4 only.
-                                    one of [SCSI_FC, iSCSI, NVMe_TCP] -- str
-        :returns: new port group details -- dict
-        """
-        return self.create_new_port_group(
-            port_group_id, ports, port_group_protocol)
 
     def create_empty_port_group(
             self, port_group_id, port_group_protocol=None, _async=None):
@@ -1918,7 +1705,12 @@ class ProvisioningFunctions(object):
         :param device_id: device id -- str
         :param payload: request payload e.g. {"editVolumeActionParam": {
                         "enable_mobility_id_param": {
-                            "enable_mobility_id": "true"}}} -- dict
+                            "enable_mobility_id": "true"}}}
+                              or
+                              {
+                        "editVolumeActionParam": {
+                          "reset_wwn_param": {
+                            "reset_wwn": "true"}}} -- dict
         :returns: volume details -- dict
         """
         return self.modify_resource(
@@ -1973,6 +1765,29 @@ class ProvisioningFunctions(object):
             'modifyVolumeIdentifierParam': {
                 'volumeIdentifier': vol_identifier_dict}}})
         return self._modify_volume(device_id, rename_vol_payload)
+
+    def reset_volume_wwn(self, device_id, array_id=None):
+        """reset volume wwn to remove external identify set by non
+        disruptive migration.
+
+        :param device_id: 5 digit device id -- int
+        :param array_id: 16 digit array id -- int
+
+        """
+        array_id = array_id if array_id else self.array_id
+        payload = {
+            "editVolumeActionParam": {
+                "reset_wwn_param": {
+                    "reset_wwn": "true"
+                }}}
+        try:
+            return self.common.modify_resource(
+                target_uri=f"/{self.version}/sloprovisioning/"
+                           f"symmetrix/{array_id}/volume/{device_id}",
+                resource_type=None, payload=payload)
+        except Exception as e:
+            error_message = f"Failed to reset volume WWN: {str(e)}"
+            raise Exception(error_message)
 
     def deallocate_volume(self, device_id):
         """Deallocate all tracks on a volume.
@@ -2099,25 +1914,6 @@ class ProvisioningFunctions(object):
                 active_connections = masking_view_connections
                 break
         return selected_masking_view, active_connections
-
-    @decorators.refactoring_notice(
-        'SystemFunctions', 'get_fa_directors', 10.0, 10.2)
-    def get_fa_directors(self):
-        """Get all FA directors on the array.
-
-        DEPRECATION NOTICE: ProvisioningFunctions.get_fa_directors()
-        will be removed in PyU4V version 10.2 in favour of
-        SystemFunctions.get_fa_directors(). For further
-        information please consult PyU4V 10.0 release notes.
-
-        :returns: fa director strings  -- list
-        """
-        directors = self.get_director_list()
-        fa_directors = set()
-        for director in directors:
-            if 'FA-' in director:
-                fa_directors.add(director)
-        return list(fa_directors)
 
     def get_available_initiator_list(self, director_type=None):
         """Get list of available initiators.
