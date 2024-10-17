@@ -123,7 +123,7 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 9.2 is distributed under the Apache 2.0 License. Unless required by
+PyU4V 10.2 is distributed under the Apache 2.0 License. Unless required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
 **conditions of any kind**, either express or implied. See the License for the
