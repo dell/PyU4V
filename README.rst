@@ -20,7 +20,7 @@ Note
    where ``{ip-address}`` is the IP address of your Unisphere server and
    ``{port}`` is the port it is listening on.
 
-PyU4V Version 10.1
+PyU4V Version 10.2
 ------------------
 
 +-------------------------------+----------------------------+
