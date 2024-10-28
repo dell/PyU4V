@@ -166,7 +166,7 @@ class MetroDRFunctions(object):
 
     def convert_to_metrodr_environment(
             self, storage_group_name, environment_name,
-            metro_r1_array_id=None, _async=True):
+            metro_r1_array_id=None, metro_r2_dr_rdfg=None, _async=True):
         """Converts existing R2--Async--R11--Metro--R2 to Metro DR Environment.
 
         Automatically adds recovery RDFG between Metro R2 and Async R2.
@@ -174,22 +174,29 @@ class MetroDRFunctions(object):
         :param storage_group_name: storage group name containing source
                                    devices -- str
         :param environment_name: name of Metro Dr Environment up to 16
-                                 characters-- str
+                                 characters -- str
         :param metro_r1_array_id: 12 Digit Serial Number of R1 Array for
                                   SRDF Metro Source Array, optional -- int
+        :param metro_r2_dr_rdfg: DR SRDF group that should be used to pair
+                                 Metro R2 volumes with DR volumes, optional -- int
         :param _async: if call should be executed asynchronously or
-                       synchronously  -- bool
+                       synchronously -- bool
         :returns: details of newly created metro dr environment -- dict
         """
         if metro_r1_array_id:
             array_id = metro_r1_array_id
         else:
             array_id = self.array_id
+
         payload = {
             'action': 'ConvertToMetroDR',
             'convert_to_metrodr_param': {
                 'storage_group_name': storage_group_name,
                 'environment_name': environment_name}}
+
+        if metro_r2_dr_rdfg:
+            payload['convert_to_metrodr_param']['metro_r2_dr_rdfg'] = metro_r2_dr_rdfg
+
         if _async:
             payload.update(ASYNC_UPDATE)
 
