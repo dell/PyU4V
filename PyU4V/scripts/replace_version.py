@@ -1,6 +1,7 @@
 # replace_version.py
 import fileinput
-from version import VERSION, Unisphere_Min_version, API_VERSION
+from version import (VERSION, API_VERSION,
+                     UNI_VERSION, MAJOR_VERSION)
 
 version_file_list = ['../../README.rst', '../../index.rst',
                      '../../docs/source/installation.rst',
@@ -9,7 +10,11 @@ version_file_list = ['../../README.rst', '../../index.rst',
 for filename in version_file_list:
     with fileinput.input(filename, inplace=True) as f:
         for line in f:
-            print(line.replace('{version}', VERSION), end='')
+            line = line.replace('{version}', VERSION)
+            line = line.replace('{uni_version}', UNI_VERSION)
+            line = line.replace('{major_version}', MAJOR_VERSION)
+            line = line.replace('{api_version}', API_VERSION)
+            print(line, end='')
 
 
 
