@@ -5,9 +5,9 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.0                               |
+| **PyU4V Version**             | {version}                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.2                                   |
+| **Minimum Unisphere Version** | {uni_version}                                   |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -25,7 +25,7 @@ Requirements
 
 .. note::
     If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
-    need to remain on PyU4V 3.1.x. There is no support for PyU4V 9.x with any
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V 8.4.x with any
     version of Unisphere older than 9.1.x
 
 .. note::
@@ -35,15 +35,9 @@ Requirements
 PyU4V Version Compatibility
 ---------------------------
 
-PyU4V version 10.x is compatible with scripts written for PyU4V versions
+PyU4V version {version} is compatible with scripts written for PyU4V versions
 >= 9.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
-scripts in later versions of PyU4V. If you have scripts written which
-specifically target Unisphere REST 8.4, 9.0 or 9.1 endpoints these are still
-accessible via PyU4V 10.x however you will need to ensure you are passing
-the version required when performing these calls as PyU4V 9.2 will default
-to using 9.2 endpoints exclusively.  You will also need to pay special
-attention to any REST JSON payloads in custom scripts as payloads are
-subject to change between major Unisphere REST releases.
+scripts in later versions of PyU4V.
 
 Installation
 ------------
@@ -66,7 +60,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==10.0.0.7
+    $ pip install PyU4V=={version}
 
 .. URL LINKS
 

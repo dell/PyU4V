@@ -35,9 +35,10 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.0                               |
+| **PyU4V Version**             | {version}                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.2                                   |
+| **Minimum Unisphere Version** | {uni_version}
+|
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -59,7 +60,8 @@ Supported PyU4V Versions
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.2.x is compatible with scripts written for PyU4V versions
+    PyU4V version {version} is compatible with scripts written for PyU4V
+versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 

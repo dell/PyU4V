@@ -1,4 +1,4 @@
-Welcome to PyU4V 10.2
+Welcome to PyU4V {major_version}
 =====================
 
 | |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
@@ -26,9 +26,9 @@ PyU4V Version 10.1
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | 10.2.0.0                   |
-+-------------------------------+----------------------------+
-| **Minimum Unisphere Version** | 10.2.0.0                   |
+| **PyU4V Version**             | {version}                               |
++-------------------------------+----------------------------------------+
+| **Minimum Unisphere Version** | {uni_version}                                   |
 +-------------------------------+----------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax |
 +-------------------------------+----------------------------+
@@ -47,7 +47,8 @@ Note
     version of Unisphere older than 9.1.x
 
 Note
-    PyU4V version 10.x is compatible with scripts written for PyU4V versions
+    PyU4V version {major_version} is compatible with scripts written for PyU4V
+versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
@@ -74,7 +75,7 @@ specifying ``PyU4V`` as the install package for ``pip``::
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==10.2.0.0
+    $ pip install PyU4V==10.2.0.1
 
 Copy the sample ``PyU4V.conf`` provided with PyU4V to either your working
 directory or within a directory named ``.PyU4V`` in your current users home
@@ -163,7 +164,7 @@ outlined in the previous section).
 
     conn = PyU4V.U4VConn()
     conn.common.get_unisphere_version()
-    >> {'version': 'V10.2.0.0'}
+    >> {'version': '{version}'}
 
 If you wish to query another array without changing the configuration file,
 call the connection ``set_array_id()`` function:
