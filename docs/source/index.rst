@@ -37,8 +37,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **PyU4V Version**             | {version}                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | {uni_version}
-|
+| **Minimum Unisphere Version** | {uni_version}                          |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -118,7 +117,8 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10.2 is distributed under the Apache 2.0 License. Unless required by
+PyU4V {major_version} is distributed under the Apache 2.0 License. Unless
+required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
 **conditions of any kind**, either express or implied. See the License for the
