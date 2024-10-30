@@ -13,7 +13,7 @@
 # limitations under the License.
 """setup.py."""
 import setuptools
-from version import VERSION
+from PyU4V.version import VERSION
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
