@@ -17,6 +17,7 @@ import logging
 import sys
 import time
 
+import version
 from PyU4V.common import CommonFunctions
 from PyU4V.clone import CloneFunctions
 from PyU4V.metro_dr import MetroDRFunctions
@@ -35,7 +36,7 @@ from PyU4V.workload_planner import WLPFunctions
 from PyU4V.volumes import VolumesFunctions
 from PyU4V.storage_groups import StorageGroupsFunctions
 from PyU4V.performance_enhanced import EnhancedPerformanceFunctions
-
+from version import VERSION, MAJOR_VERSION, API_VERSION
 
 file_path = None
 app_type = 'PyU4V-{v}'.format(v=constants.PYU4V_VERSION)
@@ -51,7 +52,7 @@ PASSWORD = constants.PASSWORD
 SERVER_IP = constants.SERVER_IP
 PORT = constants.PORT
 VERIFY = constants.VERIFY
-
+MAJOR_VERSION = version.MAJOR_VERSION
 
 class U4VConn(object):
     """U4VConn."""
@@ -187,10 +188,11 @@ class U4VConn(object):
         :raises: SystemExit
         """
         uni_ver, major_ver = self.common.get_uni_version()
-        if int(major_ver) < int(constants.UNISPHERE_VERSION):
+        if int(major_ver) < int(version.API_VERSION):
             msg = ('Unisphere version {uv} does not meet the minimum '
-                   'requirement of v10.2.x Please upgrade your version of '
-                   'Unisphere to use this SDK. Exiting...'.format(uv=uni_ver))
+                   'requirement of v{mv} Please upgrade your version of '
+                   'Unisphere to use this SDK. Exiting...'.format(
+                uv=uni_ver, mv=MAJOR_VERSION))
             sys.exit(msg)
         else:
             LOG.debug('Unisphere version {uv} passes minimum requirement '
