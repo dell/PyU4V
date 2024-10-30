@@ -36,7 +36,7 @@ from PyU4V.workload_planner import WLPFunctions
 from PyU4V.volumes import VolumesFunctions
 from PyU4V.storage_groups import StorageGroupsFunctions
 from PyU4V.performance_enhanced import EnhancedPerformanceFunctions
-from version import VERSION, MAJOR_VERSION, API_VERSION
+from version import MAJOR_VERSION
 
 file_path = None
 app_type = 'PyU4V-{v}'.format(v=constants.PYU4V_VERSION)
