@@ -1,7 +1,7 @@
 # replace_version.py
 import fileinput
-from version import (VERSION, API_VERSION,
-                     UNI_VERSION, MAJOR_VERSION)
+from PyU4V.version import (VERSION, API_VERSION,
+                           UNI_VERSION, MAJOR_VERSION)
 
 version_file_list = ['../../README.rst', '../../index.rst',
                      '../../docs/source/installation.rst',
