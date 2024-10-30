@@ -13,7 +13,7 @@
 # limitations under the License.
 """constants.py."""
 
-import version
+from PyU4V import version
 
 # Configuration constants
 SETUP = 'setup'
