@@ -189,10 +189,9 @@ class U4VConn(object):
         """
         uni_ver, major_ver = self.common.get_uni_version()
         if int(major_ver) < int(API_VERSION):
-            msg = ('Unisphere version {uv} does not meet the minimum '
-                   'requirement of v{mv} Please upgrade your version of '
-                   'Unisphere to use this SDK. Exiting...'.format(
-                uv=uni_ver, mv=MAJOR_VERSION))
+            msg = (f'Unisphere version {uni_ver} does not meet the minimum '
+                   f'requirement of v{MAJOR_VERSION} Please upgrade your version of '
+                   f'Unisphere to use this SDK. Exiting...')
             sys.exit(msg)
         else:
             LOG.debug('Unisphere version {uv} passes minimum requirement '

@@ -747,7 +747,7 @@ class PyU4VSystemTest(testtools.TestCase):
 
     def test_configure_ldap_authentication(self):
         with (mock.patch.object(
-                self.system, 'configure_ldap_authentication') as
-        mock_configure):
+                self.system, 'configure_ldap_authentication')
+        as mock_configure):
             self.system.configure_ldap_authentication(enabled=True)
             mock_configure.assert_called_once()

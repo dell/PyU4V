@@ -15,8 +15,3 @@ for filename in version_file_list:
             line = line.replace('{major_version}', MAJOR_VERSION)
             line = line.replace('{api_version}', API_VERSION)
             print(line, end='')
-
-
-
-
-
