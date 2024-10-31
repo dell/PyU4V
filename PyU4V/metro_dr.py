@@ -166,7 +166,7 @@ class MetroDRFunctions(object):
 
     def convert_to_metrodr_environment(
             self, storage_group_name, environment_name,
-            metro_r1_array_id=None, metro_r2_dr_rdfg=None,_async=True):
+            metro_r1_array_id=None, metro_r2_dr_rdfg=None, _async=True):
         """Converts existing R2--Async--R11--Metro--R2 to Metro DR Environment.
 
         Automatically adds recovery RDFG between Metro R2 and Async R2.
