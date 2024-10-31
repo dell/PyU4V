@@ -1371,7 +1371,7 @@ class SystemFunctions(object):
             resource_type=None)
 
     def configure_ldap_authentication(
-            self, action, ldap_server, ldap_port, bind_dn,bind_password,
+            self, action, ldap_server, ldap_port, bind_dn, bind_password,
             user_search_path, group_name_attribute, group_member_attribute,
             group_object_class, ssl_certificate,
             limit_authentication_to_ldap_group_members, user_object_class,
