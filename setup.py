@@ -45,6 +45,9 @@ setuptools.setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules'],
     python_requires='>=3.6, <4.0',
-    scripts=['PyU4V/scripts/replace_version.py'],
+    entry_points={
+        'console_scripts': [
+            'replace_version = PyU4V.scripts.replace_version:main',
+        ],},
     tests_require=['mock', 'testtools'],
     test_suite='tests')
