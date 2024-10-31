@@ -13,14 +13,13 @@
 # limitations under the License.
 """setup.py."""
 import setuptools
-from PyU4V.version import VERSION
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='PyU4V',
-    version=VERSION,
+    version='10.2.0.1',
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
     author_email='paule.martin@dell.com',
