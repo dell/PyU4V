@@ -13,6 +13,16 @@
 # limitations under the License.
 """setup.py."""
 import setuptools
+from setuptools.command.build_py import build_py
+
+class RunScriptBeforeBuild(build_py):
+    def run(self):
+        # Run your script here
+        import subprocess
+        subprocess.call(['python', 'PyU4V/scripts/replace_version.py'])
+
+        # Call the original build_py command
+        build_py.run(self)
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
@@ -45,8 +55,8 @@ setuptools.setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules'],
     python_requires='>=3.6, <4.0',
-    entry_points={
-        'console_scripts': [
-            'replace_version = PyU4V.scripts.replace_version']},
+    cmdclass={
+        'build_py': RunScriptBeforeBuild,
+    },
     tests_require=['mock', 'testtools'],
     test_suite='tests')
