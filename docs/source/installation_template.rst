@@ -1,0 +1,73 @@
+Installation Guide
+==================
+
+Requirements
+------------
+
++-------------------------------+----------------------------------------+
+| **PyU4V Version**             | {version}                               |
++-------------------------------+----------------------------------------+
+| **Minimum Unisphere Version** | {uni_version}                                 |
++-------------------------------+----------------------------------------+
+| **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
++-------------------------------+----------------------------------------+
+| **Array uCode**               | HyperMax OS, PowerMax OS               |
++-------------------------------+----------------------------------------+
+| **Platforms**                 | Linux, Windows                         |
++-------------------------------+----------------------------------------+
+| **Python**                    | 3.6, 3.7, 3.8, 3.9, 3.10               |
++-------------------------------+----------------------------------------+
+| **Requirements**              | Requests_, Six_, urllib3_,             |
+|                               | prettytable_                           |
++-------------------------------+----------------------------------------+
+| **Test Requirements**         | TestTools_, Tox_                       |
++-------------------------------+----------------------------------------+
+
+.. note::
+    If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V 8.4.x with any
+    version of Unisphere older than 9.1.x
+
+.. note::
+    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
+    has been dropped since January 1st 2020.
+
+PyU4V Version Compatibility
+---------------------------
+
+PyU4V version {version} is compatible with scripts written for PyU4V versions
+>= 9.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
+scripts in later versions of PyU4V.
+
+Installation
+------------
+
+PyU4V can be installed from source, via ``pip``, or run directly from the
+source directory. To clone PyU4V and install from source use ``git`` and
+``pip``:
+
+.. code-block:: bash
+
+    $ git clone https://github.com/dell/PyU4V
+    $ cd PyU4V/
+    $ pip install .
+
+
+Installing via ``pip`` without cloning from source can be achieved by
+specifying ``PyU4V`` as the install package for ``pip``:
+
+.. code-block:: bash
+
+    $ pip install PyU4V
+    # Install a specific version
+    $ pip install PyU4V=={version}
+
+.. URL LINKS
+
+.. _Requests: https://realpython.com/python-requests/
+.. _Six: https://six.readthedocs.io/
+.. _urllib3: https://urllib3.readthedocs.io/en/latest/
+.. _retired: https://pythonclock.org/
+.. _TestTools: https://pypi.org/project/testtools/
+.. _Tox: https://pypi.org/project/tox/
+.. _prettytable: https://pypi.org/project/PrettyTable/
