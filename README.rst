@@ -1,4 +1,4 @@
-Welcome to PyU4V {major_version}
+Welcome to PyU4V 10.2
 =====================
 
 | |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
@@ -26,9 +26,9 @@ PyU4V Version 10.1
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | {version}                   |
+| **PyU4V Version**             | 10.2.0.1                   |
 +-------------------------------+----------------------------+
-| **Minimum Unisphere Version** | {uni_version}                     |
+| **Minimum Unisphere Version** | 10.2.0                     |
 +-------------------------------+----------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax |
 +-------------------------------+----------------------------+
@@ -47,7 +47,7 @@ Note
     version of Unisphere older than 9.1.x
 
 Note
-    PyU4V version {major_version} is compatible with scripts written for PyU4V
+    PyU4V version 10.2 is compatible with scripts written for PyU4V
 versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
@@ -164,7 +164,7 @@ outlined in the previous section).
 
     conn = PyU4V.U4VConn()
     conn.common.get_unisphere_version()
-    >> {'version': '{version}'}
+    >> {'version': '10.2.0.1'}
 
 If you wish to query another array without changing the configuration file,
 call the connection ``set_array_id()`` function:

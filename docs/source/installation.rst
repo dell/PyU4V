@@ -5,9 +5,9 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | {version}                               |
+| **PyU4V Version**             | 10.2.0.1                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | {uni_version}                                 |
+| **Minimum Unisphere Version** | 10.2.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -35,7 +35,7 @@ Requirements
 PyU4V Version Compatibility
 ---------------------------
 
-PyU4V version {version} is compatible with scripts written for PyU4V versions
+PyU4V version 10.2.0.1 is compatible with scripts written for PyU4V versions
 >= 9.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
 scripts in later versions of PyU4V.
 
@@ -60,7 +60,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V=={version}
+    $ pip install PyU4V==10.2.0.1
 
 .. URL LINKS
 
