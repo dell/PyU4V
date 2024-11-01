@@ -33,7 +33,7 @@ def copy_files_with_version_names(template_file_list, version_file_list):
         shutil.copyfile(original_file_path, new_file_path)
         print(f"Copied {original_file_path} to {new_file_path}")
 
-def update_version();
+def update_version():
     for filename in version_file_list:
         with fileinput.input(filename, inplace=True) as f:
             for line in f:
