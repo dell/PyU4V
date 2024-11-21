@@ -104,9 +104,10 @@ class PyU4VMetroDRTest(testtools.TestCase):
                 self.metro_dr, 'create_resource') as mock_create:
             self.metro_dr.convert_to_metrodr_environment(
                 storage_group_name="PyU4V", environment_name='PyU4V',
-                metro_r1_array_id='000197800123')
+                metro_r1_array_id='000197800123', metro_r2_dr_rdfg=45)
             self.metro_dr.convert_to_metrodr_environment(
-                storage_group_name="PyU4V", environment_name='PyU4V')
+                storage_group_name="PyU4V", environment_name='PyU4V',
+                metro_r2_dr_rdfg=45)
             mock_create.assert_called()
 
     def test_modify_metrodr_environment_failover(self):

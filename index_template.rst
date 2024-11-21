@@ -24,20 +24,20 @@ PowerMax REST API.  It wraps REST calls with simple APIs that abstract the HTTP
 request and response handling.
 
 .. note::
-   All official documentation for Unipshere for PowerMax API
-   is available at https://developer.dell.com/apis/4458. An OpenApi.json file
-   can be download from this site for use with tools like PostMan or for
-   interfacing with PyU4V custom API call mechanism.  Please refer to this
-   documentation when looking for information about query path parameters
-   for functions that accept them.
+   You can get the Unisphere for PowerMax REST documentation by
+   navigating to a URL in your local instance of Unisphere for PowerMax.
+   Navigate to ``https://{ip}:{port}/univmax/restapi/docs`` where ``{ip}`` is
+   the IP address of your Unisphere server and ``{port}`` is the port it is
+   listening on. A zip file will be downloaded to your computer containing
+   complete Unisphere REST endpoint documentation.
 
 Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.1                               |
+| **PyU4V Version**             | {version}                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version*  | 10.2.0                                 |
+| **Minimum Unisphere Version** | {uni_version}                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -45,7 +45,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    | 3.6, 3.7, 3.8, 3.9, 3.10               |
+| **Python**                    | 3.6, 3.7, 3.8, 3.9                     |
 +-------------------------------+----------------------------------------+
 | **Requirements**              | Requests_, Six_, urllib3_,             |
 |                               | prettytable_                           |
@@ -53,15 +53,26 @@ Supported PyU4V Versions
 | **Test Requirements**         | TestTools_, Tox_                       |
 +-------------------------------+----------------------------------------+
 
+.. note::
+    If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V {version} with
+any
+    version of Unisphere older than {uni_version}
 
 .. note::
     PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.2.0.1 is compatible with scripts written for PyU4V versions
-    >= 9.2. Please ensure to check change log to ensure that you are not
-    using functions that have been marked as depreciated.
+    PyU4V version {major_version} is compatible with scripts written for PyU4V
+versions
+    >= 3.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
+    scripts in later versions of PyU4V. PyU4V {version} will
+    default to using v{api_version} endpoints exclusively. You will also
+need to
+pay
+    special attention to any REST JSON payloads in custom scripts as payloads
+    are subject to change between major Unisphere REST releases.
 
 Getting Started
 ---------------
@@ -116,7 +127,7 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10.2 is distributed under the Apache 2.0 License. Unless
+PyU4V {major_version} is distributed under the Apache 2.0 License. Unless
 required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**

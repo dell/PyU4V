@@ -1371,10 +1371,11 @@ class SystemFunctions(object):
             resource_type=None)
 
     def configure_ldap_authentication(
-            self,action, ldap_server, ldap_port, bind_dn,bind_password,
-            user_search_path,group_name_attribute,group_member_attribute,
+            self, action, ldap_server, ldap_port, bind_dn, bind_password,
+            user_search_path, group_name_attribute, group_member_attribute,
             group_object_class, ssl_certificate,
-            limit_authentication_to_ldap_group_members, ldap_group_names=None):
+            limit_authentication_to_ldap_group_members, user_object_class,
+            user_id_attribute, ldap_group_names=None):
         """Enable or disable LDAP authentication.
         :param action: Enable or Disable, Enable requires additional payload
                        parameters  -- Bool
@@ -1397,6 +1398,8 @@ class SystemFunctions(object):
                                   -----END CERTIFICATE----- --str
         :param limit_authentication_to_ldap_group_members --bool
         :param ldap_group_names: LDAP groups separated by commas --str
+        :param user_object_class --str
+        :param user_id_attribute --str
         :returns: dict
         """
 

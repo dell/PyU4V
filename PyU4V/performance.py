@@ -2333,7 +2333,10 @@ class PerformanceFunctions(object):
 
         Note: This function can gather statistics for up to 10,000 volumes
         or 100 Storage groups per call, time range can not exceed 1 hour/60
-        minutes .
+        minutes.  If Maximum values are required you will need to ensure the
+        array is registered for both realtime and diagnostic data and
+        storage groups are registered for realtime data collection using
+        function enable_real_time_data_collection().
 
         :param volume_range_start: 5 digit device id of first device in range
                                    -- str
