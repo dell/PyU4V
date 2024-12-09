@@ -47,8 +47,7 @@ Note
     version of Unisphere older than 9.1.x
 
 Note
-    PyU4V version 10.2 is compatible with scripts written for PyU4V
-versions
+    PyU4V version 10.2 is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
