@@ -5,7 +5,7 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.1                               |
+| **PyU4V Version**             | 10.2.0.2                               |
 +-------------------------------+----------------------------------------+
 | **Minimum Unisphere Version** | 10.2.0                                 |
 +-------------------------------+----------------------------------------+
@@ -35,7 +35,7 @@ Requirements
 PyU4V Version Compatibility
 ---------------------------
 
-PyU4V version 10.2.0.1 is compatible with scripts written for PyU4V versions
+PyU4V version 10.2.0.2 is compatible with scripts written for PyU4V versions
 >= 9.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
 scripts in later versions of PyU4V.
 
@@ -60,7 +60,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==10.2.0.1
+    $ pip install PyU4V==10.2.0.2
 
 .. URL LINKS
 

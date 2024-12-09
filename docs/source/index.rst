@@ -35,7 +35,7 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.1                               |
+| **PyU4V Version**             | 10.2.0.2                               |
 +-------------------------------+----------------------------------------+
 | **Minimum Unisphere Version*  | 10.2.0                                 |
 +-------------------------------+----------------------------------------+
@@ -59,7 +59,7 @@ Supported PyU4V Versions
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.2.0.1 is compatible with scripts written for PyU4V versions
+    PyU4V version 10.2.0.2 is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 

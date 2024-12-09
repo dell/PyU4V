@@ -1,5 +1,9 @@
 PyU4V Change Log
 ================
+Version 10.2.0.2
+Modified placement of version script breaking import for PyU4V Github Issue
+#208
+
 Version 10.2.0.1
 metro_dr.py added support to specify r2_rdfg on convert
 updated versioning to be more automatic, version only needs to be updated in

@@ -21,7 +21,6 @@
 """__init__.py."""
 
 from .univmax_conn import U4VConn  # noqa: F401
-import version
 
 __title__ = 'pyu4v'
 __version__ = version.VERSION

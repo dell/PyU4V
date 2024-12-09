@@ -26,7 +26,7 @@ PyU4V Version 10.2
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | 10.2.0.1                   |
+| **PyU4V Version**             | 10.2.0.2                   |
 +-------------------------------+----------------------------+
 | **Minimum Unisphere Version** | 10.2.0                     |
 +-------------------------------+----------------------------+
@@ -164,7 +164,7 @@ outlined in the previous section).
 
     conn = PyU4V.U4VConn()
     conn.common.get_unisphere_version()
-    >> {'version': '10.2.0.1'}
+    >> {'version': '10.2.0.2'}
 
 If you wish to query another array without changing the configuration file,
 call the connection ``set_array_id()`` function:
