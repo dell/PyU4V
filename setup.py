@@ -18,7 +18,7 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='PyU4V',
+    name='pyu4v',
     version='10.2.0.2',
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
