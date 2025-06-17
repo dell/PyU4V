@@ -35,7 +35,7 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.2                               |
+| **PyU4V Version**             | 10.2.0.3                               |
 +-------------------------------+----------------------------------------+
 | **Minimum Unisphere Version** | 10.2.0                                 |
 +-------------------------------+----------------------------------------+
@@ -55,7 +55,7 @@ Supported PyU4V Versions
 
 .. note::
     If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
-    need to remain on PyU4V 3.1.x. There is no support for PyU4V 10.2.0.2 with
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V 10.2.0.3 with
 any
     version of Unisphere older than 10.2.0
 
@@ -64,13 +64,10 @@ any
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.2 is compatible with scripts written for PyU4V
-versions
+    PyU4V version 10.x is compatible with scripts written for PyU4V versions
     >= 3.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
-    scripts in later versions of PyU4V. PyU4V 10.2.0.2 will
-    default to using v102 endpoints exclusively. You will also
-need to
-pay
+    scripts in later versions of PyU4V. PyU4V 10.0 will
+    default to using v100 endpoints exclusively. You will also need to pay
     special attention to any REST JSON payloads in custom scripts as payloads
     are subject to change between major Unisphere REST releases.
 
@@ -127,8 +124,7 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10.2 is distributed under the Apache 2.0 License. Unless
-required by
+PyU4V 10.2 is distributed under the Apache 2.0 License. Unless required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
 **conditions of any kind**, either express or implied. See the License for the
