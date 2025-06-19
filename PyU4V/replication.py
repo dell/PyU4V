@@ -931,7 +931,8 @@ class ReplicationFunctions(object):
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
         if force_new_rdf_group:
-            rdf_payload.update({'forceNewRdfGroup': True})
+            LOG.warning("Parameter 'force_new_rdf_group' is no longer "
+                             "supported and will be ignored.")
         if _async:
             rdf_payload.update(ASYNC_UPDATE)
         return self.create_resource(

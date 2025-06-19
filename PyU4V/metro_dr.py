@@ -128,7 +128,11 @@ class MetroDRFunctions(object):
             dr_storage_group_name = storage_group_name
         if not metro_r2_storage_group_name:
             metro_r2_storage_group_name = storage_group_name
-
+        if force_new_metro_r1_dr_rdfg or force_new_metro_r2_dr_rdfg:
+                LOG.warning(
+                    "Parameter 'force_new_group' is no longer "
+                    "supported and will be ignored. Default behavior is to "
+                    "do this automatically")
         if dr_replication_mode:
             if 'ASYNCHRONOUS' in dr_replication_mode.upper():
                 dr_replication_mode = ASYNCHRONOUS
@@ -149,8 +153,6 @@ class MetroDRFunctions(object):
                 'metro_r2_array_id': metro_r2_array_id,
                 'metro_r2_storage_group_name': metro_r2_storage_group_name,
                 'dr_array_id': dr_array_id,
-                'force_new_metro_r1_dr_rdfg': force_new_metro_r1_dr_rdfg,
-                'force_new_metro_r2_dr_rdfg': force_new_metro_r2_dr_rdfg,
                 'dr_replication_mode': dr_replication_mode,
                 'dr_storage_group_name': dr_storage_group_name,
                 'metro_establish': True,
