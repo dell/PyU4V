@@ -66,7 +66,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==10.0.0.7
+    $ pip install PyU4V==10.2.0.3
 
 .. URL LINKS
 
