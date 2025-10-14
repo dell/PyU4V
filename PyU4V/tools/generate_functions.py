@@ -1,5 +1,6 @@
 import json
-
+#to use this script you must have a json file named openapi.json in the same directory as this script. The json file should contain the paths of the API resources and their corresponding methods.
+# The script will generate functions for all GET calls for the specified API resource. The generated functions will be in a file named generate_get_functions.py.
 f = open('openapi.json')
 data = json.load(f)
 data = data.get('paths')
@@ -15,7 +16,7 @@ def generate_get_functions(category, api_connection, api_version):
     returns: whole bunch of functions in a file eventually.
     """
     for uri_link in keys:
-        if f'102/{category}' in uri_link:
+        if f'103/{category}' in uri_link:
             if 'get' in data.get(f'{uri_link}').keys():
                 uri_detail = data.get(f'{uri_link}')
                 function_name = (
@@ -80,5 +81,5 @@ def generate_get_functions(category, api_connection, api_version):
                 print()
 
 
-generate_get_functions(category='replication', api_connection='self',
-                       api_version='102')
+generate_get_functions(category='settings', api_connection='self',
+                       api_version='103')

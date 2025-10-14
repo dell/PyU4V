@@ -920,7 +920,8 @@ class ReplicationFunctions(object):
         :param establish: establish srdf -- bool
         :param _async: if call should be async -- bool
         :param rdfg_number: rdf group number -- int
-        :param force_new_rdf_group: if force command should be applied -- bool
+        :param force_new_rdf_group: ignored, present for backward
+                                    compatibility -- bool
         :returns: storage group rdf details -- dict
         """
         establish_sg = 'True' if establish else 'False'
@@ -930,11 +931,11 @@ class ReplicationFunctions(object):
                        'establish': establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
-        if force_new_rdf_group:
-            LOG.warning("Parameter 'force_new_rdf_group' is no longer "
-                             "supported and will be ignored.")
         if _async:
             rdf_payload.update(ASYNC_UPDATE)
+        if force_new_rdf_group:
+            LOG.warning("Parameter 'force_new_rdf_group' is no longer "
+                        "supported and will be ignored.")
         return self.create_resource(
             category=REPLICATION,
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
@@ -1222,7 +1223,8 @@ class ReplicationFunctions(object):
 
     def modify_rdf_group(self, action, srdf_group_number, array_id=None,
                          port_list=None, label=None, dev_list=None,
-                         target_rdf_group=None, consistency_exempt=None):
+                         target_rdf_group=None, consistency_exempt=None,
+                         keepR1=None, keepR2=None):
         """Function to Modify Ports, devices or change label of RDF group.
 
         Function can be used to Add ports, move volumes between rdf groups,
@@ -1238,6 +1240,8 @@ class ReplicationFunctions(object):
         :param dev_list: list of volumes to be moved between RDF groups -- list
         :param target_rdf_group: rdfg group to move volumes to -- int
         :param consistency_exempt: ignore device for consistency checks -- bool
+        :param keepR1: preserves data on R1 -- bool
+        :param keepR2: preserves data on R2 -- bool
         """
 
         rdfg_action = constants.RDFG_ACTIONS.get(action.upper())
@@ -1259,6 +1263,10 @@ class ReplicationFunctions(object):
                     'volumesToMove': dev_list,
                     'exempt': consistency_exempt},
                 'action': 'Move'}
+            if keepR1 is not None:
+                payload['move']['keepR1'] = keepR1
+            if keepR2 is not None:
+                payload['move']['keepR2'] = keepR2
 
         elif rdfg_action == 'set_label':
             payload = {

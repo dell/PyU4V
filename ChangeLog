@@ -1,23 +1,17 @@
 PyU4V Change Log
 ================
+Version 10.3
+setup.py changed name to normalized pyu4v per PEP 625
+added enhanced_api functions
+updated performance_enhanced.py to accept filters new in 10.3
+added keepR1 and KeepR2 parameters to modify_rdf_group function in
+replication.py
+
+
 Version 10.2.0.3
 replication.py create_storage_group_srdf_pairings force_new_rdfg parameter made
 defunct as was removed from API, will be ignored if specified and warning
 logged.
-
-metro_dr.py create_metrodr_environment force_new_metro_r1_dr_rdfg or
-force_new_metro_r2_dr_rdfg parameter
-made defunct as was removed from API, will be ignored if specified and
-warning logged.
-
-Version 10.2.0.1
-metro_dr.py added support to specify r2_rdfg on convert
-updated versioning to be more automatic, version only needs to be updated in
-version.py
-
-Version 10.2.0.2
-Modified placement of version script breaking import for PyU4V Github Issue
-#208
 
 Version 10.2.0.1
 metro_dr.py added support to specify r2_rdfg on convert

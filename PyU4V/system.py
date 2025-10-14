@@ -1300,6 +1300,9 @@ class SystemFunctions(object):
 
         :returns SNMP configuration information--dict
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings module")
         return self.common.get_request(
             target_uri=f"/{self.version}/system/snmp",
             resource_type=None)
@@ -1316,6 +1319,9 @@ class SystemFunctions(object):
         :param passphrase: Passphrase for SNMP v3 --str
         :returns:
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings module")
         payload = {
             'name': name,
             'port': port,
@@ -1332,6 +1338,9 @@ class SystemFunctions(object):
 
         :param snmp_id unique identifier for snmp trap destination - str
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings module")
         return self.common.delete_resource(
             target_uri=f"/{self.version}/system/snmp/{snmp_id}",
             resource_type=None)
@@ -1357,6 +1366,9 @@ class SystemFunctions(object):
             'password': password,
             'passphrase': passphrase
         }
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings module.")
         return self.common.modify_resource(
             target_uri=f"/{self.version}/system/snmp/{snmp_id}",
             resource_type=None, payload=payload)
@@ -1366,6 +1378,9 @@ class SystemFunctions(object):
 
         :returns: dict
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings module")
         return self.common.get_request(
             target_uri=f"/{self.version}/system/authorization/ldap",
             resource_type=None)
@@ -1402,6 +1417,9 @@ class SystemFunctions(object):
         :param user_id_attribute --str
         :returns: dict
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings module")
 
         payload = {"action": action}
         if action:

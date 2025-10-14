@@ -43,5 +43,6 @@ def main():
     update_version(version_files)
     print("Please verify formatting on readme.rst line 50-53")
 
+
 if __name__ == '__main__':
     main()

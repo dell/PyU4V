@@ -132,17 +132,8 @@ class RestRequests(object):
 
         except requests.Timeout as error:
             LOG.error(
-                'The {} request to URL {} timed-out, but may have '
-                'been successful. Please check Unisphere Server for any '
-                'slowness, long-running API calls are a symptom of '
-                'Unisphere Server limits being reached. {}. See '
-                'https://developer.dell.com/apis/4458/versions/10.0/docs'
-                '/Getting%20Started/4.concurrent_operations.md, To ensure '
-                'limits are not being exceeded verify the number of '
-                'connections and calls in Unisphere for PowerMax under '
-                'Support > Management Server Resources or using system '
-                'call get_management_server_resources()'
-                ''.format(method, url, error))
+                'The {} request to URL {} timed-out, Check Unisphere '
+                'connection.'.format(method, url, error))
             return None, None
 
         except r_exc.SSLError as error:
