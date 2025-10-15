@@ -13,7 +13,7 @@
 # limitations under the License.
 """constants.py."""
 
-import PyU4V.version
+from PyU4V import version
 
 # Configuration constants
 SETUP = 'setup'
@@ -41,9 +41,9 @@ APP_OCT = 'application/octet-stream'
 APP_MPART = 'multipart/form-data'
 
 # Unisphere REST URI constants
-PYU4V_VERSION = PyU4V.version.VERSION
-UNISPHERE_VERSION = PyU4V.version.API_VERSION
-ENHANCED_API_VERSION = PyU4V.version.ENHANCED_API_VERSION
+PYU4V_VERSION = version.VERSION
+UNISPHERE_VERSION = version.API_VERSION
+ENHANCED_API_VERSION = version.ENHANCED_API_VERSION
 UCODE_6079 = '6079'
 VERSION = 'version'
 ITERATOR = 'Iterator'

@@ -76,19 +76,36 @@ class EnhancedPerformanceFunctions(object):
                 full_metric_collection.append(response)
         return full_metric_collection
 
-    def get_category_metrics(self, category, array_id=None):
+    def get_category_metrics(self, category: str, array_id=None, filters=None):
         """Get latest data for KPI metrics for specificied performance
         category.
 
         :param array_id: 12 Digit Serial Number of Array -- int
+        :param filters: users can filter on the time_range and component id,
+                        these can be combined in single query,
+                        e.g. filters=['time_range eq 1','id ilike Oracle',
+                        'data_format eq Maximum']
+                        valid values for time range are 1,2,4,8,12,
+                        24 in hours, you can also specify data_format to
+                        return Average or Maximum values, note for max
+                        values to be retuned you must be registered for
+                        realtime statistics -- list
         :returns: full list of all KPI metrics for latest diagnostic
                  timestamp for the specified array and performance category --
                  dict
         """
         array_id = array_id if array_id else self.array_id
+        """Build the optional filter part – empty string when no filters are
+        given.
+        """
+        filter_part = ''
+        if filters:  # filters is not None/empty
+            filter_part = '?filter=' + ','.join(filters)
+
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
                        f"/{array_id}/performance-categories/"
-                       f"{category}",
+                       f"{category}{filter_part}",
             resource_type=None)
+
         return response

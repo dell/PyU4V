@@ -44,6 +44,7 @@ class TestBaseTestCase(testtools.TestCase):
         self.perf = self.conn.performance
         self.clone = self.conn.clone
         self.system = self.conn.system
+        self.settings = self.conn.settings
 
     def setup_credentials(self):
         """Set REST credentials."""

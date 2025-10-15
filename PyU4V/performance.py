@@ -892,6 +892,9 @@ class PerformanceFunctions(object):
         :param output_csv_path: filename for CSV to be generated -- str
         :param category: threshold specific category -- str
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in future version 10.4. Please explore API Calls in new "
+                    "settings Category for getting and setting thresholds")
         category_list = (
             self.get_threshold_categories() if not category else [category])
         data_for_csv = list()
@@ -900,12 +903,11 @@ class PerformanceFunctions(object):
         for category in category_list:
             metric_setting = self.get_threshold_category_settings(category)
             threshold_settings = metric_setting.get(pc.PERF_THRESH)
-            print(threshold_settings)
             for threshold in threshold_settings:
                 data_for_csv.append([
                     category, threshold.get(pc.METRIC),
-                    int(threshold.get(pc.FIRST_THRESH)),
-                    int(threshold.get(pc.SEC_THRESH)),
+                    threshold.get("firstUpperThreshold"),
+                    threshold.get("secondUpperThreshold"),
                     threshold.get(pc.ALERT_ERR), threshold.get(pc.KPI)])
         file_handler.write_to_csv_file(output_csv_path, data_for_csv)
 
@@ -923,22 +925,31 @@ class PerformanceFunctions(object):
         :param csv_file_path: path to CSV file -- str
         :param kpi_only: set only KPI thresholds -- bool
         """
+        LOG.warning("Warning: This function is deprecated and will be removed "
+                    "in version 10.4. Please explore API Calls in new "
+                    "settings Category for getting and setting thresholds")
+
         def _str_to_bool(str_in):
             return str_in == 'True'
 
         data = file_handler.read_csv_values(csv_file_path)
-
         category_list = data.get(pc.CATEGORY)
         metric_list = data.get(pc.METRIC)
         notify_list = data.get(pc.ALERT_ERR)
-        f_threshold_list = data.get(pc.FIRST_THRESH)
-        s_threshold_list = data.get(pc.SEC_THRESH)
+        f_threshold_list = data.get("firstThreshold")
+        s_threshold_list = data.get("secondThreshold")
         is_kpi = data.get(pc.KPI)
 
         for i in range(0, len(metric_list)):
             if not _str_to_bool(is_kpi[i]) and kpi_only:
                 continue
-            if int(f_threshold_list[i]) >= int(s_threshold_list[i]):
+            if not (f_threshold_list[i]) or not (s_threshold_list[i]):
+                LOG.warning(
+                    'Not setting performance metric {m} threshold as '
+                    'values are not in file'.format(
+                        m=metric_list[i], ))
+                continue
+            if (f_threshold_list[i]) >= (s_threshold_list[i]):
                 LOG.warning(
                     'Not setting performance metric {m} threshold, second '
                     'threshold value {f} must be greater than first threshold '
@@ -946,11 +957,14 @@ class PerformanceFunctions(object):
                         m=metric_list[i], f=f_threshold_list[i],
                         s=s_threshold_list[i]))
                 continue
-            self.update_threshold_settings(
-                category=category_list[i], metric=metric_list[i],
-                alert=notify_list[i], first_threshold=f_threshold_list[i],
-                second_threshold=s_threshold_list[i],
-                include_realtime_trace=False)
+            try:
+                self.update_threshold_settings(
+                    category=category_list[i], metric=metric_list[i],
+                    alert=notify_list[i], first_threshold=f_threshold_list[i],
+                    second_threshold=s_threshold_list[i],
+                    include_realtime_trace=False)
+            except Exception as e:
+                LOG.error('Error updating threshold settings: {e}'.format(e=e))
 
     def get_array_keys(self):
         """List Arrays registered for performance data collection.

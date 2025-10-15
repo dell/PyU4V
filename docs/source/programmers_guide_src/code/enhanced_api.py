@@ -22,20 +22,21 @@ conn = PyU4V.U4VConn(
 
 # Get Details on all storage groups for the specified Storage Array,
 # selecting values that are needed for report.
-print(conn.storage_groups.get_storage_groups_details())
+print(conn.enhanced_api.get_storage_object_details(
+    storage_object="storage-groups"))
 
 # Get Details on what data you can gather about storage volumes.
-print(conn.volumes.get_volumes_meta_data())
+print(conn.enhanced_api.get_storage_object_details(storage_object='volumes'))
 # Get a list of volumes with their storage group id,
-print(conn.volumes.get_volumes_details(
-    select=['id', 'effective_wwn', 'effective_wwn', 'storage_groups', 'cap_gb',
-            ],
+print(conn.enhanced_api.get_storage_object_details(
+    storage_object='volumes', select=['id', 'effective_wwn', 'effective_wwn',
+                                      'storage_groups', 'cap_gb'],
     filters=['identifier ilike findme']))
 
-# get all diagnostic Key Performance indicator metrics for last 5 minute
-# interval for the specified storage array
+# get all diagnostic KPI metrics for specified storage group for last 4 hours
 
-print(conn.performance_enhanced.get_all_performance_metrics_for_system())
+print(conn.performance_enhanced.get_category_metrics(
+    category='StorageGroup', filters=['id eq Aaron', 'time_range eq 2']))
 
 # Close the session
 conn.close_session()

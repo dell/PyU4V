@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """pyu4v_common_data.py."""
+from PyU4V import version
 
 
 class CommonData(object):
     """Common array data."""
-    U4P_VERSION = '102'
-    server_version = {'version': 'V10.2.0.0'}
+    U4P_VERSION = version.API_VERSION
+    server_version = {'version': f'V{version.VERSION}'}
 
     array = '000197800123'
     remote_array = '000197800124'
@@ -2641,3 +2642,129 @@ class CommonData(object):
         'access_id': '63323335-37656265-36393334',
         'se_nethost': [
             {'node_name': '', 'user': ''}]}
+
+    # setttings data
+    alert_policies = {
+        "email": {
+            "enabled": False
+        },
+        "snmp": {
+            "enabled": True,
+            "snmp_trap_targets": [
+                {
+                    "host": "enttme1091.hop.lab.emc.com",
+                    "port": 161,
+                    "version": 1
+                }
+            ]
+        },
+        "syslog": {
+            "enabled": True,
+            "syslog_target": {
+                "host": "10.246.91.91",
+                "port": 514,
+                "protocol": "udp",
+                "text_format": "RFC_3164"
+            }
+        }
+    }
+
+    system_thresholds = {"system_thresholds": [
+        {"name": "backendMetaDataUsage",
+         "applicable": True, "type": "system",
+         "unit": "percent", "warning_threshold": 60, "critical_threshold": 80,
+         "fatal_threshold": 100, "email_notifications": True,
+         "snmp_notifications": True, "syslog_notifications": True},
+        {"name": "frontendMetaDataUsage", "applicable": True, "type": "system",
+         "unit": "percent", "warning_threshold": 60, "critical_threshold": 80,
+         "fatal_threshold": 100, "email_notifications": True,
+         "snmp_notifications": True, "syslog_notifications": True},
+        {"name": "localReplicationUtilization", "applicable": True,
+         "type": "system", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 100,
+         "email_notifications": True, "snmp_notifications": True,
+         "syslog_notifications": True},
+        {"name": "srpCkdEffectiveCapacityResourceUsage", "applicable": False,
+         "type": "srp", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 95,
+         "email_notifications": False, "snmp_notifications": False,
+         "syslog_notifications": False},
+        {"name": "srpCkdEffectiveUsedCapacity", "applicable": False,
+         "type": "srp", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 95,
+         "email_notifications": False, "snmp_notifications": False,
+         "syslog_notifications": False},
+        {"name": "srpCkdOverProvisionedCapacity", "applicable": False,
+         "type": "srp", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 95,
+         "email_notifications": False, "snmp_notifications": False,
+         "syslog_notifications": False},
+        {"name": "srpCkdPhysicalCapacity", "applicable": False, "type": "srp",
+         "unit": "percent", "warning_threshold": 60, "critical_threshold": 80,
+         "fatal_threshold": 95, "email_notifications": False,
+         "snmp_notifications": False, "syslog_notifications": False},
+        {"name": "srpFbaEffectiveCapacityResourceUsage", "applicable": True,
+         "type": "srp", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 95,
+         "email_notifications": True, "snmp_notifications": True,
+         "syslog_notifications": True},
+        {"name": "srpFbaEffectiveUsedCapacity", "applicable": True,
+         "type": "srp", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 95,
+         "email_notifications": True, "snmp_notifications": True,
+         "syslog_notifications": True},
+        {"name": "srpFbaOverProvisionedCapacity", "applicable": True,
+         "type": "srp", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 95,
+         "email_notifications": True, "snmp_notifications": True,
+         "syslog_notifications": True},
+        {"name": "srpFbaPhysicalCapacity", "applicable": True, "type": "srp",
+         "unit": "percent", "warning_threshold": 60, "critical_threshold": 80,
+         "fatal_threshold": 95, "email_notifications": True,
+         "snmp_notifications": True, "syslog_notifications": True},
+        {"name": "storageContainerUtilization", "applicable": True,
+         "type": "storage_container", "unit": "percent",
+         "warning_threshold": 60, "critical_threshold": 80,
+         "fatal_threshold": 100, "email_notifications": True,
+         "snmp_notifications": True, "syslog_notifications": True},
+        {"name": "systemMetaDataUtilization", "applicable": True,
+         "type": "system", "unit": "percent", "warning_threshold": 60,
+         "critical_threshold": 80, "fatal_threshold": 100,
+         "email_notifications": True, "snmp_notifications": True,
+         "syslog_notifications": True}]}
+
+    notification_settings = {
+        "alert_severity": {
+            "system": {
+                "fatal": True,
+                "critical": True,
+                "warning": True,
+                "normal": False,
+                "info": False
+            },
+            "performance": {
+                "critical": True,
+                "warning": True,
+                "info": False
+            }
+        },
+        "subscriptions": {
+            "system": [
+                "paule.martin@dell.com"
+            ],
+            "performance": [
+                "paule.martin@dell.com"
+            ],
+            "jobs": [],
+            "reports": [
+                "paule.martin@dell.com"
+            ],
+            "none": []
+        }
+    }
+    performance_registration_settings = {
+        "registration_details": [{
+            "system_id": "000197800123",
+            "diagnostic": True,
+            "real_time": True,
+            "file": False}]}

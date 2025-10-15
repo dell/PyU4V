@@ -41,6 +41,41 @@ all other configuration settings from ``PyU4V.conf``.
     # Option 2 - Create new PyU4V connection using PyU4V.conf settings
     new_conn = PyU4V.U4VConn(array_id='000197900126')
 
+Working with Security Certificates
+----------------------------------
+There are some functions and API calls in PyU4V that allow you to update the
+security certificates. When supplying security certificates to PyU4V you must
+provide the path to the certificate file, not the file contents this should
+be in base64 encoded string.
+
+.. code-block:: python
+    # Sample function for encoding certificate to base64, the encoded file
+    # can be used with any function requiring it.
+    import os
+    import base64
+    import sys
+
+    if len(sys.argv) > 1:
+      filename=sys.argv[1]
+      if not os.path.isfile(filename):
+        print("File %s doesnt exist")
+        exit(1)
+    else:
+      print("No file given to encode")
+      exit(1)
+
+    def encode(file_name):
+      with open(file_name, "rb") as file:
+        file_content = base64.b64encode(file.read())
+        print(file_content)
+        print(len(file_content))
+        with open(f"{file_name}.b64", 'w+') as b64_out:
+          b64_out.writelines(file_content.decode("utf-8"))
+
+
+    if __name__ == '__main__':
+      encode(filename)
+
 
 PyU4V Unisphere REST Coverage
 -----------------------------

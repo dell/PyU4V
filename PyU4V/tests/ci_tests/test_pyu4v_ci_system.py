@@ -999,6 +999,7 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         self.system.delete_snmp_trap_destination(snmp_id=new_config['id'])
 
     def test_delete_snmp_trap_destination(self):
+
         snmp_id = self.system.set_snmp_trap_destination(
             name='10.60.156.28', port=52)['id']
         self.system.delete_snmp_trap_destination(snmp_id=snmp_id)
