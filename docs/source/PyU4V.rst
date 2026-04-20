@@ -15,6 +15,14 @@ PyU4V\.common
     :undoc-members:
     :show-inheritance:
 
+PyU4V\.enhanced_api
+---------------------------
+
+.. automodule:: PyU4V.enhanced_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PyU4V\.metro_dr
 ---------------
 
@@ -83,6 +91,14 @@ PyU4V\.system
 -------------
 
 .. automodule:: PyU4V.system
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.settings
+-------------
+
+.. automodule:: PyU4V.settings
     :members:
     :undoc-members:
     :show-inheritance:

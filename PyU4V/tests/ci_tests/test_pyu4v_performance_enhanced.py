@@ -41,3 +41,11 @@ class CITestPerformanceEnhanced(base.TestBaseTestCase, testtools.TestCase):
             category='Array')
         self.assertIn('HostIOs', category_metrics['metric_instances'][0][
             'metrics'][0])
+
+    def test_get_category_metrics_with_filters(self):
+        category_metrics = self.performance_enhanced.get_category_metrics(
+            category='Array', filters=["time_range eq 1"])
+        self.assertIn('HostIOs', category_metrics['metric_instances'][0][
+            'metrics'][0])
+        self.assertGreater(len(category_metrics['metric_instances'][0][
+            'metrics']), 1)

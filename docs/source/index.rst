@@ -35,9 +35,9 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.2.0.3                               |
+| **PyU4V Version**             | 10.4.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version*  | 10.2.0                                 |
+| **Minimum Unisphere Version*  | 10.4.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -45,7 +45,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    | 3.6, 3.7, 3.8, 3.9, 3.10               |
+| **Python**                    |  3.6 -3.12                             |
 +-------------------------------+----------------------------------------+
 | **Requirements**              | Requests_, Six_, urllib3_,             |
 |                               | prettytable_                           |
@@ -59,7 +59,7 @@ Supported PyU4V Versions
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.2.0.3 is compatible with scripts written for PyU4V versions
+    PyU4V version 10.4.0.0 is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
@@ -116,7 +116,8 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10.2 is distributed under the Apache 2.0 License. Unless required by
+PyU4V 10.4 is distributed under the Apache 2.0 License. Unless
+required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
 **conditions of any kind**, either express or implied. See the License for the

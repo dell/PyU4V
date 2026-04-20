@@ -162,8 +162,8 @@ class ReplicationFunctions(object):
                         'has_snap_policies': has_snap_policies,
                         'has_clones': has_clones}
         response = self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/"
-                       f"storagegroup",
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
+                       f"{array_id}/storagegroup",
             resource_type=None, params=query_params)
         storage_group_list = (
             response.get('name', list()) if response else list())
@@ -693,7 +693,7 @@ class ReplicationFunctions(object):
             params.update({'symforce': symforce})
         array_id = self.array_id if not array_id else array_id
         self.delete_resource(
-            target_uri=f'/{self.version}/replication/symmetrix'
+            target_uri=f'/{self.common.UNI_VERSION}/replication/symmetrix'
                        f'/{array_id}/storagegroup/'
                        f'{storage_group_id}/snapshot/{snap_name}/'
                        f'snapid/{snap_id}',
@@ -732,7 +732,7 @@ class ReplicationFunctions(object):
 
         array_id = array_id if array_id else self.array_id
         self.common.delete_resource(
-            target_uri=f'/{self.version}/replication/symmetrix/'
+            target_uri=f'/{self.common.UNI_VERSION}/replication/symmetrix/'
                        f'{array_id}/storagegroup/{storage_group_id}/snapshot',
             params=params)
 
@@ -908,7 +908,8 @@ class ReplicationFunctions(object):
 
     def create_storage_group_srdf_pairings(
             self, storage_group_id, remote_sid, srdf_mode, establish=None,
-            _async=False, rdfg_number=None, force_new_rdf_group=False):
+            _async=False, rdfg_number=None, force_new_rdf_group=False,
+            remote_storage_group_id=None):
         """SRDF protect a storage group.
 
         Valid modes are 'Active', 'AdaptiveCopyDisk', 'Synchronous', and
@@ -920,21 +921,27 @@ class ReplicationFunctions(object):
         :param establish: establish srdf -- bool
         :param _async: if call should be async -- bool
         :param rdfg_number: rdf group number -- int
-        :param force_new_rdf_group: if force command should be applied -- bool
+        :param force_new_rdf_group: ignored, present for backward
+                                    compatibility -- bool
+        :param remote_storage_group_id: remote storage group id, offers
+                                        flexibiliity to have remote storage
+                                        group name different from local -- str
         :returns: storage group rdf details -- dict
         """
         establish_sg = 'True' if establish else 'False'
+        if remote_storage_group_id:
+            storage_group_id = remote_storage_group_id
         rdf_payload = {'replicationMode': srdf_mode,
                        'remoteSymmId': remote_sid,
                        'remoteStorageGroupName': storage_group_id,
                        'establish': establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
-        if force_new_rdf_group:
-            LOG.warning("Parameter 'force_new_rdf_group' is no longer "
-                             "supported and will be ignored.")
         if _async:
             rdf_payload.update(ASYNC_UPDATE)
+        if force_new_rdf_group:
+            LOG.warning("Parameter 'force_new_rdf_group' is no longer "
+                        "supported and will be ignored.")
         return self.create_resource(
             category=REPLICATION,
             resource_level=SYMMETRIX, resource_level_id=self.array_id,
@@ -1222,7 +1229,8 @@ class ReplicationFunctions(object):
 
     def modify_rdf_group(self, action, srdf_group_number, array_id=None,
                          port_list=None, label=None, dev_list=None,
-                         target_rdf_group=None, consistency_exempt=None):
+                         target_rdf_group=None, consistency_exempt=None,
+                         keepR1=None, keepR2=None):
         """Function to Modify Ports, devices or change label of RDF group.
 
         Function can be used to Add ports, move volumes between rdf groups,
@@ -1238,6 +1246,8 @@ class ReplicationFunctions(object):
         :param dev_list: list of volumes to be moved between RDF groups -- list
         :param target_rdf_group: rdfg group to move volumes to -- int
         :param consistency_exempt: ignore device for consistency checks -- bool
+        :param keepR1: preserves data on R1 -- bool
+        :param keepR2: preserves data on R2 -- bool
         """
 
         rdfg_action = constants.RDFG_ACTIONS.get(action.upper())
@@ -1259,6 +1269,10 @@ class ReplicationFunctions(object):
                     'volumesToMove': dev_list,
                     'exempt': consistency_exempt},
                 'action': 'Move'}
+            if keepR1 is not None:
+                payload['move']['keepR1'] = keepR1
+            if keepR2 is not None:
+                payload['move']['keepR2'] = keepR2
 
         elif rdfg_action == 'set_label':
             payload = {

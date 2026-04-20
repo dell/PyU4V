@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#        http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """rest_requests.py."""
-
 import json
 import logging
 import platform
@@ -20,7 +19,6 @@ import requests
 import requests.exceptions as r_exc
 import sys
 import urllib3
-
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 from requests.auth import HTTPBasicAuth
@@ -29,6 +27,7 @@ __pyu4v_version__ = constants.PYU4V_VERSION
 __python_version__ = platform.python_version()
 __platform__ = platform.system()
 __platform_release__ = platform.release()
+
 ua_details = (
     'PyU4V/{pv} ({platform}; version {release}) Python {python}'.format(
         pv=__pyu4v_version__, platform=__platform__,
@@ -50,33 +49,86 @@ APP_MPART = constants.APP_MPART
 class RestRequests(object):
     """RestRequests."""
 
-    def __init__(self, username, password, verify, base_url, interval, retries,
-                 application_type=None, proxies=None, timeout=None):
-        """__init__."""
+    def __init__(self, username=None, password=None, verify=None,
+                 base_url=None, interval=None, retries=None,
+                 application_type=None, proxies=None, timeout=None,
+                 token=None):
+        """
+        Initialize RestRequests.
+
+        Supports either:
+          - Bearer token via `token`, OR
+          - Basic auth via `username` + `password`
+
+        Bearer token takes precedence if both are supplied.
+        """
         self.username = username
         self.password = password
+        self.token = token  # <-- New
+
         self.verify_ssl = verify
         self.base_url = base_url
-        self.headers = {CONTENT_TYPE: APP_JSON,
-                        ACCEPT: APP_JSON,
-                        USER_AGENT: ua_details,
-                        APP_TYPE: application_type}
+        self.headers = {
+            CONTENT_TYPE: APP_JSON,
+            ACCEPT: APP_JSON,
+            USER_AGENT: ua_details,
+            APP_TYPE: application_type
+        }
+
+        # Apply auth header (if token) directly to base headers so it persists.
+        self._apply_auth_to_headers(self.headers)
+
         # if timeout is not none set self.timeout to timeout
         # value or set to 120
         self.timeout = timeout or 120
         self.interval = interval
         self.proxies = proxies
         self.retries = retries
+
         self.session = self.establish_rest_session()
+
+    # --- New helper ---------------------------------------------------------
+    def _apply_auth_to_headers(self, headers):
+        """Inject Authorization header for Bearer tokens if present."""
+        # Remove any stale Authorization first (defensive)
+        if 'Authorization' in headers and not self.token:
+            headers.pop('Authorization')
+        if self.token:
+            headers['Authorization'] = f'Bearer {self.token}'
+
+    # ------------------------------------------------------------------------
 
     def establish_rest_session(self, headers=None):
         """Establish a REST session.
-
         :returns: session -- object
         """
+        if not (self.token or (self.username and self.password)):
+            raise ValueError(
+                "Authentication required: provide either a bearer token "
+                "(`token`) or username/password for Basic auth."
+            )
+
         session = requests.session()
-        session.headers = self.headers if not headers else headers
-        session.auth = HTTPBasicAuth(self.username, self.password)
+
+        # Start with a copy of default headers which may contain Authorization
+        session_headers = dict(self.headers)
+
+        # Merge in any per-call headers e.g., file transfer Accept/Content-Type
+        if headers:
+            session_headers.update(headers)
+
+        # Ensure Authorization is present if using token auth
+        self._apply_auth_to_headers(session_headers)
+
+        session.headers = session_headers
+
+        # Use Basic auth only when no token is present
+        if not self.token and self.username and self.password:
+            session.auth = HTTPBasicAuth(self.username, self.password)
+        else:
+            # Explicitly clear in case a previous session had Basic set
+            session.auth = None
+
         session.verify = self.verify_ssl
         session.proxies = self.proxies
         return session
@@ -84,9 +136,7 @@ class RestRequests(object):
     def rest_request(self, target_url, method,
                      params=None, request_object=None, timeout=None):
         """Send a request to the target api.
-
         Valid methods are 'GET', 'POST', 'PUT', 'DELETE'.
-
         :param target_url: target url --str
         :param method: method -- str
         :param params: Additional URL parameters -- dict
@@ -98,10 +148,13 @@ class RestRequests(object):
             timeout_val = timeout
         else:
             timeout_val = self.timeout
+
         if not self.session:
             self.session = self.establish_rest_session()
+
         url = '{base_url}{target_url}'.format(
             base_url=self.base_url, target_url=target_url)
+
         try:
             if request_object:
                 response = self.session.request(
@@ -115,36 +168,26 @@ class RestRequests(object):
             else:
                 response = self.session.request(method=method, url=url,
                                                 timeout=timeout_val)
+
             status_code = response.status_code
             try:
                 response = response.json()
             except ValueError:
                 response = None
-                if not status_code:
-                    status_code = None
-                LOG.debug('No response received from API. Status code '
-                          'received is: {sc}.'.format(sc=status_code))
 
+            if not status_code:
+                status_code = None
+            LOG.debug('No response received from API. Status code '
+                      'received is: {sc}.'.format(sc=status_code))
             LOG.debug('{method} request to {url} has returned with a status '
                       'code of: {sc}.'.format(method=method, url=url,
                                               sc=status_code))
             return response, status_code
-
         except requests.Timeout as error:
             LOG.error(
-                'The {} request to URL {} timed-out, but may have '
-                'been successful. Please check Unisphere Server for any '
-                'slowness, long-running API calls are a symptom of '
-                'Unisphere Server limits being reached. {}. See '
-                'https://developer.dell.com/apis/4458/versions/10.0/docs'
-                '/Getting%20Started/4.concurrent_operations.md, To ensure '
-                'limits are not being exceeded verify the number of '
-                'connections and calls in Unisphere for PowerMax under '
-                'Support > Management Server Resources or using system '
-                'call get_management_server_resources()'
-                ''.format(method, url, error))
+                'The {} request to URL {} timed-out, Check Unisphere '
+                'connection.'.format(method, url, error))
             return None, None
-
         except r_exc.SSLError as error:
             msg = (
                 'The connection to {base} has encountered an SSL error. '
@@ -152,9 +195,8 @@ class RestRequests(object):
                 'configuration. SSL Exception message: {m}'.format(
                     base=self.base_url, m=error))
             raise r_exc.SSLError(msg) from error
-
         except (r_exc.ConnectionError, r_exc.HTTPError) as error:
-            exc_class, __, __ = sys.exc_info()
+            exc_class, _, __ = sys.exc_info()
             msg = (
                 'The {met} to Unisphere server {base} has experienced a {exc} '
                 'error. Please check your Unisphere server connection and '
@@ -162,7 +204,6 @@ class RestRequests(object):
                     met=method, base=self.base_url,
                     exc=error.__class__.__name__, msg=error))
             raise exc_class(msg) from error
-
         except Exception as error:
             exp_message = (
                 'The {method} request to URL {url} failed with exception: '
@@ -173,9 +214,7 @@ class RestRequests(object):
     def file_transfer_request(self, method, uri, timeout=None, download=False,
                               r_obj=None, upload=False, form_data=None):
         """Send a file transfer request via REST to the target API.
-
         Valid methods are 'POST' and 'PUT'.
-
         :param method: request method -- str
         :param uri: target uri -- str
         :param timeout: optional timeout override -- int
@@ -209,6 +248,7 @@ class RestRequests(object):
         url = '{base_url}{uri}'.format(base_url=self.base_url, uri=uri)
 
         try:
+            # Rebuild a session with merged headers (preserves Authorization)
             ft_session = self.establish_rest_session(headers=headers)
             response = ft_session.request(
                 method=method, url=url, timeout=timeout_val,
@@ -219,14 +259,12 @@ class RestRequests(object):
                       'code of: {sc}.'.format(method=method, url=url,
                                               sc=status_code))
             return response, status_code
-
         except requests.Timeout as error:
             LOG.error(
                 'The {method} request to URL {url} timed-out, but may have '
                 'been successful. Please check the array. Exception received: '
                 '{exc}.'.format(method=method, url=url, exc=error))
             return None, None
-
         except r_exc.SSLError as error:
             msg = (
                 'The connection to {base} has encountered an SSL error. '
@@ -234,9 +272,8 @@ class RestRequests(object):
                 'configuration. SSL Exception message: {m}'.format(
                     base=self.base_url, m=error))
             raise r_exc.SSLError(msg) from error
-
         except (r_exc.ConnectionError, r_exc.HTTPError) as error:
-            exc_class, __, __ = sys.exc_info()
+            exc_class, _, __ = sys.exc_info()
             msg = (
                 'The {met} to Unisphere server {base} has experienced a {exc} '
                 'error. Please check your Unisphere server connection and '
@@ -244,7 +281,6 @@ class RestRequests(object):
                     met=method, base=self.base_url,
                     exc=error.__class__.__name__, msg=error))
             raise exc_class(msg) from error
-
         except Exception as error:
             exp_message = (
                 'The {method} request to URL {url} failed with exception: '

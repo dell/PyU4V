@@ -1782,7 +1782,7 @@ class ProvisioningFunctions(object):
                 }}}
         try:
             return self.common.modify_resource(
-                target_uri=f"/{self.version}/sloprovisioning/"
+                target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning/"
                            f"symmetrix/{array_id}/volume/{device_id}",
                 resource_type=None, payload=payload)
         except Exception as e:

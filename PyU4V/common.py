@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#        http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """common.py."""
-
 import json
 import logging
 import math
@@ -20,7 +19,6 @@ import re
 import six
 import socket
 import time
-
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 
@@ -61,20 +59,29 @@ HEADROOM = constants.HEADROOM
 class CommonFunctions(object):
     """CommonFunctions."""
 
-    def __init__(self, rest_client):
-        """__init__."""
+    def __init__(self, rest_client, u4v_version=None):
+        """__init__.
+        Honors explicit u4v_version, otherwise falls back to
+        rest_client.u4v_version if set, else constants.UNISPHERE_VERSION.
+        """
         self.rest_client = rest_client
         self.request = self.rest_client.rest_request
         self.interval = self.rest_client.interval
         self.retries = self.rest_client.retries
-        self.UNI_VERSION = constants.UNISPHERE_VERSION
+
+        if u4v_version is not None:
+            self.UNI_VERSION = str(u4v_version)
+        elif (hasattr(self.rest_client, 'u4v_version') and (
+              self.rest_client.u4v_version)):
+            self.UNI_VERSION = str(self.rest_client.u4v_version)
+        else:
+            self.UNI_VERSION = constants.UNISPHERE_VERSION
 
     def wait_for_job_complete(self, job):
         """Given the job wait for it to complete.
-
         :param job: job details -- dict
         :returns: response code, result, status, task details -- int, str, str,
-                  list
+        list
         :raises: VolumeBackendAPIException
         """
         res, tasks = None, None
@@ -104,13 +111,11 @@ class CommonFunctions(object):
                 LOG.exception(exception_message)
                 raise exception.VolumeBackendAPIException(
                     data=exception_message) from error
-
             return kwargs
 
         job_id = job['jobId']
         kwargs = {'retries': 0, 'wait_for_job_called': False,
                   'rc': 0, 'result': None}
-
         while not kwargs['wait_for_job_called']:
             time.sleep(self.interval)
             kwargs = _wait_for_job_complete()
@@ -119,7 +124,6 @@ class CommonFunctions(object):
                           'tries.'.format(cnt=kwargs['retries']))
                 kwargs['rc'], kwargs['result'] = -1, kwargs['result']
                 break
-
         LOG.debug('Return code is: {rc}. Result is {res}.'.format(
             rc=kwargs['rc'], res=kwargs['result']))
         return (kwargs['rc'], kwargs['result'],
@@ -127,7 +131,6 @@ class CommonFunctions(object):
 
     def get_job_by_id(self, job_id):
         """Get details of a specific job.
-
         :param job_id: job id -- str
         :returns: job details -- dict
         """
@@ -136,10 +139,9 @@ class CommonFunctions(object):
 
     def _is_job_finished(self, job_id):
         """Check if the job is finished.
-
         :param job_id: job id -- str
         :returns: job complete, result, response code, status, task
-                  details -- bool, str, int, str, list
+        details -- bool, str, int, str, list
         """
         complete, rc, status, result, task = False, 0, None, None, None
         job = self.get_job_by_id(job_id)
@@ -160,12 +162,14 @@ class CommonFunctions(object):
     @staticmethod
     def check_status_code_success(operation, status_code, message):
         """Check if a status code indicates success.
-
         :param operation: operation being performed -- str
         :param status_code: status code -- int
         :param message: server response -- str
         :raises: VolumeBackendAPIException
         """
+        if status_code == None:
+            raise exception.VolumeBackendAPIException(
+                data="Server unavailable or IP incorrect")
         if status_code not in [STATUS_200, STATUS_201,
                                STATUS_202, STATUS_204]:
             exception_message = (
@@ -176,13 +180,11 @@ class CommonFunctions(object):
                     data=exception_message)
             if status_code == STATUS_401:
                 raise exception.UnauthorizedRequestException()
-
             raise exception.VolumeBackendAPIException(
                 data=exception_message)
 
     def wait_for_job(self, operation, status_code, job):
         """Check if call is async, wait for it to complete.
-
         :param operation: operation being performed -- str
         :param status_code: status code -- int
         :param job: job id -- str
@@ -205,9 +207,7 @@ class CommonFunctions(object):
 
     def build_target_uri(self, **kwargs):
         """Build the target URI.
-
         This function calls into _build_uri() for access outside this class.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -225,7 +225,6 @@ class CommonFunctions(object):
 
     def _build_uri(self, **kwargs):
         """Build the target URI.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -240,50 +239,41 @@ class CommonFunctions(object):
         :returns: target URI -- str
         """
         target_uri, version = str(), None
-
         if kwargs.get('category') not in ['performance', 'common']:
             version = self._build_uri_get_version(kwargs.get('version'),
                                                   kwargs.get('no_version'))
-        if version:
-            target_uri += '/{version}'.format(version=version)
-
+            if version:
+                target_uri += '/{version}'.format(version=version)
         target_uri += '/{category}'.format(
             category=kwargs.get('category'))
-
         if kwargs.get('resource_level'):
             target_uri += '/{resource_level}'.format(
                 resource_level=kwargs.get('resource_level'))
-
         if kwargs.get('resource_level_id'):
             target_uri += '/{resource_level_id}'.format(
                 resource_level_id=kwargs.get('resource_level_id'))
-
         if kwargs.get('resource_type'):
             target_uri += '/{resource_type}'.format(
                 resource_type=kwargs.get('resource_type'))
-            if kwargs.get('resource_type_id'):
-                target_uri += '/{resource_type_id}'.format(
-                    resource_type_id=kwargs.get('resource_type_id'))
-
+        if kwargs.get('resource_type_id'):
+            target_uri += '/{resource_type_id}'.format(
+                resource_type_id=kwargs.get('resource_type_id'))
         if kwargs.get('resource'):
             target_uri += '/{resource}'.format(
                 resource=kwargs.get('resource'))
-            if kwargs.get('resource_id'):
-                target_uri += '/{resource_id}'.format(
-                    resource_id=kwargs.get('resource_id'))
-
+        if kwargs.get('resource_id'):
+            target_uri += '/{resource_id}'.format(
+                resource_id=kwargs.get('resource_id'))
         if kwargs.get('object_type'):
             target_uri += '/{object_type}'.format(
                 object_type=kwargs.get('object_type'))
-            if kwargs.get('object_type_id'):
-                target_uri += '/{object_type_id}'.format(
-                    object_type_id=kwargs.get('object_type_id'))
-
+        if kwargs.get('object_type_id'):
+            target_uri += '/{object_type_id}'.format(
+                object_type_id=kwargs.get('object_type_id'))
         return target_uri
 
     def _build_uri_get_version(self, version=None, no_version=False):
         """Get the Unisphere version for the target URI.
-
         :param version: version to use from kwargs -- str
         :param no_version: if URI should be versionless -- bool
         :returns: version -- str
@@ -301,7 +291,6 @@ class CommonFunctions(object):
 
     def get_request(self, target_uri, resource_type, params=None):
         """Send a GET request to the array.
-
         :param target_uri: target uri -- str
         :param resource_type: the resource type, e.g. maskingview -- str
         :param params: optional filter params -- dict
@@ -315,7 +304,6 @@ class CommonFunctions(object):
 
     def get_resource(self, *args, **kwargs):
         """Get resource details from the array.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -341,7 +329,6 @@ class CommonFunctions(object):
 
     def create_resource(self, *args, **kwargs):
         """Create a resource.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -373,7 +360,6 @@ class CommonFunctions(object):
 
     def modify_resource(self, *args, **kwargs):
         """Modify a resource.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -405,7 +391,6 @@ class CommonFunctions(object):
 
     def delete_resource(self, *args, **kwargs):
         """Delete a resource.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -436,7 +421,6 @@ class CommonFunctions(object):
 
     def download_file(self, **kwargs):
         """Download a file.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -473,7 +457,6 @@ class CommonFunctions(object):
 
     def upload_file(self, **kwargs):
         """Upload a file.
-
         :key version: Unisphere version -- int
         :key no_version: if versionless uri -- bool
         :key category: resource category e.g. sloprovisioning -- str
@@ -516,7 +499,6 @@ class CommonFunctions(object):
 
     def get_uni_version(self):
         """Get the unisphere version from the server.
-
         :returns: version and major_version e.g. "V10.0.0.0", "100" -- str, str
         """
         version, major_version = None, None
@@ -529,17 +511,14 @@ class CommonFunctions(object):
 
     def get_uni_version_info(self):
         """Get the unisphere version from the server.
-
         :returns: {'version': 'T10.1.0.468', 'api_version': '101',
-                  'supported_api_versions': ['101', '100', '92']} -- dict
+        'supported_api_versions': ['101', '100', '92']} -- dict
         """
         response = self.get_resource(category=VERSION, no_version=True)
-
         return response
 
     def get_array_list(self, filters=None):
         """Return a list of arrays.
-
         :param filters: optional filters -- dict
         :returns: arrays ids -- list
         """
@@ -549,7 +528,6 @@ class CommonFunctions(object):
 
     def get_v3_or_newer_array_list(self, filters=None):
         """Return a list of V3 or newer arrays in the environment.
-
         :param filters: optional filters -- dict
         :returns: arrays ids -- list
         """
@@ -559,7 +537,6 @@ class CommonFunctions(object):
 
     def get_array(self, array_id):
         """Get array details.
-
         :param array_id: array id -- str
         :returns: array details -- dict
         """
@@ -568,7 +545,6 @@ class CommonFunctions(object):
 
     def get_iterator_page_list(self, iterator_id, start, end):
         """Get a page of results from an iterator instance.
-
         :param iterator_id: iterator id -- str
         :param start: the start number -- int
         :param end: the end number -- int
@@ -582,13 +558,11 @@ class CommonFunctions(object):
 
     def get_iterator_results(self, rest_response):
         """Get all results from all pages of an iterator if count > 1000.
-
         :param rest_response: response JSON from REST API -- dict
         :returns: all results -- dict
         """
         full_response = list()
         full_response += rest_response['resultList']['result']
-
         if rest_response.get('count') and int(rest_response.get('count')) > 0:
             count = rest_response.get('count')
             max_page_size = rest_response.get('maxPageSize')
@@ -609,7 +583,6 @@ class CommonFunctions(object):
     @staticmethod
     def check_ipv4(ipv4):
         """Check if a given string is a valid ipv6 address
-
         :param ipv4: ipv4 address -- str
         :returns: string is valid ipv4 address -- bool
         """
@@ -622,7 +595,6 @@ class CommonFunctions(object):
     @staticmethod
     def check_ipv6(ipv6):
         """Check if a given string is a valid ipv6 address
-
         :param ipv6: ipv6 address -- str
         :returns: string is valid ipv6 address -- bool
         """
@@ -635,7 +607,6 @@ class CommonFunctions(object):
     @staticmethod
     def convert_to_snake_case(camel_case_string):
         """Convert a string from camel case to snake case.
-
         :param camel_case_string: string for formatting -- str
         :returns: snake case variant -- str
         """
@@ -646,10 +617,8 @@ class CommonFunctions(object):
     @staticmethod
     def check_timestamp(in_timestamp):
         """Check that the timestamp is in the correct format
-
         :param in_timestamp: timestamp e.g. 2020-11-24 15:00 -- str
         """
-
         pattern = (r'^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) '
                    r'(2[0-3]|[01][0-9]):[0-5][0-9]$')
         return re.match(pattern, in_timestamp)
@@ -657,10 +626,8 @@ class CommonFunctions(object):
     @staticmethod
     def check_epoch_timestamp(in_epoch_timestamp):
         """Check that the timestamp is in the correct format
-
         :param in_epoch_timestamp: timestamp e.g. 1554332400 -- str
         """
-
         pattern1 = r'^[0-9]{10}$'
         pattern2 = r'^[0-9]{13}$'
         return re.match(pattern1, in_epoch_timestamp) or re.match(
@@ -668,14 +635,11 @@ class CommonFunctions(object):
 
     def is_array_v4(self, array_id):
         """Check to see if array is a v4
-
         :param array_id: the array serial number
         :returns: bool
         """
-
         is_v4 = False
         array_details = self.get_array(array_id)
-
         if array_details:
             ucode_version = array_details.get(
                 'ucode') or array_details.get('microcode')
@@ -683,5 +647,4 @@ class CommonFunctions(object):
                 major_version = ucode_version.split('.')[0]
                 if major_version >= constants.UCODE_6079:
                     is_v4 = True
-
         return is_v4

@@ -46,7 +46,6 @@ class CloneFunctions(object):
         self.modify_resource = self.common.modify_resource
         self.delete_resource = self.common.delete_resource
         self.array_id = array_id
-        self.version = constants.UNISPHERE_VERSION
 
     def get_clone_target_storage_group_list(
             self, storage_group_id, array_id=None, target_storage_group=None,
@@ -105,8 +104,9 @@ class CloneFunctions(object):
             'vse': vse, }
         array_id = array_id if array_id else self.array_id
         response = self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
-                       f"/storagegroup/{storage_group_id}/clone/storagegroup",
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
+                       f"{array_id}/storagegroup/{storage_group_id}"
+                       f"/clone/storagegroup",
             resource_type=None, params=query_params)
         if response and response.get('clone_target_sg_names'):
             target_sg_names_list = response.get('clone_target_sg_names')
@@ -122,7 +122,7 @@ class CloneFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix"
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix"
                        f"/{array_id}/storagegroup/{storage_group_id}"
                        f"/clone/volume",
             resource_type=None)
@@ -139,9 +139,9 @@ class CloneFunctions(object):
         query_params = {}
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
-                       f"/storagegroup/{storage_group_id}/clone/storagegroup/"
-                       f"{target_storage_group_id}",
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
+                       f"{array_id}/storagegroup/{storage_group_id}/clone"
+                       f"/storagegroup/{target_storage_group_id}",
             resource_type=None, params=query_params)
 
     def create_clone(
@@ -180,7 +180,7 @@ class CloneFunctions(object):
         }
         return self.common.create_resource(
             target_uri=(
-                f"/{self.version}/replication/symmetrix"
+                f"/{self.common.UNI_VERSION}/replication/symmetrix"
                 f"/{array_id}/storagegroup/{storage_group_id}"
                 f"/clone/storagegroup"), payload=payload)
 
@@ -219,7 +219,7 @@ class CloneFunctions(object):
             "restored": restored
         }
         return self.common.delete_resource(
-            target_uri=(f"/{self.version}/replication/symmetrix"
+            target_uri=(f"/{self.common.UNI_VERSION}/replication/symmetrix"
                         f"/{array_id}/storagegroup/{storage_group_id}"
                         f"/clone/storagegroup"),
             params=params)
@@ -264,8 +264,8 @@ class CloneFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(target_uri=(
-            f"/{self.version}/replication/symmetrix/{array_id}/storagegroup/"
-            f"{storage_group_id}/clone/storagegroup/"
+            f"/{self.common.UNI_VERSION}/replication/symmetrix/{array_id}"
+            f"/storagegroup/{storage_group_id}/clone/storagegroup/"
             f"{target_storage_group_id}"), resource_type=None, payload=payload)
 
     def split_clone(
@@ -298,9 +298,9 @@ class CloneFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
-                       f"/storagegroup/{storage_group_id}/clone/storagegroup/"
-                       f"{target_storage_group_id}",
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
+                       f"{array_id}/storagegroup/{storage_group_id}/clone/"
+                       f"storagegroup/{target_storage_group_id}",
             resource_type=None, payload=payload)
 
     def restore_clone(
@@ -332,7 +332,7 @@ class CloneFunctions(object):
             payload.update(ASYNC_UPDATE)
 
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}"
-                       f"/storagegroup/{storage_group_id}/clone/storagegroup/"
-                       f"{target_storage_group_id}",
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
+                       f"{array_id}/storagegroup/{storage_group_id}/clone/"
+                       f"storagegroup/{target_storage_group_id}",
             resource_type=None, payload=payload)
