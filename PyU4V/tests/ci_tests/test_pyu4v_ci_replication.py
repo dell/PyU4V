@@ -695,7 +695,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             vol_name)
         self.replication.create_storage_group_srdf_pairings(
             storage_group_id=sg_name, remote_sid=self.conn.remote_array,
-            srdf_mode='Synchronous', establish=True, force_new_rdf_group=True)
+            srdf_mode='Synchronous', establish=True)
         srdf_group_number = (
             self.conn.replication.get_storage_group_srdf_group_list(
                 sg_name))[0]

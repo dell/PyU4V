@@ -203,7 +203,7 @@ class TestBaseTestCase(testtools.TestCase):
                         storage_group_id=sg_name,
                         remote_sid=self.conn.remote_array,
                         srdf_mode='Synchronous', establish=True,
-                        force_new_rdf_group=True, _async=True)
+                        _async=True)
                     self.conn.common.wait_for_job_complete(job)
                     srdf_pair_info = (
                         self.replication.get_storage_group_replication_details(
