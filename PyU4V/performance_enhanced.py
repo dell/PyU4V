@@ -56,21 +56,37 @@ class EnhancedPerformanceFunctions(object):
             category_list = []
         return category_list
 
-    def get_all_performance_metrics_for_system(self, array_id=None):
+    def get_all_performance_metrics_for_system(self, array_id=None,
+                                               filters=None):
         """Get latest data for all KPI metrics.
 
         :param array_id: 12 Digit Serial Number of Array -- int
+        :param filters: users can filter on the time_range and component id,
+                        these can be combined in single query,
+                        e.g. filters=['time_range eq 1','id ilike Oracle',
+                        'data_format eq Maximum']
+                        valid values for time range are 1,2,4,8,12,
+                        24 in hours, you can also specify data_format to
+                        return Average or Maximum values, note for max
+                        values to be retuned you must be registered for
+                        realtime statistics -- list
         :returns: data for all available categories for the specified PowerMax
                  Array diagnostic level metrics only, 5 min interval -- dict
         """
         array_id = array_id if array_id else self.array_id
         category_list = self.get_performance_categories_list(array_id=array_id)
         full_metric_collection = []
+        """Build the optional filter part – empty string when no filters are
+                given.
+                """
+        filter_part = ''
+        if filters:  # filters is not None/empty
+            filter_part = '?filter=' + ','.join(filters)
         for category in category_list:
             response = self.common.get_request(
                 target_uri=f"/{self.enhanced_api_version}/systems"
                            f"/{array_id}/performance-categories/"
-                           f"{category['id']}",
+                           f"{category['id']}{filter_part}",
                 resource_type=None)
             if response is not None:
                 full_metric_collection.append(response)

@@ -78,7 +78,7 @@ class ServiceabilityFunctions(object):
         :returns: symmetrix id -- dict
         """
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix",
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix",
             resource_type=None)
 
     def get_ntp_settings(self, array_id=None):
@@ -88,8 +88,9 @@ class ServiceabilityFunctions(object):
         :returns: ntp server -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(f"/{self.version}/serviceability/symmetrix/"
-                                f"{array_id}", resource_type=None)
+        return self.get_request(f"/{self.common.UNI_VERSION}/"
+                                f"serviceability/symmetrix/{array_id}",
+                                resource_type=None)
 
     def modify_ntp_settings(self, ntp_server, array_id=None):
         """Set a new NTP server information.
@@ -106,8 +107,8 @@ class ServiceabilityFunctions(object):
         payload = {'ntp_server': ntp_server}
         array_id = self.array_id if not array_id else array_id
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}",
-            resource_type=None, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}", resource_type=None, payload=payload)
 
     def download_grab_files(self, array_id=None,
                             node_name=DEFAULT_NODE_NAME,
@@ -140,8 +141,8 @@ class ServiceabilityFunctions(object):
         req_body = {'node_name': node_name}
 
         response = self.common.download_file(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/export",
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/export",
             resource_type=None, payload=req_body, timeout=timeout)
 
         return_dict = dict()
@@ -171,8 +172,8 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/ip_configuration", resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/ip_configuration", resource_type=None)
 
     def update_ip_configuration(self, array_id=None, action=None,
                                 natone_ip_address=None, natone_netmask=None,
@@ -233,8 +234,8 @@ class ServiceabilityFunctions(object):
             }
         array_id = self.array_id if not array_id else array_id
         return self.modify_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/ip_configuration", resource_type=None,
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/ip_configuration", resource_type=None,
             payload=payload)
 
     def get_application(self, array_id=None):
@@ -245,8 +246,8 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application", resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application", resource_type=None)
 
     def get_unisphere_application_details(self, array_id=None):
         """Get a list of information about Unisphere node.
@@ -257,8 +258,8 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/unisphere", resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/unisphere", resource_type=None)
 
     def modify_unisphere_service_access(self, action, array_id=None):
         """Enables Unisphere server access for remote support assistance.
@@ -270,8 +271,8 @@ class ServiceabilityFunctions(object):
         payload = {'action': action}
         array_id = self.array_id if not array_id else array_id
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/unisphere", resource_type=None,
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/unisphere", resource_type=None,
             payload=payload)
 
     def restart_unisphere_application(self, array_id=None):
@@ -287,8 +288,8 @@ class ServiceabilityFunctions(object):
         payload = {'action': 'RestartUnisphere'}
         array_id = self.array_id if not array_id else array_id
         return self.common.create_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/unisphere", resource_type=None,
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/unisphere", resource_type=None,
             payload=payload)
 
     def get_unisphere_configuration(self, array_id=None):
@@ -299,8 +300,8 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/unisphere/configuration",
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/unisphere/configuration",
             resource_type=None)
 
     def get_symavoid_settings(self, array_id=None):
@@ -311,7 +312,7 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            f"/{self.version}/serviceability/symmetrix/"
+            f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
             f"{self.array_id}/application/unisphere/system",
             resource_type=None)
 
@@ -345,9 +346,9 @@ class ServiceabilityFunctions(object):
 
         array_id = self.array_id if not array_id else array_id
         return self.modify_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/unisphere/system", resource_type=None,
-            payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/unisphere/system",
+            resource_type=None, payload=payload)
 
     def get_solutions_enabler_application(self, array_id=None):
         """Get a list of information on each SE node and get the access Id,
@@ -359,8 +360,8 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/solutions_enabler",
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/solutions_enabler",
             resource_type=None)
 
     def modify_nethosts(self, action, host_name, user, array_id=None):
@@ -393,8 +394,8 @@ class ServiceabilityFunctions(object):
                            "user": user
                        }}
         return self.modify_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/solutions_enabler",
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/solutions_enabler",
             resource_type=None, payload=payload)
 
     def get_solutions_enabler_configuration(self, array_id=None):
@@ -405,9 +406,9 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.get_request(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/solutions_enabler/configuration",
-            resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/solutions_enabler/"
+                       f"configuration", resource_type=None)
 
     def modify_solutions_enabler_configuration(
             self, array_id=None, allow_symforce=None, use_access_id=None):
@@ -446,9 +447,9 @@ class ServiceabilityFunctions(object):
                 'SYMAPI_USE_ACCESS_ID'] = use_access_id
         array_id = self.array_id if not array_id else array_id
         return self.modify_resource(
-            target_uri=f"/{self.version}/serviceability/symmetrix/{array_id}"
-                       f"/application/solutions_enabler/configuration",
-            resource_type=None, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+                       f"{array_id}/application/solutions_enabler/"
+                       f"configuration", resource_type=None, payload=payload)
 
     def import_custom_certificate(
             self, array_id=None, node_name=None, keyfile=None, certfile=None,

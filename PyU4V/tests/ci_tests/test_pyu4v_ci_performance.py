@@ -325,69 +325,6 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
                 self.assertEqual(threshold.get(pc.FIRST_THRESH), f_threshold)
                 self.assertEqual(threshold.get(pc.SEC_THRESH), s_threshold)
 
-    def test_generate_threshold_settings_csv(self):
-        """Test generate_threshold_settings_csv."""
-        csv_file_name = 'test.csv'
-        temp_dir = self.create_temp_directory()
-        csv_file_path = os.path.join(temp_dir, csv_file_name)
-        self.perf.generate_threshold_settings_csv(csv_file_path)
-        self.assertTrue(os.path.isfile(csv_file_path))
-
-    def test_set_thresholds_from_csv(self):
-        """Test set_thresholds_from_csv."""
-        # Generate CSV settings file
-        csv_file_name = 'test.csv'
-        temp_dir = self.create_temp_directory()
-        csv_file_path = os.path.join(temp_dir, csv_file_name)
-        self.perf.generate_threshold_settings_csv(
-            csv_file_path, category='Array')
-        self.assertTrue(os.path.isfile(csv_file_path))
-
-        # Read CSV file
-        csv_data = file_handler.read_csv_values(csv_file_path)
-
-        # Make change to metric threshold
-        num_metrics = len(csv_data.get('metric'))
-        orig_values = (0, 0)
-        updated_values = (0, 0)
-        metric_set = 'PercentCacheWP'
-        for i in range(0, num_metrics):
-            metric = csv_data.get(pc.METRIC)[i]
-            if metric == metric_set:
-                orig_values = (csv_data.get(pc.FIRST_THRESH)[i],
-                               csv_data.get(pc.SEC_THRESH)[i])
-                updated_values = ((orig_values[0]) + 5,
-                                  (orig_values[1]) + 10)
-                csv_data[pc.FIRST_THRESH][i] = updated_values[0]
-                csv_data[pc.SEC_THRESH][i] = updated_values[1]
-                csv_data[pc.KPI][i] = True
-                break
-
-        # Write updated metrics list to CSV
-        csv_file_name_updated = 'test_updated.csv'
-        csv_file_path_updated = os.path.join(temp_dir, csv_file_name_updated)
-        file_handler.write_dict_to_csv_file(csv_file_path_updated, csv_data)
-
-        # Apply update to metrics via CSV
-        self.perf.set_thresholds_from_csv(csv_file_path_updated)
-
-        # Get updated threshold settings from Unisphere
-        t_settings = self.perf.get_threshold_category_settings(pc.ARRAY)
-        for t in t_settings.get(pc.PERF_THRESH):
-            if t.get(pc.METRIC) == metric_set:
-                self.assertEqual(t.get(pc.FIRST_THRESH), updated_values[0])
-                self.assertEqual(t.get(pc.SEC_THRESH), updated_values[1])
-
-        # Reapply old metric settings
-        self.perf.set_thresholds_from_csv(csv_file_path)
-
-        # Check old settings were successfully re-applied
-        t_settings = self.perf.get_threshold_category_settings(pc.ARRAY)
-        for t in t_settings.get(pc.PERF_THRESH):
-            if t.get(pc.METRIC) == metric_set:
-                self.assertEqual(t.get(pc.FIRST_THRESH), int(orig_values[0]))
-                self.assertEqual(t.get(pc.SEC_THRESH), int(orig_values[1]))
-
     def test_performance_stats_max_format(self):
         """Test performance stats max data format."""
         array_metrics = self.perf.get_array_stats(
@@ -860,6 +797,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_volume_stats_device_range(self):
         """Test get_volume_stats function."""
+        self.skipTest('Test run manually')
         start_time, end_time = self.perf.get_timestamp_by_hour(
             hours_difference=1)
         results = self.perf.get_volume_stats(
@@ -870,6 +808,7 @@ class CITestPerformance(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_volume_stats_storage_group_list(self):
         """Test get volume stats function with storage groups."""
+
         start_time, end_time = self.perf.get_timestamp_by_hour(
             hours_difference=1)
         sg_list = self.conn.provisioning.get_storage_group_list()

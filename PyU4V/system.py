@@ -1239,7 +1239,7 @@ class SystemFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/system/symmetrix/"
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
                        f"{array_id}/director/{director}/port/{port_number}",
             resource_type=None, payload=payload)
 
@@ -1249,8 +1249,8 @@ class SystemFunctions(object):
         returns: dictionary with details on server utilization --dict
         """
         return self.common.get_request(
-            target_uri=f"/{self.version}/system/management_server_resources",
-            resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/system/"
+                       f"management_server_resources", resource_type=None)
 
     def refresh_array_details(self, array_id=None):
         """Refresh Unisphere object model for specified array with latest
@@ -1268,7 +1268,7 @@ class SystemFunctions(object):
 
         array_id = array_id if array_id else self.array_id
         return self.common.create_resource(
-            target_uri=f"/{self.version}/system/symmetrix/"
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
                        f"{array_id}/refresh")
 
     def get_server_logging_level(self):
@@ -1276,7 +1276,7 @@ class SystemFunctions(object):
         returns: dict
         """
         return self.common.get_request(
-            target_uri=f"/{self.version}/system/logging",
+            target_uri=f"/{self.common.UNI_VERSION}/system/logging",
             resource_type=None)
 
     def set_server_logging_level(
@@ -1292,7 +1292,7 @@ class SystemFunctions(object):
         }
 
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/system/logging",
+            target_uri=f"/{self.common.UNI_VERSION}/system/logging",
             resource_type=None, payload=payload)
 
     def get_snmp_trap_configuration(self):
@@ -1304,7 +1304,7 @@ class SystemFunctions(object):
                     "in future version 10.4. Please explore API Calls in new "
                     "settings module")
         return self.common.get_request(
-            target_uri=f"/{self.version}/system/snmp",
+            target_uri=f"/{self.common.UNI_VERSION}/system/snmp",
             resource_type=None)
 
     def set_snmp_trap_destination(
@@ -1330,7 +1330,7 @@ class SystemFunctions(object):
             'passphrase': passphrase
         }
         return self.common.create_resource(
-            target_uri=f"/{self.version}/system/snmp",
+            target_uri=f"/{self.common.UNI_VERSION}/system/snmp",
             resource_type=None, payload=payload)
 
     def delete_snmp_trap_destination(self, snmp_id):
@@ -1342,7 +1342,7 @@ class SystemFunctions(object):
                     "in future version 10.4. Please explore API Calls in new "
                     "settings module")
         return self.common.delete_resource(
-            target_uri=f"/{self.version}/system/snmp/{snmp_id}",
+            target_uri=f"/{self.common.UNI_VERSION}/system/snmp/{snmp_id}",
             resource_type=None)
 
     def update_snmp_trap_destination(
@@ -1370,7 +1370,7 @@ class SystemFunctions(object):
                     "in future version 10.4. Please explore API Calls in new "
                     "settings module.")
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/system/snmp/{snmp_id}",
+            target_uri=f"/{self.common.UNI_VERSION}/system/snmp/{snmp_id}",
             resource_type=None, payload=payload)
 
     def get_ldap_configuration(self):
@@ -1382,7 +1382,7 @@ class SystemFunctions(object):
                     "in future version 10.4. Please explore API Calls in new "
                     "settings module")
         return self.common.get_request(
-            target_uri=f"/{self.version}/system/authorization/ldap",
+            target_uri=f"/{self.common.UNI_VERSION}/system/authorization/ldap",
             resource_type=None)
 
     def configure_ldap_authentication(
@@ -1441,5 +1441,5 @@ class SystemFunctions(object):
                 "ldap_group_names": ldap_group_names
             }
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/system/authorization/ldap",
+            target_uri=f"/{self.common.UNI_VERSION}/system/authorization/ldap",
             resource_type=None, payload=payload)

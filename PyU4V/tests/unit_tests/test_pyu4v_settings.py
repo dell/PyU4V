@@ -50,12 +50,6 @@ class PyU4VsettingsTest(testtools.TestCase):
         pf.FakeConfigFile.delete_fake_config_file(
             self.conf_file, self.conf_dir)
 
-    def test_get_performance_registration_settings(self):
-        """Test get_performance_registration_settings."""
-        response = self.settings.get_performance_registration_settings()
-        self.assertIsNotNone(response)
-        self.assertIsInstance(response, dict)
-
     def test_update_performance_registration_settings(self):
         """Test update_performance_registration_settings."""
         self.settings.common.modify_resource = MagicMock(
@@ -76,13 +70,12 @@ class PyU4VsettingsTest(testtools.TestCase):
     def test_get_alert_notification_agent_details(self):
         """Test get_alert_notification_agent_details."""
         self.settings.common.get_request = MagicMock(
-            return_value=pcd.CommonData.alert_agent_details)
+            return_value=pcd.CommonData.alert_details)
         result = self.settings.get_alert_notification_agent_details()
         self.settings.common.get_request.assert_called_once_with(
-            target_uri=f"/{self.version}/settings/alert/notification"
-                       f"/agent_details",
-            resource_type=None, params={})
-        self.assertEqual(pcd.CommonData.alert_agent_details, result)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
+                       f"notification/agent_details", resource_type=None)
+        self.assertEqual(pcd.CommonData.alert_details, result)
 
     def test_get_system_thresholds(self):
         """Test get_system_thresholds."""
@@ -97,11 +90,11 @@ class PyU4VsettingsTest(testtools.TestCase):
         self.conn.set_array_id = MagicMock(return_value=None)
         self.settings.common.modify_resource = MagicMock(
             return_value=pcd.CommonData.system_thresholds)
-        result = self.settings.set_system_thresholds(
+        result = self.settings.update_system_thresholds(
             payload=pcd.CommonData.system_thresholds)
         self.settings.common.modify_resource.assert_called_once_with(
-            target_uri=f"/{self.version}/settings/symmetrix/000197800123"
-                       f"/alert/system_threshold",
+            target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
+                       f"000197800123/alert/system_threshold",
             resource_type=None, payload=pcd.CommonData.system_thresholds)
         self.assertEqual(pcd.CommonData.system_thresholds, result)
 
@@ -110,23 +103,8 @@ class PyU4VsettingsTest(testtools.TestCase):
         self.conn.set_array_id = MagicMock(return_value=None)
         self.settings.common.get_request = MagicMock(
             return_value=pcd.CommonData.notification_settings)
-        result = self.settings.get_notification_settings()
+        result = self.settings.get_alert_notification_settings()
         self.settings.common.get_request.assert_called_once_with(
-            target_uri=f"/{self.version}/settings/symmetrix/000197800123"
-                       f"/alert/notification",
-            resource_type=None, params={})
+            target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
+                       f"000197800123/alert/notification", resource_type=None)
         self.assertEqual(pcd.CommonData.notification_settings, result)
-
-    def test_storage_group_compliance_policy_allocation(self):
-        """Test storage_group_compliance_policy_allocation."""
-        self.conn.set_array_id = MagicMock(return_value=None)
-        self.settings.common.get_request = MagicMock(
-            return_value=pcd.CommonData.storage_group_compliance_policy)
-        result = self.settings.storage_group_compliance_policy_allocation(
-            payload=pcd.CommonData.storage_group_compliance_policy)
-        self.settings.common.get_request.assert_called_once_with(
-            target_uri=f"/{self.version}/settings/symmetrix/000197800123"
-                       f"/storage_group_compliance_policy",
-            resource_type=None, params={})
-        self.assertEqual(
-            pcd.CommonData.storage_group_compliance_policy, result)

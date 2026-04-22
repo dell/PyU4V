@@ -48,6 +48,9 @@ class TestBaseTestCase(testtools.TestCase):
 
     def setup_credentials(self):
         """Set REST credentials."""
+        ci_conf = Path(__file__).parent / 'PyU4V.conf'
+        if ci_conf.is_file():
+            univmax_conn.file_path = str(ci_conf)
         self.conn = univmax_conn.U4VConn()
         self.assertTrue(self.conn.rest_client.headers.get('user-agent'))
         self.assertTrue(self.conn.rest_client.headers.get('application-type'))
@@ -200,7 +203,7 @@ class TestBaseTestCase(testtools.TestCase):
                         storage_group_id=sg_name,
                         remote_sid=self.conn.remote_array,
                         srdf_mode='Synchronous', establish=True,
-                        force_new_rdf_group=True, _async=True)
+                        _async=True)
                     self.conn.common.wait_for_job_complete(job)
                     srdf_pair_info = (
                         self.replication.get_storage_group_replication_details(

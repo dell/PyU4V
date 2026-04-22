@@ -65,7 +65,6 @@ class CITestSettings(base.TestBaseTestCase, testtools.TestCase):
     def test_get_scg_configuration_details(self):
         """Test get_scg_configuration_details."""
         scg_config = self.settings.get_scg_configuration_details()
-        print(scg_config)
         self.assertIsNotNone(scg_config)
         self.assertIsInstance(scg_config, dict)
         self.assertIn('unisphere_registered', scg_config.keys())

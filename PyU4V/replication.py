@@ -162,8 +162,8 @@ class ReplicationFunctions(object):
                         'has_snap_policies': has_snap_policies,
                         'has_clones': has_clones}
         response = self.common.get_request(
-            target_uri=f"/{self.version}/replication/symmetrix/{array_id}/"
-                       f"storagegroup",
+            target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
+                       f"{array_id}/storagegroup",
             resource_type=None, params=query_params)
         storage_group_list = (
             response.get('name', list()) if response else list())
@@ -693,7 +693,7 @@ class ReplicationFunctions(object):
             params.update({'symforce': symforce})
         array_id = self.array_id if not array_id else array_id
         self.delete_resource(
-            target_uri=f'/{self.version}/replication/symmetrix'
+            target_uri=f'/{self.common.UNI_VERSION}/replication/symmetrix'
                        f'/{array_id}/storagegroup/'
                        f'{storage_group_id}/snapshot/{snap_name}/'
                        f'snapid/{snap_id}',
@@ -732,7 +732,7 @@ class ReplicationFunctions(object):
 
         array_id = array_id if array_id else self.array_id
         self.common.delete_resource(
-            target_uri=f'/{self.version}/replication/symmetrix/'
+            target_uri=f'/{self.common.UNI_VERSION}/replication/symmetrix/'
                        f'{array_id}/storagegroup/{storage_group_id}/snapshot',
             params=params)
 
@@ -908,7 +908,8 @@ class ReplicationFunctions(object):
 
     def create_storage_group_srdf_pairings(
             self, storage_group_id, remote_sid, srdf_mode, establish=None,
-            _async=False, rdfg_number=None, force_new_rdf_group=False):
+            _async=False, rdfg_number=None, force_new_rdf_group=False,
+            remote_storage_group_id=None):
         """SRDF protect a storage group.
 
         Valid modes are 'Active', 'AdaptiveCopyDisk', 'Synchronous', and
@@ -922,9 +923,14 @@ class ReplicationFunctions(object):
         :param rdfg_number: rdf group number -- int
         :param force_new_rdf_group: ignored, present for backward
                                     compatibility -- bool
+        :param remote_storage_group_id: remote storage group id, offers
+                                        flexibiliity to have remote storage
+                                        group name different from local -- str
         :returns: storage group rdf details -- dict
         """
         establish_sg = 'True' if establish else 'False'
+        if remote_storage_group_id:
+            storage_group_id = remote_storage_group_id
         rdf_payload = {'replicationMode': srdf_mode,
                        'remoteSymmId': remote_sid,
                        'remoteStorageGroupName': storage_group_id,

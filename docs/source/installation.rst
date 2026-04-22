@@ -5,9 +5,9 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.3.0.0                               |
+| **PyU4V Version**             | 10.4.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.3.0                                 |
+| **Minimum Unisphere Version** | 10.4.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -15,7 +15,7 @@ Requirements
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    | 3.6, 3.7, 3.8, 3.9, 3.10               |
+| **Python**                    |  3.6 -3.12                             |
 +-------------------------------+----------------------------------------+
 | **Requirements**              | Requests_, Six_, urllib3_,             |
 |                               | prettytable_                           |
@@ -35,7 +35,7 @@ Requirements
 PyU4V Version Compatibility
 ---------------------------
 
-PyU4V version 10.3.0.0 is compatible with scripts written for PyU4V versions
+PyU4V version 10.4.0.0 is compatible with scripts written for PyU4V versions
 >= 9.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
 scripts in later versions of PyU4V.
 
@@ -60,7 +60,7 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==10.3.0.0
+    $ pip install PyU4V==10.4.0.0
 
 .. URL LINKS
 

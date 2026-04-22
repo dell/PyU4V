@@ -33,8 +33,8 @@ class SettingsFunctions(object):
         returns: Array Performance Registration Settings -- dict
         """
         return self.common.get_request(
-            target_uri=f"/{self.version}/settings/registration/performance",
-            resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/registration/"
+                       f"performance", resource_type=None)
 
     # Unipshere registration functions
 
@@ -67,8 +67,8 @@ class SettingsFunctions(object):
             payload.update({"selectedSGs": real_time_storage_groups})
 
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/settings/registration/performance",
-            resource_type=None, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/registration/"
+                       f"performance", resource_type=None, payload=payload)
 
     def get_scg_configuration_details(self) -> dict:
         """List SCG Configuration Details.
@@ -77,7 +77,7 @@ class SettingsFunctions(object):
 
         query_params = {}
         return self.common.get_request(
-            target_uri=f"/{self.version}/settings/registration/scg",
+            target_uri=f"/{self.common.UNI_VERSION}/settings/registration/scg",
             resource_type=None, params=query_params)
 
     def get_scg_server_certificate_configuration(self) -> dict:
@@ -86,7 +86,7 @@ class SettingsFunctions(object):
         """
         return self.common.get_request(
             target_uri=(f""
-                        f"/{self.version}/"
+                        f"/{self.common.UNI_VERSION}/"
                         f"settings/registration/scg/server_cert"),
             resource_type=None)
 
@@ -143,8 +143,8 @@ class SettingsFunctions(object):
 
         return self.common.create_resource(
             target_uri=f"/"
-                       f"{self.version}/settings/registration/scg/connection"
-                       f"", resource_type=None, payload=payload)
+                       f"{self.common.UNI_VERSION}/settings/registration/scg/"
+                       f"connection", resource_type=None, payload=payload)
 
     def get_cloudiq_data_collection_configuration(self) -> dict:
         """List CloudIQ Data Collection Configuration.
@@ -153,8 +153,9 @@ class SettingsFunctions(object):
         """
         query_params = {}
         return self.common.get_request(
-            target_uri=f"/{self.version}/settings/registration/cloudiq",
-            resource_type=None, params=query_params)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/"
+                       f"registration/cloudiq", resource_type=None,
+            params=query_params)
 
     def register_cloudiq_data_collection(
             self, send_data: bool = None,
@@ -168,8 +169,8 @@ class SettingsFunctions(object):
             "data_collection_disabled": data_collection_disabled
         }
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/settings/registration/cloudiq",
-            resource_type=None, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/registration/"
+                       f"cloudiq", resource_type=None, payload=payload)
 
     # Functions for alert configurations
     def update_performance_thresholds_and_alerts(self, payload: dict) -> dict:
@@ -194,8 +195,9 @@ class SettingsFunctions(object):
         """
         payload = payload
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/settings/alert/performance_threshold",
-            resource_type=None, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
+                       f"performance_threshold", resource_type=None,
+            payload=payload)
 
     def get_performance_thresholds_and_alerts(self,
                                               enabled_alerts: bool = False,
@@ -212,8 +214,8 @@ class SettingsFunctions(object):
         """
         # Fetch all alerts
         all_alerts = self.common.get_request(
-            target_uri=f"/{self.version}/settings/alert/performance_threshold",
-            resource_type=None
+            target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
+                       f"performance_threshold", resource_type=None
         )
 
         filtered_alerts = {'global_performance_thresholds': []}
@@ -233,8 +235,8 @@ class SettingsFunctions(object):
         returns: Unisphere's Alert Notification Settings -- dict
         """
         return self.common.get_request(
-            target_uri=f"/{self.version}/settings/alert/notification",
-            resource_type=None)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
+                       f"notification", resource_type=None)
 
     def update_alert_notification_targets(
             self, payload: dict = None, enable_email: bool = None,
@@ -376,8 +378,8 @@ class SettingsFunctions(object):
             payload.update(syslog_payload)
 
         return self.common.create_resource(
-            target_uri=f"/{self.version}/settings/alert/notification",
-            resource_type=None, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
+                       f"notification", resource_type=None, payload=payload)
 
     def get_alert_policies(
             self, array_id: str = None, name: str = None, type: str = None,
@@ -419,8 +421,8 @@ class SettingsFunctions(object):
                         "snmp_notifications": snmp_notifications,
                         "syslog_notifications": syslog_notifications}
         return self.common.get_request(
-            target_uri=f"/{self.version}/settings/symmetrix/{array_id}"
-                       f"/alert/alert_policy",
+            target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
+                       f"{array_id}/alert/alert_policy",
             resource_type=None, params=query_params)
 
     def update_alert_policies(self, payload: dict,
@@ -435,8 +437,8 @@ class SettingsFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         return self.common.modify_resource(
-            target_uri=f"/{self.version}/settings/symmetrix/{array_id}"
-                       f"/alert/alert_policy",
+            target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
+                       f"{array_id}/alert/alert_policy",
             resource_type=None, payload=payload)
 
     def get_host_access_control_configuration(self,
@@ -448,7 +450,7 @@ class SettingsFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
-            target_uri=(f"/{self.version}/settings/symmetrix"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix"
                         f"/{array_id}/access_control/host_access"),
             resource_type=None)
 
@@ -485,7 +487,7 @@ class SettingsFunctions(object):
                         "authority": authority, "qualifier": qualifier,
                         "role": role, }
         return self.common.get_request(
-            target_uri=(f"/{self.version}/settings/symmetrix"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix"
                         f"/{array_id}/access_control/authorization_rule"),
             resource_type=None, params=query_params)
 
@@ -566,7 +568,7 @@ class SettingsFunctions(object):
                 device_manage_wildcard)
 
         return self.common.create_resource(
-            target_uri=(f"/{self.version}/settings/symmetrix/"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix/"
                         f"{array_id}/access_control/authorization_rule"),
             resource_type=None,
             payload=payload
@@ -582,7 +584,7 @@ class SettingsFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         return self.common.modify_resource(
-            target_uri=(f"/{self.version}/settings/symmetrix/"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix/"
                         f"{array_id}/access_control/authorization_rule"),
             resource_type=None, payload=payload)
 
@@ -640,7 +642,7 @@ class SettingsFunctions(object):
                         "snmp_notifications": snmp_notifications,
                         "syslog_notifications": syslog_notifications, }
         return self.common.get_request(
-            target_uri=(f"/{self.version}/settings/symmetrix"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix"
                         f"/{array_id}/alert/system_threshold"),
             resource_type=None, params=query_params)
 
@@ -655,7 +657,7 @@ class SettingsFunctions(object):
         payload = payload
         return self.common.modify_resource(
             target_uri=(
-                f"/{self.version}/settings/symmetrix/"
+                f"/{self.common.UNI_VERSION}/settings/symmetrix/"
                 f"{array_id}/alert/system_threshold"), resource_type=None,
             payload=payload)
 
@@ -665,9 +667,8 @@ class SettingsFunctions(object):
         """
         return self.common.get_request(
             target_uri=(f""
-                        f"/{self.version}/settings/alert/notification/"
-                        f"agent_details"),
-            resource_type=None)
+                        f"/{self.common.UNI_VERSION}/settings/alert/"
+                        f"notification/agent_details"), resource_type=None)
 
     def get_alert_notification_settings(self, array_id: str = None) -> dict:
         """System Alert Notification Settings.
@@ -680,7 +681,7 @@ class SettingsFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
-            target_uri=(f"/{self.version}/settings/symmetrix"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix"
                         f"/{array_id}/alert/notification"),
             resource_type=None)
 
@@ -713,7 +714,7 @@ class SettingsFunctions(object):
         payload = payload
         return self.common.modify_resource(
             target_uri=(
-                f"/{self.version}/settings/symmetrix/"
+                f"/{self.common.UNI_VERSION}/settings/symmetrix/"
                 f"{array_id}/alert/notification"), resource_type=None,
             payload=payload)
 
@@ -727,7 +728,7 @@ class SettingsFunctions(object):
         array_id = array_id if array_id else self.array_id
         query_params = {}
         return self.common.get_request(
-            target_uri=(f"/{self.version}/settings/symmetrix"
+            target_uri=(f"/{self.common.UNI_VERSION}/settings/symmetrix"
                         f"/{array_id}/alert/compliance_alert_policy/"
                         f"storage_group"),
             resource_type=None, params=query_params)

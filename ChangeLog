@@ -1,5 +1,58 @@
 PyU4V Change Log
 ================
+
+
+Version 10.4
+================
+
+Authentication Enhancements
+--------------------------
+rest_requests.py
+- Added Bearer token support for authentication (api_key parameter), requires
+Microsoft Entra ID or OKTA to be configured,  API key is passed as a Bearer
+token and obtained from Entra ID or OKTA
+- Added _apply_auth_to_headers() helper method to manage Authorization headers
+- Modified establish_rest_session() to support both Basic auth and Bearer
+  token auth
+- Improved error handling for authentication scenarios
+
+replication.py
+- Added remote_storage_group parameter to create_storage_group_srdf_pairings,
+ this allows for different naming of remote storage group.
+
+univmax_conn.py
+- Added API key authentication support as alternative to username/password
+- Added set_u4v_version() method to dynamically update Unisphere API version
+- Added u4v_version configuration option from config file
+- Modified validate_unisphere() to skip minimum version check when custom
+  version is specified
+- Improved version propagation across all REST clients and CommonFunctions
+
+Version Management Improvements
+-------------------------------
+- Changed from self.version to self.common.UNI_VERSION throughout codebase for
+  consistent version handling
+- Updated settings.py, serviceability.py, and system.py to use
+  self.common.UNI_VERSION
+- Improved version handling in URI construction across all modules
+
+Deprecated Functions Removed
+-----------------------------
+performance.py
+- Removed generate_threshold_settings_csv() function (deprecated in favor of
+  settings module)
+- Removed set_thresholds_from_csv() function (deprecated in favor of
+  settings module)
+- Users should explore API calls in the new settings module for
+  threshold management
+
+Code Cleanup
+------------
+- Removed blank lines in docstrings throughout common.py for cleaner code
+- Improved code formatting and consistency across modules
+- Minor refactoring for better code maintainability
+
+
 Version 10.3
 setup.py changed name to normalized pyu4v per PEP 625
 added enhanced_api functions
