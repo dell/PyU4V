@@ -1,6 +1,6 @@
 # version.py
-MAJOR_VERSION = '10.4'
-VERSION = '10.4.0.0'   # PyU4V version
-UNI_VERSION = "10.4.0"
+MAJOR_VERSION = '10.5'
+VERSION = '10.5.0.0'   # PyU4V version
+UNI_VERSION = "10.5.0"
 API_VERSION = "105"
 ENHANCED_API_VERSION = 'v1'
