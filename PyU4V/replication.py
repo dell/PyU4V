@@ -60,10 +60,6 @@ class ReplicationFunctions(object):
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
         self.array_id = array_id
         self.version = constants.UNISPHERE_VERSION
 
@@ -72,9 +68,10 @@ class ReplicationFunctions(object):
 
         :returns: replication details -- dict
         """
-        return self.get_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=self.array_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}",
+            resource_type=None)
 
     def get_array_replication_capabilities(self, array_id=None):
         """Check what replication facilities are available.
@@ -82,9 +79,10 @@ class ReplicationFunctions(object):
         :returns: replication capability details -- dict
         """
         array_id = array_id if array_id else self.array_id
-        capabilities = self.get_resource(
-            category=REPLICATION, resource_level=CAPABILITIES,
-            resource_type=SYMMETRIX)
+        capabilities = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/capabilities/symmetrix",
+            resource_type=None)
         symm_list = capabilities.get(
             'symmetrixCapability', list()) if capabilities else list()
         array_capabilities = dict()
@@ -129,11 +127,11 @@ class ReplicationFunctions(object):
             'exclude_manual_snaps': exclude_manual_snaps
         }
 
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            params=filters)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}",
+            resource_type=None, params=filters)
 
     def get_replication_enabled_storage_groups(
             self, array_id=None, has_srdf=None, has_snapshots=None,
@@ -176,11 +174,11 @@ class ReplicationFunctions(object):
         :returns: snapshot ids -- list
         """
         try:
-            response = self.get_resource(
-                category=REPLICATION,
-                resource_level=SYMMETRIX, resource_level_id=self.array_id,
-                resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-                resource=SNAPSHOT)
+            response = self.common.get_request(
+                target_uri=f"/{self.common.UNI_VERSION}/replication"
+                           f"/symmetrix/{self.array_id}/storagegroup"
+                           f"/{storage_group_id}/snapshot",
+                resource_type=None)
         except exception.ResourceNotFoundException:
             return list()
         return response.get('name', list()) if response else list()
@@ -213,11 +211,11 @@ class ReplicationFunctions(object):
                 payload.update({'timeInHours': 'True'})
         if bothsides:
             payload.update({'bothSides': 'True'})
-        return self.create_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=SNAPSHOT, payload=payload)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/snapshot",
+            payload=payload)
 
     def get_storage_group_snapshot_generation_list(
             self, storage_group_id, snap_name):
@@ -236,12 +234,12 @@ class ReplicationFunctions(object):
         :param snap_name: the name of the snapshot -- str
         :returns: generation numbers -- list
         """
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=GENERATION)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/snapshot/{snap_name}"
+                       f"/generation",
+            resource_type=None)
         return response.get('generations', list()) if response else list()
 
     def get_storage_group_snapshot_snap_id_list(
@@ -256,12 +254,12 @@ class ReplicationFunctions(object):
         :param snap_name: the name of the snapshot -- str
         :returns: snapids -- list
         """
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=SNAP_ID)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/snapshot/{snap_name}"
+                       f"/snapid",
+            resource_type=None)
         return response.get('snapids', list()) if response else list()
 
     def get_snapshot_generation_details(self, sg_id, snap_name, gen_num):
@@ -276,12 +274,12 @@ class ReplicationFunctions(object):
         :param gen_num: generation number -- int
         :returns: snapshot generation details -- dict
         """
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=sg_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=GENERATION, object_type_id=str(gen_num))
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{sg_id}/snapshot/{snap_name}"
+                       f"/generation/{gen_num}",
+            resource_type=None)
 
     def get_snapshot_snap_id_details(self, sg_id, snap_name, snap_id):
         """Get the details for a particular snapshot snap_id.
@@ -294,12 +292,12 @@ class ReplicationFunctions(object):
         :param snap_id: unique snap id -- int
         :returns: snapshot snap id details -- dict
         """
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=sg_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=SNAP_ID, object_type_id=snap_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{sg_id}/snapshot/{snap_name}"
+                       f"/snapid/{snap_id}",
+            resource_type=None)
 
     def find_expired_snapvx_snapshots(self):
         """Find all expired snapvx snapshots.
@@ -441,13 +439,12 @@ class ReplicationFunctions(object):
                 'relinkStorageGroupName': tgt_storage_grp_id}})
         if _async:
             payload.update(ASYNC_UPDATE)
-        return self.modify_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=src_storage_grp_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=GENERATION, object_type_id=str(gen_num),
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{src_storage_grp_id}/snapshot/{snap_name}"
+                       f"/generation/{gen_num}",
+            resource_type=None, payload=payload)
 
     def modify_storage_group_snapshot_by_snap_id(
             self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
@@ -505,13 +502,12 @@ class ReplicationFunctions(object):
                 'force': force}})
         if _async:
             payload.update(ASYNC_UPDATE)
-        return self.modify_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=src_storage_grp_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=SNAP_ID, object_type_id=snap_id,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{src_storage_grp_id}/snapshot/{snap_name}"
+                       f"/snapid/{snap_id}",
+            resource_type=None, payload=payload)
 
     def restore_snapshot(self, sg_id, snap_name, gen_num=0):
         """Restore a storage group to its snapshot.
@@ -663,12 +659,11 @@ class ReplicationFunctions(object):
         :param snap_name: snapshot name -- str
         :param gen: snapshot generation number -- int
         """
-        self.delete_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=SNAPSHOT, resource_id=snap_name,
-            object_type=GENERATION, object_type_id=str(gen))
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/snapshot/{snap_name}"
+                       f"/generation/{gen}")
 
     def delete_storage_group_snapshot_by_snap_id(
             self, storage_group_id, snap_name, snap_id, force=False,
@@ -692,7 +687,7 @@ class ReplicationFunctions(object):
         if force:
             params.update({'symforce': symforce})
         array_id = self.array_id if not array_id else array_id
-        self.delete_resource(
+        self.common.delete_resource(
             target_uri=f'/{self.common.UNI_VERSION}/replication/symmetrix'
                        f'/{array_id}/storagegroup/'
                        f'{storage_group_id}/snapshot/{snap_name}/'
@@ -767,10 +762,10 @@ class ReplicationFunctions(object):
         :returns: rdf group details -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDFG, resource_type_id=rdf_number)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_group/{rdf_number}",
+            resource_type=None)
 
     def get_rdf_group_list(self, array_id=None, remote_symmetrix_id=None,
                            rdf_mode=None, volume_count=None, group_type=None):
@@ -803,10 +798,10 @@ class ReplicationFunctions(object):
                    'volume_count': volume_count,
                    'group_type': group_type}
         array_id = self.array_id if not array_id else array_id
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDFG, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_group",
+            resource_type=None, params=filters)
         return response.get('rdfGroupID', list()) if response else list()
 
     def get_rdf_group_volume(self, rdf_number, device_id):
@@ -816,11 +811,11 @@ class ReplicationFunctions(object):
         :param device_id: device id -- str
         :returns: rdf group volume details -- dict
         """
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=RDFG, resource_type_id=rdf_number,
-            resource=VOLUME, resource_id=device_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/rdf_group"
+                       f"/{rdf_number}/volume/{device_id}",
+            resource_type=None)
 
     def get_rdf_group_volume_list(self, rdf_number):
         """Get specific volume details, from an RDF group.
@@ -828,11 +823,11 @@ class ReplicationFunctions(object):
         :param rdf_number: rdf group number -- int
         :returns: device ids -- list
         """
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=RDFG, resource_type_id=rdf_number,
-            resource=VOLUME)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/rdf_group"
+                       f"/{rdf_number}/volume",
+            resource_type=None)
         return response.get('name', list()) if response else list()
 
     def are_volumes_rdf_paired(self, remote_array, device_id,
@@ -886,11 +881,11 @@ class ReplicationFunctions(object):
         :returns: rdf group numbers -- list
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=RDFG)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/storagegroup"
+                       f"/{storage_group_id}/rdf_group",
+            resource_type=None)
         return response.get('rdfgs', list()) if response else list()
 
     def get_storage_group_srdf_details(self, storage_group_id, rdfg_num):
@@ -900,11 +895,11 @@ class ReplicationFunctions(object):
         :param rdfg_num: rdf group number -- int
         :returns: storage group rdf details -- dict
         """
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=RDFG, resource_id=rdfg_num)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/rdf_group/{rdfg_num}",
+            resource_type=None)
 
     def create_storage_group_srdf_pairings(
             self, storage_group_id, remote_sid, srdf_mode, establish=None,
@@ -942,11 +937,11 @@ class ReplicationFunctions(object):
         if force_new_rdf_group:
             LOG.warning("Parameter 'force_new_rdf_group' is no longer "
                         "supported and will be ignored.")
-        return self.create_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=RDFG, payload=rdf_payload)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/rdf_group",
+            payload=rdf_payload)
 
     def modify_storage_group_srdf(
             self, storage_group_id, action, srdf_group_number, options=None,
@@ -988,11 +983,12 @@ class ReplicationFunctions(object):
             payload.update(ASYNC_UPDATE)
         if options and action:
             payload.update(options)
-        return self.modify_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            resource=RDFG, resource_id=srdf_group_number, payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_id}/rdf_group"
+                       f"/{srdf_group_number}",
+            resource_type=None, payload=payload)
 
     def suspend_storage_group_srdf(self, storage_group_id, srdf_group_number,
                                    suspend_options=None, _async=False):
@@ -1077,11 +1073,12 @@ class ReplicationFunctions(object):
         :returns: storage group rdf details -- dict
         """
         if srdf_group_number:
-            self.delete_resource(
-                category=REPLICATION, resource_level=SYMMETRIX,
-                resource_level_id=self.array_id, resource_type=STORAGEGROUP,
-                resource_type_id=storage_group_id, resource=RDFG,
-                resource_id=srdf_group_number, params=filters)
+            self.common.delete_resource(
+                target_uri=f"/{self.common.UNI_VERSION}/replication"
+                           f"/symmetrix/{self.array_id}/storagegroup"
+                           f"/{storage_group_id}/rdf_group"
+                           f"/{srdf_group_number}",
+                params=filters)
 
     def get_rdf_director_list(self, array_id=None, filters=None):
         """Finds out directors configured for SRDF on the specified array.
@@ -1093,10 +1090,10 @@ class ReplicationFunctions(object):
         if not array_id:
             array_id = self.array_id
         try:
-            response = self.get_resource(
-                category=REPLICATION,
-                resource_level=SYMMETRIX, resource_level_id=array_id,
-                resource_type=RDF_DIRECTOR, params=filters)
+            response = self.common.get_request(
+                target_uri=f"/{self.common.UNI_VERSION}/replication"
+                           f"/symmetrix/{array_id}/rdf_director",
+                resource_type=None, params=filters)
         except exception.ResourceNotFoundException:
             return list()
         director_list = (
@@ -1112,10 +1109,11 @@ class ReplicationFunctions(object):
         """
         if not array_id:
             array_id = self.array_id
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDF_DIRECTOR, resource_type_id=director_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_director"
+                       f"/{director_id}",
+            resource_type=None)
 
     def get_rdf_director_port_list(self, director_id, array_id=None,
                                    filters=None):
@@ -1128,11 +1126,11 @@ class ReplicationFunctions(object):
         """
         if not array_id:
             array_id = self.array_id
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDF_DIRECTOR, resource_type_id=director_id,
-            resource=PORT, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_director"
+                       f"/{director_id}/port",
+            resource_type=None, params=filters)
         port_list = (
             response.get('portNumber', list()) if response else list())
         return port_list
@@ -1148,11 +1146,11 @@ class ReplicationFunctions(object):
         """
         if not array_id:
             array_id = self.array_id
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDF_DIRECTOR, resource_type_id=director_id,
-            resource=PORT, resource_id=port_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_director"
+                       f"/{director_id}/port/{port_id}",
+            resource_type=None)
 
     def get_rdf_port_remote_connections(self, director_id, port_id,
                                         array_id=None):
@@ -1169,11 +1167,11 @@ class ReplicationFunctions(object):
 
         if not array_id:
             array_id = self.array_id
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=RDF_DIRECTOR, resource_type_id=director_id,
-            resource=PORT, resource_id=port_id, object_type=REMOTE_PORT)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_director"
+                       f"/{director_id}/port/{port_id}/remote_port",
+            resource_type=None)
 
     def create_rdf_group(self, local_director_port_list, remote_array_id,
                          label, local_rdfg_number, remote_rdfg_number,
@@ -1222,10 +1220,10 @@ class ReplicationFunctions(object):
             'label': label,
             'local_rdfg_number': local_rdfg_number}
 
-        self.create_resource(category=REPLICATION,
-                             resource_level=SYMMETRIX,
-                             resource_level_id=array_id,
-                             resource_type=RDF_GROUP, payload=payload)
+        self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_group",
+            payload=payload)
 
     def modify_rdf_group(self, action, srdf_group_number, array_id=None,
                          port_list=None, label=None, dev_list=None,
@@ -1297,10 +1295,11 @@ class ReplicationFunctions(object):
                            rdfg_action: {
                                'ports': port_payload}}
 
-        self.modify_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=RDF_GROUP,
-            resource_type_id=srdf_group_number, payload=payload)
+        self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_group"
+                       f"/{srdf_group_number}",
+            resource_type=None, payload=payload)
 
     def delete_rdf_group(self, srdf_group_number, array_id=None):
         """Function to Delete SRDF groups between VMAX or PowerMax arrays.
@@ -1312,10 +1311,10 @@ class ReplicationFunctions(object):
         if not array_id:
             array_id = self.array_id
 
-        self.delete_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=RDF_GROUP,
-            resource_type_id=srdf_group_number)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/rdf_group"
+                       f"/{srdf_group_number}")
 
     def create_storage_group_from_rdfg(
             self, storage_group_name, srdf_group_number, array_id=None,
@@ -1351,7 +1350,7 @@ class ReplicationFunctions(object):
             create_sg_payload.update(
                 {'remote_storage_group_name': remote_storage_group_name})
 
-        self.create_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=STORAGEGROUP,
+        self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/storagegroup",
             payload=payload)

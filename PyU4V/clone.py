@@ -41,10 +41,6 @@ class CloneFunctions(object):
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
         self.array_id = array_id
 
     def get_clone_target_storage_group_list(

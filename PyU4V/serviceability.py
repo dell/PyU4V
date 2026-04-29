@@ -63,12 +63,6 @@ class ServiceabilityFunctions(object):
     def __init__(self, array_id, rest_client):
         """__init__."""
         self.common = CommonFunctions(rest_client)
-        self.get_request = self.common.get_request
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
-        self.upload_file = self.common.upload_file
         self.array_id = array_id
         self.version = constants.UNISPHERE_VERSION
 
@@ -77,7 +71,7 @@ class ServiceabilityFunctions(object):
         with version v4 or higher.
         :returns: symmetrix id -- dict
         """
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix",
             resource_type=None)
 
@@ -88,7 +82,7 @@ class ServiceabilityFunctions(object):
         :returns: ntp server -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(f"/{self.common.UNI_VERSION}/"
+        return self.common.get_request(f"/{self.common.UNI_VERSION}/"
                                 f"serviceability/symmetrix/{array_id}",
                                 resource_type=None)
 
@@ -171,7 +165,7 @@ class ServiceabilityFunctions(object):
         :returns: IPInformation -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/ip_configuration", resource_type=None)
 
@@ -233,7 +227,7 @@ class ServiceabilityFunctions(object):
                 }
             }
         array_id = self.array_id if not array_id else array_id
-        return self.modify_resource(
+        return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/ip_configuration", resource_type=None,
             payload=payload)
@@ -245,7 +239,7 @@ class ServiceabilityFunctions(object):
         :returns: ApplicationInformation -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application", resource_type=None)
 
@@ -257,7 +251,7 @@ class ServiceabilityFunctions(object):
         :returns: UnisphereInformation -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/unisphere", resource_type=None)
 
@@ -299,7 +293,7 @@ class ServiceabilityFunctions(object):
         :returns: ConfigArray -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/unisphere/configuration",
             resource_type=None)
@@ -311,7 +305,7 @@ class ServiceabilityFunctions(object):
         :returns: UnisphereInformation -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
             f"{self.array_id}/application/unisphere/system",
             resource_type=None)
@@ -345,7 +339,7 @@ class ServiceabilityFunctions(object):
             }
 
         array_id = self.array_id if not array_id else array_id
-        return self.modify_resource(
+        return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/unisphere/system",
             resource_type=None, payload=payload)
@@ -359,7 +353,7 @@ class ServiceabilityFunctions(object):
         :returns: SEInformation -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/solutions_enabler",
             resource_type=None)
@@ -393,7 +387,7 @@ class ServiceabilityFunctions(object):
                            "node_name": host_name,
                            "user": user
                        }}
-        return self.modify_resource(
+        return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/solutions_enabler",
             resource_type=None, payload=payload)
@@ -405,7 +399,7 @@ class ServiceabilityFunctions(object):
         :returns: SEConfigInformation -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.get_request(
+        return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/solutions_enabler/"
                        f"configuration", resource_type=None)
@@ -446,7 +440,7 @@ class ServiceabilityFunctions(object):
             payload['se_base_configuration']['general_symapi_options'][
                 'SYMAPI_USE_ACCESS_ID'] = use_access_id
         array_id = self.array_id if not array_id else array_id
-        return self.modify_resource(
+        return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
                        f"{array_id}/application/solutions_enabler/"
                        f"configuration", resource_type=None, payload=payload)
@@ -502,11 +496,11 @@ class ServiceabilityFunctions(object):
         form_data = {'node_name': node_name, 'keyfile': keyfiledata,
                      'trustfile': trustfiledata, 'certfile': certfiledata}
 
-        return self.upload_file(
-            category=SERVICEABILITY, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=APPLICATION,
-            resource=SOLUTIONS_ENABLER, form_data=form_data,
-            object_type=CUSTOM_CERTIFICATE, object_type_id=IMPORT)
+        return self.common.upload_file(
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability"
+                       f"/symmetrix/{array_id}/application"
+                       f"/solutions_enabler/custom_certificate/import",
+            form_data=form_data)
 
     def replace_self_signed_certificate(self, array_id=None,
                                         node_name=None):
@@ -520,8 +514,7 @@ class ServiceabilityFunctions(object):
         payload = {'node_name': node_name}
 
         return self.common.create_resource(
-            category=SERVICEABILITY, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=APPLICATION,
-            object_type=SOLUTIONS_ENABLER,
-            object_type_id=SELF_SIGNED_CERTIFICATE,
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability"
+                       f"/symmetrix/{array_id}/application"
+                       f"/solutions_enabler/self_signed_certificate",
             payload=payload)

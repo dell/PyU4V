@@ -59,7 +59,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_create_metrodr_environment(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'create_resource') as mock_create:
+                self.metro_dr.common, 'create_resource') as mock_create:
             self.metro_dr.create_metrodr_environment(
                 storage_group_name="PyU4V", environment_name='PyU4V',
                 metro_r1_array_id='000197800123',
@@ -70,7 +70,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_create_metrodr_environment_adaptive(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'create_resource') as mock_create:
+                self.metro_dr.common, 'create_resource') as mock_create:
             self.metro_dr.create_metrodr_environment(
                 storage_group_name="PyU4V", environment_name='PyU4V',
                 metro_r1_array_id='000197800123',
@@ -91,7 +91,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_delete_metrodr_environment(self):
         """Test delete_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'delete_resource') as mock_delete:
+                self.metro_dr.common, 'delete_resource') as mock_delete:
             self.metro_dr.delete_metrodr_environment(
                 environment_name='PyU4V')
             self.metro_dr.delete_metrodr_environment(
@@ -101,7 +101,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_convert_to_metrodr_environment(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'create_resource') as mock_create:
+                self.metro_dr.common, 'create_resource') as mock_create:
             self.metro_dr.convert_to_metrodr_environment(
                 storage_group_name="PyU4V", environment_name='PyU4V',
                 metro_r1_array_id='000197800123', metro_r2_dr_rdfg=45)
@@ -113,7 +113,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_modify_metrodr_environment_failover(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'modify_resource') as mock_put:
+                self.metro_dr.common, 'modify_resource') as mock_put:
             self.metro_dr.modify_metrodr_environment(
                 action='failover', environment_name='PyU4V')
             mock_put.assert_called_once()
@@ -121,7 +121,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_modify_metrodr_environment_failback(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'modify_resource') as mock_put:
+                self.metro_dr.common, 'modify_resource') as mock_put:
             self.metro_dr.modify_metrodr_environment(
                 action='failback', environment_name='PyU4V', metro=True,
                 keep_r2=True)
@@ -137,7 +137,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_modify_metrodr_environment_suspend(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'modify_resource') as mock_put:
+                self.metro_dr.common, 'modify_resource') as mock_put:
             self.metro_dr.modify_metrodr_environment(
                 action='suspend', environment_name='PyU4V', metro=True,
                 keep_r2=True)
@@ -146,7 +146,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_modify_metrodr_environment_establish(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'modify_resource') as mock_put:
+                self.metro_dr.common, 'modify_resource') as mock_put:
             self.metro_dr.modify_metrodr_environment(
                 action='establish', environment_name='PyU4V', metro=True,
                 _async=True)
@@ -155,7 +155,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_modify_metrodr_environment_set_mode(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'modify_resource') as mock_put:
+                self.metro_dr.common, 'modify_resource') as mock_put:
             self.metro_dr.modify_metrodr_environment(
                 action='SetMode', environment_name='PyU4V',
                 dr_replication_mode='AdaptiveCopyDisk')
@@ -171,7 +171,7 @@ class PyU4VMetroDRTest(testtools.TestCase):
     def test_modify_metrodr_environment_recover(self):
         """Test create_metrodr_environment."""
         with mock.patch.object(
-                self.metro_dr, 'modify_resource') as mock_put:
+                self.metro_dr.common, 'modify_resource') as mock_put:
             self.metro_dr.modify_metrodr_environment(
                 action='recover', environment_name='PyU4V')
             mock_put.assert_called_once()

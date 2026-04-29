@@ -134,8 +134,9 @@ class CommonFunctions(object):
         :param job_id: job id -- str
         :returns: job details -- dict
         """
-        return self.get_resource(category=SYSTEM, resource_level=JOB,
-                                 resource_level_id=job_id)
+        return self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/system/job/{job_id}",
+            resource_type=None)
 
     def _is_job_finished(self, job_id):
         """Check if the job is finished.
@@ -502,7 +503,8 @@ class CommonFunctions(object):
         :returns: version and major_version e.g. "V10.0.0.0", "100" -- str, str
         """
         version, major_version = None, None
-        response = self.get_resource(category=VERSION, no_version=True)
+        response = self.get_request(
+            target_uri="/version", resource_type=None)
         if response and response.get('version'):
             version = response['version']
             version_list = version.split('.')
@@ -514,7 +516,8 @@ class CommonFunctions(object):
         :returns: {'version': 'T10.1.0.468', 'api_version': '101',
         'supported_api_versions': ['101', '100', '92']} -- dict
         """
-        response = self.get_resource(category=VERSION, no_version=True)
+        response = self.get_request(
+            target_uri="/version", resource_type=None)
         return response
 
     def get_array_list(self, filters=None):
@@ -522,8 +525,9 @@ class CommonFunctions(object):
         :param filters: optional filters -- dict
         :returns: arrays ids -- list
         """
-        response = self.get_resource(
-            category=SYSTEM, resource_level=SYMMETRIX, params=filters)
+        response = self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/system/symmetrix",
+            resource_type=None, params=filters)
         return response.get('symmetrixId', list()) if response else list()
 
     def get_v3_or_newer_array_list(self, filters=None):
@@ -531,8 +535,9 @@ class CommonFunctions(object):
         :param filters: optional filters -- dict
         :returns: arrays ids -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING, resource_level=SYMMETRIX, params=filters)
+        response = self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/sloprovisioning/symmetrix",
+            resource_type=None, params=filters)
         return response.get('symmetrixId', list()) if response else list()
 
     def get_array(self, array_id):
@@ -540,8 +545,9 @@ class CommonFunctions(object):
         :param array_id: array id -- str
         :returns: array details -- dict
         """
-        return self.get_resource(category=SYSTEM, resource_level=SYMMETRIX,
-                                 resource_level_id=array_id)
+        return self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/system/symmetrix/{array_id}",
+            resource_type=None)
 
     def get_iterator_page_list(self, iterator_id, start, end):
         """Get a page of results from an iterator instance.
@@ -550,9 +556,9 @@ class CommonFunctions(object):
         :param end: the end number -- int
         :returns: iterator page results -- dict
         """
-        response = self.get_resource(
-            no_version=True, category=COMMON, resource_level=ITERATOR,
-            resource_level_id=iterator_id, resource_type=PAGE,
+        response = self.get_request(
+            target_uri=f"/common/Iterator/{iterator_id}/page",
+            resource_type=None,
             params={'from': start, 'to': end})
         return response.get('result', list()) if response else list()
 

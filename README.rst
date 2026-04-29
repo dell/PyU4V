@@ -150,6 +150,43 @@ directly in ``PyU4V.conf``::
     [setup]
     verify=/path/to/file/{cert_name}.pem
 
+API Version Configuration
+-------------------------
+
+PyU4V uses the latest Unisphere API version by default for the current release.
+If you need to connect to an older Unisphere server that does not support the
+latest API version, you can specify a custom API version using the ``u4v_version``
+parameter.
+
+This is useful for backward compatibility when using PyU4V with older Unisphere
+versions. The specified version will be validated against the server's supported
+API versions on connection.
+
+Configure in ``PyU4V.conf``:
+
+.. code-block:: ini
+
+    [setup]
+    u4v_version=100
+
+Or pass it on initialisation:
+
+.. code-block:: python
+
+    import PyU4V
+
+    # Connect using API version 100 (Unisphere 10.0)
+    conn = PyU4V.U4VConn(u4v_version='100')
+
+    # Or dynamically update the version
+    conn.set_u4v_version('101')
+
+Note
+    The ``u4v_version`` parameter accepts string values like ``'100'``, ``'101'``,
+    ``'104'``, etc. These correspond to the Unisphere API version numbers. If the
+    specified version is not supported by the server, PyU4V will exit with an error
+    listing the supported versions.
+
 Initialise PyU4V Connection
 ---------------------------
 

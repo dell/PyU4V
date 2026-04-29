@@ -142,7 +142,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_create_storage_group_snap(self):
         """Test create_storage_group_snap."""
         with mock.patch.object(
-                self.replication, 'create_resource') as mock_create:
+                self.replication.common, 'create_resource') as mock_create:
             self.replication.create_storage_group_snapshot(
                 self.data.storagegroup_name, 'snap_name')
             self.replication.create_storage_group_snapshot(
@@ -152,7 +152,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_create_storage_group_snapshot_secure(self):
         """Test create_storage_group_snapshot."""
         with mock.patch.object(
-                self.replication, 'create_resource') as mock_create:
+                self.replication.common, 'create_resource') as mock_create:
             self.replication.create_storage_group_snapshot(
                 self.data.storagegroup_name, 'snap_name')
             self.replication.create_storage_group_snapshot(
@@ -243,40 +243,41 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_modify_storagegroup_snap(self):
         """Test modify_storagegroup_snap."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.modify_storage_group_snapshot(
                 self.data.storagegroup_name,
                 self.data.target_group_name, self.data.group_snapshot_name,
                 restore=True)
             mock_mod.assert_called_once_with(
-                category='replication', object_type='generation',
-                object_type_id='0', payload=self.data.snap_restore_payload,
-                resource='snapshot', resource_id='Grp_snapshot',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup',
-                resource_type_id='PU-mystoragegroup-SG')
+                target_uri=f"/{self.replication.common.UNI_VERSION}"
+                           f"/replication/symmetrix/{self.data.array}"
+                           f"/storagegroup/{self.data.storagegroup_name}"
+                           f"/snapshot/{self.data.group_snapshot_name}"
+                           f"/generation/0",
+                resource_type=None,
+                payload=self.data.snap_restore_payload)
 
     def test_modify_storage_group_snap_by_snap_id(self):
         """Test modify_storage_group_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.modify_storage_group_snapshot_by_snap_id(
                 self.data.storagegroup_name,
                 self.data.target_group_name, self.data.group_snapshot_name,
                 self.data.sg_snap_id, restore=True)
             mock_mod.assert_called_once_with(
-                category='replication', object_type='snapid',
-                object_type_id=self.data.sg_snap_id,
-                payload=self.data.snap_restore_payload,
-                resource='snapshot', resource_id='Grp_snapshot',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup',
-                resource_type_id='PU-mystoragegroup-SG')
+                target_uri=f"/{self.replication.common.UNI_VERSION}"
+                           f"/replication/symmetrix/{self.data.array}"
+                           f"/storagegroup/{self.data.storagegroup_name}"
+                           f"/snapshot/{self.data.group_snapshot_name}"
+                           f"/snapid/{self.data.sg_snap_id}",
+                resource_type=None,
+                payload=self.data.snap_restore_payload)
 
     def test_rename_snapshot(self):
         """Test rename_snapshot."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.rename_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 'new-snap-name')
@@ -285,7 +286,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_rename_snapshot_by_snap_id(self):
         """Test rename_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.rename_snapshot_by_snap_id(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 'new-snap-name', self.data.sg_snap_id)
@@ -294,7 +295,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_restore_snapshot(self):
         """Test rename_snapshot."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.restore_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 0)
@@ -303,7 +304,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_restore_snapshot_by_snap_id(self):
         """Test restore_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.restore_snapshot_by_snap_id(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 self.data.sg_snap_id)
@@ -312,7 +313,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_link_gen_snapshot(self):
         """Test link_gen_snapshot."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.link_gen_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 self.data.target_group_name, _async=True)
@@ -321,7 +322,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_link_snapshot_by_snap_id(self):
         """Test link_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.link_snapshot_by_snap_id(
                 self.data.storagegroup_name, self.data.target_group_name,
                 self.data.group_snapshot_name, self.data.sg_snap_id,
@@ -331,7 +332,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_unlink_gen_snapshot(self):
         """Test unlink_gen_snapshot."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.unlink_gen_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 self.data.target_group_name, _async=True)
@@ -340,7 +341,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_unlink_snapshot_by_snap_id(self):
         """Test unlink_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.unlink_snapshot_by_snap_id(
                 self.data.storagegroup_name, self.data.target_group_name,
                 self.data.group_snapshot_name, self.data.sg_snap_id,
@@ -350,7 +351,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_delete_storage_group_snapshot(self):
         """Test delete_storage_group_snapshot."""
         with mock.patch.object(
-                self.replication, 'delete_resource') as mock_delete:
+                self.replication.common, 'delete_resource') as mock_delete:
             self.replication.delete_storage_group_snapshot(
                 self.data.storagegroup_name, self.data.group_snapshot_name)
             mock_delete.assert_called_once()
@@ -358,7 +359,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_delete_storage_group_snapshot_by_snap_id(self):
         """Test delete_storage_group_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'delete_resource') as mock_delete:
+                self.replication.common, 'delete_resource') as mock_delete:
             self.replication.delete_storage_group_snapshot_by_snap_id(
                 self.data.storagegroup_name, self.data.group_snapshot_name,
                 self.data.sg_snap_id)
@@ -465,7 +466,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_create_storage_group_srdf_pairings_new_rdfg(self):
         """Test create_storage_group_srdf_pairings."""
         with mock.patch.object(
-                self.replication, 'create_resource') as mock_create:
+                self.replication.common, 'create_resource') as mock_create:
             self.replication.create_storage_group_srdf_pairings(
                 self.data.storagegroup_name, self.data.remote_array, 'Active')
             mock_create.assert_called_once()
@@ -478,7 +479,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_modify_storage_group_srdf(self):
         """Test modify_storage_group_srdf."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             # Lowercase action
             self.replication.modify_storage_group_srdf(
                 self.data.storagegroup_name, 'suspend', self.data.rdf_group_no,
@@ -513,7 +514,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_suspend_storage_group_srdf(self):
         """Test suspend_storage_group_srdf."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.suspend_storage_group_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no,
                 suspend_options={'consExempt': 'true'}, _async=True)
@@ -522,7 +523,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_establish_storage_group_srdf(self):
         """Test establish_storage_group_srdf."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.establish_storage_group_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no,
                 establish_options={'full': 'true'}, _async=True)
@@ -531,7 +532,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_failover_storage_group_srdf(self):
         """Test failover_storage_group_srdf."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.failover_storage_group_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no)
             mock_mod.assert_called_once()
@@ -539,7 +540,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_failback_storage_group_srdf(self):
         """Test failback_storage_group_srdf."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.failback_storage_group_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no)
             mock_mod.assert_called_once()
@@ -547,21 +548,20 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_delete_storage_group_srdf(self):
         """Test delete_storage_group_srdf."""
         with mock.patch.object(
-                self.replication, 'delete_resource') as mock_delete:
+                self.replication.common, 'delete_resource') as mock_delete:
             self.replication.delete_storage_group_srdf(
                 self.data.storagegroup_name, self.data.rdf_group_no)
             mock_delete.assert_called_once_with(
-                category='replication', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup',
-                resource_type_id=self.data.storagegroup_name,
-                resource='rdf_group', resource_id=self.data.rdf_group_no,
+                target_uri=f"/{self.replication.common.UNI_VERSION}"
+                           f"/replication/symmetrix/{self.data.array}"
+                           f"/storagegroup/{self.data.storagegroup_name}"
+                           f"/rdf_group/{self.data.rdf_group_no}",
                 params=None)
 
     def test_create_rdf_group(self):
         """Test create_rdf_group."""
         with mock.patch.object(
-                self.replication, 'create_resource') as mock_create:
+                self.replication.common, 'create_resource') as mock_create:
             self.replication.create_rdf_group(
                 local_director_port_list=self.data.local_rdf_ports,
                 local_rdfg_number=1,
@@ -573,7 +573,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_modify_rdf_group_remove_port(self):
         """Test modify_rdf_group removing an RDF port."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.modify_rdf_group(
                 action='remove_ports', srdf_group_number=1,
                 port_list=['RF-1E:1'])
@@ -582,7 +582,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_modify_rdf_group_add_port(self):
         """Test modify_rdf_group adding an RDF port."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.modify_rdf_group(
                 action='remove_ports', srdf_group_number=1,
                 port_list=['RF-1E:1'])
@@ -591,7 +591,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_modify_rdf_group_set_label(self):
         """Test modify_rdf_group changing label."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.modify_rdf_group(
                 action='set_label', srdf_group_number=1,
                 label='new_label')
@@ -621,7 +621,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_delete_rdf_group(self):
         """Test delete_rdf_group."""
         with mock.patch.object(
-                self.replication, 'delete_resource') as mock_delete:
+                self.replication.common, 'delete_resource') as mock_delete:
             self.replication.delete_rdf_group(srdf_group_number=1)
             mock_delete.assert_called_once()
 
@@ -665,7 +665,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_create_storage_group_from_rdfg(self):
         """Test create_storage_group_from_rdfg."""
         with mock.patch.object(
-                self.replication, 'create_resource') as mock_create:
+                self.replication.common, 'create_resource') as mock_create:
             self.replication.create_storage_group_from_rdfg(
                 storage_group_name=self.data.storagegroup_name,
                 srdf_group_number=1,
@@ -676,7 +676,7 @@ class PyU4VReplicationTest(testtools.TestCase):
     def test_relink_snapshot_by_snap_id(self):
         """Test relink_snapshot_by_snap_id."""
         with mock.patch.object(
-                self.replication, 'modify_resource') as mock_mod:
+                self.replication.common, 'modify_resource') as mock_mod:
             self.replication.modify_storage_group_snapshot_by_snap_id(
                 self.data.storagegroup_name, self.data.target_group_name,
                 self.data.group_snapshot_name, self.data.sg_snap_id,

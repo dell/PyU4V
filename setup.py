@@ -12,14 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """setup.py."""
+import os
+import re
 import setuptools
+
+
+def _read_version():
+    """Read version from PyU4V/version.py without importing it."""
+    version_file = os.path.join(os.path.dirname(__file__), 'PyU4V', 'version.py')
+    with open(version_file, 'r') as f:
+        version_content = f.read()
+    # Match VERSION = '...'
+    match = re.search(r"VERSION\s*=\s*['\"]([^'\"]+)['\"]", version_content)
+    if match:
+        return match.group(1)
+    raise RuntimeError("Unable to find VERSION string in PyU4V/version.py")
+
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='pyu4v',
-    version='10.4.0.0',
+    version=_read_version(),
     url='https://github.com/dell/PyU4V/',
     author='Dell Inc. or its subsidiaries',
     author_email='paule.martin@dell.com',

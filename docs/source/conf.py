@@ -17,6 +17,8 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../..'))
 
+from PyU4V.version import MAJOR_VERSION, VERSION
+
 # -- Project information -----------------------------------------------------
 
 project = 'PyU4V'
@@ -24,9 +26,9 @@ copyright = '2022 Dell Inc. or its subsidiaries.'
 author = 'Dell'
 
 # The short X.Y version.
-version = u'10.2'
+version = MAJOR_VERSION
 # The full version, including alpha/beta/rc tags
-release = '10.2.0.0'
+release = VERSION
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

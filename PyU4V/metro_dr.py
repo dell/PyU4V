@@ -42,10 +42,6 @@ class MetroDRFunctions(object):
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
         self.array_id = array_id
 
     def get_metrodr_environment_list(self, array_id=None):
@@ -56,9 +52,10 @@ class MetroDRFunctions(object):
         """
         if not array_id:
             array_id = self.array_id
-        response = self.get_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=METRO_DR)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/metrodr",
+            resource_type=None)
         return response.get('names', list()) if response else list()
 
     def get_metrodr_environment_details(self, environment_name,
@@ -74,10 +71,11 @@ class MetroDRFunctions(object):
         """
         if not array_id:
             array_id = self.array_id
-        response = self.get_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=METRO_DR,
-            resource_type_id=environment_name, params={'config': config})
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/metrodr"
+                       f"/{environment_name}",
+            resource_type=None, params={'config': config})
 
         return response
 
@@ -159,10 +157,10 @@ class MetroDRFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
 
-        response = self.create_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=metro_r1_array_id,
-            resource_type=METRO_DR, payload=payload)
+        response = self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{metro_r1_array_id}/metrodr",
+            payload=payload)
         return response
 
     def convert_to_metrodr_environment(
@@ -200,9 +198,9 @@ class MetroDRFunctions(object):
         if _async:
             payload.update(ASYNC_UPDATE)
 
-        response = self.create_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=METRO_DR,
+        response = self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/metrodr",
             payload=payload)
         return response
 
@@ -231,10 +229,11 @@ class MetroDRFunctions(object):
         else:
             array_id = self.array_id
 
-        self.delete_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=METRO_DR,
-            resource_type_id=environment_name, params={
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{array_id}/metrodr"
+                       f"/{environment_name}",
+            params={
                 'remove_r1_dr_rdfg': remove_r1_dr_rdfg, 'force': force})
 
     def modify_metrodr_environment(
@@ -316,7 +315,8 @@ class MetroDRFunctions(object):
                     "symforce": symforce}})
         if _async:
             payload.update(ASYNC_UPDATE)
-        return self.modify_resource(
-            category=REPLICATION, resource_level=SYMMETRIX,
-            resource_level_id=self.array_id, resource_type=METRO_DR,
-            resource_type_id=environment_name, payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/metrodr"
+                       f"/{environment_name}",
+            resource_type=None, payload=payload)

@@ -21,19 +21,39 @@ from PyU4V.utils import constants
 LOG = logging.getLogger(__name__)
 
 
-class EnhancedPerformanceFunctions(object):
+class EnhancedPerformanceFunctions:
     """Enhanced Functions for retrieving latest diagnostic level
     performance Metrics."""
 
     def __init__(self, array_id, rest_client):
         """__init__."""
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
         self.array_id = array_id
         self.enhanced_api_version = constants.ENHANCED_API_VERSION
+
+    @staticmethod
+    def _build_filter_query(filters):
+        """Build the optional filter query string.
+
+        :param filters: list of filter expressions -- list
+        :returns: filter query string or empty string -- str
+        """
+        if filters:
+            return '?filter=' + ','.join(filters)
+        return ''
+
+    def _perf_uri(self, array_id, category=None):
+        """Construct the performance-categories URI.
+
+        :param array_id: 12 Digit Serial Number of Array -- str
+        :param category: optional performance category name -- str
+        :returns: URI path -- str
+        """
+        base = (f"/{self.enhanced_api_version}/systems"
+                f"/{array_id}/performance-categories")
+        if category:
+            return f"{base}/{category}"
+        return base
 
     def get_performance_categories_list(self, array_id=None):
         """Get a list of performance categories and metrics that will be
@@ -47,8 +67,7 @@ class EnhancedPerformanceFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         response = self.common.get_request(
-            target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{array_id}/performance-categories",
+            target_uri=self._perf_uri(array_id),
             resource_type=None)
         if response:
             category_list = response['performance_categories']
@@ -74,19 +93,15 @@ class EnhancedPerformanceFunctions(object):
                  Array diagnostic level metrics only, 5 min interval -- dict
         """
         array_id = array_id if array_id else self.array_id
-        category_list = self.get_performance_categories_list(array_id=array_id)
+        category_list = self.get_performance_categories_list(
+            array_id=array_id)
         full_metric_collection = []
-        """Build the optional filter part – empty string when no filters are
-                given.
-                """
-        filter_part = ''
-        if filters:  # filters is not None/empty
-            filter_part = '?filter=' + ','.join(filters)
+        # Build the optional filter part – empty string when no filters.
+        filter_part = self._build_filter_query(filters)
         for category in category_list:
             response = self.common.get_request(
-                target_uri=f"/{self.enhanced_api_version}/systems"
-                           f"/{array_id}/performance-categories/"
-                           f"{category['id']}{filter_part}",
+                target_uri=(self._perf_uri(array_id, category['id'])
+                            + filter_part),
                 resource_type=None)
             if response is not None:
                 full_metric_collection.append(response)
@@ -111,17 +126,10 @@ class EnhancedPerformanceFunctions(object):
                  dict
         """
         array_id = array_id if array_id else self.array_id
-        """Build the optional filter part – empty string when no filters are
-        given.
-        """
-        filter_part = ''
-        if filters:  # filters is not None/empty
-            filter_part = '?filter=' + ','.join(filters)
-
+        # Build the optional filter part – empty string when no filters.
+        filter_part = self._build_filter_query(filters)
         response = self.common.get_request(
-            target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{array_id}/performance-categories/"
-                       f"{category}{filter_part}",
+            target_uri=(self._perf_uri(array_id, category)
+                        + filter_part),
             resource_type=None)
-
         return response

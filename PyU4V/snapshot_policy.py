@@ -45,10 +45,6 @@ class SnapshotPolicyFunctions(object):
 
     def __init__(self, array_id, rest_client):
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
         self.array_id = array_id
 
     def get_snapshot_policy_list(self):
@@ -56,10 +52,10 @@ class SnapshotPolicyFunctions(object):
 
         :returns: snapshot policy names -- list
         """
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SNAPSHOT_POLICY)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/snapshot_policy",
+            resource_type=None)
         return response.get('name', list()) if response else list()
 
     def get_snapshot_policy(self, snapshot_policy_name):
@@ -68,11 +64,11 @@ class SnapshotPolicyFunctions(object):
         :param snapshot_policy_name: name of the snapshot policy -- str
         :returns: snapshot policy details -- dict
         """
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SNAPSHOT_POLICY,
-            resource_type_id=snapshot_policy_name)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/snapshot_policy"
+                       f"/{snapshot_policy_name}",
+            resource_type=None)
 
     def get_snapshot_policy_storage_group_list(self, snapshot_policy_name):
         """Get list of storage groups associated to specified snapshot policy.
@@ -80,11 +76,11 @@ class SnapshotPolicyFunctions(object):
         :param snapshot_policy_name: name of the snapshot policy -- str
         :returns: snapshot policy details -- list
         """
-        response = self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SNAPSHOT_POLICY,
-            resource_type_id=snapshot_policy_name, object_type=STORAGEGROUP)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/snapshot_policy"
+                       f"/{snapshot_policy_name}/storagegroup",
+            resource_type=None)
         return response.get('name', list()) if response else list()
 
     def create_snapshot_policy(
@@ -202,10 +198,10 @@ class SnapshotPolicyFunctions(object):
         if _async:
             payload.update(constants.ASYNC_UPDATE)
 
-        return self.create_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SNAPSHOT_POLICY, payload=payload)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/snapshot_policy",
+            payload=payload)
 
     def associate_to_storage_groups(
             self, snapshot_policy_name, storage_group_names, _async=False):
@@ -445,12 +441,11 @@ class SnapshotPolicyFunctions(object):
         if _async:
             payload.update(constants.ASYNC_UPDATE)
 
-        return self.modify_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SNAPSHOT_POLICY,
-            resource_type_id=snapshot_policy_name,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/snapshot_policy"
+                       f"/{snapshot_policy_name}",
+            resource_type=None, payload=payload)
 
     def delete_snapshot_policy(self, snapshot_policy_name):
         """Delete a snapshot policy
@@ -462,11 +457,10 @@ class SnapshotPolicyFunctions(object):
             LOG.exception(msg)
             raise exception.InvalidInputException(data=msg)
 
-        self.delete_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SNAPSHOT_POLICY,
-            resource_type_id=snapshot_policy_name)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/snapshot_policy"
+                       f"/{snapshot_policy_name}")
 
     def get_snapshot_policy_compliance(
             self, storage_group_name, last_week=False, last_four_weeks=False,
@@ -499,12 +493,11 @@ class SnapshotPolicyFunctions(object):
             LOG.exception(msg)
             raise exception.InvalidInputException(data=msg)
 
-        return self.get_resource(
-            category=REPLICATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_name,
-            resource=COMPLIANCE, object_type=SNAPSHOT,
-            params=query_params)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.array_id}/storagegroup"
+                       f"/{storage_group_name}/compliance/snapshot",
+            resource_type=None, params=query_params)
 
     def get_snapshot_policy_compliance_last_week(
             self, storage_group_name):
