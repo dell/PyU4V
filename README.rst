@@ -1,4 +1,4 @@
-Welcome to PyU4V 10.4
+Welcome to PyU4V 10.5
 =====================
 
 | |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
@@ -20,15 +20,15 @@ Note
    where ``{ip-address}`` is the IP address of your Unisphere server and
    ``{port}`` is the port it is listening on.
 
-PyU4V Version 10.4
+PyU4V Version 10.5
 ------------------
 
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | 10.4.0.0                   |
+| **PyU4V Version**             | 10.5.0.0                   |
 +-------------------------------+----------------------------+
-| **Minimum Unisphere Version** | 10.4.0                     |
+| **Minimum Unisphere Version** | 10.5.0                     |
 +-------------------------------+----------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax |
 +-------------------------------+----------------------------+
