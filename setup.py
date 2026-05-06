@@ -44,7 +44,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     license='Apache 2.0',
     packages=setuptools.find_packages(),
-    install_requires=['requests', 'six', 'urllib3', 'prettytable'],
+    install_requires=['requests', 'urllib3', 'prettytable'],
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',

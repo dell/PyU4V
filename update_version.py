@@ -95,6 +95,24 @@ def main():
          f'| **Minimum Unisphere Version** | {uni}                                 |'),
     ]
 
+    # root index.rst replacements (mirrors docs/source/index.rst patterns)
+    root_index_replacements = [
+        (r'\| \*\*PyU4V Version\*\*\s+\| [\d.]+ +\|',
+         f'| **PyU4V Version**             | {ver}                               |'),
+        (r'\| \*\*Minimum Unisphere Version\*\*\s+\| [\d.]+ +\|',
+         f'| **Minimum Unisphere Version** | {uni}                                 |'),
+        (r'PyU4V version [\d.]+ is compatible',
+         f'PyU4V version {major} is compatible'),
+        (r'PyU4V [\d.]+\.\d+\.\d+ with',
+         f'PyU4V {ver} with'),
+        (r'older than [\d.]+\n',
+         f'older than {uni}\n'),
+        (r'PyU4V [\d.]+\.\d+\.\d+ will',
+         f'PyU4V {ver} will'),
+        (r'PyU4V [\d.]+ is distributed under the Apache',
+         f'PyU4V {major} is distributed under the Apache'),
+    ]
+
     # docs/source/index.rst replacements
     index_replacements = [
         (r'\| \*\*PyU4V Version\*\*\s+\| [\d.]+ +\|',
@@ -109,10 +127,12 @@ def main():
     
     # Update files
     readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
+    root_index_path = os.path.join(os.path.dirname(__file__), 'index.rst')
     installation_path = os.path.join(os.path.dirname(__file__), 'docs', 'source', 'installation.rst')
     index_path = os.path.join(os.path.dirname(__file__), 'docs', 'source', 'index.rst')
 
     update_file(readme_path, readme_replacements)
+    update_file(root_index_path, root_index_replacements)
     update_file(installation_path, installation_replacements)
     update_file(index_path, index_replacements)
     

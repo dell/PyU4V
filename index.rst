@@ -35,9 +35,9 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.4.0.0                               |
+| **PyU4V Version**             | 10.5.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.4.0                                 |
+| **Minimum Unisphere Version** | 10.5.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -47,7 +47,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **Python**                    | 3.6, 3.7, 3.8, 3.9                     |
 +-------------------------------+----------------------------------------+
-| **Requirements**              | Requests_, Six_, urllib3_,             |
+| **Requirements**              | Requests_, urllib3_,                   |
 |                               | prettytable_                           |
 +-------------------------------+----------------------------------------+
 | **Test Requirements**         | TestTools_, Tox_                       |
@@ -55,20 +55,20 @@ Supported PyU4V Versions
 
 .. note::
     If you want to continue to use Unisphere 8.4.x or 9.0.x with PyU4V you will
-    need to remain on PyU4V 3.1.x. There is no support for PyU4V 10.4.0.0 with
+    need to remain on PyU4V 3.1.x. There is no support for PyU4V 10.5.0.0 with
 any
-    version of Unisphere older than 10.4.0
+    version of Unisphere older than 10.5.0
 
 .. note::
     PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
     has been dropped since January 1st 2020.
 
 .. note::
-    PyU4V version 10.4 is compatible with scripts written for PyU4V
+    PyU4V version 10.5 is compatible with scripts written for PyU4V
 versions
     >= 3.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
-    scripts in later versions of PyU4V. PyU4V 10.4.0.0 will
-    default to using v104 endpoints exclusively. You will also
+    scripts in later versions of PyU4V. PyU4V 10.5.0.0 will
+    default to using v105 endpoints exclusively. You will also
 need to
 pay
     special attention to any REST JSON payloads in custom scripts as payloads
@@ -127,7 +127,7 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10.4 is distributed under the Apache 2.0 License. Unless
+PyU4V 10.5 is distributed under the Apache 2.0 License. Unless
 required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
@@ -137,7 +137,6 @@ specific language governing permissions and limitations under the License.
 .. URL LINKS
 
 .. _Requests: https://realpython.com/python-requests/
-.. _Six: https://six.readthedocs.io/
 .. _urllib3: https://urllib3.readthedocs.io/en/latest/
 .. _retired: https://pythonclock.org/
 .. _TestTools: https://pypi.org/project/testtools/

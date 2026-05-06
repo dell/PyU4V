@@ -16,7 +16,6 @@ import json
 import logging
 import math
 import re
-import six
 import socket
 import time
 from PyU4V.utils import constants
@@ -199,7 +198,7 @@ class CommonFunctions(object):
                 exception_message = (
                     'Error {op}. Status code: {sc}. Error: {err}. '
                     'Status: {st}.'.format(
-                        op=operation, sc=rc, err=six.text_type(result),
+                        op=operation, sc=rc, err=str(result),
                         st=status))
                 LOG.error(exception_message)
                 raise exception.VolumeBackendAPIException(

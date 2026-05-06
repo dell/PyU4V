@@ -17,7 +17,7 @@ Requirements
 +-------------------------------+----------------------------------------+
 | **Python**                    |  3.6 -3.12                             |
 +-------------------------------+----------------------------------------+
-| **Requirements**              | Requests_, Six_, urllib3_,             |
+| **Requirements**              | Requests_, urllib3_,                   |
 |                               | prettytable_                           |
 +-------------------------------+----------------------------------------+
 | **Test Requirements**         | TestTools_, Tox_                       |
@@ -65,7 +65,6 @@ specifying ``PyU4V`` as the install package for ``pip``:
 .. URL LINKS
 
 .. _Requests: https://realpython.com/python-requests/
-.. _Six: https://six.readthedocs.io/
 .. _urllib3: https://urllib3.readthedocs.io/en/latest/
 .. _retired: https://pythonclock.org/
 .. _TestTools: https://pypi.org/project/testtools/

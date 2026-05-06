@@ -38,7 +38,7 @@ PyU4V Version 10.5
 +-------------------------------+----------------------------+
 | **Python**                    | 3.6 - 3.12                 |
 +-------------------------------+----------------------------+
-| **Requires**                  | Requests_, Six_, urllib3_  |
+| **Requires**                  | Requests_, urllib3_       |
 +-------------------------------+----------------------------+
 
 Note
@@ -289,7 +289,6 @@ the License.
 .. README URL Links
 
 .. _Requests: https://realpython.com/python-requests/
-.. _Six: https://six.readthedocs.io/
 .. _urllib3: https://urllib3.readthedocs.io/en/latest/
 .. _ReadTheDocs: https://pyu4v.readthedocs.io/en/latest/
 .. _GitHub-Issues: https://github.com/dell/PyU4V/issues

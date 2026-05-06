@@ -2,6 +2,16 @@
 
 ## Version 10.5
 
+### Dependency Removal: `six`
+
+#### Python 3 Native Compatibility
+- Removed `six` package dependency from the codebase — PyU4V targets Python 3.6+ exclusively and has no need for the Python 2/3 compatibility shim
+- Replaced `six.text_type(x)` with `str(x)` in `PyU4V/common.py`, `PyU4V/utils/exception.py`, and `PyU4V/tests/unit_tests/test_pyu4v_utils.py`
+- Removed `import six` from all three affected modules
+- Removed `six` from `install_requires` in `setup.py`
+- Removed `six` from `requirements.txt`
+- Removed `Six_` reference and link from `README.rst`, `index.rst`, `docs/source/index.rst`, and `docs/source/installation.rst`
+
 ### Unit Test Updates
 
 #### Test Suite Refactoring

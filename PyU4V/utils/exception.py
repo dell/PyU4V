@@ -14,7 +14,6 @@
 """exception.py"""
 
 import logging
-import six
 
 LOG = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class PyU4VException(Exception):
 
         for k, v in self.kwargs.items():
             if isinstance(v, Exception):
-                self.kwargs[k] = six.text_type(v)
+                self.kwargs[k] = str(v)
 
         if self._should_format():
             try:
@@ -46,7 +45,7 @@ class PyU4VException(Exception):
                 self._log_exception()
                 message = self.message
         elif isinstance(message, Exception):
-            message = six.text_type(message)
+            message = str(message)
 
         self.msg = message
         super().__init__(message)
