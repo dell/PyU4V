@@ -44,7 +44,8 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     license='Apache 2.0',
     packages=setuptools.find_packages(),
-    install_requires=['requests', 'urllib3', 'prettytable'],
+    install_requires=['requests', 'urllib3'],
+    extras_require={'tools': ['prettytable']},
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -60,5 +61,5 @@ setuptools.setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules'],
     python_requires='>=3.6, <4.0',
-    tests_require=['mock', 'testtools'],
+    tests_require=['testtools'],
     test_suite='tests')

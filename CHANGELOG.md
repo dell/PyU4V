@@ -2,6 +2,14 @@
 
 ## Version 10.5
 
+### Dependency Cleanup
+
+#### Removed Unnecessary Packages
+- Removed standalone `mock` package from `tox.ini` (`[testenv]` and `[testenv:ci]`) and `setup.py` `tests_require` — all test files already use `unittest.mock` (Python stdlib since 3.3)
+- Removed unused `pytest` from `tox.ini` test deps — test runner is `stestr`; `pytest` was listed but never invoked
+- Moved `prettytable` from `install_requires` to `extras_require={'tools': ['prettytable']}` in `setup.py` — only used by the OpenStack migration utility in `tools/`, not by the core library; install via `pip install pyu4v[tools]`
+- Updated `Requirements` table in `README.rst`, `index.rst`, `docs/source/index.rst`, and `docs/source/installation.rst` to reflect core deps only (`requests`, `urllib3`)
+
 ### Dependency Removal: `six`
 
 #### Python 3 Native Compatibility
