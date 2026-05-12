@@ -97,3 +97,29 @@ def retry(exceptions, total_attempts=3, delay=3, backoff=2):
             return f(*args, **kwargs)
         return f_retry
     return deco_retry
+
+
+def performance_enhanced_recommendation(func_class):
+    """Notify the user to consider using performance_enhanced.py functions.
+
+    This decorator displays a recommendation to use performance_enhanced.py
+    functions for improved usability and code efficiency by reducing the
+    number of API calls.
+
+    :param func_class: the class name for the function -- str
+    :returns: decorated function -- decorator
+    """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            LOG.info(
+                'For improved usability and code efficiency by reducing the '
+                'number of API calls, consider using performance_enhanced.py '
+                'functions instead of {func_class}.{func}. For further '
+                'information please consult the PyU4V documentation.'.format(
+                    func_class=func_class, func=func.__name__))
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

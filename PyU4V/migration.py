@@ -45,7 +45,7 @@ class MigrationFunctions(object):
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{array_id}",
+            f"/symmetrix/{array_id}",
             resource_type=None)
 
     def create_migration_environment(self, target_array_id):
@@ -59,7 +59,7 @@ class MigrationFunctions(object):
         """
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}",
+            f"/symmetrix/{self.array_id}",
             payload={'otherArrayId': target_array_id})
 
     def delete_migration_environment(self, target_array_id):
@@ -72,8 +72,8 @@ class MigrationFunctions(object):
         """
         self.common.delete_resource(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/environment"
-                       f"/{target_array_id}")
+            f"/symmetrix/{self.array_id}/environment"
+            f"/{target_array_id}")
 
     def get_array_migration_capabilities(self, array_id=None):
         """Check what migration facilities are available.
@@ -83,7 +83,7 @@ class MigrationFunctions(object):
         array_id = array_id if array_id else self.array_id
         capabilities = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/capabilities/symmetrix",
+            f"/capabilities/symmetrix",
             resource_type=None)
         symm_list = (
             capabilities.get(
@@ -103,7 +103,7 @@ class MigrationFunctions(object):
         """
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/environment",
+            f"/symmetrix/{self.array_id}/environment",
             resource_type=None)
         return response.get('arrayId', list()) if response else list()
 
@@ -115,8 +115,8 @@ class MigrationFunctions(object):
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/environment"
-                       f"/{target_array_id}",
+            f"/symmetrix/{self.array_id}/environment"
+            f"/{target_array_id}",
             resource_type=None)
 
     def get_storage_group_list(self, include_migrations=False):
@@ -128,7 +128,7 @@ class MigrationFunctions(object):
         """
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/storagegroup",
+            f"/symmetrix/{self.array_id}/storagegroup",
             resource_type=None)
         return response.get('migratingName') if include_migrations else (
             response.get('name'))
@@ -140,7 +140,7 @@ class MigrationFunctions(object):
         """
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/storagegroup",
+            f"/symmetrix/{self.array_id}/storagegroup",
             resource_type=None)
         return response
 
@@ -152,8 +152,8 @@ class MigrationFunctions(object):
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/storagegroup"
-                       f"/{storage_group_name}",
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
             resource_type=None)
 
     def create_storage_group_migration(
@@ -185,8 +185,8 @@ class MigrationFunctions(object):
 
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/storagegroup"
-                       f"/{storage_group_name}",
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
             payload=payload)
 
     def modify_storage_group_migration(
@@ -210,8 +210,8 @@ class MigrationFunctions(object):
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/storagegroup"
-                       f"/{storage_group_name}",
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
             resource_type=None, payload=payload)
 
     def delete_storage_group_migration(self, storage_group_name):
@@ -221,5 +221,5 @@ class MigrationFunctions(object):
         """
         self.common.delete_resource(
             target_uri=f"/{self.common.UNI_VERSION}/mobility"
-                       f"/symmetrix/{self.array_id}/storagegroup"
-                       f"/{storage_group_name}")
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}")

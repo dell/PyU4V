@@ -271,7 +271,8 @@ class U4VConn(object):
         uni_ver, major_ver = self.common.get_uni_version()
         if self.custom_api_version:
             LOG.debug('A Custom API Version has been specified.')
-            # Validate that the specified u4v_version is supported by the server
+            # Validate that the specified u4v_version is supported by the
+            # server
             version_info = self.common.get_uni_version_info()
             supported_versions = version_info.get('supported_api_versions', [])
             if self.u4v_version not in supported_versions:

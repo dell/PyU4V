@@ -49,6 +49,22 @@
 #### Result
 - Sphinx build now completes with **zero warnings** (`-W` flag passes)
 
+### Performance Enhancement Recommendations
+
+#### New Decorator
+- Added `performance_enhanced_recommendation` decorator in `PyU4V/utils/decorators.py` to display a message recommending `performance_enhanced.py` functions for improved usability and code efficiency by reducing the number of API calls
+- Applied decorator to approximately 92 public functions in `PyU4V/performance.py` including:
+  - Registration functions (enable/disable diagnostic/real-time data collection)
+  - Key retrieval functions (get_*_keys for all resource types)
+  - Stats retrieval functions (get_*_stats for all resource types)
+  - Performance metrics and categories functions
+  - Threshold management functions
+  - Days to full functionality
+
+#### PEP8 Compliance Fixes
+- Fixed E711 error in `PyU4V/common.py` - changed `if status_code == None:` to `if status_code is None:`
+- Fixed E265 and E501 errors in `PyU4V/tools/generate_functions.py` - added space after `#` in comment and broke long lines to stay under 100 characters
+
 ### Dependency Cleanup
 
 #### Removed Unnecessary Packages

@@ -54,7 +54,7 @@ class SnapshotPolicyFunctions(object):
         """
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/snapshot_policy",
+            f"/symmetrix/{self.array_id}/snapshot_policy",
             resource_type=None)
         return response.get('name', list()) if response else list()
 
@@ -66,8 +66,8 @@ class SnapshotPolicyFunctions(object):
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/snapshot_policy"
-                       f"/{snapshot_policy_name}",
+            f"/symmetrix/{self.array_id}/snapshot_policy"
+            f"/{snapshot_policy_name}",
             resource_type=None)
 
     def get_snapshot_policy_storage_group_list(self, snapshot_policy_name):
@@ -78,8 +78,8 @@ class SnapshotPolicyFunctions(object):
         """
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/snapshot_policy"
-                       f"/{snapshot_policy_name}/storagegroup",
+            f"/symmetrix/{self.array_id}/snapshot_policy"
+            f"/{snapshot_policy_name}/storagegroup",
             resource_type=None)
         return response.get('name', list()) if response else list()
 
@@ -200,7 +200,7 @@ class SnapshotPolicyFunctions(object):
 
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/snapshot_policy",
+            f"/symmetrix/{self.array_id}/snapshot_policy",
             payload=payload)
 
     def associate_to_storage_groups(
@@ -443,8 +443,8 @@ class SnapshotPolicyFunctions(object):
 
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/snapshot_policy"
-                       f"/{snapshot_policy_name}",
+            f"/symmetrix/{self.array_id}/snapshot_policy"
+            f"/{snapshot_policy_name}",
             resource_type=None, payload=payload)
 
     def delete_snapshot_policy(self, snapshot_policy_name):
@@ -459,8 +459,8 @@ class SnapshotPolicyFunctions(object):
 
         self.common.delete_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/snapshot_policy"
-                       f"/{snapshot_policy_name}")
+            f"/symmetrix/{self.array_id}/snapshot_policy"
+            f"/{snapshot_policy_name}")
 
     def get_snapshot_policy_compliance(
             self, storage_group_name, last_week=False, last_four_weeks=False,
@@ -495,8 +495,8 @@ class SnapshotPolicyFunctions(object):
 
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/storagegroup"
-                       f"/{storage_group_name}/compliance/snapshot",
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}/compliance/snapshot",
             resource_type=None, params=query_params)
 
     def get_snapshot_policy_compliance_last_week(

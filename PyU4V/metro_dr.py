@@ -54,7 +54,7 @@ class MetroDRFunctions(object):
             array_id = self.array_id
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{array_id}/metrodr",
+            f"/symmetrix/{array_id}/metrodr",
             resource_type=None)
         return response.get('names', list()) if response else list()
 
@@ -73,8 +73,8 @@ class MetroDRFunctions(object):
             array_id = self.array_id
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{array_id}/metrodr"
-                       f"/{environment_name}",
+            f"/symmetrix/{array_id}/metrodr"
+            f"/{environment_name}",
             resource_type=None, params={'config': config})
 
         return response
@@ -159,7 +159,7 @@ class MetroDRFunctions(object):
 
         response = self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{metro_r1_array_id}/metrodr",
+            f"/symmetrix/{metro_r1_array_id}/metrodr",
             payload=payload)
         return response
 
@@ -200,7 +200,7 @@ class MetroDRFunctions(object):
 
         response = self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{array_id}/metrodr",
+            f"/symmetrix/{array_id}/metrodr",
             payload=payload)
         return response
 
@@ -231,8 +231,8 @@ class MetroDRFunctions(object):
 
         self.common.delete_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{array_id}/metrodr"
-                       f"/{environment_name}",
+            f"/symmetrix/{array_id}/metrodr"
+            f"/{environment_name}",
             params={
                 'remove_r1_dr_rdfg': remove_r1_dr_rdfg, 'force': force})
 
@@ -317,6 +317,6 @@ class MetroDRFunctions(object):
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication"
-                       f"/symmetrix/{self.array_id}/metrodr"
-                       f"/{environment_name}",
+            f"/symmetrix/{self.array_id}/metrodr"
+            f"/{environment_name}",
             resource_type=None, payload=payload)

@@ -167,7 +167,7 @@ class CommonFunctions(object):
         :param message: server response -- str
         :raises: VolumeBackendAPIException
         """
-        if status_code == None:
+        if status_code is None:
             raise exception.VolumeBackendAPIException(
                 data="Server unavailable or IP incorrect")
         if status_code not in [STATUS_200, STATUS_201,

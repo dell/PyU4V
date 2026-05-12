@@ -1,6 +1,10 @@
 import json
-#to use this script you must have a json file named openapi.json in the same directory as this script. The json file should contain the paths of the API resources and their corresponding methods.
-# The script will generate functions for all GET calls for the specified API resource. The generated functions will be in a file named generate_get_functions.py.
+# To use this script you must have a json file named openapi.json in the same
+# directory as this script. The json file should contain the paths of the API
+# resources and their corresponding methods.
+# The script will generate functions for all GET calls for the specified API
+# resource. The generated functions will be in a file named
+# generate_get_functions.py.
 f = open('openapi.json')
 data = json.load(f)
 data = data.get('paths')

@@ -1240,7 +1240,7 @@ class SystemFunctions(object):
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
-                       f"{array_id}/director/{director}/port/{port_number}",
+            f"{array_id}/director/{director}/port/{port_number}",
             resource_type=None, payload=payload)
 
     def get_management_server_resources(self):
@@ -1250,7 +1250,7 @@ class SystemFunctions(object):
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/system/"
-                       f"management_server_resources", resource_type=None)
+            f"management_server_resources", resource_type=None)
 
     def refresh_array_details(self, array_id=None):
         """Refresh Unisphere object model for specified array with latest
@@ -1269,7 +1269,7 @@ class SystemFunctions(object):
         array_id = array_id if array_id else self.array_id
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
-                       f"{array_id}/refresh")
+            f"{array_id}/refresh")
 
     def get_server_logging_level(self):
         """Get Server logging level for Unisphere Server.

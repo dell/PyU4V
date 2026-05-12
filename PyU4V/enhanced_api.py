@@ -45,8 +45,8 @@ class EnhancedAPIFunctions(object):
         """
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{storage_object}/metadata",
-                       resource_type=None)
+            f"/{storage_object}/metadata",
+            resource_type=None)
         return response
 
     def get_storage_object_details(
@@ -106,7 +106,7 @@ class EnhancedAPIFunctions(object):
             filters = ''
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{array_id}/{storage_object}"
-                       f"?select={select}{filters}",
-                       resource_type=None)
+            f"/{array_id}/{storage_object}"
+            f"?select={select}{filters}",
+            resource_type=None)
         return response

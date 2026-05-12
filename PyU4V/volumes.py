@@ -94,6 +94,6 @@ class VolumesFunctions(object):
             filters = ''
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{array_id}/volumes?select={select}{filters}",
-                       resource_type=None)
+            f"/{array_id}/volumes?select={select}{filters}",
+            resource_type=None)
         return response
