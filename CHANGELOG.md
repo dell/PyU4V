@@ -2,6 +2,53 @@
 
 ## Version 10.5
 
+### Sphinx Documentation Audit & Fixes
+
+#### Build-Breaking Fixes
+- Fixed toctree filename mismatch in `programmers_guide.rst` — reference used hyphen (`enhanced_bulk-api_calls`) but file uses underscore (`enhanced_bulk_api_calls`)
+- Fixed missing blank line after `.. code-block:: python` directive in `quick_start.rst` causing content to not render as code
+- Fixed broken RST bold markup in `index.rst` version table (`**Minimum Unisphere Version*` → `**Minimum Unisphere Version**`)
+- Fixed title underline too short for `PyU4V.settings` section in `PyU4V.rst`
+- Fixed multiple `literalinclude` line ranges that exceeded file length in `clone.rst`, `enhanced_bulk_api_calls.rst`, `serviceability.rst`, `settings.rst`, `volumes_storage_groups.rst`
+
+#### Docstring Fixes (Sphinx Warning Elimination)
+- Fixed docstring formatting in `settings.py` — added blank lines after summaries, fixed `:param` syntax, corrected sample payload formatting for `update_performance_thresholds_and_alerts`, `update_alert_notifications`, `update_alert_policies`, `update_performance_registration_settings`
+- Fixed docstring in `system.py` `configure_ldap_authentication` — added blank line after summary, fixed missing colons in `:param` directives
+- Fixed docstring in `rest_requests.py` `file_transfer_request` — added blank lines, fixed `:raises:` continuation indentation
+- Fixed `get_alert_policies` indentation misalignment in `syslog_notifications` param
+
+#### Version & Content Updates
+- Updated copyright year from 2022 to 2025 in `conf.py`
+- Updated Python version notes to include 3.11 & 3.12 in `index.rst` and `installation.rst`
+- Updated outdated Unisphere version references (`V9.1.0.5` → `V10.5.0.0`, `V10.2.0.0` → `V10.5.0.0`) in `quick_start.rst`, `configuration.rst`
+- Updated `pip install` version from `10.4.0.0` to `10.5.0.0` in `installation.rst`
+- Updated compatibility statement from `10.4.0.0` to `10.5.0.0` in `installation.rst`
+- Updated API docs URL from `10.2` to `10.5` in `quick_start.rst`
+- Fixed typo `Unipshere` → `Unisphere` in `index.rst` and `quick_start.rst`
+- Fixed outdated GitHub links (`MichaelMcAleer/PyU4V` → `Dell/PyU4V`) in `tools.rst` and `recommendations.rst`
+- Fixed invalid Python syntax in `contribute.rst` example (`raise Exception` in ternary → `False`)
+- Added missing convention #4 (import ordering) in `contribute.rst`
+
+#### New Programmer's Guide Examples
+- Added migration operations example (`migration-operations.py`) with full migration lifecycle
+- Added serviceability operations example (`serviceability-operations.py`) with NTP and GRAB log operations
+- Added settings operations example (`settings-operations.py`) with performance registration, SCG, and CloudIQ
+- Added volumes & storage groups example (`volumes-storage_groups.py`) with metadata queries, filtering, and selection
+- Created corresponding RST guide pages: `migration.rst`, `serviceability.rst`, `settings.rst`, `volumes_storage_groups.rst`
+- Added new sections to `programmers_guide.rst` toctree
+- Copied example files to top-level `examples/` directory
+
+#### API Documentation Completeness
+- Added missing `PyU4V.utils.utils`, `PyU4V.utils.performance_constants`, and `PyU4V.utils.performance_category_map` modules to `PyU4V.utils.rst`
+- Fixed `enhanced_api.py` docstring referencing wrong filename
+- Added license header and fixed comments in `restoreclone.py`
+
+#### Copyright Year Update
+- Updated all copyright headers from 2019-2025 to 2026 across all project source files (~120 `.py` files), `conf.py`, `__init__.py`, and `setup.py`
+
+#### Result
+- Sphinx build now completes with **zero warnings** (`-W` flag passes)
+
 ### Dependency Cleanup
 
 #### Removed Unnecessary Packages

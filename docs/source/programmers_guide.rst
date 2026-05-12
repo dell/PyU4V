@@ -18,6 +18,10 @@ test.
    programmers_guide_src/provisioning
    programmers_guide_src/replication
    programmers_guide_src/clone
+   programmers_guide_src/migration
    programmers_guide_src/performance
    programmers_guide_src/system
-   programmers_guide_src/enhanced_bulk-api_calls
+   programmers_guide_src/serviceability
+   programmers_guide_src/settings
+   programmers_guide_src/enhanced_bulk_api_calls
+   programmers_guide_src/volumes_storage_groups

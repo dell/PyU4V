@@ -43,18 +43,19 @@ class SettingsFunctions(object):
             True, file: bool = False, real_time_storage_groups: list[str] =
             None):
         """Update Array Performance Registration Settings.
+
         :param array_id: The storage array ID -- string
         :param diagnostic: enable/disable diagnostic performance data
                            collection at 5 minute intervals -- bool
         :param real_time: enable/disable real-time performance data
-                         collection at 5 second intervals, note enabling
-                         this parameter also enables max values to be
-                         returned on diagnostic metrics -- bool
+                          collection at 5 second intervals, note enabling
+                          this parameter also enables max values to be
+                          returned on diagnostic metrics -- bool
         :param file: enable/disable file performance data collection -- bool
-        :param real_time_storage_groups: Comma separated list of Storage Groups
-                                         to collect realtime data on, requires
-                                         realtime=True -- string
-        returns: Array Performance Registration Settings -- dict
+        :param real_time_storage_groups: Comma separated list of Storage
+                                         Groups to collect realtime data on,
+                                         requires realtime=True -- string
+        :returns: Array Performance Registration Settings -- dict
         """
         payload = {
             "registration_details": [{
@@ -178,20 +179,22 @@ class SettingsFunctions(object):
 
         :param payload: Global Thresholds and Alerts, can be a subset of the
                         overall payload from
-                        get_performance_thresholds_and_alerts-- dict
-        :sample payload:
-                        {"global_performance_thresholds": [
-                              {
-                                "category": "Array",
-                                "metric": "BEUtilization",
-                                "kpi": 'true',
-                                "alert_error": 'true',
-                                "first_lower_threshold": "50",
-                                "second_lower_threshold": "40",
-                                "first_upper_threshold": "65",
-                                "second_upper_threshold": "80"
-                              }]
+                        get_performance_thresholds_and_alerts -- dict
 
+        Sample payload::
+
+            {"global_performance_thresholds": [
+                {
+                    "category": "Array",
+                    "metric": "BEUtilization",
+                    "kpi": "true",
+                    "alert_error": "true",
+                    "first_lower_threshold": "50",
+                    "second_lower_threshold": "40",
+                    "first_upper_threshold": "65",
+                    "second_upper_threshold": "80"
+                }]
+            }
         """
         payload = payload
         return self.common.modify_resource(
@@ -411,7 +414,7 @@ class SettingsFunctions(object):
         :param syslog_notifications: Optional value that filters returned list
                                      to display Alert Policies that have
                                      syslog notifications enabled
-                                    (true/false) -- bool
+                                     (true/false) -- bool
         :param array_id: The storage array ID -- string
         """
         array_id = array_id if array_id else self.array_id
@@ -431,8 +434,9 @@ class SettingsFunctions(object):
 
         :param array_id: The storage array ID -- string
         :param payload: Optional payload, can be user supplied or generated
-        from get_alert_policies, users can use a subset of payload if they
-        are only wishing to do partial update -- dict
+                        from get_alert_policies, users can use a subset of
+                        payload if they are only wishing to do partial
+                        update -- dict
 
         """
         array_id = array_id if array_id else self.array_id
@@ -688,27 +692,29 @@ class SettingsFunctions(object):
     def update_alert_notifications(self, payload: dict, array_id: str = None) \
             -> dict:
         """Set/update Alert Notification Settings.
+
         Defines what alert severity is sent for System and Performance
-        Alerts, per array.  Also sets subsciption of Alert Notification for
+        Alerts, per array.  Also sets subscription of Alert Notification for
         email subscribers.
 
-        :payload: payload, user built or generated from
-                  get_alert_notification_settings
-                  sample_payload = {'alert_severity': {
-                  'system': {'fatal': True,
-                       'critical': True,
-                       'warning': True,
-                       'normal': False,
-                       'info': False},
-                  'performance': {'critical': True,
-                            'warning': True,
-                            'info': False}},
-                  'subscriptions': {'system': ['random.person@dell.com'],
-                              'performance': ['random.person@dell.com'],
-                              'jobs': [],
-                              'reports': ['random.person@dell.com'],
-                              'none': []}} -- dict
-        :array_id: The storage array ID -- string
+        :param payload: payload, user built or generated from
+                        get_alert_notification_settings -- dict
+        :param array_id: The storage array ID -- string
+
+        Sample payload::
+
+            {'alert_severity': {
+                'system': {'fatal': True, 'critical': True,
+                           'warning': True, 'normal': False,
+                           'info': False},
+                'performance': {'critical': True, 'warning': True,
+                                'info': False}},
+             'subscriptions': {
+                'system': ['random.person@dell.com'],
+                'performance': ['random.person@dell.com'],
+                'jobs': [],
+                'reports': ['random.person@dell.com'],
+                'none': []}}
         """
         array_id = array_id if array_id else self.array_id
         payload = payload

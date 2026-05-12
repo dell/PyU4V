@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -214,7 +214,9 @@ class RestRequests(object):
     def file_transfer_request(self, method, uri, timeout=None, download=False,
                               r_obj=None, upload=False, form_data=None):
         """Send a file transfer request via REST to the target API.
+
         Valid methods are 'POST' and 'PUT'.
+
         :param method: request method -- str
         :param uri: target uri -- str
         :param timeout: optional timeout override -- int
@@ -224,7 +226,7 @@ class RestRequests(object):
         :param form_data: upload multipart form data -- dict
         :returns: server response, status code -- dict, int
         :raises: InvalidInputException, VolumeBackendAPIException,
-                 Timeout, SSLError, ConnectionError, HTTPError
+            Timeout, SSLError, ConnectionError, HTTPError
         """
         if download and not upload:
             headers = {

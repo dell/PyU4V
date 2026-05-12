@@ -77,4 +77,4 @@ directory.
 
 .. URL LINKS
 
-.. _issues: https://github.com/MichaelMcAleer/PyU4V/issues
+.. _issues: https://github.com/Dell/PyU4V/issues

@@ -96,7 +96,7 @@ PyU4V\.system
     :show-inheritance:
 
 PyU4V\.settings
--------------
+---------------
 
 .. automodule:: PyU4V.settings
     :members:

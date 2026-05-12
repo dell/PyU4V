@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1392,29 +1392,30 @@ class SystemFunctions(object):
             limit_authentication_to_ldap_group_members, user_object_class,
             user_id_attribute, ldap_group_names=None):
         """Enable or disable LDAP authentication.
+
         :param action: Enable or Disable, Enable requires additional payload
-                       parameters  -- Bool
-        :param ldap_server: LDAP Server IP address or DNS Name --str
-        :param ldap_port: TCP port number --int
+                       parameters -- Bool
+        :param ldap_server: LDAP Server IP address or DNS Name -- str
+        :param ldap_port: TCP port number -- int
         :param bind_dn: Distinguished name of the privileged account used to
                         perform operations, such as searching users and
-                        groups, on the LDAP directory --str
-        :param bind_password: Password of the privileged account --str
+                        groups, on the LDAP directory -- str
+        :param bind_password: Password of the privileged account -- str
         :param user_search_path: name of the node at which to begin user
-                                 searches --str
-        :param group_name_attribute: --str
-        :param group_member_attribute: --str
-        :param group_object_class: --str
-        :param ssl_certificate -- base64 encoded SSL certificate, obtained
-                                  from server or contents of .cer file
-                                  All text in file required including begin
-                                  and end markers for file
-                                  -----BEGIN CERTIFICATE----- to
-                                  -----END CERTIFICATE----- --str
-        :param limit_authentication_to_ldap_group_members --bool
-        :param ldap_group_names: LDAP groups separated by commas --str
-        :param user_object_class --str
-        :param user_id_attribute --str
+                                 searches -- str
+        :param group_name_attribute: group name attribute -- str
+        :param group_member_attribute: group member attribute -- str
+        :param group_object_class: group object class -- str
+        :param ssl_certificate: base64 encoded SSL certificate, obtained
+                                from server or contents of .cer file.
+                                All text in file required including begin
+                                and end markers for file -- str
+        :param limit_authentication_to_ldap_group_members: limit auth to
+                                                           LDAP group
+                                                           members -- bool
+        :param ldap_group_names: LDAP groups separated by commas -- str
+        :param user_object_class: user object class -- str
+        :param user_id_attribute: user id attribute -- str
         :returns: dict
         """
         LOG.warning("Warning: This function is deprecated and will be removed "

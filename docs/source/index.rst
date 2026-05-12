@@ -24,7 +24,7 @@ PowerMax REST API.  It wraps REST calls with simple APIs that abstract the HTTP
 request and response handling.
 
 .. note::
-   All official documentation for Unipshere for PowerMax API
+   All official documentation for Unisphere for PowerMax API
    is available at https://developer.dell.com/apis/4458. An OpenApi.json file
    can be download from this site for use with tools like PostMan or for
    interfacing with PyU4V custom API call mechanism.  Please refer to this
@@ -37,7 +37,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **PyU4V Version**             | 10.5.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version*  | 10.5.0                                 |
+| **Minimum Unisphere Version** | 10.5.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -54,8 +54,8 @@ Supported PyU4V Versions
 
 
 .. note::
-    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
-    has been dropped since January 1st 2020.
+    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 & 3.12.
+    Python 2.x support has been dropped since January 1st 2020.
 
 .. note::
     PyU4V version 10.5.0.0 is compatible with scripts written for PyU4V versions

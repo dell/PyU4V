@@ -11,4 +11,4 @@ below shows how to use the new enhanced API calls.
 .. literalinclude:: code/enhanced_api.py
     :linenos:
     :language: python
-    :lines: 14-200
+    :lines: 14-42

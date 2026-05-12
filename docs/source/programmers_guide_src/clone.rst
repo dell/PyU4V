@@ -20,4 +20,4 @@ Clone CLI User Guide available on https://support.dell.com.
 .. literalinclude:: code/restoreclone.py
     :linenos:
     :language: python
-    :lines: 14-18
+    :lines: 15-30

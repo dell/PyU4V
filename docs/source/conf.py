@@ -22,7 +22,7 @@ from PyU4V.version import MAJOR_VERSION, VERSION
 # -- Project information -----------------------------------------------------
 
 project = 'PyU4V'
-copyright = '2022 Dell Inc. or its subsidiaries.'
+copyright = '2026 Dell Inc. or its subsidiaries.'
 author = 'Dell'
 
 # The short X.Y version.
