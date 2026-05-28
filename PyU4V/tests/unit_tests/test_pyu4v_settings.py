@@ -73,7 +73,7 @@ class PyU4VsettingsTest(testtools.TestCase):
             return_value=pcd.CommonData.alert_details)
         result = self.settings.get_alert_notification_agent_details()
         self.settings.common.get_request.assert_called_once_with(
-            target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
+            target_uri=f"/{self.settings.common.UNI_VERSION}/settings/alert/"
                        f"notification/agent_details", resource_type=None)
         self.assertEqual(pcd.CommonData.alert_details, result)
 
@@ -93,7 +93,8 @@ class PyU4VsettingsTest(testtools.TestCase):
         result = self.settings.update_system_thresholds(
             payload=pcd.CommonData.system_thresholds)
         self.settings.common.modify_resource.assert_called_once_with(
-            target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
+            target_uri=f"/{self.settings.common.UNI_VERSION}/"
+                       f"settings/symmetrix/"
                        f"000197800123/alert/system_threshold",
             resource_type=None, payload=pcd.CommonData.system_thresholds)
         self.assertEqual(pcd.CommonData.system_thresholds, result)
@@ -105,6 +106,7 @@ class PyU4VsettingsTest(testtools.TestCase):
             return_value=pcd.CommonData.notification_settings)
         result = self.settings.get_alert_notification_settings()
         self.settings.common.get_request.assert_called_once_with(
-            target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
+            target_uri=f"/{self.settings.common.UNI_VERSION}/"
+                       f"settings/symmetrix/"
                        f"000197800123/alert/notification", resource_type=None)
         self.assertEqual(pcd.CommonData.notification_settings, result)

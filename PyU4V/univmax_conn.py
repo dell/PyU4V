@@ -70,6 +70,8 @@ class U4VConn(object):
         self.end_date = int(round(time.time() * 1000))
         self.start_date = (self.end_date - 3600000)
         self.array_id = array_id
+        self.remote_array = remote_array
+        self.remote_array_2 = remote_array_2
         self.timeout = timeout if timeout is not None else 120
 
         # Track custom API version intent
@@ -101,16 +103,10 @@ class U4VConn(object):
                 port = config.get(SETUP, PORT)
 
             # Optional Parameters for SRDF Remote array configurations
-            if config.has_option(SETUP, R_ARRAY):
-                if not remote_array:
-                    self.remote_array = config.get(SETUP, R_ARRAY)
-                else:
-                    self.remote_array = None
-            if config.has_option(SETUP, R_ARRAY_2):
-                if not remote_array_2:
-                    self.remote_array_2 = config.get(SETUP, R_ARRAY_2)
-                else:
-                    self.remote_array_2 = None
+            if config.has_option(SETUP, R_ARRAY) and not remote_array:
+                self.remote_array = config.get(SETUP, R_ARRAY)
+            if config.has_option(SETUP, R_ARRAY_2) and not remote_array_2:
+                self.remote_array_2 = config.get(SETUP, R_ARRAY_2)
 
             if config.has_option(SETUP, 'timeout') and timeout is None:
                 self.timeout = int(config.get(SETUP, 'timeout'))

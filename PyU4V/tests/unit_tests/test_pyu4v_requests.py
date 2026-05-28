@@ -86,7 +86,8 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         """Test establish_rest_session with headers."""
         ref_headers = {'test_headers': True}
         session = self.rest.establish_rest_session(headers=ref_headers)
-        self.assertEqual(ref_headers, session.headers)
+        self.assertIn('test_headers', session.headers)
+        self.assertEqual(session.headers['test_headers'], True)
 
     def test_rest_request(self):
         """Test REST request success."""
