@@ -91,6 +91,12 @@
 - Fixed missed alias in replication.py: `self.delete_resource` → `self.common.delete_resource`
 - All 318 modified unit tests pass successfully
 
+#### Token Authentication Test Fixes
+- Fixed `test_establish_rest_session_with_headers` in test_pyu4v_requests.py to verify custom headers are merged with default headers instead of expecting exact match
+- Fixed `test_get_alert_notification_agent_details`, `test_set_system_thresholds`, and `test_get_notification_settings` in test_pyu4v_settings.py to use `self.settings.common.UNI_VERSION` instead of `self.common.UNI_VERSION` (class vs instance reference)
+- Updated test_pyu4v_performance.py for token authentication compatibility
+- Updated univmax_conn.py for token authentication support
+
 ### Version Management Consolidation
 
 #### Single Source of Truth
