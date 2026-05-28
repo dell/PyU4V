@@ -2,6 +2,36 @@
 
 ## Version 10.5
 
+### Replication Module Split: snapshot.py & srdf.py
+
+#### New Modules
+- Created `PyU4V/snapshot.py` (`SnapshotFunctions`) — 22 SnapVX snapshot methods extracted from `replication.py`
+- Created `PyU4V/srdf.py` (`SRDFFunctions`) — 24 SRDF/RDF methods extracted from `replication.py`
+- Both modules are self-contained with their own `CommonFunctions` initialization
+
+#### Backward Compatibility
+- `replication.py` retains all original method signatures as thin delegation wrappers
+- Each delegated method is decorated with `@refactoring_notice` emitting a deprecation warning
+- 5 general replication methods remain with full implementations in `replication.py` (no decorator):
+  `get_replication_info`, `get_array_replication_capabilities`, `get_storage_group_replication_details`,
+  `get_replication_enabled_storage_groups`, `is_volume_in_replication_session`
+- Existing scripts using `conn.replication.*` continue to work unchanged
+
+#### Connection Object
+- Added `conn.snapshot` and `conn.srdf` attributes to `U4VConn` in `univmax_conn.py`
+- Both new modules participate in `set_array_id()` and UNI_VERSION propagation
+
+#### Decorator Enhancement
+- Updated `refactoring_notice` decorator to support `{func}` placeholder in path template
+- Updated docstrings to reflect string-typed version parameters
+
+#### API Documentation & Programmer's Guide
+- Added `PyU4V.snapshot` and `PyU4V.srdf` automodule sections to `PyU4V.rst`
+- Created `snapshot.rst` programmer's guide with full lifecycle example (license check, create, TTL, list, link/unlink, rename, expire scan, delete)
+- Created `srdf.rst` programmer's guide with 4 sections: RDF director/port discovery, RDF group management, SG SRDF protection, SRDF state management
+- Added example scripts `snapshot-operations.py` and `srdf-operations.py` to both `docs/` and `examples/`
+- Added both guides to `programmers_guide.rst` toctree for automatic indexing
+
 ### Sphinx Documentation Audit & Fixes
 
 #### Build-Breaking Fixes

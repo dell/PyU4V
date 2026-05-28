@@ -79,6 +79,14 @@ PyU4V\.rest\_requests
     :undoc-members:
     :show-inheritance:
 
+PyU4V\.snapshot
+---------------
+
+.. automodule:: PyU4V.snapshot
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PyU4V\.snapshot_policy
 ----------------------
 
@@ -99,6 +107,14 @@ PyU4V\.settings
 ---------------
 
 .. automodule:: PyU4V.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.srdf
+-----------
+
+.. automodule:: PyU4V.srdf
     :members:
     :undoc-members:
     :show-inheritance:

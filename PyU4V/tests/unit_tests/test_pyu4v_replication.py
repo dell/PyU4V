@@ -21,6 +21,8 @@ import PyU4V.common
 from PyU4V import common
 from PyU4V import replication
 from PyU4V import rest_requests
+from PyU4V import snapshot
+from PyU4V import srdf
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
@@ -85,8 +87,9 @@ class PyU4VReplicationTest(testtools.TestCase):
         is_licensed = self.replication.is_snapvx_licensed()
         self.assertTrue(is_licensed)
 
-    @mock.patch.object(replication.ReplicationFunctions,
-                       'get_array_replication_capabilities', return_value=None)
+    @mock.patch.object(snapshot.SnapshotFunctions,
+                       '_get_array_replication_capabilities',
+                       return_value=None)
     def test_is_snapvx_licensed_exception(self, mck_get):
         """Test is_snapvx_licensed."""
         is_licensed = self.replication.is_snapvx_licensed()
@@ -186,10 +189,10 @@ class PyU4VReplicationTest(testtools.TestCase):
             self.data.sg_snap_id)
         self.assertEqual(self.data.group_snap_vx, snap_details)
 
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_snapshot_generation_details',
                        return_value=pcd.CommonData.expired_snap)
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_storage_group_snapshot_generation_list',
                        return_value=pcd.CommonData.sg_snap_gen_list)
     def test_find_expired_snapvx_snapshots(self, mock_gen_list, mock_snap):
@@ -198,10 +201,10 @@ class PyU4VReplicationTest(testtools.TestCase):
             self.replication.find_expired_snapvx_snapshots())
         self.assertIsInstance(expired_snap_list, list)
 
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_snapshot_generation_details',
                        return_value=pcd.CommonData.non_expired_snap)
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_storage_group_snapshot_generation_list',
                        return_value=pcd.CommonData.sg_snap_gen_list)
     def test_find_expired_snapvx_snapshots_not_expired(
@@ -212,10 +215,10 @@ class PyU4VReplicationTest(testtools.TestCase):
         self.assertIsInstance(expired_snap_list, list)
         self.assertFalse(expired_snap_list)
 
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_snapshot_snap_id_details',
                        return_value=pcd.CommonData.expired_snap_id)
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_storage_group_snapshot_snap_id_list',
                        return_value=pcd.CommonData.sg_snap_id_list)
     def test_find_expired_snapvx_snapshots_by_snap_id(
@@ -226,10 +229,10 @@ class PyU4VReplicationTest(testtools.TestCase):
         self.assertIsInstance(expired_snap_list, list)
         self.assertTrue(expired_snap_list)
 
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_snapshot_snap_id_details',
                        return_value=pcd.CommonData.non_expired_snap_id)
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(snapshot.SnapshotFunctions,
                        'get_storage_group_snapshot_snap_id_list',
                        return_value=pcd.CommonData.sg_snap_id_list)
     def test_find_expired_snapvx_snapshots_by_snap_id_not_expired(
@@ -411,7 +414,7 @@ class PyU4VReplicationTest(testtools.TestCase):
             self.data.device_id4, self.data.rdf_group_no)
         self.assertFalse(paired3)
 
-    @mock.patch.object(replication.ReplicationFunctions,
+    @mock.patch.object(srdf.SRDFFunctions,
                        'get_rdf_group_volume',
                        return_value=None)
     def test_are_volumes_not_rdf_paired(self, mck):
@@ -421,7 +424,7 @@ class PyU4VReplicationTest(testtools.TestCase):
             self.data.device_id2, self.data.rdf_group_no)
         mck.assert_called_once()
 
-    @mock.patch.object(replication.ReplicationFunctions, 'get_rdf_group',
+    @mock.patch.object(srdf.SRDFFunctions, 'get_rdf_group',
                        return_value=None)
     def test_get_rdf_group_number(self, mck_get):
         """Test get_rdf_group_number."""

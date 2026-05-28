@@ -49,20 +49,23 @@ def refactoring_notice(func_class, path, start_version, end_version):
     """Notify the user of function refactoring elsewhere in PyU4V.
 
     :param func_class: the class name for deprecated function -- str
-    :param path: path to the new function -- str
-    :param start_version: the start Unisphere version -- float
-    :param end_version: the end Unisphere version -- float
+    :param path: path to the new function, may contain ``{func}``
+                 placeholder which is replaced with the function name
+                 at runtime -- str
+    :param start_version: the start PyU4V version -- str
+    :param end_version: the end PyU4V version -- str
     :returns: decorated function -- decorator
     """
 
     def decorator(func):
         def wrapper(*args, **kwargs):
+            resolved_path = path.format(func=func.__name__)
             LOG.warning(
-                '{func_class}.{func} will be deprecated in version {end} in '
+                '{func_class}.{func} will be deprecated in {end} in '
                 'favour of function {path}. For further information please '
                 'consult PyU4V {start} release notes.'.format(
                     func_class=func_class, func=func.__name__, end=end_version,
-                    path=path, start=start_version))
+                    path=resolved_path, start=start_version))
             return func(*args, **kwargs)
 
         return wrapper

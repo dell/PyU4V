@@ -23,7 +23,9 @@ from PyU4V.performance import PerformanceFunctions
 from PyU4V.provisioning import ProvisioningFunctions
 from PyU4V.replication import ReplicationFunctions
 from PyU4V.rest_requests import RestRequests
+from PyU4V.snapshot import SnapshotFunctions
 from PyU4V.snapshot_policy import SnapshotPolicyFunctions
+from PyU4V.srdf import SRDFFunctions
 from PyU4V.serviceability import ServiceabilityFunctions
 from PyU4V.settings import SettingsFunctions
 from PyU4V.system import SystemFunctions
@@ -178,6 +180,9 @@ class U4VConn(object):
                                                 self.rest_client)
         self.replication = ReplicationFunctions(self.array_id,
                                                 self.rest_client)
+        self.snapshot = SnapshotFunctions(self.array_id,
+                                          self.rest_client)
+        self.srdf = SRDFFunctions(self.array_id, self.rest_client)
         self.metro_dr = MetroDRFunctions(self.array_id,
                                          self.rest_client)
         self.migration = MigrationFunctions(self.array_id,
@@ -216,6 +221,8 @@ class U4VConn(object):
         self.performance.array_id = array_id
         self.provisioning.array_id = array_id
         self.replication.array_id = array_id
+        self.snapshot.array_id = array_id
+        self.srdf.array_id = array_id
         self.migration.array_id = array_id
         self.wlp.array_id = array_id
         self.system.array_id = array_id
@@ -248,6 +255,7 @@ class U4VConn(object):
         # with UNI_VERSION
         for comp in (
             self.clone, self.provisioning, self.performance, self.replication,
+            self.snapshot, self.srdf,
             self.metro_dr, self.migration, self.wlp, self.snapshot_policy,
             self.system, self.serviceability, self.performance_enhanced,
             self.volumes, self.storage_groups, self.enhanced_api, self.settings
