@@ -42,7 +42,7 @@ earlier release.
 3. If in any doubt, please file an issue on the GitHub issues page for this
    project issues_.
 
-The script can be run using python 2.7, python3.6 and python 3.7. It is
+The script can be run using Python 3.9 or later. It is
 recommended you run from the PyU4V base directory, however you can run from
 the 'openstack' directory so long as you copy/create PyU4V.conf in that
 directory.

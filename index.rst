@@ -45,7 +45,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    | 3.6, 3.7, 3.8, 3.9                     |
+| **Python**                    | 3.9 - 3.13                             |
 +-------------------------------+----------------------------------------+
 | **Requirements**              | Requests_, urllib3_                    |
 +-------------------------------+----------------------------------------+
@@ -59,8 +59,8 @@ any
     version of Unisphere older than 10.5.0
 
 .. note::
-    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
-    has been dropped since January 1st 2020.
+    PyU4V officially supports Python 3.9, 3.10, 3.11, 3.12 & 3.13.
+    Python 2.x support was dropped in January 2020.
 
 .. note::
     PyU4V version 10.5 is compatible with scripts written for PyU4V

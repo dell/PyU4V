@@ -36,7 +36,7 @@ PyU4V Version 10.5
 +-------------------------------+----------------------------+
 | **Platforms**                 | Linux, Windows             |
 +-------------------------------+----------------------------+
-| **Python**                    | 3.6 - 3.12                 |
+| **Python**                    | 3.9 - 3.13                 |
 +-------------------------------+----------------------------+
 | **Requires**                  | Requests_, urllib3_       |
 +-------------------------------+----------------------------+
@@ -299,7 +299,7 @@ the License.
 .. |Docs| image:: https://img.shields.io/badge/Docs-Passing-blue
 .. |Language| image:: https://img.shields.io/badge/Language-Python%20-blue
    :target: https://www.python.org/
-.. |PyVersions| image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue
+.. |PyVersions| image:: https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue
    :target: https://github.com/dell/PyU4V/blob/master/README.rst
 .. |Platform| image:: https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue
    :target: https://github.com/dell/PyU4V/blob/master/README.rst

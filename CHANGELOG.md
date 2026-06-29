@@ -2,6 +2,23 @@
 
 ## Version 10.5
 
+### Packaging modernisation (PEP 517/518/621)
+
+- **`setup.py` removed** — all packaging configuration is now in `pyproject.toml`.
+  Modern build tools (pip >=19, `python -m build`) use `pyproject.toml` directly.
+- **`pyproject.toml` introduced** as the canonical build and metadata file, replacing
+  `setup.py`. All project metadata, classifiers, dependencies, optional extras, and
+  project URLs now live in `pyproject.toml`.
+- **`[tool.pytest.ini_options]`** added to `pyproject.toml` so `pytest` (with no
+  arguments) discovers unit tests automatically via `testpaths`.
+- **`tox.ini` modernised**: EOL Python 3.6–3.8 environments removed; Python 3.9–3.13
+  added; test runner switched from `stestr` to `pytest`; `whitelist_externals` renamed
+  to `allowlist_externals` (tox 4 requirement).
+- **`docs` extras** added to `pyproject.toml` (`pip install pyu4v[docs]`) so the Sphinx
+  doc-build dependencies are installable from the package metadata.
+- **Documentation updated**: all README and docs files now reflect Python 3.9–3.13
+  support (previously 3.6–3.12).
+
 ### Dependency & packaging hygiene
 
 - **`urllib3` removed as a direct dependency** — it is a transitive dependency of
