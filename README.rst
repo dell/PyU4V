@@ -187,6 +187,14 @@ Note
     specified version is not supported by the server, PyU4V will exit with an error
     listing the supported versions.
 
+Note
+    As of 10.5 the active API version is held in a single place (the shared REST
+    client) and exposed live via ``conn.common.UNI_VERSION``. Calling
+    ``conn.set_u4v_version('101')`` updates every feature module
+    (``conn.snapshot``, ``conn.srdf``, ``conn.provisioning``, etc.) at once — no
+    per-module update is required. ``conn.common.UNI_VERSION`` remains both
+    readable and writable, but a write now applies globally to the connection.
+
 Initialise PyU4V Connection
 ---------------------------
 
@@ -213,6 +221,24 @@ The various types of functionality provided by PyU4V is separated into logical
 sections such as ``replication``, ``provisioning``, and ``performance``. For a
 full API breakdown by section and some usage example please refer to the
 PyU4V ReadTheDocs_.
+
+Version 10.5 Changes Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **New modules**: ``PyU4V.snapshot`` (``SnapshotFunctions``) and ``PyU4V.srdf``
+  (``SRDFFunctions``) split from ``replication.py``. Access via ``conn.snapshot``
+  and ``conn.srdf`` respectively.
+- **Backward compatibility**: All existing ``conn.replication.*`` calls continue to work
+  via thin delegation wrappers decorated with ``@refactoring_notice``.
+- **New CI test files**: ``test_pyu4v_ci_snapshot.py`` (``CITestSnapshot``) and
+  ``test_pyu4v_ci_srdf.py`` (``CITestSRDF``) added to ``PyU4V/tests/ci_tests/``.
+  These test ``conn.snapshot`` and ``conn.srdf`` directly.
+- **Legacy CI tests**: ``CITestReplication`` in ``test_pyu4v_ci_replication.py`` is
+  retained for regression; snapshot/SRDF methods marked deprecated pointing to new files.
+- **Post-split fixes**: ``set_array_id()`` now reaches the snapshot/SRDF instances used by
+  the deprecated ``conn.replication.*`` calls (shared single instances); deprecation
+  decorators preserve docstrings/signatures via ``functools.wraps``; and
+  ``ReplicationFunctions.version`` now reflects the live ``common.UNI_VERSION``.
 
 Support, Bugs, Issues
 ---------------------

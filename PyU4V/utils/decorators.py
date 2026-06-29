@@ -31,6 +31,7 @@ def deprecation_notice(func_class, start_version, end_version):
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             LOG.warning(
                 '{func_class}.{func} will be deprecated in version {end}. For '
@@ -58,6 +59,7 @@ def refactoring_notice(func_class, path, start_version, end_version):
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             resolved_path = path.format(func=func.__name__)
             LOG.warning(

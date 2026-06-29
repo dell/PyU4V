@@ -61,7 +61,15 @@ class ProvisioningFunctions(object):
         """__init__."""
         self.array_id = array_id
         self.common = CommonFunctions(rest_client)
-        self.version = constants.UNISPHERE_VERSION
+
+    @property
+    def version(self):
+        """Unisphere version used for requests (live ``common.UNI_VERSION``).
+
+        :returns: Unisphere REST API version -- str
+        """
+        return getattr(
+            self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
     def get_array(self, array_id=None):
         """Query for details of an array from SLOPROVISIONING endpoint.

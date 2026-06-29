@@ -84,7 +84,19 @@ class ReplicationFunctions(object):
         self._snapshot.common = self.common
         self._srdf.common = self.common
         self.array_id = array_id
-        self.version = constants.UNISPHERE_VERSION
+
+    @property
+    def version(self):
+        """Unisphere version used for requests (single source of truth).
+
+        Reflects the live ``common.UNI_VERSION`` rather than a value cached
+        at construction time, so it stays correct after the connection
+        negotiates or overrides the API version.
+
+        :returns: Unisphere REST API version -- str
+        """
+        return getattr(
+            self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
     def get_replication_info(self):
         """Return replication information for an array.

@@ -60,21 +60,45 @@ class CommonFunctions(object):
 
     def __init__(self, rest_client, u4v_version=None):
         """__init__.
-        Honors explicit u4v_version, otherwise falls back to
-        rest_client.u4v_version if set, else constants.UNISPHERE_VERSION.
+
+        The active Unisphere REST API version is stored once on the shared
+        ``rest_client`` and exposed via the :pyattr:`UNI_VERSION` property,
+        giving a single source of truth across all feature modules. If an
+        explicit ``u4v_version`` is supplied it is stamped onto the shared
+        client; otherwise the property falls back to
+        ``rest_client.u4v_version`` and finally ``constants.UNISPHERE_VERSION``.
         """
         self.rest_client = rest_client
         self.request = self.rest_client.rest_request
         self.interval = self.rest_client.interval
         self.retries = self.rest_client.retries
 
+        # Stamp an explicit version onto the shared client so every module
+        # sharing this client resolves the same version (single source).
         if u4v_version is not None:
-            self.UNI_VERSION = str(u4v_version)
-        elif (hasattr(self.rest_client, 'u4v_version') and (
-              self.rest_client.u4v_version)):
-            self.UNI_VERSION = str(self.rest_client.u4v_version)
-        else:
-            self.UNI_VERSION = constants.UNISPHERE_VERSION
+            self.rest_client.u4v_version = str(u4v_version)
+
+    @property
+    def UNI_VERSION(self):
+        """Active Unisphere REST API version (single source of truth).
+
+        Resolved live from the shared ``rest_client`` so a version change via
+        ``U4VConn.set_u4v_version`` propagates to every feature module without
+        per-module updates.
+
+        :returns: Unisphere REST API version -- str
+        """
+        version = getattr(self.rest_client, 'u4v_version', None)
+        return str(version) if version else constants.UNISPHERE_VERSION
+
+    @UNI_VERSION.setter
+    def UNI_VERSION(self, value):
+        """Set the active version on the shared client (back-compat write).
+
+        :param value: Unisphere REST API version, or falsy to reset to the
+                      packaged default -- str
+        """
+        self.rest_client.u4v_version = str(value) if value else None
 
     def wait_for_job_complete(self, job):
         """Given the job wait for it to complete.

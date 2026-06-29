@@ -2,6 +2,69 @@
 
 ## Version 10.5
 
+### Versioning: single source of truth (no interface change)
+
+- **`common.UNI_VERSION` is now a live property** backed by the shared
+  `rest_client.u4v_version`. All feature modules resolve the active Unisphere REST API
+  version from this one place, so a version change propagates everywhere immediately.
+  The attribute remains both readable and writable for backward compatibility (a write
+  now applies globally to the connection rather than per-instance).
+- **`set_u4v_version()` simplified**: the hand-maintained per-module update loop was
+  removed; it now only stamps the two shared REST clients. This eliminates the class of
+  bug where a newly added module was omitted from the loop and silently kept a stale
+  version.
+- **Per-module `version` attributes** in `provisioning`, `settings`, `serviceability`,
+  and `system` (and `replication`) converted from a value cached at construction to
+  read-only properties reading the live `common.UNI_VERSION`.
+- **`PyU4V/version.py` cleanup**: removed the unused/misleading `UNI_VERSION` constant
+  (`"10.5.0"`, never used to build URLs — `API_VERSION`/`constants.UNISPHERE_VERSION`
+  drives REST paths) and documented the remaining constants. `MAJOR_VERSION`, `VERSION`,
+  `API_VERSION`, and `ENHANCED_API_VERSION` are unchanged.
+- **`U4VConn.supported_api_versions`**: server-supported API versions are now cached on
+  the connection during `validate_unisphere()`.
+- **Tests**: added `test_set_u4v_version_propagates_to_all_modules` and
+  `test_set_u4v_version_reset_falls_back_to_default` to lock in single-source behaviour.
+
+### Bug Fixes (post-split regressions)
+
+- **`set_array_id()` propagation**: `conn.replication` previously created its own private
+  `SnapshotFunctions`/`SRDFFunctions` instances. `set_array_id()` only updated the top-level
+  `conn.snapshot`/`conn.srdf`, leaving the delegated instances pointing at the original array.
+  `univmax_conn` now shares the single `conn.snapshot`/`conn.srdf` instances with
+  `conn.replication` (`_snapshot`/`_srdf`), so `set_array_id()` and UNI_VERSION propagation
+  reach the deprecated `conn.replication.*` calls.
+- **Deprecation decorators**: `refactoring_notice` and `deprecation_notice` now use
+  `functools.wraps`, preserving `__name__`, `__doc__`, and signatures on decorated
+  `ReplicationFunctions` methods (restores Sphinx autodoc / `help()` output).
+- **`ReplicationFunctions.version`**: changed from a value cached at construction
+  (`constants.UNISPHERE_VERSION`) to a read-only property returning the live
+  `common.UNI_VERSION`, establishing a single source of truth for the API version.
+- **Tests**: extended `test_set_array_id` and added
+  `test_set_array_id_propagates_to_replication_delegates` to assert propagation to the
+  snapshot/SRDF instances and that they are shared (not copied) objects.
+
+### CI Test Split: snapshot and SRDF modules
+
+#### New CI Test Files
+- Created `PyU4V/tests/ci_tests/test_pyu4v_ci_snapshot.py` (`CITestSnapshot`) — full snapshot
+  CI test coverage using `conn.snapshot.*` directly; also covers 5 general replication methods
+- Created `PyU4V/tests/ci_tests/test_pyu4v_ci_srdf.py` (`CITestSRDF`) — full SRDF/RDF CI test
+  coverage using `conn.srdf.*` directly
+
+#### Existing CI Test Updates
+- `test_pyu4v_ci_replication.py` (`CITestReplication`) retained unchanged for regression
+  purposes; snapshot/SRDF test methods marked `.. deprecated:: 10.5` pointing to new files;
+  class-level deprecation note added
+- `CITestReplication.setUp()` updated to also set `self.snapshot` and `self.srdf` attributes
+
+#### Base Test Helper Updates (`base.py`)
+- Snapshot helpers (`create_sg_snapshot`, `get_sg_snapshot`, `delete_sg_snapshot`) updated to
+  use `self.snapshot.*` instead of `self.replication.*`
+- SRDF helpers (`cleanup_rdfg`, `get_online_rdf_ports`, `get_next_free_srdf_group`,
+  `setup_srdf_group`) updated to use `self.srdf.*` instead of `self.replication.*`
+- `create_rdf_sg` updated to use `self.srdf.*` for SRDF-specific operations; retains
+  `self.replication.*` for the 5 general methods that remain in `replication.py`
+
 ### Replication Module Split: snapshot.py & srdf.py
 
 #### New Modules

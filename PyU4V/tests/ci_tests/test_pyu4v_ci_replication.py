@@ -19,12 +19,23 @@ from PyU4V.tests.ci_tests import base
 
 
 class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
-    """Test Replication Functions."""
+    """Test Replication Functions.
+
+    .. deprecated:: 10.5
+       Snapshot tests have moved to
+       :class:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot.CITestSnapshot`
+       and SRDF tests have moved to
+       :class:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf.CITestSRDF`.
+       These tests are retained for regression purposes and will be removed
+       in a future release.
+    """
 
     def setUp(self):
         """SetUp."""
         super(CITestReplication, self).setUp()
         self.replication = self.conn.replication
+        self.snapshot = self.conn.snapshot
+        self.srdf = self.conn.srdf
         self.provisioning = self.conn.provisioning
         self.system = self.conn.system
         self.is_v4 = self.common.is_array_v4(self.conn.array_id)
@@ -45,12 +56,23 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         assert 'metro_capable' in rep_info
 
     def test_is_snapvx_licensed(self):
-        """Test is_snapvx_licensed."""
+        """Test is_snapvx_licensed.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_is_snapvx_licensed` instead.
+        """
         licensed = self.replication.is_snapvx_licensed()
         self.assertIs(True, licensed)
 
     def test_get_storage_group_replication_details(self):
-        """Test get_storage_group_rep."""
+        """Test get_storage_group_rep.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_storage_group_replication_details`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         rep_info = self.replication.get_storage_group_replication_details(
             storage_group_id=sg_name)
@@ -67,7 +89,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(sg_name, remote_storage_group.get('storage_group_id'))
 
     def test_create_storage_group_snapshot(self):
-        """Test get_storagegroup_snapshot_list."""
+        """Test get_storagegroup_snapshot_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_create_storage_group_snapshot` instead.
+        """
         if self.is_v4:
             self.skipTest('Create storage group snapshot by generation does '
                           'not work on the V4.')
@@ -84,7 +111,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('ci_snap', snapshot_info)
 
     def test_create_storage_group_snapshot_by_snap_id(self):
-        """Test create_storage_group_snapshot by snap_id."""
+        """Test create_storage_group_snapshot by snap_id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_create_storage_group_snapshot_by_snap_id`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         ss_name = self.generate_name(object_type='ss')
         self.replication.create_storage_group_snapshot(
@@ -99,21 +132,37 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn(ss_name, snapshot_info)
 
     def test_get_replication_enabled_storage_groups(self):
-        """Test get_replication_enabled_storage_groups."""
+        """Test get_replication_enabled_storage_groups.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_replication_enabled_storage_groups`
+           instead.
+        """
         self.create_sg_snapshot()
         snap_list = self.replication.get_replication_enabled_storage_groups(
             has_snapshots=True, has_srdf=False)
         self.assertIsInstance(snap_list, list)
 
     def test_get_storage_group_snapshot_list(self):
-        """Test get_storage_group_snapshot_list."""
+        """Test get_storage_group_snapshot_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_storage_group_snapshot_list` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         sg_snap_list = self.replication.get_storage_group_snapshot_list(
             storage_group_id=sg_name)
         self.assertEqual(snapshot_info.get('name'), sg_snap_list[0])
 
     def test_get_storage_group_no_snapshot(self):
-        """Test get_storagegroup_snapshot_list."""
+        """Test get_storagegroup_snapshot_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_storage_group_no_snapshot` instead.
+        """
         storage_group_name = self.generate_name('sg')
         volume_name = self.generate_name()
         self.provisioning.create_storage_group(
@@ -124,7 +173,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             storage_group_name))
 
     def test_modify_storage_group_snapshot_rename(self):
-        """Test modify_storage_group_snapshot."""
+        """Test modify_storage_group_snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snapshot_rename` instead.
+        """
         if self.is_v4:
             self.skipTest('Getting storage group list by generation does  '
                           'not work on the V4.')
@@ -147,7 +201,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual('newname', snap_list[0])
 
     def test_modify_storage_group_snap_rename_by_snap_id(self):
-        """Test modify_storage_group_snapshot_by_snap_id."""
+        """Test modify_storage_group_snapshot_by_snap_id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snap_rename_by_snap_id`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         old_name = snapshot_info.get('name')
         new_name = self.generate_name(object_type='ss')
@@ -166,7 +226,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(new_name, snap_list[0])
 
     def test_get_replication_info(self):
-        """Test get_replication_info."""
+        """Test get_replication_info.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_replication_info` instead.
+        """
         array_id = self.conn.array_id
         rep_info = self.replication.get_replication_info()
         self.assertEqual(array_id, rep_info.get('symmetrixId'))
@@ -174,7 +239,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         assert 'replicationCacheUsage' in rep_info
 
     def test_modify_storage_group_snapshot_link(self):
-        """Test to cover link snapshot."""
+        """Test to cover link snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snapshot_link` instead.
+        """
         if self.is_v4:
             self.skipTest(
                 'Modify storage group snapshot link by generation does '
@@ -196,7 +266,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
     def test_modify_storage_group_snap_relink(self):
-        """Test to cover relink snapshot."""
+        """Test to cover relink snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snap_relink` instead.
+        """
         if self.is_v4:
             self.skipTest(
                 'Modify storage group snapshot relink by generation does '
@@ -224,7 +299,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
     def test_modify_storage_group_snap_link_by_snap_id(self):
-        """Test to cover link snapshot by snap id."""
+        """Test to cover link snapshot by snap id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snap_link_by_snap_id`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         target_sg = "{sg}_lnk".format(sg=sg_name)
         snap_name = snapshot_info.get('name')
@@ -241,7 +322,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(target_sg)
 
     def test_modify_storage_group_snap_relink_by_snap_id(self):
-        """Test to cover relink snapshot by snap id."""
+        """Test to cover relink snapshot by snap id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snap_relink_by_snap_id`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         target_sg = "{sg}_lnk".format(sg=sg_name)
         snap_name = snapshot_info.get('name')
@@ -263,7 +350,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(target_sg)
 
     def test_modify_storage_group_snapshot_unlink(self):
-        """Test to cover unlink snapshot."""
+        """Test to cover unlink snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snapshot_unlink` instead.
+        """
         if self.is_v4:
             self.skipTest(
                 'Modify storage group snapshot unlink by generation does '
@@ -286,7 +378,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
     def test_modify_storage_group_snapshot_unlink_by_snap_id(self):
-        """Test modify_storage_group_snapshot unlink snapshot by snap id."""
+        """Test modify_storage_group_snapshot unlink snapshot by snap id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snapshot_unlink_by_snap_id`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         target_sg = "{sg}_lnk".format(sg=sg_name)
         snap_name = snapshot_info.get('name')
@@ -304,7 +402,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(target_sg)
 
     def test_modify_storage_group_snapshot_restore(self):
-        """Test modify_storage_group_snapshot restore snapshot."""
+        """Test modify_storage_group_snapshot restore snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snapshot_restore` instead.
+        """
         if self.is_v4:
             self.skipTest(
                 'Modify storage group snapshot restore by generation does '
@@ -319,7 +422,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue('Restored' in snap_details.get('state'))
 
     def test_modify_storage_group_snap_restore_by_snap_id(self):
-        """Test to cover restore snapshot by snap id."""
+        """Test to cover restore snapshot by snap id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_modify_storage_group_snap_restore_by_snap_id`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         snap_name = snapshot_info.get('name')
         snap_id = snapshot_info.get('snapid')
@@ -331,7 +440,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue('Restored' in snap_details.get('state'))
 
     def test_restore_snapshot(self):
-        """Test to cover restore snapshot."""
+        """Test to cover restore snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_restore_snapshot` instead.
+        """
         if self.is_v4:
             self.skipTest('Restore snapshot by generation does '
                           'not work on the V4.')
@@ -344,7 +458,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue('Restored' in snap_details.get('state'))
 
     def test_restore_snapshot_by_snap_id(self):
-        """Test to cover restore snapshot."""
+        """Test to cover restore snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_restore_snapshot_by_snap_id` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         snap_name = snapshot_info.get('name')
         snap_id = snapshot_info.get('snapid')
@@ -355,7 +474,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertTrue('Restored' in snap_details.get('state'))
 
     def test_rename_snapshot(self):
-        """Test to cover rename snapshot."""
+        """Test to cover rename snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_rename_snapshot` instead.
+        """
         if self.is_v4:
             self.skipTest('Rename shapshot by generation does '
                           'not work on the V4.')
@@ -372,7 +496,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             gen_num=0)
 
     def test_rename_snapshot_by_snap_id(self):
-        """Test to cover rename snapshot by snap_id."""
+        """Test to cover rename snapshot by snap_id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_rename_snapshot_by_snap_id` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         old_name = snapshot_info.get('name')
         snap_id = snapshot_info.get('snapid')
@@ -464,7 +593,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         return snap_details
 
     def test_link_gen_snapshot(self):
-        """Testot s to cover link snapshot."""
+        """Test to cover link snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_link_gen_snapshot` instead.
+        """
         if self.is_v4:
             self.skipTest('Getting storage group list by generation does '
                           'not work on the V4. Will need logic in this test '
@@ -487,7 +621,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
     def test_link_snapshot_by_snap_id(self):
-        """Test to cover link snapshot by snap id."""
+        """Test to cover link snapshot by snap id.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_link_snapshot_by_snap_id` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         target_sg = "{sg}_lnk".format(sg=sg_name)
         snap_name = snapshot_info.get('name')
@@ -506,7 +645,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(target_sg)
 
     def test_unlink_gen_snapshot(self):
-        """Test to cover unlink snapshot."""
+        """Test to cover unlink snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_unlink_gen_snapshot` instead.
+        """
         if self.is_v4:
             self.skipTest('Getting storage group list by generation does '
                           'not work on the V4. Will need logic in this test '
@@ -531,7 +675,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(storage_group_id=target_sg)
 
     def test_unlink_snapshot_by_snap_id(self):
-        """Test to cover unlink snapshot."""
+        """Test to cover unlink snapshot.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_unlink_snapshot_by_snap_id` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         target_sg = "{sg}_lnk".format(sg=sg_name)
         snap_name = snapshot_info.get('name')
@@ -550,7 +699,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.provisioning.delete_storage_group(target_sg)
 
     def test_is_volume_in_replication_session(self):
-        """Test is_volume_in_replication_session."""
+        """Test is_volume_in_replication_session.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_is_volume_in_replication_session` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         volume = snapshot_info.get('source_volume')
         vol_name = volume[0].get('name')
@@ -568,7 +722,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(snapxv_src, True)
 
     def test_get_snapshot_generation_details(self):
-        """Test get_snapshot_generation_details."""
+        """Test get_snapshot_generation_details.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_snapshot_generation_details` instead.
+        """
         if self.is_v4:
             self.skipTest('Getting storage group list by generation does '
                           'not work on the V4. Will need logic in this test '
@@ -580,7 +739,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(['Established'], snap_gen_details.get('state'))
 
     def test_get_snapshot_snap_id_details(self):
-        """Test get_snapshot_snap_id_details."""
+        """Test get_snapshot_snap_id_details.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_snapshot_snap_id_details` instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         snap_name = snapshot_info.get('name')
         snap_id = snapshot_info.get('snapid')
@@ -589,7 +753,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(['Established'], snap_details.get('state'))
 
     def test_get_storage_group_snapshot_snap_id_list(self):
-        """Test get_storage_group_snapshot_snap_id_list."""
+        """Test get_storage_group_snapshot_snap_id_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_get_storage_group_snapshot_snap_id_list`
+           instead.
+        """
         snapshot_info, sg_name = self.create_sg_snapshot()
         snap_name = snapshot_info.get('name')
         snap_id = snapshot_info.get('snapid')
@@ -599,7 +769,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual([snap_id], snap_id_list)
 
     def test_get_rdf_group(self):
-        """Test get_rdf_group."""
+        """Test get_rdf_group.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_group` instead.
+        """
         rdf_group = self.replication.get_rdf_group_list()
         if not rdf_group:
             self.skipTest('test_get_rdf_group - Unable to get an RDF group.')
@@ -608,19 +783,34 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('remoteSymmetrix', rdfg_details)
 
     def test_get_rdf_group_list(self):
-        """Test get_rdf_group_list."""
+        """Test get_rdf_group_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_group_list` instead.
+        """
         rdf_number = self.replication.get_rdf_group_list()
         self.assertIsInstance(rdf_number, list)
 
     def test_get_rdf_group_list_with_parms(self):
-        """Test get_rdf_group_list."""
+        """Test get_rdf_group_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_group_list_with_parms` instead.
+        """
         rdf_number = self.replication.get_rdf_group_list(
             group_type='Dynamic', remote_symmetrix_id=self.conn.remote_array,
             volume_count=0, rdf_mode='Synchronous')
         self.assertIsInstance(rdf_number, list)
 
     def test_get_rdf_group_volume(self):
-        """Test get_rdf_group_volume."""
+        """Test get_rdf_group_volume.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_group_volume` instead.
+        """
         sg_name, srdf_group_number, device_id, remote_volume = (
             self.create_rdf_sg())
         rdf_vol_details = self.replication.get_rdf_group_volume(
@@ -630,7 +820,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                          rdf_vol_details.get('localRdfGroupNumber'))
 
     def test_get_rdf_group_number(self):
-        """Test get_rdf_group."""
+        """Test get_rdf_group.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_group_number` instead.
+        """
         sg_name, srdf_group_number, device_id, remote_volume = (
             self.create_rdf_sg())
         label = self.replication.get_rdf_group(srdf_group_number).get('label')
@@ -638,7 +833,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertEqual(srdf_group_number, number)
 
     def test_get_rdf_group_volume_list(self):
-        """Test get_rdf_group_volume_list."""
+        """Test get_rdf_group_volume_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_group_volume_list` instead.
+        """
         sg_name, srdf_group_number, device_id, remote_volume = (
             self.create_rdf_sg())
         rdf_volume_list = self.replication.get_rdf_group_volume_list(
@@ -646,7 +846,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(rdf_volume_list, list)
 
     def test_find_expired_snapvx_snapshots(self):
-        """Test find_expired_snapvx_snapshots."""
+        """Test find_expired_snapvx_snapshots.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_find_expired_snapvx_snapshots` instead.
+        """
         if self.is_v4:
             self.skipTest('Getting storage group list by generation does '
                           'not work on the V4. Will need logic in this test '
@@ -655,13 +860,24 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(expired_snap_list, list)
 
     def test_find_expired_snapvx_snapshots_by_snap_id(self):
-        """Test find_expired_snapvx_snapshots_by_snap_ids."""
+        """Test find_expired_snapvx_snapshots_by_snap_ids.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_find_expired_snapvx_snapshots_by_snap_id`
+           instead.
+        """
         expired_snap_list = (
             self.replication.find_expired_snapvx_snapshots_by_snap_ids())
         self.assertIsInstance(expired_snap_list, list)
 
     def test_are_volumes_rdf_paired(self):
-        """Test are_volumes_rdf_paired."""
+        """Test are_volumes_rdf_paired.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_are_volumes_rdf_paired` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         pair_state = self.replication.are_volumes_rdf_paired(
@@ -670,7 +886,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Synchronized', pair_state)
 
     def test_get_storage_group_srdf_group_list(self):
-        """Test get_storage_group_srdf_group_list."""
+        """Test get_storage_group_srdf_group_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_storage_group_srdf_group_list` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         sg_rdfg_list = self.replication.get_storage_group_srdf_group_list(
@@ -678,7 +899,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(sg_rdfg_list, list)
 
     def test_get_storage_group_srdf_details(self):
-        """Test get_storage_group_srdf_details."""
+        """Test get_storage_group_srdf_details.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_storage_group_srdf_details` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         sg_rdf_details = self.replication.get_storage_group_srdf_details(
@@ -686,7 +912,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(sg_rdf_details, dict)
 
     def test_create_storage_group_srdf_pairings(self):
-        """Test create_storage_group_srdf_pairings."""
+        """Test create_storage_group_srdf_pairings.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_create_storage_group_srdf_pairings` instead.
+        """
         self.check_for_remote_array()
         sg_name = self.generate_name(object_type='sg')
         vol_name = self.generate_name(object_type='v')
@@ -705,7 +936,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
     # is not masked to a host
 
     def test_modify_storage_group_srdf(self):
-        """Test modify_storage_group_srdf."""
+        """Test modify_storage_group_srdf.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_modify_storage_group_srdf` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         self.replication.modify_storage_group_srdf(
@@ -715,7 +951,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Failed Over', status)
 
     def test_suspend_storage_group_srdf(self):
-        """Test get_storage_group_srdf_details."""
+        """Test get_storage_group_srdf_details.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_suspend_storage_group_srdf` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         self.replication.suspend_storage_group_srdf(
@@ -725,7 +966,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Suspended', status)
 
     def test_establish_storage_group_srdf(self):
-        """Test establish_storage_group_srdf."""
+        """Test establish_storage_group_srdf.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_establish_storage_group_srdf` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         self.replication.suspend_storage_group_srdf(sg_name, srdf_group_number)
@@ -737,7 +983,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Synchronized', status)
 
     def test_failover_storage_group_srdf(self):
-        """Test get_storage_group_srdf_details."""
+        """Test get_storage_group_srdf_details.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_failover_storage_group_srdf` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         self.replication.failover_storage_group_srdf(sg_name,
@@ -747,7 +998,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Failed Over', status)
 
     def test_failback_storage_group_srdf(self):
-        """Test failback_storage_group_srdf."""
+        """Test failback_storage_group_srdf.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_failback_storage_group_srdf` instead.
+        """
         sg_name, srdf_group_number, local_volume, remote_volume = (
             self.create_rdf_sg())
         self.replication.failover_storage_group_srdf(
@@ -759,12 +1015,22 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('Synchronized', status)
 
     def test_get_rdf_director_list(self):
-        """Test get rdf director list."""
+        """Test get rdf director list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_director_list` instead.
+        """
         rdf_director_list = self.replication.get_rdf_director_list()
         self.assertIsInstance(rdf_director_list, list)
 
     def test_get_rdf_director_detail(self):
-        """Test get_rdf_director_detail."""
+        """Test get_rdf_director_detail.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_director_detail` instead.
+        """
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_details = self.replication.get_rdf_director_detail(
@@ -776,7 +1042,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                           'configured on the specified array.')
 
     def test_get_rdf_director_port_list(self):
-        """Test get_rdf_direector_list."""
+        """Test get_rdf_director_port_list.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_director_port_list` instead.
+        """
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_ports = self.replication.get_rdf_director_port_list(
@@ -787,7 +1058,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                           'configured on the specified array.')
 
     def test_get_rdf_director_port_details(self):
-        """Test get_rdf_director_port_details."""
+        """Test get_rdf_director_port_details.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_director_port_details` instead.
+        """
         rdf_director_list = self.replication.get_rdf_director_list()
         if len(rdf_director_list) > 0:
             rdf_director_ports = self.replication.get_rdf_director_port_list(
@@ -802,7 +1078,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
                           'configured on the specified array.')
 
     def test_create_and_delete_rdf_group(self):
-        """Test create_rdf_group and delete_rdf_group."""
+        """Test create_rdf_group and delete_rdf_group.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_create_and_delete_rdf_group` instead.
+        """
         local_array = self.conn.array_id
         local_port_list, remote_port_list = self.get_online_rdf_ports()
         if not remote_port_list:
@@ -830,7 +1111,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertNotIn(rdf_group, rdfg_list)
 
     def test_get_rdf_port_remote_connections(self):
-        """Test get_rdf_port_remote_connections."""
+        """Test get_rdf_port_remote_connections.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_get_rdf_port_remote_connections` instead.
+        """
         local_array = self.conn.array_id
         local_port_list, remote_port_list = self.get_online_rdf_ports()
         if not remote_port_list:
@@ -844,7 +1130,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.assertIn('remotePort', connections)
 
     def test_modify_rdf_group_add_remove_port(self):
-        """test adding and removing of port from RDF group."""
+        """Test adding and removing of port from RDF group.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_modify_rdf_group_add_remove_port` instead.
+        """
         srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
         if not remote_port_list:
             self.skipTest('Skipping test_modify_rdf_group_add_remove_port - '
@@ -866,7 +1157,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.replication.delete_rdf_group(srdf_group_number=srdf_group)
 
     def test_modify_rdf_group_change_label(self):
-        """Test modify_rdf_group_change_label."""
+        """Test modify_rdf_group_change_label.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_modify_rdf_group_change_label` instead.
+        """
         srdf_group, local_port_list, remote_port_list = self.setup_srdf_group()
         if not remote_port_list:
             self.skipTest('Skipping test_modify_rdf_group_change_label - '
@@ -880,7 +1176,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         self.replication.delete_rdf_group(srdf_group_number=srdf_group)
 
     def test_create_storage_group_from_rdfg(self):
-        """Test create_storage_group_from_rdfg."""
+        """Test create_storage_group_from_rdfg.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_create_storage_group_from_rdfg` instead.
+        """
         sg_name, srdf_group_number, device_id, remote_volume = (
             self.create_rdf_sg())
         storage_group_name = self.generate_name('sg')
@@ -894,7 +1195,13 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             storage_group_id=storage_group_name)
 
     def test_modify_storage_group_srdf_set_consistency_enable(self):
-        """Test test_modify_storage_group_srdf to enable consistency."""
+        """Test modify_storage_group_srdf to enable consistency.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
+           .CITestSRDF.test_modify_storage_group_srdf_set_consistency_enable`
+           instead.
+        """
         if not self.run_consistency_enable_check():
             self.skipTest(
                 'Skip test_modify_storage_group_srdf_set_consistency_enable '
@@ -925,7 +1232,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
         return True
 
     def test_bulk_terminate_snapshots(self):
-        """Test bulk_terminate_snapshots."""
+        """Test bulk_terminate_snapshots.
+
+        .. deprecated:: 10.5
+           Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_snapshot
+           .CITestSnapshot.test_bulk_terminate_snapshots` instead.
+        """
         sg_name = self.create_empty_storage_group()
         self.provisioning.create_volume_from_storage_group_return_id(
             'bulk_terminate_test', sg_name, '1')

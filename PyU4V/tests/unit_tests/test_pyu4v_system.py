@@ -723,7 +723,7 @@ class PyU4VSystemTest(testtools.TestCase):
                 return_value=self.data.snmp):
             new_config = self.system.set_snmp_trap_destination(
                 name='10.60.1.1', port=162)
-        self.assertEquals('10.60.1.1', new_config['snmp_traps'][0]['name'])
+        self.assertEqual('10.60.1.1', new_config['snmp_traps'][0]['name'])
 
     def test_delete_snmp_trap_destination(self):
         with mock.patch.object(

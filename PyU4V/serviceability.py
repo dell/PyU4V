@@ -64,7 +64,15 @@ class ServiceabilityFunctions(object):
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
-        self.version = constants.UNISPHERE_VERSION
+
+    @property
+    def version(self):
+        """Unisphere version used for requests (live ``common.UNI_VERSION``).
+
+        :returns: Unisphere REST API version -- str
+        """
+        return getattr(
+            self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
     def get_local_system(self):
         """Get local powermax system serial number in the embedded environment

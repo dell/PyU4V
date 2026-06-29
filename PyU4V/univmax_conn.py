@@ -75,6 +75,9 @@ class U4VConn(object):
         self.remote_array = remote_array
         self.remote_array_2 = remote_array_2
         self.timeout = timeout if timeout is not None else 120
+        # Cache of server-supported API versions, populated lazily by
+        # validate_unisphere() when a custom API version is in use.
+        self.supported_api_versions = None
 
         # Track custom API version intent
         if u4v_version:
@@ -183,6 +186,13 @@ class U4VConn(object):
         self.snapshot = SnapshotFunctions(self.array_id,
                                           self.rest_client)
         self.srdf = SRDFFunctions(self.array_id, self.rest_client)
+        # Share the single snapshot/srdf instances with the replication
+        # module so that set_array_id() and UNI_VERSION propagation reach
+        # the delegated (deprecated) conn.replication.* calls.
+        self.replication._snapshot = self.snapshot
+        self.replication._srdf = self.srdf
+        self.snapshot.common = self.replication.common
+        self.srdf.common = self.replication.common
         self.metro_dr = MetroDRFunctions(self.array_id,
                                          self.rest_client)
         self.migration = MigrationFunctions(self.array_id,
@@ -235,36 +245,21 @@ class U4VConn(object):
 
     def set_u4v_version(self, version: str):
         """Update the Unisphere API version and propagate.
-        Setting this ensures user-specified version persists across calls.
+
+        The version is stamped onto the two shared REST clients only. Every
+        feature module resolves the version live via ``common.UNI_VERSION``
+        (a property backed by ``rest_client.u4v_version``), so there is a
+        single source of truth and no per-module update is required.
+
+        :param version: Unisphere REST API version, or falsy to reset to the
+                        packaged default -- str
         """
         self.u4v_version = str(version) if version else None
         self.custom_api_version = bool(version)
 
-        # Persist on clients (picked up by any CommonFunctions)
+        # Single source of truth: stamp both shared clients.
         self.rest_client.u4v_version = self.u4v_version
         self.enhanced_rest_client.u4v_version = self.u4v_version
-
-        # Update existing CommonFunctions instance
-        if hasattr(self.common, 'UNI_VERSION'):
-            self.common.UNI_VERSION = (
-                self.u4v_version if self.u4v_version else (
-                    constants.UNISPHERE_VERSION)
-            )
-
-        # Best-effort: update any child module that exposes a 'common'
-        # with UNI_VERSION
-        for comp in (
-            self.clone, self.provisioning, self.performance, self.replication,
-            self.snapshot, self.srdf,
-            self.metro_dr, self.migration, self.wlp, self.snapshot_policy,
-            self.system, self.serviceability, self.performance_enhanced,
-            self.volumes, self.storage_groups, self.enhanced_api, self.settings
-        ):
-            if hasattr(comp, 'common') and hasattr(comp.common, 'UNI_VERSION'):
-                comp.common.UNI_VERSION = (
-                    self.u4v_version if self.u4v_version else (
-                        constants.UNISPHERE_VERSION)
-                )
 
     def validate_unisphere(self):
         """Check that the minimum version of Unisphere is in-use.
@@ -276,9 +271,10 @@ class U4VConn(object):
         if self.custom_api_version:
             LOG.debug('A Custom API Version has been specified.')
             # Validate that the specified u4v_version is supported by the
-            # server
+            # server. Cache the supported versions for reuse.
             version_info = self.common.get_uni_version_info()
             supported_versions = version_info.get('supported_api_versions', [])
+            self.supported_api_versions = supported_versions
             if self.u4v_version not in supported_versions:
                 msg = (
                     f'API version {self.u4v_version} is not supported by this '

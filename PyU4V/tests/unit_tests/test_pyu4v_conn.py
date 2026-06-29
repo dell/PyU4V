@@ -22,6 +22,7 @@ from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
 from PyU4V.utils import config_handler
+from PyU4V.utils import constants
 from PyU4V.utils import exception
 
 
@@ -63,6 +64,48 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
         self.assertEqual('000123456789', self.conn.replication.array_id)
         self.assertEqual('000123456789', self.conn.migration.array_id)
         self.assertEqual('000123456789', self.conn.wlp.array_id)
+        self.assertEqual('000123456789', self.conn.snapshot.array_id)
+        self.assertEqual('000123456789', self.conn.srdf.array_id)
+
+    def test_set_array_id_propagates_to_replication_delegates(self):
+        """set_array_id must reach the snapshot/srdf instances that the
+        deprecated conn.replication.* calls delegate to."""
+        self.conn.set_array_id('000123456789')
+        self.assertEqual(
+            '000123456789', self.conn.replication._snapshot.array_id)
+        self.assertEqual(
+            '000123456789', self.conn.replication._srdf.array_id)
+        # The shared instances must be identical objects, not copies.
+        self.assertIs(self.conn.snapshot, self.conn.replication._snapshot)
+        self.assertIs(self.conn.srdf, self.conn.replication._srdf)
+
+    def test_set_u4v_version_propagates_to_all_modules(self):
+        """set_u4v_version must propagate live to every feature module."""
+        self.conn.set_u4v_version('100')
+        for comp in (
+                self.conn.common, self.conn.snapshot.common,
+                self.conn.srdf.common, self.conn.provisioning.common,
+                self.conn.system.common, self.conn.settings.common,
+                self.conn.serviceability.common, self.conn.replication.common,
+                self.conn.replication._snapshot.common,
+                self.conn.replication._srdf.common,
+                self.conn.volumes.common, self.conn.storage_groups.common):
+            self.assertEqual('100', comp.UNI_VERSION)
+        # Per-module version properties resolve from the same source.
+        self.assertEqual('100', self.conn.provisioning.version)
+        self.assertEqual('100', self.conn.system.version)
+        self.assertEqual('100', self.conn.settings.version)
+        self.assertEqual('100', self.conn.serviceability.version)
+        self.assertEqual('100', self.conn.replication.version)
+
+    def test_set_u4v_version_reset_falls_back_to_default(self):
+        """Resetting the version falls back to the packaged default."""
+        self.conn.set_u4v_version('100')
+        self.conn.set_u4v_version(None)
+        self.assertEqual(
+            constants.UNISPHERE_VERSION, self.conn.common.UNI_VERSION)
+        self.assertEqual(
+            constants.UNISPHERE_VERSION, self.conn.snapshot.common.UNI_VERSION)
 
     def test_validate_unisphere_failed_check(self):
         """Test Unisphere version validation fail scenario."""
