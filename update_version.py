@@ -33,15 +33,15 @@ def read_version():
     
     version_match = re.search(r"^VERSION\s*=\s*['\"]([^'\"]+)['\"]", content, re.MULTILINE)
     major_match = re.search(r"^MAJOR_VERSION\s*=\s*['\"]([^'\"]+)['\"]", content, re.MULTILINE)
-    uni_match = re.search(r"UNI_VERSION\s*=\s*['\"]([^'\"]+)['\"]", content)
-    
-    if not version_match or not major_match or not uni_match:
+
+    if not version_match or not major_match:
         raise RuntimeError("Unable to find version strings in PyU4V/version.py")
-    
+
+    major = major_match.group(1)
     return {
         'VERSION': version_match.group(1),
-        'MAJOR_VERSION': major_match.group(1),
-        'UNI_VERSION': uni_match.group(1)
+        'MAJOR_VERSION': major,
+        'UNI_VERSION': major + '.0',  # derived: '10.5' -> '10.5.0'
     }
 
 
@@ -65,7 +65,7 @@ def main():
     print(f"Read versions from PyU4V/version.py:")
     print(f"  VERSION: {versions['VERSION']}")
     print(f"  MAJOR_VERSION: {versions['MAJOR_VERSION']}")
-    print(f"  UNI_VERSION: {versions['UNI_VERSION']}")
+    print(f"  UNI_VERSION (derived): {versions['UNI_VERSION']}")
     print()
     
     # Extract old versions from the files to replace
