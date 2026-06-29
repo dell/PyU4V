@@ -28,8 +28,8 @@ Requirements
     version of Unisphere older than 9.1.x
 
 .. note::
-    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 & 3.12.
-    Python 2.x support has been dropped since January 1st 2020.
+    PyU4V officially supports Python 3.9, 3.10, 3.11, 3.12 & 3.13.
+    Python 2.x support was dropped in January 2020.
 
 PyU4V Version Compatibility
 ---------------------------
