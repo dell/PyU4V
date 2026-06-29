@@ -2,6 +2,26 @@
 
 ## Version 10.5
 
+### Dependency & packaging hygiene
+
+- **`urllib3` removed as a direct dependency** — it is a transitive dependency of
+  `requests` and listing it separately risked version-conflict errors with `urllib3` v2.
+  The import in `rest_requests.py` is retained (urllib3 is always present via `requests`)
+  but is no longer pinned separately.
+- **Version floor added for `requests`**: `requests>=2.28` is now required, matching the
+  minimum version that ships `urllib3>=1.26` (HTTPS/TLS 1.3 support).
+- **`urllib3.disable_warnings` made conditional**: the call that suppresses
+  `InsecureRequestWarning` was previously issued unconditionally at module-import time,
+  silencing warnings globally for any other library in the same process. It now fires only
+  when `verify=False` is explicitly passed to `RestRequests`.
+- **Python classifiers updated**: EOL versions (3.6–3.8) removed; 3.10–3.13 added.
+  `python_requires` bumped to `>=3.9, <4.0`.
+- **License classifier corrected**: was `MIT License` — now correctly states
+  `Apache Software License` to match the `LICENSE` file and `license='Apache-2.0'`.
+- **Docs dependency isolated**: `sphinx_rtd_theme` (and `sphinx`) moved from the
+  top-level `requirements.txt` to a new `docs/requirements.txt` so end-users do not
+  pull in Sphinx tooling.
+
 ### Versioning: single source of truth (no interface change)
 
 - **`common.UNI_VERSION` is now a live property** backed by the shared

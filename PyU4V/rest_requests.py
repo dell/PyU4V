@@ -33,7 +33,6 @@ ua_details = (
         pv=__pyu4v_version__, platform=__platform__,
         release=__platform_release__, python=__python_version__))
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 LOG = logging.getLogger(__name__)
 
 CONTENT_TYPE = constants.CONTENT_TYPE
@@ -67,6 +66,8 @@ class RestRequests(object):
         self.token = token  # <-- New
 
         self.verify_ssl = verify
+        if not verify:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.base_url = base_url
         self.headers = {
             CONTENT_TYPE: APP_JSON,
