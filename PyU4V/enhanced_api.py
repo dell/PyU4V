@@ -39,7 +39,7 @@ class EnhancedAPIFunctions(object):
         :param: storage_object, the storage object to get metadata for,
                 valid values are directors, hosts, initiators,
                 ip-interfaces, ip-routes, masking-views, port-groups, ports,
-                rdf-groups, storage-groups, volumes -- string
+                rdf-groups, storage-groups, volumes, fpins -- string
         :returns: dictionary with list of attributes and descriptions of
                  attribute types used for filtering and selection -- dict
         """
@@ -57,7 +57,7 @@ class EnhancedAPIFunctions(object):
         :param: storage_object, the storage object to get metadata for,
                 valid values are directors, hosts, initiators,
                 ip-interfaces, ip-routes, masking-views, port-groups, ports,
-                rdf-groups, storage-groups, volumes -- string
+                rdf-groups, storage-groups, volumes, fpins -- string
         :param array_id: The storage array ID -- string
         :param filters: filter parameters, used to narrow down the result
                         list, filters can be any of the volume attributes,

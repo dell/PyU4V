@@ -38,5 +38,29 @@ print(conn.enhanced_api.get_storage_object_details(
 print(conn.performance_enhanced.get_category_metrics(
     category='StorageGroup', filters=['id eq Aaron', 'time_range eq 2']))
 
+# get all metrics (not just KPI) for the Array category
+print(conn.performance_enhanced.get_category_metrics(
+    category='Array', all_metrics=True))
+
+# combine all_metrics with additional filters
+print(conn.performance_enhanced.get_category_metrics(
+    category='StorageGroup', filters=['id eq Aaron', 'time_range eq 2'],
+    all_metrics=True))
+
+# Get available FPIN metadata (attributes available for filtering/selection)
+print(conn.enhanced_api.get_storage_object_meta_data(storage_object='fpins'))
+
+# Retrieve all FPIN fabric notifications for this array
+print(conn.enhanced_api.get_storage_object_details(storage_object='fpins'))
+
+# Retrieve only high-impact Link_Integrity FPINs (potential data loss)
+print(conn.enhanced_api.get_storage_object_details(
+    storage_object='fpins', filters=['type eq Link_Integrity']))
+
+# Retrieve Delivery and Congestion FPINs using in operator
+print(conn.enhanced_api.get_storage_object_details(
+    storage_object='fpins',
+    filters=['type in (Delivery;Congestion)']))
+
 # Close the session
 conn.close_session()

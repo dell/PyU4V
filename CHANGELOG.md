@@ -2,6 +2,82 @@
 
 ## Version 10.5
 
+### Enhanced API – FPIN (Fabric Performance Impact Notification) support
+
+`get_storage_object_details()` and `get_storage_object_meta_data()` now accept
+`storage_object='fpins'` to retrieve fabric event notifications reported by the array.
+
+#### Background
+
+The array monitors SAN fabric events and automatically generates FPINs once the attached
+SAN switches support the FC-LS-5 FPIN standard. FPINs are exposed via the existing Enhanced
+API bulk-retrieval endpoint — pass `storage_object='fpins'` to any existing call with no
+new PyU4V method or code change required.
+
+#### FPIN types
+
+| Type | Description | Severity | Impact |
+|---|---|---|---|
+| `None` | No specific notification — informational | Low | Informational only |
+| `Link_Integrity` | Physical link issues detected | **High** | **Potential data loss** |
+| `Delivery` | Frame delivery problems | **High** | Performance degradation |
+| `Peer_Congestion` | Congestion at peer device | Medium | Potential slowdown |
+| `Congestion` | Fabric congestion detected | Medium | Performance impact |
+
+#### Use cases
+
+- **Automation** – integrate fabric monitoring into existing PyU4V workflows
+- **Proactive alerting** – build custom alerts on `Link_Integrity` / `Delivery` events
+  before impact reaches hosts
+- **Analytics** – analyse historical fabric performance trends
+- **Troubleshooting** – quickly identify root cause of performance issues
+- **Capacity planning** – make data-driven decisions for fabric upgrades
+- **Multi-array monitoring** – centralised FPIN monitoring across multiple systems
+
+#### Customer impact
+
+- Reduced MTTR (Mean Time To Resolution)
+- Improved SLA compliance
+- Better resource utilisation
+
+### Unisphere 10.5 API – new performance-categories features
+
+#### Volume category (new)
+
+- **`Volume` added to the bulk diagnostic endpoint.**
+  `GET /v1/systems/{id}/performance-categories/Volume` returns per-volume KPI metrics
+  at a 5-minute interval. Each instance includes a `storage_groups` field listing the
+  Storage Group(s) the volume belongs to.
+- Accessible via the existing `get_category_metrics(category='Volume', ...)` and
+  `get_all_performance_metrics_for_system()` calls — no code change required.
+
+#### New filter syntax – `in` / `notin` (applies to all bulk diagnostic categories)
+
+- **Include specific instances:** `filter=id in (SG1;SG2;SG3)` — returns data only
+  for the listed component IDs.
+- **Exclude specific instances:** `filter=id notin (SG1;SG2)` — returns data for all
+  instances except those listed.
+- Semicolon-separated values inside the parentheses; applies to **all** bulk diagnostic
+  performance categories, not just Volume.
+- These expressions can be passed directly through the existing `filters` list parameter,
+  e.g. `filters=["id in (SG1;SG2)"]`.
+- Use in / notin operators to include or exclude multiple instances in a 
+  single request — reducing round-trips and simplifying automation scripts.
+
+### Performance Enhanced – `get_category_metrics` all_metrics parameter
+
+- **`get_category_metrics` gains an `all_metrics` keyword argument** (default `False`).
+  When set to `True` the filter `metric_type eq All` is automatically appended to any
+  caller-supplied filters, causing the API to return every available metric for the
+  category rather than KPI metrics only. Existing call-sites are unaffected (non-breaking
+  change).
+- Unit tests added: `test_get_category_metrics_all_metrics_true`,
+  `test_get_category_metrics_all_metrics_with_existing_filters`, and
+  `test_get_category_metrics_all_metrics_false`.
+- CI tests added: `test_get_category_metrics_all_metrics` and
+  `test_get_category_metrics_all_metrics_with_filters`.
+- Docs example updated to demonstrate `all_metrics=True` usage.
+
 ### Packaging modernisation (PEP 517/518/621)
 
 - **`setup.py` removed** — all packaging configuration is now in `pyproject.toml`.

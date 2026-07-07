@@ -1,0 +1,4 @@
+# Documentation build dependencies.
+# Install with: pip install -r docs/requirements.txt
+sphinx>=7.0
+sphinx_rtd_theme>=2.0
