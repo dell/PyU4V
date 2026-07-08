@@ -1,5 +1,19 @@
 # PyU4V Change Log
 
+## Bug Fixes
+
+- **Removed OpenStack migration tooling**: Deleted `PyU4V/tests/unit_tests/test_migrate.py`
+  and `docs/source/tools.rst` now that `PyU4V/tools/openstack` is no longer part of the
+  codebase. Removed the `tools` entry from the Sphinx toctree and index page in
+  `docs/source/index.rst`.
+- **P1 – API-key auth** (`univmax_conn.py`): The token-based `RestRequests` constructor call
+  was passing the unsupported keyword `api_key=`. Changed to `token=api_key` to match the
+  `RestRequests.__init__` signature and restore the `U4VConn(api_key=…)` code path.
+- **P2 – Docs table** (`docs/source/index.rst`): Fixed malformed RST bold marker on the
+  *Minimum Unisphere Version* row (`**…*` → `**…**`).
+- **P2 – Docs ChangeLog link** (`docs/source/quick_start.rst`): Updated stale `ChangeLog`
+  URL to `CHANGELOG.md`.
+
 ## Version 10.5
 
 ### Enhanced API – FPIN (Fabric Performance Impact Notification) support

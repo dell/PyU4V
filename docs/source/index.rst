@@ -9,7 +9,6 @@
     contribute
     support
     programmers_guide
-    tools
     api
     genindex
 
@@ -37,7 +36,7 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **PyU4V Version**             | 10.5.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version*  | 10.5.0                                 |
+| **Minimum Unisphere Version** | 10.5.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -82,9 +81,6 @@ Getting Started
 
 :doc:`programmers_guide`
     A range of examples demonstrating various PyU4V module usage.
-
-:doc:`tools`
-  The tools guide for PyU4V
 
 :doc:`api`
     A glossary of all available functions.

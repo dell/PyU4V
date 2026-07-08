@@ -141,4 +141,4 @@ functions using PyU4V.
 
 .. Links
 
-.. _link: https://github.com/dell/PyU4V/blob/master/ChangeLog
+.. _link: https://github.com/dell/PyU4V/blob/master/CHANGELOG.md

@@ -153,8 +153,9 @@ class U4VConn(object):
         else:
             # API-key auth path
             self.rest_client = RestRequests(
-                verify, base_url, interval, retries, application_type,
-                proxies=proxies, timeout=self.timeout, api_key=api_key)
+                verify=verify, base_url=base_url, interval=interval,
+                retries=retries, application_type=application_type,
+                proxies=proxies, timeout=self.timeout, token=api_key)
 
         # Enhanced client
         self.enhanced_rest_client = RestRequests(
