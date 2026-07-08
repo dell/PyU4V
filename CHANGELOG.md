@@ -1,5 +1,11 @@
 # PyU4V Change Log
 
+## Documentation
+
+- **Added `AGENTS.md`**: Contributor guide covering dev setup, unit-test and linting
+  commands, PEP 8 standards, API compatibility rules (additions, deprecation decorators,
+  breaking-change policy), and the PR process.
+
 ## Bug Fixes
 
 - **Removed OpenStack migration tooling**: Deleted `PyU4V/tests/unit_tests/test_migrate.py`
@@ -19,7 +25,8 @@
 ### Enhanced API – FPIN (Fabric Performance Impact Notification) support
 
 `get_storage_object_details()` and `get_storage_object_meta_data()` now accept
-`storage_object='fpins'` to retrieve fabric event notifications reported by the array.
+`storage_object='fpins'` to retrieve fabric event notifications reported by 
+the array requires Unisphere for PowerMax 10.5.0 or later.
 
 #### Background
 
