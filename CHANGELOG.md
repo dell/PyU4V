@@ -5,6 +5,8 @@
 - **Added `AGENTS.md`**: Contributor guide covering dev setup, unit-test and linting
   commands, PEP 8 standards, API compatibility rules (additions, deprecation decorators,
   breaking-change policy), and the PR process.
+- **Added `REVIEW_PLAN.md`**: Records completed compatibility-safe fixes and reprioritises
+  the remaining reliability, test, tooling, documentation, and compatibility-sensitive work.
 
 ## Bug Fixes
 
@@ -12,9 +14,34 @@
   and `docs/source/tools.rst` now that `PyU4V/tools/openstack` is no longer part of the
   codebase. Removed the `tools` entry from the Sphinx toctree and index page in
   `docs/source/index.rst`.
-- **P1 – API-key auth** (`univmax_conn.py`): The token-based `RestRequests` constructor call
-  was passing the unsupported keyword `api_key=`. Changed to `token=api_key` to match the
-  `RestRequests.__init__` signature and restore the `U4VConn(api_key=…)` code path.
+- **P1 – API-key auth** (`univmax_conn.py`): Explicit API keys now take precedence over
+  configuration-file basic credentials and are passed to both the primary and enhanced REST
+  clients. Server details and a valid basic-or-token authentication choice are validated before
+  either client is created.
+- **P1 – array state propagation** (`univmax_conn.py`): `set_array_id()` now updates every
+  top-level and nested array-scoped component, including settings, Metro DR, enhanced API,
+  real-time performance, and nested provisioning/delegation helpers.
+- **P1 – enhanced API selection** (`enhanced_api.py`, `volumes.py`, `storage_groups.py`):
+  Selection clauses no longer duplicate attributes or include default-excluded snapshots/RDF
+  information. Passing `exclude=[]` now explicitly includes all metadata, and caller-owned
+  selection lists are not modified.
+- **P1 – alert notification partial updates** (`settings.py`): Omitted notification categories
+  remain unchanged, supplied payloads are copied, explicit `False` values disable email/SNMP/
+  syslog targets, and integer or string SNMPv3 versions retain their full target details.
+- **P2 – REST client lifecycle parity** (`univmax_conn.py`): `close_session()` and
+  `set_requests_timeout()` now apply to both primary and enhanced REST clients.
+- **P2 – serviceability correctness** (`serviceability.py`): Explicit array overrides now
+  reach the symavoid URI, nethost actions are validated before REST calls, and custom
+  certificate paths are validated without assertions. Certificate file handles remain open
+  for the synchronous upload and close on both success and failure; valid-call signatures,
+  payloads, responses, and propagated upload exceptions are unchanged.
+- **P2 – performance decorator metadata** (`utils/decorators.py`): Performance recommendation
+  wrappers now preserve the original public method names, modules, docstrings, and reflected
+  signatures. Direct calls, logging, return values, and propagated exceptions are unchanged.
+- **Regression coverage**: Added exact authentication, array-object-graph, enhanced URI,
+  notification-payload, timeout, session-close, serviceability URI/payload, invalid-input,
+  optimized-mode validation, certificate resource-lifecycle, and decorator metadata/forwarding
+  unit tests without changing public method signatures.
 - **P2 – Docs table** (`docs/source/index.rst`): Fixed malformed RST bold marker on the
   *Minimum Unisphere Version* row (`**…*` → `**…**`).
 - **P2 – Docs ChangeLog link** (`docs/source/quick_start.rst`): Updated stale `ChangeLog`

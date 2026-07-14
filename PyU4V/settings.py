@@ -303,80 +303,72 @@ class SettingsFunctions(object):
         email, SNMP, and/or syslog.
         """
 
-        if not payload:
-            payload = {}
+        # Build a new top-level payload so partial updates do not modify a
+        # dictionary owned by the caller.
+        payload = dict(payload) if payload is not None else {}
 
         # Handle email settings
-        if enable_email:
-            email_payload = {
-                "email": {
-                    "enabled": enable_email,
+        if enable_email is not None:
+            if enable_email:
+                if not all([email_server, sender_address, email_port]):
+                    raise ValueError(
+                        "enable_email is True but email server, sender "
+                        "address, or email port is missing.")
+                email_payload = {
+                    "enabled": True,
                     "email_server": email_server,
                     "sender_address": sender_address,
                     "email_port": email_port
                 }
-            }
-            if not all([email_server, sender_address, email_port]):
-                raise ValueError(
-                    "enable_email is True but email server, sender address, "
-                    "or email port is missing.")
-
-        else:
-            email_payload = {"email": {
-                "enabled": enable_email
-            }}
-        payload.update(email_payload)
+            else:
+                email_payload = {"enabled": False}
+            payload["email"] = email_payload
 
         # Handle SNMP settings
-        if enable_snmp:
-            snmp_payload = {
-                "snmp": {
-                    "enabled": enable_snmp,
-                    "snmp_trap_targets": [
-                        {
-                            "host": snmp_host,
-                            "port": snmp_port,
-                            "version": snmp_version
+        if enable_snmp is not None:
+            if enable_snmp:
+                snmp_target = {
+                    "host": snmp_host,
+                    "port": snmp_port,
+                    "version": snmp_version
+                }
+
+                # SNMPv3 specific fields. Accept both the documented integer
+                # value and the equivalent string used by existing scripts.
+                if str(snmp_version) == "3":
+                    snmp_target["security_model"] = snmp_security_model
+                    snmp_target["authorization"] = {
+                        "username": snmp_username,
+                        "password": snmp_password,
+                        "passphrase": snmp_passphrase
+                    }
+
+                    if tls_security_name and certificate_authority_pem:
+                        snmp_target["tls"] = {
+                            "security_name": tls_security_name,
+                            "certificate_authority_pem":
+                                certificate_authority_pem
                         }
-                    ]
-                }
-            }
 
-            # SNMPv3 specific fields
-            if snmp_version == "3":
-                snmp_target = snmp_payload["snmp"]["snmp_trap_targets"][0]
-                snmp_target["security_model"] = snmp_security_model
-                snmp_target["authorization"] = {
-                    "username": snmp_username,
-                    "password": snmp_password,
-                    "passphrase": snmp_passphrase
-                }
-
-                if tls_security_name and certificate_authority_pem:
-                    snmp_target["tls"] = {
-                        "security_name": tls_security_name,
-                        "certificate_authority_pem": certificate_authority_pem
-                    }
-            else:
                 snmp_payload = {
-                    "snmp": {
-                        "enabled": enable_snmp
-                    }
+                    "enabled": True,
+                    "snmp_trap_targets": [snmp_target]
                 }
-
-            payload.update(snmp_payload)
+            else:
+                snmp_payload = {"enabled": False}
+            payload["snmp"] = snmp_payload
 
         # Handle syslog settings
-        if enable_syslog:
-            if not all([syslog_host, syslog_protocol, syslog_text_format,
-                        tls is not None, syslog_port]):
-                raise ValueError(
-                    "enable_syslog is True but one or more required syslog "
-                    "fields are missing.")
+        if enable_syslog is not None:
+            if enable_syslog:
+                if not all([syslog_host, syslog_protocol, syslog_text_format,
+                            tls is not None, syslog_port]):
+                    raise ValueError(
+                        "enable_syslog is True but one or more required "
+                        "syslog fields are missing.")
 
-            syslog_payload = {
-                "syslog": {
-                    "enabled": enable_syslog,
+                syslog_payload = {
+                    "enabled": True,
                     "syslog_target": {
                         "host": syslog_host,
                         "protocol": syslog_protocol,
@@ -385,8 +377,9 @@ class SettingsFunctions(object):
                         "port": syslog_port
                     }
                 }
-            }
-            payload.update(syslog_payload)
+            else:
+                syslog_payload = {"enabled": False}
+            payload["syslog"] = syslog_payload
 
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"

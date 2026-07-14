@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Editor backup files
+*~
+
 # C extensions
 *.so
 

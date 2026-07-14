@@ -50,3 +50,36 @@ class PyU4VStorageGroupsTest(testtools.TestCase):
                 self.common, 'get_request') as mock_get:
             self.storage_groups.get_storage_groups_details()
         mock_get.assert_called()
+
+    def test_get_storage_groups_details_default_exclusions(self):
+        """Default selection excludes snapshots and RDF information."""
+        metadata = [
+            {'name': 'id'}, {'name': 'snapshots'},
+            {'name': 'rdf_infos'}, {'name': 'num_of_volumes'}]
+        with mock.patch.object(
+                self.storage_groups, 'get_storage_groups_meta_data',
+                return_value=metadata), mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+            self.storage_groups.get_storage_groups_details()
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.storage_groups.enhanced_api_version}/systems/"
+                       f"{self.data.array}/storage-groups"
+                       f"?select=id,num_of_volumes",
+            resource_type=None)
+
+    def test_get_storage_groups_details_empty_exclusions(self):
+        """An empty exclusion list explicitly includes every attribute."""
+        metadata = [
+            {'name': 'id'}, {'name': 'snapshots'}, {'name': 'rdf_infos'}]
+        with mock.patch.object(
+                self.storage_groups, 'get_storage_groups_meta_data',
+                return_value=metadata), mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+            self.storage_groups.get_storage_groups_details(exclude=[])
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.storage_groups.enhanced_api_version}/systems/"
+                       f"{self.data.array}/storage-groups"
+                       f"?select=id,snapshots,rdf_infos",
+            resource_type=None)

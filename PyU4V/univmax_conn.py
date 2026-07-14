@@ -98,10 +98,15 @@ class U4VConn(object):
 
         # Set environment config
         if config is not None:
-            if not username:
-                username = config.get(SETUP, USERNAME)
-            if not password:
-                password = config.get(SETUP, PASSWORD)
+            # Explicit token authentication takes precedence over basic
+            # credentials from the configuration file. Explicitly supplied
+            # username/password values are still retained for compatibility,
+            # but RestRequests will prefer the token when both are present.
+            if not api_key:
+                if not username:
+                    username = config.get(SETUP, USERNAME)
+                if not password:
+                    password = config.get(SETUP, PASSWORD)
             if not server_ip:
                 server_ip = config.get(SETUP, SERVER_IP)
             if not port:
@@ -136,31 +141,30 @@ class U4VConn(object):
             except Exception:
                 verify = True
 
-        if None in [username, password, server_ip, port] and api_key is None:
-            # Keep legacy behavior: either username+password or api_key
-            # must be provided
+        missing_server = server_ip is None or port is None
+        missing_auth = not api_key and (
+            username is None or password is None)
+        if missing_server or missing_auth:
+            # A server and either username/password or an API key are
+            # required for both REST clients.
             raise exception.MissingConfigurationException
 
         # Initialise REST sessions
         base_url = f'https://{server_ip}:{port}/univmax/restapi'
         enhanced_api_url = f'https://{server_ip}:{port}/univmax/rest'
 
-        if username and password:
-            self.rest_client = RestRequests(
-                username, password, verify, base_url, interval, retries,
-                application_type, proxies=proxies, timeout=self.timeout,
-            )
-        else:
-            # API-key auth path
-            self.rest_client = RestRequests(
-                verify=verify, base_url=base_url, interval=interval,
-                retries=retries, application_type=application_type,
-                proxies=proxies, timeout=self.timeout, token=api_key)
+        self.rest_client = RestRequests(
+            username=username, password=password, verify=verify,
+            base_url=base_url, interval=interval, retries=retries,
+            application_type=application_type, proxies=proxies,
+            timeout=self.timeout, token=api_key)
 
         # Enhanced client
         self.enhanced_rest_client = RestRequests(
-            username, password, verify, enhanced_api_url, interval, retries,
-            application_type, proxies=proxies, timeout=self.timeout)
+            username=username, password=password, verify=verify,
+            base_url=enhanced_api_url, interval=interval, retries=retries,
+            application_type=application_type, proxies=proxies,
+            timeout=self.timeout, token=api_key)
 
 # Persist version on clients so any downstream CommonFunctions can pick it up
         self.rest_client.u4v_version = self.u4v_version
@@ -217,32 +221,47 @@ class U4VConn(object):
     def close_session(self):
         """Close the current rest session."""
         self.rest_client.close_session()
+        self.enhanced_rest_client.close_session()
 
     def set_requests_timeout(self, timeout_value):
         """Set the requests timeout.
         :param timeout_value: the new timeout value -- int
         """
         self.rest_client.timeout = timeout_value
+        self.enhanced_rest_client.timeout = timeout_value
 
     def set_array_id(self, array_id):
         """Set the array serial number.
         :param array_id: the array serial number -- str
         """
         self.array_id = array_id
-        self.performance.array_id = array_id
-        self.provisioning.array_id = array_id
-        self.replication.array_id = array_id
-        self.snapshot.array_id = array_id
-        self.srdf.array_id = array_id
-        self.migration.array_id = array_id
-        self.wlp.array_id = array_id
-        self.system.array_id = array_id
-        self.storage_groups.array_id = array_id
-        self.performance_enhanced.array_id = array_id
-        self.snapshot_policy.array_id = array_id
-        self.volumes.array_id = array_id
-        self.clone.array_id = array_id
-        self.serviceability.array_id = array_id
+        components = [
+            self.clone, self.provisioning, self.performance,
+            self.replication, self.snapshot, self.srdf, self.metro_dr,
+            self.migration, self.wlp, self.snapshot_policy, self.system,
+            self.serviceability, self.performance_enhanced, self.volumes,
+            self.storage_groups, self.enhanced_api, self.settings,
+        ]
+        child_attributes = ('provisioning', 'real_time', '_snapshot', '_srdf')
+        visited = set()
+
+        while components:
+            component = components.pop()
+            component_id = id(component)
+            if component_id in visited:
+                continue
+            visited.add(component_id)
+
+            set_component_array = getattr(component, 'set_array_id', None)
+            if callable(set_component_array):
+                set_component_array(array_id)
+            else:
+                component.array_id = array_id
+
+            for attribute in child_attributes:
+                child = getattr(component, attribute, None)
+                if child is not None:
+                    components.append(child)
 
     def set_u4v_version(self, version: str):
         """Update the Unisphere API version and propagate.

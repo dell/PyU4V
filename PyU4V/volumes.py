@@ -17,6 +17,7 @@ import logging
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
+from PyU4V.utils.enhanced_api_utils import _build_select_clause
 
 LOG = logging.getLogger(__name__)
 
@@ -78,16 +79,8 @@ class VolumesFunctions(object):
         :returns: dict
         """
         array_id = array_id if array_id else self.array_id
-        if not exclude:
-            exclude = ['rdf_infos', 'snapshots']
-        if not select:
-            select = []
-            volume_metadata = self.get_volumes_meta_data()
-            for attribute in volume_metadata:
-                if attribute['name'] not in exclude:
-                    select.append(attribute['name'])
-                select.append(attribute['name'])
-        select = ','.join(select)
+        metadata = self.get_volumes_meta_data() if not select else []
+        select = _build_select_clause(metadata, select, exclude)
         if filters:
             filters = '&filter=' + ','.join(filters)
         else:

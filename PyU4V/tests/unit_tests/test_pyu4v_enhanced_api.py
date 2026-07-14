@@ -52,6 +52,58 @@ class PyU4VEnhancedApiTest(testtools.TestCase):
                 storage_object='volumes')
         mock_get.assert_called()
 
+    def test_get_storage_object_details_default_exclusions(self):
+        """Default selection excludes expensive nested attributes."""
+        metadata = [
+            {'name': 'id'}, {'name': 'snapshots'},
+            {'name': 'rdf_infos'}, {'name': 'identifier'}]
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=metadata), mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details('volumes')
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.enhanced_api.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes?select=id,identifier",
+            resource_type=None)
+
+    def test_get_storage_object_details_empty_exclusions(self):
+        """An empty exclusion list explicitly includes every attribute."""
+        metadata = [
+            {'name': 'id'}, {'name': 'snapshots'}, {'name': 'rdf_infos'}]
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=metadata), mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                'volumes', exclude=[])
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.enhanced_api.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes"
+                       f"?select=id,snapshots,rdf_infos",
+            resource_type=None)
+
+    def test_get_storage_object_details_preserves_explicit_selection(self):
+        """Explicit selection bypasses metadata and is not modified."""
+        selected = ['id', 'snapshots.name']
+        with mock.patch.object(
+                self.enhanced_api,
+                'get_storage_object_meta_data') as metadata:
+            with mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+                self.enhanced_api.get_storage_object_details(
+                    'volumes', filters=['id eq 00001'], select=selected)
+
+        metadata.assert_not_called()
+        self.assertEqual(['id', 'snapshots.name'], selected)
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.enhanced_api.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes"
+                       f"?select=id,snapshots.name&filter=id eq 00001",
+            resource_type=None)
+
     def test_get_storage_object_meta_data_fpins(self):
         with mock.patch.object(
                 self.common, 'get_request') as mock_get:

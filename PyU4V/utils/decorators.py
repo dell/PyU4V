@@ -116,6 +116,7 @@ def performance_enhanced_recommendation(func_class):
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             LOG.info(
                 'For improved usability and code efficiency by reducing the '

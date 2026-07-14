@@ -16,6 +16,7 @@
 import logging
 import time
 
+from contextlib import ExitStack
 from datetime import datetime
 from pathlib import Path
 
@@ -56,6 +57,11 @@ CUSTOM_CERTIFICATE = constants.CUSTOM_CERTIFICATE
 IMPORT = constants.IMPORT
 SELF_SIGNED_CERTIFICATE = constants.SELF_SIGNED_CERTIFICATE
 FILE_READ_MODE = constants.FILE_READ_MODE
+
+_NETHOST_ACTIONS = {
+    'add': ('AddNethost', 'add_nethost'),
+    'remove': ('DeleteNethost', 'delete_nethost')
+}
 
 
 class ServiceabilityFunctions(object):
@@ -314,8 +320,8 @@ class ServiceabilityFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         return self.common.get_request(
-            f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
-            f"{self.array_id}/application/unisphere/system",
+            target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix/"
+            f"{array_id}/application/unisphere/system",
             resource_type=None)
 
     def update_symavoid_settings(self, array_id=None,
@@ -379,17 +385,21 @@ class ServiceabilityFunctions(object):
         :param user: username to be granted access -- str
         :param array_id: array_id -- str
         :returns: net host configuration -- dict
+        :raises: InvalidInputException
         """
 
         array_id = self.array_id if not array_id else array_id
-        if action.lower() == 'add':
-            action = 'AddNethost'
-            payload_action = 'add_nethost'
-        elif action.lower() == 'remove':
-            action = 'DeleteNethost'
-            payload_action = 'delete_nethost'
+        normalized_action = action.lower() if isinstance(action, str) else None
+        try:
+            wire_action, payload_action = _NETHOST_ACTIONS[normalized_action]
+        except KeyError as error:
+            msg = (
+                "Invalid nethost action '{action}'. Valid values are 'add' "
+                "and 'remove'.".format(action=action))
+            LOG.error(msg)
+            raise exception.InvalidInputException(msg) from error
 
-        payload = {"action": action,
+        payload = {"action": wire_action,
                    payload_action:
                        {
                            "node_name": host_name,
@@ -464,51 +474,47 @@ class ServiceabilityFunctions(object):
         :param keyfile: Path to alternate key file all_key.pem. -- str
         :param certfile: Path to alternate certificate file all.pem. -- str
         :param trustfile: Path to alternate trust certificate file
-                          trust.pem. -- str
+                           trust.pem. -- str
         :returns: SECertificateInfo -- dict
+        :raises: InvalidInputException
         """
         array_id = self.array_id if not array_id else array_id
-        try:
-            f_path = Path(keyfile)
-            assert f_path.is_file() is True
-            LOG.info('Uploading settings from {p}'.format(p=f_path))
-            keyfiledata = open(f_path, FILE_READ_MODE)
-        except (TypeError, AssertionError) as error:
-            msg = (
-                'Invalid file path supplied for settings upload '
-                'location: {f}'.format(f=keyfile))
-            LOG.error(msg)
-            raise exception.InvalidInputException(msg) from error
-        try:
-            f_path = Path(trustfile)
-            assert f_path.is_file() is True
-            LOG.info('Uploading settings from {p}'.format(p=f_path))
-            trustfiledata = open(f_path, FILE_READ_MODE)
-        except (TypeError, AssertionError) as error:
-            msg = (
-                'Invalid file path supplied for settings upload '
-                'location: {f}'.format(f=trustfile))
-            LOG.error(msg)
-            raise exception.InvalidInputException(msg) from error
-        try:
-            f_path = Path(certfile)
-            assert f_path.is_file() is True
-            LOG.info('Uploading settings from {p}'.format(p=f_path))
-            certfiledata = open(f_path, FILE_READ_MODE)
-        except (TypeError, AssertionError) as error:
-            msg = (
-                'Invalid file path supplied for settings upload '
-                'location: {f}'.format(f=certfiledata))
-            LOG.error(msg)
-            raise exception.InvalidInputException(msg) from error
-        form_data = {'node_name': node_name, 'keyfile': keyfiledata,
-                     'trustfile': trustfiledata, 'certfile': certfiledata}
+        file_inputs = (
+            ('keyfile', keyfile),
+            ('trustfile', trustfile),
+            ('certfile', certfile)
+        )
+        file_paths = {}
+        for field_name, file_path in file_inputs:
+            try:
+                path = Path(file_path)
+            except TypeError as error:
+                msg = (
+                    'Invalid file path supplied for settings upload '
+                    'location: {f}'.format(f=file_path))
+                LOG.error(msg)
+                raise exception.InvalidInputException(msg) from error
+            if not path.is_file():
+                msg = (
+                    'Invalid file path supplied for settings upload '
+                    'location: {f}'.format(f=file_path))
+                LOG.error(msg)
+                raise exception.InvalidInputException(msg)
+            file_paths[field_name] = path
 
-        return self.common.upload_file(
-            target_uri=f"/{self.common.UNI_VERSION}/serviceability"
-            f"/symmetrix/{array_id}/application"
-            f"/solutions_enabler/custom_certificate/import",
-            form_data=form_data)
+        with ExitStack() as file_stack:
+            form_data = {'node_name': node_name}
+            for field_name, _ in file_inputs:
+                path = file_paths[field_name]
+                LOG.info('Uploading settings from {p}'.format(p=path))
+                form_data[field_name] = file_stack.enter_context(
+                    path.open(FILE_READ_MODE))
+
+            return self.common.upload_file(
+                target_uri=f"/{self.common.UNI_VERSION}/serviceability"
+                f"/symmetrix/{array_id}/application"
+                f"/solutions_enabler/custom_certificate/import",
+                form_data=form_data)
 
     def replace_self_signed_certificate(self, array_id=None,
                                         node_name=None):
