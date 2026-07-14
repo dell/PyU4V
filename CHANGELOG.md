@@ -72,7 +72,7 @@ new PyU4V method or code change required.
 - Accessible via the existing `get_category_metrics(category='Volume', ...)` and
   `get_all_performance_metrics_for_system()` calls — no code change required.
 
-#### New filter syntax – `in` / `notin` (applies to all bulk diagnostic categories)
+#### New filter syntax – `in` / `notin` (applies to all enhanced performance categories)
 
 - **Include specific instances:** `filter=id in (SG1;SG2;SG3)` — returns data only
   for the listed component IDs.

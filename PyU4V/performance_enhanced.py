@@ -122,7 +122,9 @@ class EnhancedPerformanceFunctions:
                         24 in hours, you can also specify data_format to
                         return Average or Maximum values, note for max
                         values to be retuned you must be registered for
-                        realtime statistics -- list
+                        realtime statistics - filters =['id in (SG1;SG2;SG3)'] — returns data only
+                        for the listed component IDs.`filter=['id notin (SG1;SG2)`] — returns data for all instances
+                        except those listed-- list
         :param all_metrics: when True adds 'metric_type eq All' filter to
                             return all available metrics instead of KPI
                             metrics only, default is False -- bool
