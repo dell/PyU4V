@@ -136,3 +136,4 @@ PyU4V/tests/ci_tests/PyU4V.conf
 PyU4V/tests/ci_tests/PyU4V.log
 
 .qodo
+outputs/
