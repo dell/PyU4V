@@ -187,6 +187,38 @@ Note
     specified version is not supported by the server, PyU4V will exit with an error
     listing the supported versions.
 
+Skipping the Version Check
+--------------------------
+
+If you need maximum flexibility - for example to talk to a Unisphere server
+whose version is below the SDK minimum, or to force a specific ``u4v_version``
+that the server does not advertise as supported - set ``skip_version_check``.
+When enabled, PyU4V logs a warning instead of exiting, and API calls use the
+supplied ``u4v_version`` if set, otherwise the packaged default for the
+release. Requests that are unsupported at the resolved version simply return
+the server's error (for example a 404), which your code can handle.
+
+Configure in ``PyU4V.conf``:
+
+.. code-block:: ini
+
+    [setup]
+    skip_version_check=True
+
+Or pass it on initialisation:
+
+.. code-block:: python
+
+    import PyU4V
+
+    # Force API version 92 without failing the version check
+    conn = PyU4V.U4VConn(u4v_version='92', skip_version_check=True)
+
+Note
+    ``skip_version_check`` defaults to ``False``, preserving the existing
+    strict validation behaviour. Enable it only if you are prepared to handle
+    unsupported-endpoint errors in your own code.
+
 Note
     As of 10.5 the active API version is held in a single place (the shared REST
     client) and exposed live via ``conn.common.UNI_VERSION``. Calling

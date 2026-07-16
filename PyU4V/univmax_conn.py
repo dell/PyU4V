@@ -64,9 +64,20 @@ class U4VConn(object):
                  interval=5, retries=200, array_id=None,
                  application_type=app_type, remote_array=None,
                  remote_array_2=None, proxies=None, timeout=None,
-                 api_key=None):
+                 api_key=None, skip_version_check=False):
         """__init__.
         Persist user-specified u4v_version across all calls.
+
+        :param skip_version_check: When True, the minimum Unisphere version
+                                   check is skipped and any custom
+                                   ``u4v_version`` is accepted without failing
+                                   validation. API calls default to the
+                                   packaged version (see ``version.py``) unless
+                                   a ``u4v_version`` is supplied, in which case
+                                   that version is used for API calls. Requests
+                                   unsupported at the resolved version return
+                                   the server error (e.g. 404) for the caller
+                                   to handle. Defaults to False. -- bool
         """
         config = config_handler.set_logger_and_config(file_path)
         self.end_date = int(round(time.time() * 1000))
@@ -78,6 +89,12 @@ class U4VConn(object):
         # Cache of server-supported API versions, populated lazily by
         # validate_unisphere() when a custom API version is in use.
         self.supported_api_versions = None
+
+        # When True, relax version validation: skip the minimum version check
+        # and accept a custom u4v_version without failing (logs a warning
+        # instead of exiting). May also be set via config [setup]
+        # skip_version_check.
+        self.skip_version_check = bool(skip_version_check)
 
         # Track custom API version intent
         if u4v_version:
@@ -120,6 +137,13 @@ class U4VConn(object):
 
             if config.has_option(SETUP, 'timeout') and timeout is None:
                 self.timeout = int(config.get(SETUP, 'timeout'))
+
+            if (config.has_option(SETUP, 'skip_version_check') and not
+                    self.skip_version_check):
+                self.skip_version_check = config.getboolean(
+                    SETUP, 'skip_version_check')
+                LOG.debug('skip_version_check sourced from config [setup]: %s',
+                          self.skip_version_check)
 
             if (config.has_option(SETUP, 'u4v_version') and not (
                     self.custom_api_version)):
@@ -284,7 +308,11 @@ class U4VConn(object):
     def validate_unisphere(self):
         """Check that the minimum version of Unisphere is in-use.
         If the version of Unisphere used does not meet minimum requirements
-        the application will exit gracefully.
+        the application will exit gracefully, unless ``skip_version_check``
+        is enabled, in which case a warning is logged and execution continues
+        using the resolved API version (``u4v_version`` if supplied, otherwise
+        the packaged default). Unsupported requests may then return server
+        errors (e.g. 404) for the caller to handle.
         :raises: SystemExit
         """
         uni_ver, major_ver = self.common.get_uni_version()
@@ -296,17 +324,34 @@ class U4VConn(object):
             supported_versions = version_info.get('supported_api_versions', [])
             self.supported_api_versions = supported_versions
             if self.u4v_version not in supported_versions:
-                msg = (
+                unsupported_msg = (
                     f'API version {self.u4v_version} is not supported by this '
-                    f'Unisphere server. Supported versions: {supported_versions}. '
+                    f'Unisphere server. Supported versions: '
+                    f'{supported_versions}. '
                     f'Exiting...')
-                sys.exit(msg)
+                if self.skip_version_check:
+                    LOG.warning(
+                        'API version %s is not in the server-supported '
+                        'versions %s. Continuing anyway because '
+                        'skip_version_check is enabled; unsupported requests '
+                        'may return errors (e.g. 404).',
+                        self.u4v_version, supported_versions)
+                else:
+                    sys.exit(unsupported_msg)
         elif int(major_ver) < int(API_VERSION):
             msg = (
                 f'Unisphere version {uni_ver} does not meet the minimum '
                 f'requirement of v{MAJOR_VERSION} Please upgrade your '
                 f'version of Unisphere to use this SDK. Exiting...')
-            sys.exit(msg)
+            if self.skip_version_check:
+                LOG.warning(
+                    'Unisphere version %s does not meet the minimum '
+                    'requirement of v%s, but skip_version_check is enabled. '
+                    'API calls will use version %s; unsupported requests may '
+                    'return errors (e.g. 404).',
+                    uni_ver, MAJOR_VERSION, self.common.UNI_VERSION)
+            else:
+                sys.exit(msg)
         else:
             LOG.debug('Unisphere version {uv} passes minimum requirement '
                       'check.'.format(uv=uni_ver))

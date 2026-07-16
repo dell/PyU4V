@@ -155,6 +155,41 @@ class PyU4VUnivmaxConnTest(testtools.TestCase):
                                return_value=('v9.0.0', '90')):
             self.assertRaises(SystemExit, self.conn.validate_unisphere)
 
+    def test_validate_unisphere_skip_version_check_below_minimum(self):
+        """skip_version_check bypasses the minimum version exit."""
+        self.conn.skip_version_check = True
+        self.conn.custom_api_version = False
+        with mock.patch.object(self.common, 'get_uni_version',
+                               return_value=('v9.0.0', '90')):
+            # Should not raise SystemExit.
+            self.conn.validate_unisphere()
+
+    def test_validate_unisphere_skip_version_check_custom_unsupported(self):
+        """skip_version_check accepts an unsupported custom API version."""
+        self.conn.skip_version_check = True
+        self.conn.custom_api_version = True
+        self.conn.u4v_version = '92'
+        with mock.patch.object(
+                self.common, 'get_uni_version',
+                return_value=('v10.5.0.0', '105')), mock.patch.object(
+                    self.common, 'get_uni_version_info',
+                    return_value={'supported_api_versions': ['105', '100']}):
+            # Should not raise SystemExit even though '92' is unsupported.
+            self.conn.validate_unisphere()
+        self.assertEqual(['105', '100'], self.conn.supported_api_versions)
+
+    def test_validate_unisphere_custom_unsupported_exits_without_skip(self):
+        """Without skip_version_check an unsupported custom version exits."""
+        self.conn.skip_version_check = False
+        self.conn.custom_api_version = True
+        self.conn.u4v_version = '92'
+        with mock.patch.object(
+                self.common, 'get_uni_version',
+                return_value=('v10.5.0.0', '105')), mock.patch.object(
+                    self.common, 'get_uni_version_info',
+                    return_value={'supported_api_versions': ['105', '100']}):
+            self.assertRaises(SystemExit, self.conn.validate_unisphere)
+
 
 class PyU4VUnivmaxConnTestConfigFile(testtools.TestCase):
 

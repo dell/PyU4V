@@ -1,5 +1,17 @@
 # PyU4V Change Log
 
+## New Features
+
+- **Optional version-check bypass** (`univmax_conn.py`): Added a
+  `skip_version_check` parameter to `U4VConn` (also settable via the config
+  `[setup]` section). When enabled, the minimum Unisphere version check is
+  skipped and any custom `u4v_version` is accepted without failing validation
+  (a warning is logged instead of exiting). API calls use the supplied
+  `u4v_version` if set, otherwise the packaged default from `version.py`.
+  Requests unsupported at the resolved version return the server error
+  (e.g. 404) for the caller to handle. Defaults to `False`, preserving the
+  existing strict behaviour.
+
 ## Documentation
 
 - **Added `AGENTS.md`**: Contributor guide covering dev setup, unit-test and linting
