@@ -76,3 +76,12 @@ class CITestEnhancedApi(base.TestBaseTestCase, testtools.TestCase):
             select=['id', 'type'])
         if result is not None:
             self.assertIsInstance(result, (dict, list))
+
+    def test_get_volume_details_with_force_refresh(self):
+        """Verify one forced-refresh bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='volumes',
+            select=['id'],
+            force_refresh=True)
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))

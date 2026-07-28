@@ -2,6 +2,14 @@
 
 ## New Features
 
+- **Enhanced API force refresh** (`enhanced_api.py`):
+  `get_storage_object_details()` now accepts an optional `force_refresh`
+  parameter. When `True`, the request includes `force_refresh=true` so
+  Unisphere returns the most up-to-date information available. The parameter
+  defaults to `False` and is omitted from the request to preserve existing
+  behavior. The API permits one force-refresh request per second; HTTP 429
+  responses, including `retry_after_ms`, propagate through the existing
+  backend exception without automatic retry.
 - **Optional version-check bypass** (`univmax_conn.py`): Added a
   `skip_version_check` parameter to `U4VConn` (also settable via the config
   `[setup]` section). When enabled, the minimum Unisphere version check is

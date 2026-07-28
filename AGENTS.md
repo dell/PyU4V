@@ -48,6 +48,17 @@ CI tests (`PyU4V/tests/ci_tests/`) require a live array and are run by maintaine
 - Use keyword arguments for all new REST call wrappers to stay consistent with the existing API surface.
 - Prefer `/v1/` Unisphere REST endpoints; use `enhanced_api` / `performance_enhanced` module helpers where available.
 
+### Line Endings
+
+- Before editing, inspect every target with `git ls-files --eol -- <paths>` and
+  preserve its existing worktree line-ending style (`w/crlf` or `w/lf`).
+- Follow `.gitattributes` when it defines an explicit policy. Do not change a
+  file's line-ending style as part of an unrelated change.
+- Patch tools can insert LF lines into CRLF files. After editing, normalize the
+  entire touched file back to its original worktree style.
+- Before handoff, run `git ls-files --eol -- <touched-paths>` and confirm that no
+  touched file reports `w/mixed`; also run `git diff --check`.
+
 ---
 
 ## API Compatibility Rules

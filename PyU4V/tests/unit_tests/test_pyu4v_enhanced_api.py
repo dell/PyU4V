@@ -21,6 +21,7 @@ from PyU4V import rest_requests
 from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
+from PyU4V.utils import exception
 
 
 class PyU4VEnhancedApiTest(testtools.TestCase):
@@ -103,6 +104,49 @@ class PyU4VEnhancedApiTest(testtools.TestCase):
                        f"{self.data.array}/volumes"
                        f"?select=id,snapshots.name&filter=id eq 00001",
             resource_type=None)
+
+    def test_get_storage_object_details_force_refresh_false(self):
+        """An explicit false value preserves the existing request URI."""
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='volumes', select=['id'],
+                force_refresh=False)
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.enhanced_api.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes?select=id",
+            resource_type=None)
+
+    def test_get_storage_object_details_force_refresh_true(self):
+        """A true value adds force_refresh after the existing query."""
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='volumes', select=['id'],
+                filters=['id eq 00001'], force_refresh=True)
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.enhanced_api.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes"
+                       f"?select=id&filter=id eq 00001&force_refresh=true",
+            resource_type=None)
+
+    def test_get_storage_object_details_force_refresh_rate_limit(self):
+        """HTTP 429 details propagate through the existing exception."""
+        response = {'retry_after_ms': 328}
+        with mock.patch.object(
+                self.enhanced_api.common, 'request',
+                return_value=(response, 429)) as mock_request:
+            error = self.assertRaises(
+                exception.VolumeBackendAPIException,
+                self.enhanced_api.get_storage_object_details,
+                storage_object='volumes', select=['id'],
+                force_refresh=True)
+
+        self.assertIn('retry_after_ms', str(error))
+        self.assertIn('328', str(error))
+        mock_request.assert_called_once()
 
     def test_get_storage_object_meta_data_fpins(self):
         with mock.patch.object(

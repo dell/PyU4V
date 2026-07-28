@@ -257,6 +257,11 @@ PyU4V ReadTheDocs_.
 Version 10.5 Changes Summary
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- **Enhanced API force refresh**: ``get_storage_object_details()`` accepts a new
+  ``force_refresh`` keyword argument (default ``False``). When ``True``, Unisphere
+  refreshes the requested information before returning it. The API permits one
+  force-refresh request per second; HTTP 429 responses include ``retry_after_ms``
+  and propagate through the existing backend exception without automatic retry.
 - **``get_category_metrics`` enhanced**: new ``all_metrics`` keyword argument (default
   ``False``). When ``True``, appends ``metric_type eq All`` to the filter query so all
   available metrics are returned instead of KPI metrics only. Fully backward-compatible —

@@ -52,7 +52,7 @@ class EnhancedAPIFunctions(object):
 
     def get_storage_object_details(
             self, storage_object, array_id=None, filters=None, select=None,
-            exclude=None):
+            exclude=None, force_refresh=False):
         """Get list of volumes from array with selected parameters.
 
         :param: storage_object, the storage object to get metadata for,
@@ -87,7 +87,12 @@ class EnhancedAPIFunctions(object):
                         attribute names that you want to exclude from the
                         return, if values are passed in by select exclude is
                         ignored -- list
+        :param force_refresh: force Unisphere to return the most up-to-date
+                              information available. Limited to one request
+                              per second by the API. More frequent requests
+                              return HTTP 429 with retry_after_ms -- bool
         :returns: dict
+        :raises: VolumeBackendAPIException for API errors, including HTTP 429
         """
         array_id = array_id if array_id else self.array_id
         metadata = []
@@ -99,9 +104,10 @@ class EnhancedAPIFunctions(object):
             filters = '&filter=' + ','.join(filters)
         else:
             filters = ''
+        force_refresh = '&force_refresh=true' if force_refresh else ''
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
             f"/{array_id}/{storage_object}"
-            f"?select={select}{filters}",
+            f"?select={select}{filters}{force_refresh}",
             resource_type=None)
         return response
