@@ -33,6 +33,11 @@ print(conn.enhanced_api.get_storage_object_details(
                                       'storage_groups', 'cap_gb'],
     filters=['identifier ilike findme']))
 
+# Force Unisphere to refresh the selected volume details before returning them.
+print(conn.enhanced_api.get_storage_object_details(
+    storage_object='volumes', select=['id', 'identifier', 'cap_gb'],
+    force_refresh=True))
+
 # get all diagnostic KPI metrics for specified storage group for last 4 hours
 
 print(conn.performance_enhanced.get_category_metrics(

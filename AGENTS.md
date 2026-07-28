@@ -105,6 +105,14 @@ deprecation notice will not be merged.
 - Update `README.rst` if the public API surface, supported versions, or key
   behaviour changes.
 - Add an entry to `CHANGELOG.md` for every meaningful change.
+- Treat documentation as part of implementation: for every code change,
+  proactively review the relevant Sphinx pages and examples under
+  `docs/source/`. When a change affects an API, behavior, workflow,
+  configuration, or other user-observable output, update those docs in the
+  same change without waiting for a separate request.
+- Add or revise at least one copy-pastable example for every new public
+  parameter or behavior, keeping examples consistent with rate limits, error
+  handling, and compatibility guarantees.
 - Sphinx docs live in `docs/source/`; run `make html` from `docs/` to verify
   no build warnings before submitting.
 
