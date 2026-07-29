@@ -130,6 +130,7 @@ dmypy.json
 
 # IDE
 .idea/
+.windsurf/
 
 PyU4V.conf
 PyU4V/tests/ci_tests/PyU4V.conf
