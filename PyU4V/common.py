@@ -58,14 +58,24 @@ HEADROOM = constants.HEADROOM
 def normalize_u4v_version(version):
     """Normalize a Unisphere API version to the compact integer-string form.
 
-    Accepts either the dotted form (``'10.5'`` / ``10.5``) or the compact
-    form (``'105'`` / ``105``) and always returns the compact string, e.g.
-    ``'105'``.
+    Only the major and minor components are significant to the REST API, so
+    they are concatenated and any patch component is dropped. Both the dotted
+    form and the already-compact form are accepted, e.g.::
+
+        '10.5'   -> '105'
+        '10.3'   -> '103'
+        '11.0'   -> '110'
+        '10.5.1' -> '105'
+        '105'    -> '105'
+        105      -> '105'
 
     :param version: version value -- str, int, or float
     :returns: normalized version string -- str
     """
-    return str(version).replace('.', '')
+    parts = str(version).strip().split('.')
+    if len(parts) >= 2:
+        return parts[0] + parts[1]
+    return parts[0]
 
 
 class CommonFunctions(object):

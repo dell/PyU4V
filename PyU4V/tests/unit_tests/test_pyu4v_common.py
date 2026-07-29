@@ -58,8 +58,14 @@ class PyU4VCommonTest(testtools.TestCase):
             self.conf_file, self.conf_dir)
 
     def test_normalize_u4v_version_dotted_string(self):
-        """normalize_u4v_version converts '10.5' to '105'."""
+        """normalize_u4v_version converts dotted major.minor to compact."""
         self.assertEqual('105', common.normalize_u4v_version('10.5'))
+        self.assertEqual('103', common.normalize_u4v_version('10.3'))
+        self.assertEqual('110', common.normalize_u4v_version('11.0'))
+
+    def test_normalize_u4v_version_drops_patch(self):
+        """normalize_u4v_version drops the patch component."""
+        self.assertEqual('105', common.normalize_u4v_version('10.5.1'))
 
     def test_normalize_u4v_version_compact_string(self):
         """normalize_u4v_version leaves '105' unchanged."""
@@ -70,8 +76,9 @@ class PyU4VCommonTest(testtools.TestCase):
         self.assertEqual('105', common.normalize_u4v_version(105))
 
     def test_normalize_u4v_version_float(self):
-        """normalize_u4v_version converts float 10.5 to '105'."""
+        """normalize_u4v_version converts float major.minor to compact."""
         self.assertEqual('105', common.normalize_u4v_version(10.5))
+        self.assertEqual('110', common.normalize_u4v_version(11.0))
 
     def test_wait_for_job_complete(self):
         """Test wait_for_job_complete."""

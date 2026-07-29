@@ -4,10 +4,12 @@
 
 - **Flexible `u4v_version` input** (`common.py`, `univmax_conn.py`): A new
   `normalize_u4v_version()` helper normalizes any version value to the compact
-  integer-string form used internally by the SDK (e.g. `'105'`). Both the
-  dotted form (`'10.5'` / `10.5`) and the compact form (`'105'` / `105`) are
-  now accepted wherever `u4v_version` is consumed — constructor, config file,
-  and `set_u4v_version()`.
+  integer-string form used internally by the SDK. Only the major and minor
+  components are significant, so they are concatenated and any patch component
+  is dropped (e.g. `'10.5'`/`10.5` -> `'105'`, `'10.3'` -> `'103'`,
+  `'11.0'` -> `'110'`, `'10.5.1'` -> `'105'`, `'105'`/`105` -> `'105'`). This
+  applies wherever `u4v_version` is consumed — constructor, config file, and
+  `set_u4v_version()`.
 
 
 - **Enhanced API force refresh** (`enhanced_api.py`):
