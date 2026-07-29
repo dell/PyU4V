@@ -138,3 +138,5 @@ PyU4V/tests/ci_tests/PyU4V.log
 
 .qodo
 outputs/
+/docs/blog/
+/docs/source/pyu4v-10.5-architecture.png

@@ -15,7 +15,7 @@
 import logging
 import sys
 import time
-from PyU4V.common import CommonFunctions
+from PyU4V.common import CommonFunctions, normalize_u4v_version
 from PyU4V.clone import CloneFunctions
 from PyU4V.metro_dr import MetroDRFunctions
 from PyU4V.migration import MigrationFunctions
@@ -98,7 +98,7 @@ class U4VConn(object):
 
         # Track custom API version intent
         if u4v_version:
-            self.u4v_version = str(u4v_version)
+            self.u4v_version = normalize_u4v_version(u4v_version)
             self.custom_api_version = True
         else:
             self.u4v_version = None
@@ -147,7 +147,7 @@ class U4VConn(object):
 
             if (config.has_option(SETUP, 'u4v_version') and not (
                     self.custom_api_version)):
-                self.u4v_version = str(
+                self.u4v_version = normalize_u4v_version(
                     config.get(SETUP, 'u4v_version'))
 
                 self.custom_api_version = True
@@ -298,7 +298,7 @@ class U4VConn(object):
         :param version: Unisphere REST API version, or falsy to reset to the
                         packaged default -- str
         """
-        self.u4v_version = str(version) if version else None
+        self.u4v_version = normalize_u4v_version(version) if version else None
         self.custom_api_version = bool(version)
 
         # Single source of truth: stamp both shared clients.

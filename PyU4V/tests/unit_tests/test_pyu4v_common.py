@@ -57,6 +57,22 @@ class PyU4VCommonTest(testtools.TestCase):
         pf.FakeConfigFile.delete_fake_config_file(
             self.conf_file, self.conf_dir)
 
+    def test_normalize_u4v_version_dotted_string(self):
+        """normalize_u4v_version converts '10.5' to '105'."""
+        self.assertEqual('105', common.normalize_u4v_version('10.5'))
+
+    def test_normalize_u4v_version_compact_string(self):
+        """normalize_u4v_version leaves '105' unchanged."""
+        self.assertEqual('105', common.normalize_u4v_version('105'))
+
+    def test_normalize_u4v_version_integer(self):
+        """normalize_u4v_version converts int 105 to '105'."""
+        self.assertEqual('105', common.normalize_u4v_version(105))
+
+    def test_normalize_u4v_version_float(self):
+        """normalize_u4v_version converts float 10.5 to '105'."""
+        self.assertEqual('105', common.normalize_u4v_version(10.5))
+
     def test_wait_for_job_complete(self):
         """Test wait_for_job_complete."""
         _, _, status, _ = self.common.wait_for_job_complete(

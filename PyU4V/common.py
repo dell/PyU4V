@@ -55,6 +55,19 @@ WLP = constants.WLP
 HEADROOM = constants.HEADROOM
 
 
+def normalize_u4v_version(version):
+    """Normalize a Unisphere API version to the compact integer-string form.
+
+    Accepts either the dotted form (``'10.5'`` / ``10.5``) or the compact
+    form (``'105'`` / ``105``) and always returns the compact string, e.g.
+    ``'105'``.
+
+    :param version: version value -- str, int, or float
+    :returns: normalized version string -- str
+    """
+    return str(version).replace('.', '')
+
+
 class CommonFunctions(object):
     """CommonFunctions."""
 
@@ -66,7 +79,8 @@ class CommonFunctions(object):
         giving a single source of truth across all feature modules. If an
         explicit ``u4v_version`` is supplied it is stamped onto the shared
         client; otherwise the property falls back to
-        ``rest_client.u4v_version`` and finally ``constants.UNISPHERE_VERSION``.
+        ``rest_client.u4v_version`` and finally
+        ``constants.UNISPHERE_VERSION``.
         """
         self.rest_client = rest_client
         self.request = self.rest_client.rest_request
@@ -76,7 +90,8 @@ class CommonFunctions(object):
         # Stamp an explicit version onto the shared client so every module
         # sharing this client resolves the same version (single source).
         if u4v_version is not None:
-            self.rest_client.u4v_version = str(u4v_version)
+            self.rest_client.u4v_version = normalize_u4v_version(
+                u4v_version)
 
     @property
     def UNI_VERSION(self):
@@ -98,7 +113,8 @@ class CommonFunctions(object):
         :param value: Unisphere REST API version, or falsy to reset to the
                       packaged default -- str
         """
-        self.rest_client.u4v_version = str(value) if value else None
+        self.rest_client.u4v_version = (
+            normalize_u4v_version(value) if value else None)
 
     def wait_for_job_complete(self, job):
         """Given the job wait for it to complete.

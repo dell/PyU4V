@@ -2,6 +2,14 @@
 
 ## New Features
 
+- **Flexible `u4v_version` input** (`common.py`, `univmax_conn.py`): A new
+  `normalize_u4v_version()` helper normalizes any version value to the compact
+  integer-string form used internally by the SDK (e.g. `'105'`). Both the
+  dotted form (`'10.5'` / `10.5`) and the compact form (`'105'` / `105`) are
+  now accepted wherever `u4v_version` is consumed — constructor, config file,
+  and `set_u4v_version()`.
+
+
 - **Enhanced API force refresh** (`enhanced_api.py`):
   `get_storage_object_details()` now accepts an optional `force_refresh`
   parameter. When `True`, the request includes `force_refresh=true` so
