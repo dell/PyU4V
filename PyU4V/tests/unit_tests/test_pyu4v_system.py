@@ -152,7 +152,7 @@ class PyU4VSystemTest(testtools.TestCase):
     @mock.patch.object(common.CommonFunctions, 'modify_resource')
     def test_acknowledge_alert(self, mck_modify):
         """Test acknowledge_alert."""
-        ref_payload = {'editAlertActionParam': 'ACKNOWLEDGE'}
+        ref_payload = {'editAlertActionParam': {'acknowledgeAlertParam': {}}}
         self.system.acknowledge_alert(alert_id=ALERT_ID)
         mck_modify.assert_called_once_with(
             category=SYSTEM, resource_level=ALERT,

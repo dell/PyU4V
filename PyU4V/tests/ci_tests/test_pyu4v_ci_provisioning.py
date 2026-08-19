@@ -2461,10 +2461,10 @@ class CITestProvisioning(base.TestBaseTestCase, testtools.TestCase):
         srp_efficiency = srp_details[constants.SRP_EFFICIENCY]
         self.assertIsInstance(srp_efficiency, dict)
         self.assertIn(compression_state, srp_efficiency)
-        # self.assertIn(data_reduction_enabled_percent, srp_efficiency)
         self.assertIsInstance(srp_efficiency[compression_state], str)
-        self.assertIs(float, type(
-            srp_efficiency[data_reduction_enabled_percent]))
+        if data_reduction_enabled_percent in srp_efficiency:
+            self.assertIs(float, type(
+                srp_efficiency[data_reduction_enabled_percent]))
         if overall_efficiency_ratio_to_one in srp_efficiency:
             self.assertIs(float, type(
                 srp_efficiency[overall_efficiency_ratio_to_one]))

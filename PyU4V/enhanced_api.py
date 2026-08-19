@@ -40,10 +40,16 @@ class EnhancedAPIFunctions(object):
         :param: storage_object, the storage object to get metadata for,
                 valid values are directors, hosts, initiators,
                 ip-interfaces, ip-routes, masking-views, port-groups, ports,
-                rdf-groups, storage-groups, volumes, fpins -- string
+                rdf-groups, storage-groups, volumes -- string
         :returns: dictionary with list of attributes and descriptions of
                  attribute types used for filtering and selection -- dict
+        :raises: InvalidInputException if fpins is passed as storage_object
         """
+        if storage_object == 'fpins':
+            from PyU4V.utils import exception
+            msg = ('Metadata endpoint is not available for fpins storage '
+                   'object. Use get_storage_object_details() directly.')
+            raise exception.InvalidInputException(msg)
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
             f"/{storage_object}/metadata",
@@ -96,7 +102,7 @@ class EnhancedAPIFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
         metadata = []
-        if not select:
+        if not select and storage_object != 'fpins':
             metadata = self.get_storage_object_meta_data(
                 storage_object=storage_object)
         select = _build_select_clause(metadata, select, exclude)

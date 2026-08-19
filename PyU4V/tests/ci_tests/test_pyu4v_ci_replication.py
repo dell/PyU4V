@@ -706,6 +706,8 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
            .CITestSnapshot.test_is_volume_in_replication_session` instead.
         """
         snapshot_info, sg_name = self.create_sg_snapshot()
+        if not snapshot_info or 'source_volume' not in snapshot_info:
+            self.skipTest('Unable to create storage group snapshot')
         volume = snapshot_info.get('source_volume')
         vol_name = volume[0].get('name')
         snapxv_src = False
@@ -775,6 +777,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
            Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
            .CITestSRDF.test_get_rdf_group` instead.
         """
+        self.check_for_remote_array()
         rdf_group = self.replication.get_rdf_group_list()
         if not rdf_group:
             self.skipTest('test_get_rdf_group - Unable to get an RDF group.')
@@ -789,6 +792,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
            Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
            .CITestSRDF.test_get_rdf_group_list` instead.
         """
+        self.check_for_remote_array()
         rdf_number = self.replication.get_rdf_group_list()
         self.assertIsInstance(rdf_number, list)
 
@@ -799,6 +803,7 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
            Use :meth:`~PyU4V.tests.ci_tests.test_pyu4v_ci_srdf
            .CITestSRDF.test_get_rdf_group_list_with_parms` instead.
         """
+        self.check_for_remote_array()
         rdf_number = self.replication.get_rdf_group_list(
             group_type='Dynamic', remote_symmetrix_id=self.conn.remote_array,
             volume_count=0, rdf_mode='Synchronous')

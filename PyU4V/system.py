@@ -323,7 +323,7 @@ class SystemFunctions(object):
                          system --str
         :returns: alert details -- dict
         """
-        payload = {'editAlertActionParam': 'ACKNOWLEDGE'}
+        payload = {'editAlertActionParam': {'acknowledgeAlertParam': {}}}
 
         return self.common.modify_resource(
             category=SYSTEM, resource_level=ALERT,
