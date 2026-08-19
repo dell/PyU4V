@@ -323,11 +323,11 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
         for metric in metrics:
             if inst_req:
                 response = stats_func(
-                    start_date=start, end_date=self.time_now, metrics=metric,
+                    start_date=start, end_date=last_available_date, metrics=metric,
                     instance_id=instance_id)
             else:
                 response = stats_func(
-                    start_date=start, end_date=self.time_now, metrics=metric)
+                    start_date=start, end_date=last_available_date, metrics=metric)
 
             self.assertTrue(response.get(pc.RESULT))
             perf_data = response.get(pc.RESULT)[0]
@@ -335,11 +335,11 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
 
         if inst_req:
             response = stats_func(
-                start_date=start, end_date=self.time_now, metrics=metrics,
+                start_date=start, end_date=last_available_date, metrics=metrics,
                 instance_id=instance_id)
         else:
             response = stats_func(
-                start_date=start, end_date=self.time_now, metrics=metrics)
+                start_date=start, end_date=last_available_date, metrics=metrics)
         self.assertTrue(response.get(pc.RESULT))
         perf_data = response.get(pc.RESULT)[0]
         for metric in metrics:
