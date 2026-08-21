@@ -75,9 +75,8 @@ class PyU4VDecoratorsTest(testtools.TestCase):
         wrapped = decorators.performance_enhanced_recommendation(
             'PerformanceFunctions')(get_metrics)
 
-        with self.assertRaises(RuntimeError) as raised_exception:
-            wrapped()
-        self.assertIs(expected_exception, raised_exception.exception)
+        exc = self.assertRaises(RuntimeError, wrapped)
+        self.assertIs(expected_exception, exc)
 
     def test_performance_method_exposes_original_metadata(self):
         """Test a decorated public performance method exposes its metadata."""

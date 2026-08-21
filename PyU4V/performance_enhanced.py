@@ -55,6 +55,19 @@ class EnhancedPerformanceFunctions:
             return f"{base}/{category}"
         return base
 
+    def _realtime_uri(self, array_id, category=None):
+        """Construct the realtime-categories URI.
+
+        :param array_id: 12 Digit Serial Number of Array -- str
+        :param category: optional real-time category name -- str
+        :returns: URI path -- str
+        """
+        base = (f"/{self.enhanced_api_version}/systems"
+                f"/{array_id}/realtime-categories")
+        if category:
+            return f"{base}/{category}"
+        return base
+
     def get_performance_categories_list(self, array_id=None):
         """Get a list of performance categories and metrics that will be
         returned for each category.
@@ -141,6 +154,59 @@ class EnhancedPerformanceFunctions:
             effective_filters if effective_filters else None)
         response = self.common.get_request(
             target_uri=(self._perf_uri(array_id, category)
+                        + filter_part),
+            resource_type=None)
+        return response
+
+    def get_realtime_categories_list(self, array_id=None):
+        """Get a list of real-time performance categories.
+
+        :param array_id: 12 Digit Serial Number of Array -- str
+        :returns: a list of real-time categories available for querying --
+                 list
+        """
+        array_id = array_id if array_id else self.array_id
+        response = self.common.get_request(
+            target_uri=self._realtime_uri(array_id),
+            resource_type=None)
+        if response:
+            category_list = response.get('realtime_categories', [])
+        else:
+            category_list = []
+        return category_list
+
+    def get_realtime_category_metrics(self, category, array_id=None,
+                                      filters=None, all_metrics=False):
+        """Get real-time performance data for a specified category.
+
+        Metrics are collected at a 5-second interval. By default only
+        the last available 5-second interval is returned.
+
+        Supported categories: Array, BEDirector, BEPort,
+        ExternalDirector, FEDirector, FEPort, RDFDirector, RDFPort,
+        StorageGroups.
+
+        :param category: real-time category name -- str
+        :param array_id: 12 Digit Serial Number of Array -- str
+        :param filters: users can filter on time_range and component id,
+                        these can be combined in a single query,
+                        e.g. filters=['time_range eq 5', 'id eq OR-1C']
+                        valid values for time_range are 1, 5, 10, 15, 30,
+                        60 in minutes -- list
+        :param all_metrics: when True adds 'metric_type eq All' filter to
+                            return all available metrics instead of KPI
+                            metrics only, default is False -- bool
+        :returns: real-time performance data for the specified category --
+                 dict
+        """
+        array_id = array_id if array_id else self.array_id
+        effective_filters = list(filters) if filters else []
+        if all_metrics:
+            effective_filters.append('metric_type eq All')
+        filter_part = self._build_filter_query(
+            effective_filters if effective_filters else None)
+        response = self.common.get_request(
+            target_uri=(self._realtime_uri(array_id, category)
                         + filter_part),
             resource_type=None)
         return response

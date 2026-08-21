@@ -210,12 +210,12 @@ class PyU4VServiceabilityTest(testtools.TestCase):
                 'modify_resource') as mock_modify:
             for invalid_action in ('change', None, 123):
                 with self.subTest(action=invalid_action):
-                    with self.assertRaises(
-                            exception.InvalidInputException) as raised:
-                        self.serviceability.modify_nethosts(
+                    exc = self.assertRaises(
+                            exception.InvalidInputException,
+                            self.serviceability.modify_nethosts,
                             action=invalid_action, host_name='host', user='user')
                     self.assertIn(
-                        str(invalid_action), str(raised.exception))
+                        str(invalid_action), str(exc))
 
         mock_modify.assert_not_called()
 
@@ -268,13 +268,13 @@ class PyU4VServiceabilityTest(testtools.TestCase):
         with mock.patch.object(
                 self.serviceability.common, 'upload_file',
                 side_effect=upload_error) as mock_upload:
-            with self.assertRaises(
-                    exception.VolumeBackendAPIException) as raised:
-                self.serviceability.import_custom_certificate(
+            exc = self.assertRaises(
+                    exception.VolumeBackendAPIException,
+                    self.serviceability.import_custom_certificate,
                     node_name='Semgmt0', keyfile=__file__,
                     certfile=__file__, trustfile=__file__)
 
-        self.assertIs(upload_error, raised.exception)
+        self.assertIs(upload_error, exc)
         form_data = mock_upload.call_args.kwargs['form_data']
         for field_name in ('keyfile', 'trustfile', 'certfile'):
             self.assertTrue(form_data[field_name].closed)
@@ -294,10 +294,10 @@ class PyU4VServiceabilityTest(testtools.TestCase):
                 with mock.patch.object(
                         self.serviceability.common,
                         'upload_file') as mock_upload:
-                    with self.assertRaises(
-                            exception.InvalidInputException) as raised:
-                        self.serviceability.import_custom_certificate(
+                    exc = self.assertRaises(
+                            exception.InvalidInputException,
+                            self.serviceability.import_custom_certificate,
                             node_name='Semgmt0', **file_args)
 
-                self.assertIn(str(missing_path), str(raised.exception))
+                self.assertIn(str(missing_path), str(exc))
                 mock_upload.assert_not_called()

@@ -96,10 +96,13 @@ class RealTimeFunctions(object):
         :param array_id: array serial number -- str
         :returns: array timestamp info -- list
         """
-        response = self.get_request(
-            no_version=True, category=pc.PERFORMANCE,
-            resource_level=pc.REAL_TIME, resource_type=pc.HELP,
-            resource=pc.TIMES)
+        try:
+            response = self.get_request(
+                no_version=True, category=pc.PERFORMANCE,
+                resource_level=pc.REAL_TIME, resource_type=pc.HELP,
+                resource=pc.TIMES)
+        except exception.VolumeBackendAPIException:
+            return list()
         timestamps = response.get(
             pc.ARRAY_INFO, list()) if response else list()
 

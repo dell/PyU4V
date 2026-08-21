@@ -2,6 +2,15 @@
 
 ## New Features
 
+- **Real-time performance metrics** (`performance_enhanced.py`):
+  Added `get_realtime_categories_list()` and `get_realtime_category_metrics()`
+  methods to `EnhancedPerformanceFunctions`. These wrap the new
+  `GET /v1/systems/{id}/realtime-categories/{category}` endpoint, which returns
+  real-time performance data collected at 5-second intervals. Supported
+  categories: Array, BEDirector, BEPort, ExternalDirector, FEDirector, FEPort,
+  RDFDirector, RDFPort, StorageGroups. Filtering by `time_range` (1–60 min),
+  instance `id`, and `metric_type` (Kpi/All via the `all_metrics` boolean) is
+  supported.
 - **Flexible `u4v_version` input** (`common.py`, `univmax_conn.py`): A new
   `normalize_u4v_version()` helper normalizes any version value to the compact
   integer-string form used internally by the SDK. Only the major and minor
@@ -68,6 +77,11 @@
 - **P2 – performance decorator metadata** (`utils/decorators.py`): Performance recommendation
   wrappers now preserve the original public method names, modules, docstrings, and reflected
   signatures. Direct calls, logging, return values, and propagated exceptions are unchanged.
+- **P2 – real-time performance graceful degradation** (`real_time.py`, CI tests):
+  `get_timestamps()` now catches `VolumeBackendAPIException` (HTTP 500 when array is registered
+  but has no collected data) and returns an empty list, matching the pattern used by other
+  real-time methods. CI test setUp now also skips the entire test class if no timestamps are
+  available, preventing cascading failures in dependent tests.
 - **Regression coverage**: Added exact authentication, array-object-graph, enhanced URI,
   notification-payload, timeout, session-close, serviceability URI/payload, invalid-input,
   optimized-mode validation, certificate resource-lifecycle, and decorator metadata/forwarding

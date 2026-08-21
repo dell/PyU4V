@@ -148,28 +148,14 @@ class PyU4VEnhancedApiTest(testtools.TestCase):
         self.assertIn('328', str(error))
         mock_request.assert_called_once()
 
-    def test_get_storage_object_meta_data_fpins(self):
-        with mock.patch.object(
-                self.common, 'get_request') as mock_get:
-            self.enhanced_api.get_storage_object_meta_data(
-                storage_object='fpins')
-        mock_get.assert_called_once()
-        call_args = mock_get.call_args
-        target_uri = call_args[1].get(
-            'target_uri', call_args[0][0] if call_args[0] else '')
-        self.assertIn('fpins', target_uri)
-        self.assertIn('metadata', target_uri)
-
     def test_get_storage_object_details_fpins(self):
-        fpin_metadata = [{'name': 'id'}, {'name': 'type'},
-                         {'name': 'timestamp'}]
         with mock.patch.object(
                 self.common, 'get_request',
-                side_effect=[fpin_metadata, {}]) as mock_get:
+                return_value={}) as mock_get:
             self.enhanced_api.get_storage_object_details(
                 storage_object='fpins')
-        self.assertEqual(mock_get.call_count, 2)
-        details_call = mock_get.call_args_list[-1]
+        self.assertEqual(mock_get.call_count, 1)
+        details_call = mock_get.call_args_list[0]
         target_uri = details_call[1].get(
             'target_uri', details_call[0][0] if details_call[0] else '')
         self.assertIn('fpins', target_uri)

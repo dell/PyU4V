@@ -39,6 +39,10 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
             self.skipTest(
                 'Array {arr} is not real-time performance registered, '
                 'skipping performance tests.'.format(arr=self.conn.array_id))
+        if not self.rt.get_timestamps():
+            self.skipTest(
+                'Array {arr} has no real-time timestamp data available, '
+                'skipping performance tests.'.format(arr=self.conn.array_id))
 
     def test_set_array_id(self):
         """Test set_array_id."""

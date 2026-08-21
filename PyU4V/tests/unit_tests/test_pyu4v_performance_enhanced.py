@@ -92,3 +92,48 @@ class PyU4VPerformanceEnhancedTest(testtools.TestCase):
         target_uri = call_args[1].get(
             'target_uri', call_args[0][0] if call_args[0] else '')
         self.assertNotIn('metric_type', target_uri)
+
+    def test_get_realtime_categories_list(self):
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.performace_enhanced.get_realtime_categories_list()
+        mock_get.assert_called()
+
+    def test_get_realtime_category_metrics(self):
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.performace_enhanced.get_realtime_category_metrics(
+                category='Array')
+        mock_get.assert_called()
+
+    def test_get_realtime_category_metrics_all_metrics_true(self):
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.performace_enhanced.get_realtime_category_metrics(
+                category='Array', all_metrics=True)
+        call_args = mock_get.call_args
+        target_uri = call_args[1].get(
+            'target_uri', call_args[0][0] if call_args[0] else '')
+        self.assertIn('metric_type eq All', target_uri)
+
+    def test_get_realtime_category_metrics_with_filters(self):
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.performace_enhanced.get_realtime_category_metrics(
+                category='Array', filters=['time_range eq 5'],
+                all_metrics=True)
+        call_args = mock_get.call_args
+        target_uri = call_args[1].get(
+            'target_uri', call_args[0][0] if call_args[0] else '')
+        self.assertIn('time_range eq 5', target_uri)
+        self.assertIn('metric_type eq All', target_uri)
+
+    def test_get_realtime_category_metrics_all_metrics_false(self):
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.performace_enhanced.get_realtime_category_metrics(
+                category='FEDirector', all_metrics=False)
+        call_args = mock_get.call_args
+        target_uri = call_args[1].get(
+            'target_uri', call_args[0][0] if call_args[0] else '')
+        self.assertNotIn('metric_type', target_uri)
