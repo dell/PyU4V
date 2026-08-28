@@ -1,5 +1,17 @@
 # PyU4V Change Log
 
+## Test Coverage
+
+- **Expanded `get_storage_object_details()` test coverage**:
+  Added comprehensive unit and CI tests for all supported storage object types
+  (storage-groups, masking-views, hosts, initiators, port-groups, ports,
+  directors, rdf-groups, ip-interfaces, ip-routes) in addition to existing FPIN
+  tests. Unit tests verify correct URI construction and parameter handling for
+  each storage object type. CI tests verify API calls succeed against a live
+  array. Tests are designed to be robust by using only universally-supported
+  attributes (e.g., 'id') and avoiding invalid filter/select combinations that
+  would cause API errors.
+
 ## New Features
 
 - **Real-time performance metrics** (`performance_enhanced.py`):
