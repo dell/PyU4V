@@ -1,5 +1,14 @@
 # PyU4V Change Log
 
+## Bug Fixes
+
+- **Fixed `test_is_volume_in_replication_session` CI test** (`test_pyu4v_ci_snapshot.py`):
+  The test was failing because it relied on `source_volume` from the snapshot creation
+  response, which is unreliable on V4 arrays. The test now retrieves the device ID
+  directly from the storage group using `get_volumes_from_storage_group()` and includes
+  appropriate `skipTest` guards. The polling timeout was increased from 10 to 60 seconds
+  to account for snapshot establishment time.
+
 ## Test Coverage
 
 - **Expanded `get_storage_object_details()` test coverage**:
