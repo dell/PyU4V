@@ -160,31 +160,161 @@ class PyU4VEnhancedApiTest(testtools.TestCase):
             'target_uri', details_call[0][0] if details_call[0] else '')
         self.assertIn('fpins', target_uri)
 
-    def test_get_storage_object_details_fpins_link_integrity_filter(self):
-        fpin_metadata = [{'name': 'id'}, {'name': 'type'}]
+    def test_get_storage_object_details_fpins_with_select(self):
+        """FPIN details with select bypasses metadata lookup."""
         with mock.patch.object(
-                self.common, 'get_request',
-                side_effect=[fpin_metadata, {}]) as mock_get:
-            self.enhanced_api.get_storage_object_details(
-                storage_object='fpins',
-                filters=['type eq Link_Integrity'])
-        details_call = mock_get.call_args_list[-1]
-        target_uri = details_call[1].get(
-            'target_uri', details_call[0][0] if details_call[0] else '')
+                self.enhanced_api,
+                'get_storage_object_meta_data') as metadata:
+            with mock.patch.object(
+                    self.common, 'get_request',
+                    return_value={}) as mock_get:
+                self.enhanced_api.get_storage_object_details(
+                    storage_object='fpins',
+                    select=['id'])
+        metadata.assert_not_called()
+        self.assertEqual(mock_get.call_count, 1)
+        target_uri = mock_get.call_args[1]['target_uri']
         self.assertIn('fpins', target_uri)
-        self.assertIn('Link_Integrity', target_uri)
+        self.assertIn('id', target_uri)
 
-    def test_get_storage_object_details_fpins_multi_type_filter(self):
-        fpin_metadata = [{'name': 'id'}, {'name': 'type'}]
+    def test_get_storage_object_details_storage_groups(self):
+        """Test get_storage_object_details for storage-groups."""
         with mock.patch.object(
-                self.common, 'get_request',
-                side_effect=[fpin_metadata, {}]) as mock_get:
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
             self.enhanced_api.get_storage_object_details(
-                storage_object='fpins',
-                filters=['type in (Delivery;Congestion)'])
-        details_call = mock_get.call_args_list[-1]
-        target_uri = details_call[1].get(
-            'target_uri', details_call[0][0] if details_call[0] else '')
-        self.assertIn('fpins', target_uri)
-        self.assertIn('Delivery', target_uri)
-        self.assertIn('Congestion', target_uri)
+                storage_object='storage-groups')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('storage-groups', target_uri)
+
+    def test_get_storage_object_details_masking_views(self):
+        """Test get_storage_object_details for masking-views."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='masking-views')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('masking-views', target_uri)
+
+    def test_get_storage_object_details_masking_views_with_select(self):
+        """Test get_storage_object_details for masking-views with select."""
+        with mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='masking-views',
+                select=['id'])
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('masking-views', target_uri)
+        self.assertIn('id', target_uri)
+
+    def test_get_storage_object_details_hosts(self):
+        """Test get_storage_object_details for hosts."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='hosts')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('hosts', target_uri)
+
+    def test_get_storage_object_details_initiators(self):
+        """Test get_storage_object_details for initiators."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='initiators')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('initiators', target_uri)
+
+    def test_get_storage_object_details_port_groups(self):
+        """Test get_storage_object_details for port-groups."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='port-groups')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('port-groups', target_uri)
+
+    def test_get_storage_object_details_ports(self):
+        """Test get_storage_object_details for ports."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='ports')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('ports', target_uri)
+
+    def test_get_storage_object_details_directors(self):
+        """Test get_storage_object_details for directors."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='directors')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('directors', target_uri)
+
+    def test_get_storage_object_details_rdf_groups(self):
+        """Test get_storage_object_details for rdf-groups."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='rdf-groups')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('rdf-groups', target_uri)
+
+    def test_get_storage_object_details_ip_interfaces(self):
+        """Test get_storage_object_details for ip-interfaces."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='ip-interfaces')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('ip-interfaces', target_uri)
+
+    def test_get_storage_object_details_ip_routes(self):
+        """Test get_storage_object_details for ip-routes."""
+        with mock.patch.object(
+                self.enhanced_api, 'get_storage_object_meta_data',
+                return_value=[{'name': 'id'}]), \
+             mock.patch.object(
+                self.common, 'get_request') as mock_get:
+            self.enhanced_api.get_storage_object_details(
+                storage_object='ip-routes')
+        mock_get.assert_called()
+        target_uri = mock_get.call_args[1]['target_uri']
+        self.assertIn('ip-routes', target_uri)

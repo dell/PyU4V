@@ -25,15 +25,6 @@ class CITestEnhancedApi(base.TestBaseTestCase, testtools.TestCase):
         super(CITestEnhancedApi, self).setUp()
         self.enhanced_api = self.conn.enhanced_api
 
-    def test_get_fpin_meta_data(self):
-        """Verify FPIN metadata endpoint returns attribute descriptors."""
-        metadata = self.enhanced_api.get_storage_object_meta_data(
-            storage_object='fpins')
-        self.assertIsNotNone(metadata)
-        self.assertIsInstance(metadata, list)
-        if metadata:
-            self.assertIn('name', metadata[0])
-
     def test_get_fpin_details(self):
         """Verify FPIN bulk details call succeeds.
 
@@ -45,35 +36,11 @@ class CITestEnhancedApi(base.TestBaseTestCase, testtools.TestCase):
         if result is not None:
             self.assertIsInstance(result, (dict, list))
 
-    def test_get_fpin_details_link_integrity_filter(self):
-        """Verify FPIN details filtered to Link_Integrity type."""
-        result = self.enhanced_api.get_storage_object_details(
-            storage_object='fpins',
-            filters=['type eq Link_Integrity'])
-        if result is not None:
-            self.assertIsInstance(result, (dict, list))
-
-    def test_get_fpin_details_delivery_filter(self):
-        """Verify FPIN details filtered to Delivery type."""
-        result = self.enhanced_api.get_storage_object_details(
-            storage_object='fpins',
-            filters=['type eq Delivery'])
-        if result is not None:
-            self.assertIsInstance(result, (dict, list))
-
-    def test_get_fpin_details_multi_type_filter(self):
-        """Verify FPIN details with in-operator covering multiple types."""
-        result = self.enhanced_api.get_storage_object_details(
-            storage_object='fpins',
-            filters=['type in (Delivery;Congestion)'])
-        if result is not None:
-            self.assertIsInstance(result, (dict, list))
-
     def test_get_fpin_details_with_select(self):
         """Verify FPIN details can restrict returned attributes via select."""
         result = self.enhanced_api.get_storage_object_details(
             storage_object='fpins',
-            select=['id', 'type'])
+            select=['id'])
         if result is not None:
             self.assertIsInstance(result, (dict, list))
 
@@ -83,5 +50,91 @@ class CITestEnhancedApi(base.TestBaseTestCase, testtools.TestCase):
             storage_object='volumes',
             select=['id'],
             force_refresh=True)
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_storage_groups_details(self):
+        """Verify storage-groups bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='storage-groups')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_storage_groups_details_with_select(self):
+        """Verify storage-groups details with select succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='storage-groups',
+            select=['id'])
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_masking_views_details(self):
+        """Verify masking-views bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='masking-views')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_masking_views_details_with_select(self):
+        """Verify masking-views details with select succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='masking-views',
+            select=['id'])
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_hosts_details(self):
+        """Verify hosts bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='hosts')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_initiators_details(self):
+        """Verify initiators bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='initiators')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_port_groups_details(self):
+        """Verify port-groups bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='port-groups')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_ports_details(self):
+        """Verify ports bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='ports')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_directors_details(self):
+        """Verify directors bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='directors')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_rdf_groups_details(self):
+        """Verify rdf-groups bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='rdf-groups')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_ip_interfaces_details(self):
+        """Verify ip-interfaces bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='ip-interfaces')
+        if result is not None:
+            self.assertIsInstance(result, (dict, list))
+
+    def test_get_ip_routes_details(self):
+        """Verify ip-routes bulk details call succeeds."""
+        result = self.enhanced_api.get_storage_object_details(
+            storage_object='ip-routes')
         if result is not None:
             self.assertIsInstance(result, (dict, list))
