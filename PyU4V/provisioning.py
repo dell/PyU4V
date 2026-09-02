@@ -17,6 +17,7 @@ import logging
 import math
 import random
 import re
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -57,13 +58,13 @@ CU_IMAGE = constants.CU_IMAGE
 class ProvisioningFunctions(object):
     """ProvisioningFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.array_id = array_id
         self.common = CommonFunctions(rest_client)
 
     @property
-    def version(self):
+    def version(self) -> str:
         """Unisphere version used for requests (live ``common.UNI_VERSION``).
 
         :returns: Unisphere REST API version -- str
@@ -71,7 +72,7 @@ class ProvisioningFunctions(object):
         return getattr(
             self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
-    def get_array(self, array_id=None):
+    def get_array(self, array_id: str | None = None) -> dict[str, Any]:
         """Query for details of an array from SLOPROVISIONING endpoint.
 
         :param array_id: array serial number -- str
@@ -84,7 +85,7 @@ class ProvisioningFunctions(object):
             resource_type=None)
         return response if response else dict()
 
-    def get_host(self, host_id):
+    def get_host(self, host_id: str) -> dict[str, Any]:
         """Get details on a host on the array.
 
         :param host_id: the name of the host -- str
@@ -95,7 +96,7 @@ class ProvisioningFunctions(object):
             f"/symmetrix/{self.array_id}/host/{host_id}",
             resource_type=None)
 
-    def get_host_list(self, filters=None):
+    def get_host_list(self, filters: dict[str, Any] | None = None) -> list[str]:
         """Get list of the hosts on the array.
 
         See documentation for applicable filters.
@@ -109,8 +110,8 @@ class ProvisioningFunctions(object):
             resource_type=None, params=filters)
         return response.get('hostId', list()) if response else list()
 
-    def create_host(self, host_name, initiator_list=None,
-                    host_flags=None, init_file=None, _async=False):
+    def create_host(self, host_name: str, initiator_list: list[str] | None = None,
+                    host_flags: dict[str, Any] | None = None, init_file: str | None = None, _async: bool = False) -> dict[str, Any]:
         """Create a host with the given initiators.
 
         Accepts either initiator_list, e.g.
@@ -139,8 +140,8 @@ class ProvisioningFunctions(object):
             f"/symmetrix/{self.array_id}/host",
             payload=new_ig_data)
 
-    def modify_host(self, host_id, host_flag_dict=None,
-                    remove_init_list=None, add_init_list=None, new_name=None):
+    def modify_host(self, host_id: str, host_flag_dict: dict[str, Any] | None = None,
+                    remove_init_list: list[str] | None = None, add_init_list: list[str] | None = None, new_name: str | None = None) -> dict[str, Any]:
         """Modify an existing host.
 
         Only one parameter can be modified at a time.
@@ -174,7 +175,7 @@ class ProvisioningFunctions(object):
             f"/symmetrix/{self.array_id}/host/{host_id}",
             resource_type=None, payload=edit_host_data)
 
-    def delete_host(self, host_id):
+    def delete_host(self, host_id: str) -> None:
         """Delete a given host.
 
         Cannot delete if associated with a masking view.
@@ -185,7 +186,7 @@ class ProvisioningFunctions(object):
             target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
             f"/symmetrix/{self.array_id}/host/{host_id}")
 
-    def get_masking_views_from_host(self, host_id):
+    def get_masking_views_from_host(self, host_id: str) -> list[str]:
         """Retrieve masking view information for a specified host.
 
         :param host_id: name of the host -- str
@@ -194,7 +195,7 @@ class ProvisioningFunctions(object):
         host = self.get_host(host_id)
         return host.get('maskingview', list()) if host else list()
 
-    def get_masking_views_from_host_group(self, host_group_id):
+    def get_masking_views_from_host_group(self, host_group_id: str) -> list[str]:
         """Retrieve masking view information for a specified host group.
 
         :param host_group_id: name of the host -- str
@@ -203,7 +204,7 @@ class ProvisioningFunctions(object):
         host_group = self.get_host_group(host_group_id)
         return host_group.get('maskingview', list()) if host_group else list()
 
-    def get_initiator_ids_from_host(self, host_id):
+    def get_initiator_ids_from_host(self, host_id: str) -> list[str]:
         """Get initiator details from a host.
 
         :param host_id: name of the host -- str
@@ -212,7 +213,7 @@ class ProvisioningFunctions(object):
         host = self.get_host(host_id)
         return host.get('initiator', list()) if host else list()
 
-    def get_host_group(self, host_group_id):
+    def get_host_group(self, host_group_id: str) -> dict[str, Any]:
         """Get details on a host group on the array.
 
         :param host_group_id: name of the host group -- str
@@ -224,7 +225,7 @@ class ProvisioningFunctions(object):
             f"/{host_group_id}",
             resource_type=None)
 
-    def get_host_group_list(self, filters=None):
+    def get_host_group_list(self, filters: dict[str, Any] | None = None) -> list[str]:
         """Get list of host group(s) on the array.
 
         See unisphere documentation for applicable filters.
@@ -238,8 +239,8 @@ class ProvisioningFunctions(object):
             resource_type=None, params=filters)
         return response.get('hostGroupId', list()) if response else list()
 
-    def create_host_group(self, host_group_id, host_list,
-                          host_flags=None, _async=False):
+    def create_host_group(self, host_group_id: str, host_list: list[str],
+                          host_flags: dict[str, Any] | None = None, _async: bool = False) -> dict[str, Any]:
         """Create a host group containing the given hosts.
 
         :param host_group_id: name of the new host group -- str

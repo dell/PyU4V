@@ -14,6 +14,7 @@
 """storage_groups.py."""
 
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -25,7 +26,7 @@ LOG = logging.getLogger(__name__)
 class StorageGroupsFunctions(object):
     """Enhanced Functions for retrieving Array Configuration Data."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.get_resource = self.common.get_resource
@@ -35,7 +36,7 @@ class StorageGroupsFunctions(object):
         self.array_id = array_id
         self.enhanced_api_version = constants.ENHANCED_API_VERSION
 
-    def get_storage_groups_meta_data(self):
+    def get_storage_groups_meta_data(self) -> dict[str, Any]:
         """Get details on available meta data for storage group objects.
 
         returns: dictionary with list of attributes and descriptions of
@@ -45,8 +46,8 @@ class StorageGroupsFunctions(object):
         return response
 
     def get_storage_groups_details(
-            self, array_id=None, filters=None, select=None,
-            exclude=None):
+            self, array_id: str | None = None, filters: list[str] | None = None, select: list[str] | None = None,
+            exclude: list[str] | None = None) -> dict[str, Any]:
         """Get list of storage_groups from array with selected parameters.
 
         :param array_id: The storage array ID -- string

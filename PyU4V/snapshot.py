@@ -14,6 +14,7 @@
 """snapshot.py."""
 
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.provisioning import ProvisioningFunctions
@@ -34,13 +35,13 @@ SNAP_ID = constants.SNAP_ID
 class SnapshotFunctions(object):
     """SnapshotFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
 
-    def is_snapvx_licensed(self):
+    def is_snapvx_licensed(self) -> bool:
         """Check if the snapVx feature is licensed and enabled.
 
         :returns: bool
@@ -54,7 +55,7 @@ class SnapshotFunctions(object):
                       'for array {arr}'.format(arr=self.array_id))
         return snap_capability
 
-    def get_storage_group_snapshot_list(self, storage_group_id):
+    def get_storage_group_snapshot_list(self, storage_group_id: str) -> list[str]:
         """Get a list of snapshots associated with a storage group.
 
         :param storage_group_id: storage group id -- str
@@ -71,8 +72,8 @@ class SnapshotFunctions(object):
         return response.get('name', list()) if response else list()
 
     def create_storage_group_snapshot(
-            self, storage_group_id, snap_name, ttl=None, hours=False,
-            secure=False, bothsides=False):
+            self, storage_group_id: str, snap_name: str, ttl: int | None = None, hours: bool = False,
+            secure: bool = False, bothsides: bool = False) -> dict[str, Any]:
         """Create a snapVx snapshot of a storage group.
 
         To establish a new generation of an existing SnapVX snapshot for a
@@ -105,7 +106,7 @@ class SnapshotFunctions(object):
             payload=payload)
 
     def get_storage_group_snapshot_generation_list(
-            self, storage_group_id, snap_name):
+            self, storage_group_id: str, snap_name: str) -> dict[str, Any]:
         """Get a snapshot and its generation count information for an sg.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -130,7 +131,7 @@ class SnapshotFunctions(object):
         return response.get('generations', list()) if response else list()
 
     def get_storage_group_snapshot_snap_id_list(
-            self, storage_group_id, snap_name):
+            self, storage_group_id: str, snap_name: str) -> dict[str, Any]:
         """Get a snapshot and its snap id information for an sg.
 
         Each snapid is unique.  These have replaced generations starting
@@ -149,7 +150,7 @@ class SnapshotFunctions(object):
             resource_type=None)
         return response.get('snapids', list()) if response else list()
 
-    def get_snapshot_generation_details(self, sg_id, snap_name, gen_num):
+    def get_snapshot_generation_details(self, sg_id: str, snap_name: str, gen_num: int) -> dict[str, Any]:
         """Get the details for a particular snapshot generation.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -168,7 +169,7 @@ class SnapshotFunctions(object):
             f"/generation/{gen_num}",
             resource_type=None)
 
-    def get_snapshot_snap_id_details(self, sg_id, snap_name, snap_id):
+    def get_snapshot_snap_id_details(self, sg_id: str, snap_name: str, snap_id: int) -> dict[str, Any]:
         """Get the details for a particular snapshot snap_id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -186,7 +187,7 @@ class SnapshotFunctions(object):
             f"/snapid/{snap_id}",
             resource_type=None)
 
-    def find_expired_snapvx_snapshots(self):
+    def find_expired_snapvx_snapshots(self) -> list[dict[str, Any]]:
         """Find all expired snapvx snapshots.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -234,7 +235,7 @@ class SnapshotFunctions(object):
                             expired_snap_list.append(expired_snap_details)
         return expired_snap_list
 
-    def find_expired_snapvx_snapshots_by_snap_ids(self):
+    def find_expired_snapvx_snapshots_by_snap_ids(self) -> list[dict[str, Any]]:
         """Find all expired snapvx snapshots using snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -284,9 +285,9 @@ class SnapshotFunctions(object):
         return expired_snap_list
 
     def modify_storage_group_snapshot(
-            self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
-            link=False, unlink=False, restore=False, new_name=None,
-            gen_num=0, _async=False, relink=False):
+            self, src_storage_grp_id: str, tgt_storage_grp_id: str | None, snap_name: str,
+            link: bool = False, unlink: bool = False, restore: bool = False, new_name: str | None = None,
+            gen_num: int = 0, _async: bool = False, relink: bool = False) -> dict[str, Any]:
         """Modify a storage group snapshot.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -334,9 +335,9 @@ class SnapshotFunctions(object):
             resource_type=None, payload=payload)
 
     def modify_storage_group_snapshot_by_snap_id(
-            self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
-            snap_id, link=False, unlink=False, restore=False, new_name=None,
-            _async=False, relink=False, remote=False, force=False):
+            self, src_storage_grp_id: str, tgt_storage_grp_id: str | None, snap_name: str,
+            snap_id: int, link: bool = False, unlink: bool = False, restore: bool = False, new_name: str | None = None,
+            _async: bool = False, relink: bool = False, remote: bool = False, force: bool = False) -> dict[str, Any]:
         """Modify a storage group snapshot using it's snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -396,7 +397,7 @@ class SnapshotFunctions(object):
             f"/snapid/{snap_id}",
             resource_type=None, payload=payload)
 
-    def restore_snapshot(self, sg_id, snap_name, gen_num=0):
+    def restore_snapshot(self, sg_id: str, snap_name: str, gen_num: int = 0) -> dict[str, Any]:
         """Restore a storage group to its snapshot.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -411,7 +412,7 @@ class SnapshotFunctions(object):
         return self.modify_storage_group_snapshot(
             sg_id, None, snap_name, restore=True, gen_num=gen_num)
 
-    def restore_snapshot_by_snap_id(self, sg_id, snap_name, snap_id):
+    def restore_snapshot_by_snap_id(self, sg_id: str, snap_name: str, snap_id: int) -> dict[str, Any]:
         """Restore a storage group to its snapshot using it's snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -425,7 +426,7 @@ class SnapshotFunctions(object):
         return self.modify_storage_group_snapshot_by_snap_id(
             sg_id, None, snap_name, snap_id, restore=True)
 
-    def rename_snapshot(self, sg_id, snap_name, new_name, gen_num=0):
+    def rename_snapshot(self, sg_id: str, snap_name: str, new_name: str, gen_num: int = 0) -> dict[str, Any]:
         """Rename an existing storage group snapshot.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -442,7 +443,7 @@ class SnapshotFunctions(object):
             sg_id, None, snap_name,
             new_name=new_name, gen_num=gen_num)
 
-    def rename_snapshot_by_snap_id(self, sg_id, snap_name, new_name, snap_id):
+    def rename_snapshot_by_snap_id(self, sg_id: str, snap_name: str, new_name: str, snap_id: int) -> dict[str, Any]:
         """Rename an existing storage group snapshot using it's snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -457,8 +458,8 @@ class SnapshotFunctions(object):
         return self.modify_storage_group_snapshot_by_snap_id(
             sg_id, None, snap_name, snap_id, new_name=new_name)
 
-    def link_gen_snapshot(self, sg_id, snap_name, link_sg_name,
-                          _async=False, gen_num=0):
+    def link_gen_snapshot(self, sg_id: str, snap_name: str, link_sg_name: str,
+                          _async: bool = False, gen_num: int = 0) -> dict[str, Any]:
         """Link a snapshot to another storage group.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -479,7 +480,7 @@ class SnapshotFunctions(object):
             link=True, gen_num=gen_num, _async=_async)
 
     def link_snapshot_by_snap_id(
-            self, sg_id, link_sg_name, snap_name, snap_id, _async=False):
+            self, sg_id: str, link_sg_name: str, snap_name: str, snap_id: int, _async: bool = False) -> dict[str, Any]:
         """Link a snapshot to another storage group using it's snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -497,8 +498,8 @@ class SnapshotFunctions(object):
         return self.modify_storage_group_snapshot_by_snap_id(
             sg_id, link_sg_name, snap_name, snap_id, link=True, _async=_async)
 
-    def unlink_gen_snapshot(self, sg_id, snap_name, unlink_sg_name,
-                            _async=False, gen_num=0):
+    def unlink_gen_snapshot(self, sg_id: str, snap_name: str, unlink_sg_name: str,
+                            _async: bool = False, gen_num: int = 0) -> dict[str, Any]:
         """Unlink a snapshot from another storage group.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -517,7 +518,7 @@ class SnapshotFunctions(object):
             unlink=True, gen_num=gen_num, _async=_async)
 
     def unlink_snapshot_by_snap_id(
-            self, sg_id, unlink_sg_name, snap_name, snap_id, _async=False):
+            self, sg_id: str, unlink_sg_name: str, snap_name: str, snap_id: int, _async: bool = False) -> dict[str, Any]:
         """Unlink a snapshot from another storage group using it's snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -534,8 +535,8 @@ class SnapshotFunctions(object):
             sg_id, unlink_sg_name, snap_name, snap_id,
             unlink=True, _async=_async)
 
-    def delete_storage_group_snapshot(self, storage_group_id, snap_name,
-                                      gen=0):
+    def delete_storage_group_snapshot(self, storage_group_id: str, snap_name: str,
+                                      gen: int = 0) -> None:
         """Delete the snapshot of a storage group.
 
         This is for arrays with microcode less than 5978.669.669.
@@ -553,8 +554,8 @@ class SnapshotFunctions(object):
             f"/generation/{gen}")
 
     def delete_storage_group_snapshot_by_snap_id(
-            self, storage_group_id, snap_name, snap_id, force=False,
-            array_id=None, symforce=False):
+            self, storage_group_id: str, snap_name: str, snap_id: int, force: bool = False,
+            array_id: str | None = None, symforce: bool = False) -> None:
         """Delete the snapshot of a storage group using the snap id.
 
         Snap ids are only available on microcode 5978.669.669
@@ -582,9 +583,9 @@ class SnapshotFunctions(object):
             params=params)
 
     def bulk_terminate_snapshots(
-            self, storage_group_id, snap_name,
-            keep_count=None, terminate_all_snapshots=False,
-            snapset_id_and_older=None, force=False, array_id=None):
+            self, storage_group_id: str, snap_name: str,
+            keep_count: int | None = None, terminate_all_snapshots: bool = False,
+            snapset_id_and_older: str | None = None, force: bool = False, array_id: str | None = None) -> None:
         """Terminate Multiple snapshots in a bulk operation.
 
         :param storage_group_id: Name of the storage group with snapshots --str

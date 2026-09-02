@@ -15,6 +15,7 @@
 
 import logging
 import time
+from typing import Any
 
 from contextlib import ExitStack
 from datetime import datetime
@@ -66,13 +67,13 @@ _NETHOST_ACTIONS = {
 
 class ServiceabilityFunctions(object):
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
 
     @property
-    def version(self):
+    def version(self) -> str:
         """Unisphere version used for requests (live ``common.UNI_VERSION``).
 
         :returns: Unisphere REST API version -- str
@@ -80,7 +81,7 @@ class ServiceabilityFunctions(object):
         return getattr(
             self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
-    def get_local_system(self):
+    def get_local_system(self) -> dict[str, Any]:
         """Get local powermax system serial number in the embedded environment
         with version v4 or higher.
         :returns: symmetrix id -- dict
@@ -89,7 +90,7 @@ class ServiceabilityFunctions(object):
             target_uri=f"/{self.common.UNI_VERSION}/serviceability/symmetrix",
             resource_type=None)
 
-    def get_ntp_settings(self, array_id=None):
+    def get_ntp_settings(self, array_id: str | None = None) -> dict[str, Any]:
         """Get current NTP server configuration.
 
         :param array_id: array id -- str
@@ -100,7 +101,7 @@ class ServiceabilityFunctions(object):
                                        f"serviceability/symmetrix/{array_id}",
                                        resource_type=None)
 
-    def modify_ntp_settings(self, ntp_server, array_id=None):
+    def modify_ntp_settings(self, ntp_server: str, array_id: str | None = None) -> dict[str, Any]:
         """Set a new NTP server information.
 
         This call will restart SMAS Service so Unisphere and REST will be

@@ -14,6 +14,7 @@
 """srdf.py."""
 
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.provisioning import ProvisioningFunctions
@@ -52,13 +53,13 @@ RDF_GROUP = constants.RDF_GROUP
 class SRDFFunctions(object):
     """SRDFFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
 
-    def get_rdf_group(self, rdf_number, array_id=None):
+    def get_rdf_group(self, rdf_number: int, array_id: str | None = None) -> dict[str, Any]:
         """Get specific rdf group details.
 
         :param rdf_number: rdf group number -- int
@@ -71,8 +72,8 @@ class SRDFFunctions(object):
             f"/symmetrix/{array_id}/rdf_group/{rdf_number}",
             resource_type=None)
 
-    def get_rdf_group_list(self, array_id=None, remote_symmetrix_id=None,
-                           rdf_mode=None, volume_count=None, group_type=None):
+    def get_rdf_group_list(self, array_id: str | None = None, remote_symmetrix_id: str | None = None,
+                           rdf_mode: str | None = None, volume_count: int | None = None, group_type: str | None = None) -> list[dict[str, Any]]:
         """Get rdf group list from array.
 
         :param array_id: local array serial number -- str

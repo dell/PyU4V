@@ -14,6 +14,7 @@
 """system.py."""
 
 import logging
+from typing import Any
 import re
 import time
 
@@ -87,14 +88,14 @@ ASYNC_UPDATE = constants.ASYNC_UPDATE
 class SystemFunctions(object):
     """SystemFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.is_v4 = self.common.is_array_v4(array_id)
         self.array_id = array_id
 
     @property
-    def version(self):
+    def version(self) -> str:
         """Unisphere version used for requests (live ``common.UNI_VERSION``).
 
         :returns: Unisphere REST API version -- str
@@ -102,7 +103,7 @@ class SystemFunctions(object):
         return getattr(
             self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
-    def get_system_health(self, array_id=None):
+    def get_system_health(self, array_id: str | None = None) -> dict[str, Any]:
         """Query for system health information.
 
         :param array_id: array id -- str
@@ -113,7 +114,7 @@ class SystemFunctions(object):
             category=SYSTEM, resource_level=SYMMETRIX,
             resource_level_id=array_id, object_type=HEALTH)
 
-    def list_system_health_check(self, array_id=None):
+    def list_system_health_check(self, array_id: str | None = None) -> list[dict[str, Any]]:
         """List previously run system health checks.
 
         :param array_id: array id -- str
@@ -125,7 +126,7 @@ class SystemFunctions(object):
             resource_level=SYMMETRIX, resource_level_id=array_id,
             object_type=HEALTH, object_type_id=HEALTH_CHECK)
 
-    def get_health_check_details(self, health_check_id, array_id=None):
+    def get_health_check_details(self, health_check_id: str, array_id: str | None = None) -> dict[str, Any]:
         """Gets details of individual health check.
 
         :param health_check_id: health check id -- str

@@ -18,6 +18,7 @@ import logging
 import re
 import socket
 import time
+from typing import Any
 from PyU4V import common
 from PyU4V import real_time
 from PyU4V.utils import exception
@@ -32,7 +33,7 @@ LOG = logging.getLogger(__name__)
 class PerformanceFunctions(object):
     """PerformanceFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = common.CommonFunctions(rest_client)
         self.real_time = real_time.RealTimeFunctions(array_id, rest_client)
@@ -44,21 +45,21 @@ class PerformanceFunctions(object):
         self.timestamp = None
         self.recency = 7
 
-    def set_array_id(self, array_id):
+    def set_array_id(self, array_id: str) -> None:
         """Set the array id.
 
         :param array_id: array id -- str
         """
         self.array_id = array_id
 
-    def set_timestamp(self, timestamp):
+    def set_timestamp(self, timestamp: str) -> None:
         """Set the performance timestamp.
 
         :param timestamp: the performance timestamp -- str
         """
         self.timestamp = timestamp
 
-    def set_recency(self, minutes):
+    def set_recency(self, minutes: int) -> None:
         """Set the recency value in minutes.
 
         :param minutes: recency minutes -- int
@@ -66,7 +67,7 @@ class PerformanceFunctions(object):
         self.recency = minutes
 
     @performance_enhanced_recommendation('PerformanceFunctions')
-    def is_array_diagnostic_performance_registered(self, array_id=None):
+    def is_array_diagnostic_performance_registered(self, array_id: str | None = None) -> bool:
         """Check if an array is registered for diagnostic performance data.
 
         :param array_id: array id -- str

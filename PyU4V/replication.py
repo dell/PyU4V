@@ -21,6 +21,7 @@ new location.
 """
 
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.provisioning import ProvisioningFunctions
@@ -74,7 +75,7 @@ _srdf_notice = refactoring_notice(
 class ReplicationFunctions(object):
     """ReplicationFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
@@ -86,7 +87,7 @@ class ReplicationFunctions(object):
         self.array_id = array_id
 
     @property
-    def version(self):
+    def version(self) -> str:
         """Unisphere version used for requests (single source of truth).
 
         Reflects the live ``common.UNI_VERSION`` rather than a value cached
@@ -98,7 +99,7 @@ class ReplicationFunctions(object):
         return getattr(
             self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
-    def get_replication_info(self):
+    def get_replication_info(self) -> dict[str, Any]:
         """Return replication information for an array.
 
         :returns: replication details -- dict
@@ -108,7 +109,7 @@ class ReplicationFunctions(object):
             f"/symmetrix/{self.array_id}",
             resource_type=None)
 
-    def get_array_replication_capabilities(self, array_id=None):
+    def get_array_replication_capabilities(self, array_id: str | None = None) -> dict[str, Any]:
         """Check what replication facilities are available.
 
         :returns: replication capability details -- dict
@@ -128,7 +129,7 @@ class ReplicationFunctions(object):
         return array_capabilities
 
     @_snap_notice
-    def is_snapvx_licensed(self):
+    def is_snapvx_licensed(self) -> bool:
         """Check if the snapVx feature is licensed and enabled.
 
         .. deprecated:: 10.5
@@ -139,8 +140,8 @@ class ReplicationFunctions(object):
         return self._snapshot.is_snapvx_licensed()
 
     def get_storage_group_replication_details(
-            self, storage_group_id, return_remote_sg_info=False,
-            exclude_sl_snaps=False, exclude_manual_snaps=False):
+            self, storage_group_id: str, return_remote_sg_info: bool = False,
+            exclude_sl_snaps: bool = False, exclude_manual_snaps: bool = False) -> dict[str, Any]:
         """Given a storage group id, return storage group srdf info and
         snapshot information.
 
@@ -166,9 +167,9 @@ class ReplicationFunctions(object):
             resource_type=None, params=filters)
 
     def get_replication_enabled_storage_groups(
-            self, array_id=None, has_srdf=None, has_snapshots=None,
-            has_cloud_snapshots=None, is_link_target=None,
-            has_snap_policies=None, has_clones=None):
+            self, array_id: str | None = None, has_srdf: bool | None = None, has_snapshots: bool | None = None,
+            has_cloud_snapshots: bool | None = None, is_link_target: bool | None = None,
+            has_snap_policies: bool | None = None, has_clones: bool | None = None) -> list[str]:
         """Return list of storage groups with replication.
 
         :param has_snapshots: return only storage groups with snapshots
@@ -200,7 +201,7 @@ class ReplicationFunctions(object):
         return storage_group_list
 
     @_snap_notice
-    def get_storage_group_snapshot_list(self, storage_group_id):
+    def get_storage_group_snapshot_list(self, storage_group_id: str) -> list[str]:
         """Get a list of snapshots associated with a storage group.
 
         .. deprecated:: 10.5
@@ -211,8 +212,8 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def create_storage_group_snapshot(
-            self, storage_group_id, snap_name, ttl=None, hours=False,
-            secure=False, bothsides=False):
+            self, storage_group_id: str, snap_name: str, ttl: int | None = None, hours: bool = False,
+            secure: bool = False, bothsides: bool = False) -> dict[str, Any]:
         """Create a snapVx snapshot of a storage group.
 
         .. deprecated:: 10.5
@@ -224,7 +225,7 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def get_storage_group_snapshot_generation_list(
-            self, storage_group_id, snap_name):
+            self, storage_group_id: str, snap_name: str) -> dict[str, Any]:
         """Get a snapshot and its generation count information for an sg.
 
         .. deprecated:: 10.5
@@ -235,7 +236,7 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def get_storage_group_snapshot_snap_id_list(
-            self, storage_group_id, snap_name):
+            self, storage_group_id: str, snap_name: str) -> dict[str, Any]:
         """Get a snapshot and its snap id information for an sg.
 
         .. deprecated:: 10.5
@@ -245,7 +246,7 @@ class ReplicationFunctions(object):
             storage_group_id, snap_name)
 
     @_snap_notice
-    def get_snapshot_generation_details(self, sg_id, snap_name, gen_num):
+    def get_snapshot_generation_details(self, sg_id: str, snap_name: str, gen_num: int) -> dict[str, Any]:
         """Get the details for a particular snapshot generation.
 
         .. deprecated:: 10.5
@@ -255,7 +256,7 @@ class ReplicationFunctions(object):
             sg_id, snap_name, gen_num)
 
     @_snap_notice
-    def get_snapshot_snap_id_details(self, sg_id, snap_name, snap_id):
+    def get_snapshot_snap_id_details(self, sg_id: str, snap_name: str, snap_id: int) -> dict[str, Any]:
         """Get the details for a particular snapshot snap_id.
 
         .. deprecated:: 10.5
@@ -265,7 +266,7 @@ class ReplicationFunctions(object):
             sg_id, snap_name, snap_id)
 
     @_snap_notice
-    def find_expired_snapvx_snapshots(self):
+    def find_expired_snapvx_snapshots(self) -> list[dict[str, Any]]:
         """Find all expired snapvx snapshots.
 
         .. deprecated:: 10.5
@@ -274,7 +275,7 @@ class ReplicationFunctions(object):
         return self._snapshot.find_expired_snapvx_snapshots()
 
     @_snap_notice
-    def find_expired_snapvx_snapshots_by_snap_ids(self):
+    def find_expired_snapvx_snapshots_by_snap_ids(self) -> list[dict[str, Any]]:
         """Find all expired snapvx snapshots using snap id.
 
         .. deprecated:: 10.5
@@ -284,9 +285,9 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def modify_storage_group_snapshot(
-            self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
-            link=False, unlink=False, restore=False, new_name=None,
-            gen_num=0, _async=False, relink=False):
+            self, src_storage_grp_id: str, tgt_storage_grp_id: str, snap_name: str,
+            link: bool = False, unlink: bool = False, restore: bool = False, new_name: str | None = None,
+            gen_num: int = 0, _async: bool = False, relink: bool = False) -> dict[str, Any]:
         """Modify a storage group snapshot.
 
         .. deprecated:: 10.5
@@ -299,9 +300,9 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def modify_storage_group_snapshot_by_snap_id(
-            self, src_storage_grp_id, tgt_storage_grp_id, snap_name,
-            snap_id, link=False, unlink=False, restore=False, new_name=None,
-            _async=False, relink=False, remote=False, force=False):
+            self, src_storage_grp_id: str, tgt_storage_grp_id: str, snap_name: str,
+            snap_id: int, link: bool = False, unlink: bool = False, restore: bool = False, new_name: str | None = None,
+            _async: bool = False, relink: bool = False, remote: bool = False, force: bool = False) -> dict[str, Any]:
         """Modify a storage group snapshot using it's snap id.
 
         .. deprecated:: 10.5
@@ -313,7 +314,7 @@ class ReplicationFunctions(object):
             _async=_async, relink=relink, remote=remote, force=force)
 
     @_snap_notice
-    def restore_snapshot(self, sg_id, snap_name, gen_num=0):
+    def restore_snapshot(self, sg_id: str, snap_name: str, gen_num: int = 0) -> dict[str, Any]:
         """Restore a storage group to its snapshot.
 
         .. deprecated:: 10.5
@@ -322,7 +323,7 @@ class ReplicationFunctions(object):
         return self._snapshot.restore_snapshot(sg_id, snap_name, gen_num)
 
     @_snap_notice
-    def restore_snapshot_by_snap_id(self, sg_id, snap_name, snap_id):
+    def restore_snapshot_by_snap_id(self, sg_id: str, snap_name: str, snap_id: int) -> dict[str, Any]:
         """Restore a storage group to its snapshot using it's snap id.
 
         .. deprecated:: 10.5
@@ -332,7 +333,7 @@ class ReplicationFunctions(object):
             sg_id, snap_name, snap_id)
 
     @_snap_notice
-    def rename_snapshot(self, sg_id, snap_name, new_name, gen_num=0):
+    def rename_snapshot(self, sg_id: str, snap_name: str, new_name: str, gen_num: int = 0) -> dict[str, Any]:
         """Rename an existing storage group snapshot.
 
         .. deprecated:: 10.5
@@ -342,7 +343,7 @@ class ReplicationFunctions(object):
             sg_id, snap_name, new_name, gen_num)
 
     @_snap_notice
-    def rename_snapshot_by_snap_id(self, sg_id, snap_name, new_name, snap_id):
+    def rename_snapshot_by_snap_id(self, sg_id: str, snap_name: str, new_name: str, snap_id: int) -> dict[str, Any]:
         """Rename an existing storage group snapshot using it's snap id.
 
         .. deprecated:: 10.5
@@ -352,8 +353,8 @@ class ReplicationFunctions(object):
             sg_id, snap_name, new_name, snap_id)
 
     @_snap_notice
-    def link_gen_snapshot(self, sg_id, snap_name, link_sg_name,
-                          _async=False, gen_num=0):
+    def link_gen_snapshot(self, sg_id: str, snap_name: str, link_sg_name: str,
+                          _async: bool = False, gen_num: int = 0) -> dict[str, Any]:
         """Link a snapshot to another storage group.
 
         .. deprecated:: 10.5
@@ -364,7 +365,7 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def link_snapshot_by_snap_id(
-            self, sg_id, link_sg_name, snap_name, snap_id, _async=False):
+            self, sg_id: str, link_sg_name: str, snap_name: str, snap_id: int, _async: bool = False) -> dict[str, Any]:
         """Link a snapshot to another storage group using it's snap id.
 
         .. deprecated:: 10.5
@@ -374,8 +375,8 @@ class ReplicationFunctions(object):
             sg_id, link_sg_name, snap_name, snap_id, _async=_async)
 
     @_snap_notice
-    def unlink_gen_snapshot(self, sg_id, snap_name, unlink_sg_name,
-                            _async=False, gen_num=0):
+    def unlink_gen_snapshot(self, sg_id: str, snap_name: str, unlink_sg_name: str,
+                            _async: bool = False, gen_num: int = 0) -> dict[str, Any]:
         """Unlink a snapshot from another storage group.
 
         .. deprecated:: 10.5
@@ -386,7 +387,7 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def unlink_snapshot_by_snap_id(
-            self, sg_id, unlink_sg_name, snap_name, snap_id, _async=False):
+            self, sg_id: str, unlink_sg_name: str, snap_name: str, snap_id: int, _async: bool = False) -> dict[str, Any]:
         """Unlink a snapshot from another storage group using it's snap id.
 
         .. deprecated:: 10.5
@@ -396,8 +397,8 @@ class ReplicationFunctions(object):
             sg_id, unlink_sg_name, snap_name, snap_id, _async=_async)
 
     @_snap_notice
-    def delete_storage_group_snapshot(self, storage_group_id, snap_name,
-                                      gen=0):
+    def delete_storage_group_snapshot(self, storage_group_id: str, snap_name: str,
+                                      gen: int = 0) -> dict[str, Any]:
         """Delete the snapshot of a storage group.
 
         .. deprecated:: 10.5
@@ -408,8 +409,8 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def delete_storage_group_snapshot_by_snap_id(
-            self, storage_group_id, snap_name, snap_id, force=False,
-            array_id=None, symforce=False):
+            self, storage_group_id: str, snap_name: str, snap_id: int, force: bool = False,
+            array_id: str | None = None, symforce: bool = False) -> dict[str, Any]:
         """Delete the snapshot of a storage group using the snap id.
 
         .. deprecated:: 10.5
@@ -421,9 +422,9 @@ class ReplicationFunctions(object):
 
     @_snap_notice
     def bulk_terminate_snapshots(
-            self, storage_group_id, snap_name,
-            keep_count=None, terminate_all_snapshots=False,
-            snapset_id_and_older=None, force=False, array_id=None):
+            self, storage_group_id: str, snap_name: str,
+            keep_count: int | None = None, terminate_all_snapshots: bool = False,
+            snapset_id_and_older: int | None = None, force: bool = False, array_id: str | None = None) -> dict[str, Any]:
         """Terminate Multiple snapshots in a bulk operation.
 
         .. deprecated:: 10.5
@@ -435,7 +436,7 @@ class ReplicationFunctions(object):
             snapset_id_and_older=snapset_id_and_older,
             force=force, array_id=array_id)
 
-    def is_volume_in_replication_session(self, device_id):
+    def is_volume_in_replication_session(self, device_id: str) -> tuple[bool, bool, int | None]:
         """Check if a volume is in a replication session.
 
         NOTE: There may be a time delay between the snapshot creation
@@ -459,7 +460,7 @@ class ReplicationFunctions(object):
         return snapvx_tgt, snapvx_src, rdf_grp
 
     @_srdf_notice
-    def get_rdf_group(self, rdf_number, array_id=None):
+    def get_rdf_group(self, rdf_number: int, array_id: str | None = None) -> dict[str, Any]:
         """Get specific rdf group details.
 
         .. deprecated:: 10.5
@@ -468,8 +469,8 @@ class ReplicationFunctions(object):
         return self._srdf.get_rdf_group(rdf_number, array_id=array_id)
 
     @_srdf_notice
-    def get_rdf_group_list(self, array_id=None, remote_symmetrix_id=None,
-                           rdf_mode=None, volume_count=None, group_type=None):
+    def get_rdf_group_list(self, array_id: str | None = None, remote_symmetrix_id: str | None = None,
+                           rdf_mode: str | None = None, volume_count: int | None = None, group_type: str | None = None) -> list[dict[str, Any]]:
         """Get rdf group list from array.
 
         .. deprecated:: 10.5
@@ -481,7 +482,7 @@ class ReplicationFunctions(object):
             group_type=group_type)
 
     @_srdf_notice
-    def get_rdf_group_volume(self, rdf_number, device_id):
+    def get_rdf_group_volume(self, rdf_number: int, device_id: str) -> dict[str, Any]:
         """Get specific volume details, from an RDF group.
 
         .. deprecated:: 10.5
@@ -490,7 +491,7 @@ class ReplicationFunctions(object):
         return self._srdf.get_rdf_group_volume(rdf_number, device_id)
 
     @_srdf_notice
-    def get_rdf_group_volume_list(self, rdf_number):
+    def get_rdf_group_volume_list(self, rdf_number: int) -> list[str]:
         """Get specific volume details, from an RDF group.
 
         .. deprecated:: 10.5
@@ -499,8 +500,8 @@ class ReplicationFunctions(object):
         return self._srdf.get_rdf_group_volume_list(rdf_number)
 
     @_srdf_notice
-    def are_volumes_rdf_paired(self, remote_array, device_id,
-                               target_device, rdf_group):
+    def are_volumes_rdf_paired(self, remote_array: str, device_id: str,
+                               target_device: str, rdf_group: int) -> bool:
         """Check if a pair of volumes are RDF paired.
 
         .. deprecated:: 10.5
@@ -510,7 +511,7 @@ class ReplicationFunctions(object):
             remote_array, device_id, target_device, rdf_group)
 
     @_srdf_notice
-    def get_rdf_group_number(self, rdf_group_label):
+    def get_rdf_group_number(self, rdf_group_label: str) -> int:
         """Given a group label, return the associated group number.
 
         .. deprecated:: 10.5
@@ -519,8 +520,8 @@ class ReplicationFunctions(object):
         return self._srdf.get_rdf_group_number(rdf_group_label)
 
     @_srdf_notice
-    def get_storage_group_srdf_group_list(self, storage_group_id,
-                                          array_id=None):
+    def get_storage_group_srdf_group_list(self, storage_group_id: str,
+                                          array_id: str | None = None) -> list[int]:
         """Get the rdf group numbers for a storage group.
 
         .. deprecated:: 10.5
@@ -530,7 +531,7 @@ class ReplicationFunctions(object):
             storage_group_id, array_id=array_id)
 
     @_srdf_notice
-    def get_storage_group_srdf_details(self, storage_group_id, rdfg_num):
+    def get_storage_group_srdf_details(self, storage_group_id: str, rdfg_num: int) -> dict[str, Any]:
         """Get the details for an rdf group on a particular storage group.
 
         .. deprecated:: 10.5
@@ -541,9 +542,9 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def create_storage_group_srdf_pairings(
-            self, storage_group_id, remote_sid, srdf_mode, establish=None,
-            _async=False, rdfg_number=None, force_new_rdf_group=False,
-            remote_storage_group_id=None):
+            self, storage_group_id: str, remote_sid: str, srdf_mode: str, establish: bool | None = None,
+            _async: bool = False, rdfg_number: int | None = None, force_new_rdf_group: bool = False,
+            remote_storage_group_id: str | None = None) -> dict[str, Any]:
         """SRDF protect a storage group.
 
         .. deprecated:: 10.5
@@ -557,8 +558,8 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def modify_storage_group_srdf(
-            self, storage_group_id, action, srdf_group_number, options=None,
-            _async=False):
+            self, storage_group_id: str, action: str, srdf_group_number: int, options: dict[str, Any] | None = None,
+            _async: bool = False) -> dict[str, Any]:
         """Modify the state of a rdf group.
 
         .. deprecated:: 10.5
@@ -569,8 +570,8 @@ class ReplicationFunctions(object):
             options=options, _async=_async)
 
     @_srdf_notice
-    def suspend_storage_group_srdf(self, storage_group_id, srdf_group_number,
-                                   suspend_options=None, _async=False):
+    def suspend_storage_group_srdf(self, storage_group_id: str, srdf_group_number: int,
+                                   suspend_options: dict[str, Any] | None = None, _async: bool = False) -> dict[str, Any]:
         """Suspend IO on the links for the given storage group.
 
         .. deprecated:: 10.5
@@ -582,8 +583,8 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def establish_storage_group_srdf(
-            self, storage_group_id, srdf_group_number,
-            establish_options=None, _async=False):
+            self, storage_group_id: str, srdf_group_number: int,
+            establish_options: dict[str, Any] | None = None, _async: bool = False) -> dict[str, Any]:
         """Establish io on the links for the given storage group.
 
         .. deprecated:: 10.5
@@ -595,8 +596,8 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def failover_storage_group_srdf(
-            self, storage_group_id, srdf_group_number,
-            failover_options=None, _async=False):
+            self, storage_group_id: str, srdf_group_number: int,
+            failover_options: dict[str, Any] | None = None, _async: bool = False) -> dict[str, Any]:
         """Failover a given storage group.
 
         .. deprecated:: 10.5
@@ -608,8 +609,8 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def failback_storage_group_srdf(
-            self, storage_group_id, srdf_group_number, failback_options=None,
-            _async=False):
+            self, storage_group_id: str, srdf_group_number: int, failback_options: dict[str, Any] | None = None,
+            _async: bool = False) -> dict[str, Any]:
         """Failback a given storage group.
 
         .. deprecated:: 10.5
@@ -621,7 +622,7 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def delete_storage_group_srdf(
-            self, storage_group_id, srdf_group_number, filters=None):
+            self, storage_group_id: str, srdf_group_number: int, filters: dict[str, Any] | None = None) -> dict[str, Any]:
         """Delete srdf pairings for a given storage group.
 
         .. deprecated:: 10.5
@@ -631,7 +632,7 @@ class ReplicationFunctions(object):
             storage_group_id, srdf_group_number, filters=filters)
 
     @_srdf_notice
-    def get_rdf_director_list(self, array_id=None, filters=None):
+    def get_rdf_director_list(self, array_id: str | None = None, filters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         """Finds out directors configured for SRDF on the specified array.
 
         .. deprecated:: 10.5
@@ -641,7 +642,7 @@ class ReplicationFunctions(object):
             array_id=array_id, filters=filters)
 
     @_srdf_notice
-    def get_rdf_director_detail(self, director_id, array_id=None):
+    def get_rdf_director_detail(self, director_id: str, array_id: str | None = None) -> dict[str, Any]:
         """Retrieves details for specified RDF_director.
 
         .. deprecated:: 10.5
@@ -651,8 +652,8 @@ class ReplicationFunctions(object):
             director_id, array_id=array_id)
 
     @_srdf_notice
-    def get_rdf_director_port_list(self, director_id, array_id=None,
-                                   filters=None):
+    def get_rdf_director_port_list(self, director_id: str, array_id: str | None = None,
+                                   filters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         """Retrieves list of ports available on RDF_director.
 
         .. deprecated:: 10.5
@@ -662,8 +663,8 @@ class ReplicationFunctions(object):
             director_id, array_id=array_id, filters=filters)
 
     @_srdf_notice
-    def get_rdf_director_port_details(self, director_id, port_id,
-                                      array_id=None):
+    def get_rdf_director_port_details(self, director_id: str, port_id: str,
+                                      array_id: str | None = None) -> dict[str, Any]:
         """Retrieves details of specified RDF ports.
 
         .. deprecated:: 10.5
@@ -673,8 +674,8 @@ class ReplicationFunctions(object):
             director_id, port_id, array_id=array_id)
 
     @_srdf_notice
-    def get_rdf_port_remote_connections(self, director_id, port_id,
-                                        array_id=None):
+    def get_rdf_port_remote_connections(self, director_id: str, port_id: str,
+                                        array_id: str | None = None) -> dict[str, Any]:
         """Performs a scan of the RDF environment via specified port.
 
         .. deprecated:: 10.5
@@ -684,9 +685,9 @@ class ReplicationFunctions(object):
             director_id, port_id, array_id=array_id)
 
     @_srdf_notice
-    def create_rdf_group(self, local_director_port_list, remote_array_id,
-                         label, local_rdfg_number, remote_rdfg_number,
-                         remote_director_port_list, array_id=None):
+    def create_rdf_group(self, local_director_port_list: list[dict[str, Any]], remote_array_id: str,
+                         label: str, local_rdfg_number: int, remote_rdfg_number: int,
+                         remote_director_port_list: list[dict[str, Any]], array_id: str | None = None) -> dict[str, Any]:
         """Create a new RDF group between directors and ports on two PowerMax.
 
         .. deprecated:: 10.5
@@ -698,10 +699,10 @@ class ReplicationFunctions(object):
             remote_director_port_list, array_id=array_id)
 
     @_srdf_notice
-    def modify_rdf_group(self, action, srdf_group_number, array_id=None,
-                         port_list=None, label=None, dev_list=None,
-                         target_rdf_group=None, consistency_exempt=None,
-                         keepR1=None, keepR2=None):
+    def modify_rdf_group(self, action: str, srdf_group_number: int, array_id: str | None = None,
+                         port_list: list[dict[str, Any]] | None = None, label: str | None = None, dev_list: list[str] | None = None,
+                         target_rdf_group: int | None = None, consistency_exempt: bool | None = None,
+                         keepR1: bool | None = None, keepR2: bool | None = None) -> dict[str, Any]:
         """Function to Modify Ports, devices or change label of RDF group.
 
         .. deprecated:: 10.5
@@ -715,7 +716,7 @@ class ReplicationFunctions(object):
             keepR1=keepR1, keepR2=keepR2)
 
     @_srdf_notice
-    def delete_rdf_group(self, srdf_group_number, array_id=None):
+    def delete_rdf_group(self, srdf_group_number: int, array_id: str | None = None) -> dict[str, Any]:
         """Function to Delete SRDF groups between VMAX or PowerMax arrays.
 
         .. deprecated:: 10.5
@@ -726,8 +727,8 @@ class ReplicationFunctions(object):
 
     @_srdf_notice
     def create_storage_group_from_rdfg(
-            self, storage_group_name, srdf_group_number, array_id=None,
-            rdf_type=None, remote_storage_group_name=None):
+            self, storage_group_name: str, srdf_group_number: int, array_id: str | None = None,
+            rdf_type: str | None = None, remote_storage_group_name: str | None = None) -> dict[str, Any]:
         """Creates management storage group from all devices in SRDF group.
 
         .. deprecated:: 10.5

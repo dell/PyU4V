@@ -47,6 +47,7 @@ CI tests (`PyU4V/tests/ci_tests/`) require a live array and are run by maintaine
 - Public functions must have a **docstring** with `:param:` / `:returns:` / `:raises:`.
 - Use keyword arguments for all new REST call wrappers to stay consistent with the existing API surface.
 - Prefer `/v1/` Unisphere REST endpoints; use `enhanced_api` / `performance_enhanced` module helpers where available.
+- enforce use of modern type hints
 
 ### Line Endings
 

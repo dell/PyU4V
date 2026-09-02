@@ -25,5 +25,6 @@ test.
    programmers_guide_src/system
    programmers_guide_src/serviceability
    programmers_guide_src/settings
+   programmers_guide_src/workload_planner
    programmers_guide_src/enhanced_bulk_api_calls
    programmers_guide_src/volumes_storage_groups

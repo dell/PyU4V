@@ -14,6 +14,7 @@
 """performance_enhanced.py."""
 
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -25,14 +26,14 @@ class EnhancedPerformanceFunctions:
     """Enhanced Functions for retrieving latest diagnostic level
     performance Metrics."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
         self.enhanced_api_version = constants.ENHANCED_API_VERSION
 
     @staticmethod
-    def _build_filter_query(filters):
+    def _build_filter_query(filters: list[str]) -> str:
         """Build the optional filter query string.
 
         :param filters: list of filter expressions -- list
@@ -42,7 +43,7 @@ class EnhancedPerformanceFunctions:
             return '?filter=' + ','.join(filters)
         return ''
 
-    def _perf_uri(self, array_id, category=None):
+    def _perf_uri(self, array_id: str, category: str | None = None) -> str:
         """Construct the performance-categories URI.
 
         :param array_id: 12 Digit Serial Number of Array -- str
@@ -55,7 +56,7 @@ class EnhancedPerformanceFunctions:
             return f"{base}/{category}"
         return base
 
-    def _realtime_uri(self, array_id, category=None):
+    def _realtime_uri(self, array_id: str, category: str | None = None) -> str:
         """Construct the realtime-categories URI.
 
         :param array_id: 12 Digit Serial Number of Array -- str
@@ -68,7 +69,7 @@ class EnhancedPerformanceFunctions:
             return f"{base}/{category}"
         return base
 
-    def get_performance_categories_list(self, array_id=None):
+    def get_performance_categories_list(self, array_id: str | None = None) -> dict[str, Any]:
         """Get a list of performance categories and metrics that will be
         returned for each category.
 

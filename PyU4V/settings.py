@@ -13,6 +13,7 @@
 # limitations under the License.
 """settings.py."""
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -22,13 +23,13 @@ LOG = logging.getLogger(__name__)
 
 class SettingsFunctions(object):
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
 
     @property
-    def version(self):
+    def version(self) -> str:
         """Unisphere version used for requests (live ``common.UNI_VERSION``).
 
         :returns: Unisphere REST API version -- str
@@ -36,7 +37,7 @@ class SettingsFunctions(object):
         return getattr(
             self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
 
-    def get_performance_registration_settings(self) -> dict:
+    def get_performance_registration_settings(self) -> dict[str, Any]:
         """List Array Performance Registration Settings.
         returns: Array Performance Registration Settings -- dict
         """

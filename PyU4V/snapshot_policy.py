@@ -13,6 +13,7 @@
 # limitations under the License.
 """snapshot_policy.py."""
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -43,11 +44,11 @@ policy_interval_enum = {
 
 class SnapshotPolicyFunctions(object):
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
 
-    def get_snapshot_policy_list(self):
+    def get_snapshot_policy_list(self) -> list[str]:
         """Given a snapshot policy name, return snapshot policy details.
 
         :returns: snapshot policy names -- list
@@ -58,7 +59,7 @@ class SnapshotPolicyFunctions(object):
             resource_type=None)
         return response.get('name', list()) if response else list()
 
-    def get_snapshot_policy(self, snapshot_policy_name):
+    def get_snapshot_policy(self, snapshot_policy_name: str) -> dict[str, Any]:
         """Given a snapshot policy name, return snapshot policy details.
 
         :param snapshot_policy_name: name of the snapshot policy -- str
@@ -70,7 +71,7 @@ class SnapshotPolicyFunctions(object):
             f"/{snapshot_policy_name}",
             resource_type=None)
 
-    def get_snapshot_policy_storage_group_list(self, snapshot_policy_name):
+    def get_snapshot_policy_storage_group_list(self, snapshot_policy_name: str) -> list[str]:
         """Get list of storage groups associated to specified snapshot policy.
 
         :param snapshot_policy_name: name of the snapshot policy -- str

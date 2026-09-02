@@ -101,6 +101,26 @@ the various categories provided by the Unisphere REST API:
 There are plans to further increase the coverage of Unisphere REST calls in
 future releases. All changes are reflected in the PyU4V change log (link_).
 
+Workload Planner Quick Example
+-------------------------------
+
+PyU4V provides direct wrappers for workload planner resources, including
+system details, storage-group planning details, headroom, utilization,
+compliance history, provisioning template management, and performance
+impact analysis.
+
+.. code-block:: python
+
+    import PyU4V
+
+    conn = PyU4V.U4VConn()
+    systems = conn.wlp.get_system_list()
+    details = conn.wlp.get_system(array_id=conn.array_id)
+    headroom = conn.wlp.get_headroom(
+        array_id=conn.array_id, srp='SRP_1', slo='Diamond', emulation='FBA')
+    templates = conn.wlp.get_provisioning_template_list()
+    conn.close_session()
+
 Perform a Custom REST Call in PyU4V
 -----------------------------------
 

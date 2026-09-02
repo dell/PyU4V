@@ -1,5 +1,26 @@
 # PyU4V Change Log
 
+## Code Quality
+
+- **Added comprehensive type hints to PyU4V modules**:
+  Added complete type hints using modern Python 3.9+ syntax (`list[str]`, `dict[str, Any]`, `X | None`)
+  to the following modules:
+  - `replication.py`: All 60+ public methods in `ReplicationFunctions` including snapshot, SRDF, and RDF operations
+  - `snapshot.py`: All 20+ public methods in `SnapshotFunctions` for snapshot management operations
+  - `provisioning.py`: Key public methods in `ProvisioningFunctions` including host, host group, and array operations
+  - `serviceability.py`: Key public methods in `ServiceabilityFunctions` for serviceability operations
+  - `performance.py`: Key public methods in `PerformanceFunctions` for performance data operations
+  - `performance_enhanced.py`: Public methods in `EnhancedPerformanceFunctions` for enhanced performance metrics
+  - `settings.py`: Public methods in `SettingsFunctions` for array settings and registration
+  - `srdf.py`: Key public methods in `SRDFFunctions` for SRDF replication operations
+  - `snapshot_policy.py`: Public methods in `SnapshotPolicyFunctions` for snapshot policy management
+  - `volumes.py`: Public methods in `VolumesFunctions` for volume metadata and details
+  - `storage_groups.py`: Public methods in `StorageGroupsFunctions` for storage group metadata and details
+  - `system.py`: Key public methods in `SystemFunctions` for system health and management operations
+
+  Type hints improve IDE support, enable better static type checking with tools like mypy, and enhance code documentation.
+  All parameter and return types use modern syntax with proper union types (`X | None`) and generic collections.
+
 ## Bug Fixes
 
 - **Fixed `test_is_volume_in_replication_session` CI test** (`test_pyu4v_ci_snapshot.py`):
@@ -8,6 +29,12 @@
   directly from the storage group using `get_volumes_from_storage_group()` and includes
   appropriate `skipTest` guards. The polling timeout was increased from 10 to 60 seconds
   to account for snapshot establishment time.
+
+- **Fixed `test_is_volume_in_replication_session` CI test** (`test_pyu4v_ci_replication.py`):
+  Applied the same fix as the snapshot CI test to the deprecated replication CI test.
+  The test now retrieves the device ID from `get_volumes_from_storage_group()` instead
+  of relying on `source_volume`, includes a `skipTest` guard for empty volume lists,
+  and increased the polling timeout to 60 seconds.
 
 ## Test Coverage
 
@@ -59,9 +86,28 @@
   Requests unsupported at the resolved version return the server error
   (e.g. 404) for the caller to handle. Defaults to `False`, preserving the
   existing strict behaviour.
+- **Full Workload Planner resource coverage** (`workload_planner.py`):
+  Added `WLPFunctions` methods covering every `/wlp` operation in the
+  Unisphere 10.5 REST schema: `get_system_list()`, `get_system()`,
+  `update_data_exclusion()`, `get_storage_group_list()`,
+  `get_storage_group()`, `update_storage_group()`, `get_headroom()`,
+  `get_utilization()`, `get_compliance_history()`,
+  `get_provisioning_template_list()`, `get_provisioning_template()`,
+  `create_provisioning_template()`, `update_provisioning_template()`,
+  `delete_provisioning_template()`, and `test_performance_impact()`.
+  POST/PUT methods build their request payloads from explicit, documented
+  parameters (matching the pattern used by
+  `provisioning.ProvisioningFunctions.create_storage_group()`) rather than
+  accepting a raw payload dictionary. `get_wlp_information()` is retained as
+  a compatibility wrapper delegating to `get_system()`.
 
 ## Documentation
 
+- **Added Workload Planner programmers-guide content**:
+  Added `docs/source/programmers_guide_src/workload_planner.rst` and
+  `docs/source/programmers_guide_src/code/workload-planner-operations.py`,
+  linked from the programmers guide toctree, and added a quick-start WLP usage
+  example in `docs/source/quick_start.rst`.
 - **Added `AGENTS.md`**: Contributor guide covering dev setup, unit-test and linting
   commands, PEP 8 standards, API compatibility rules (additions, deprecation decorators,
   breaking-change policy), and the PR process.

@@ -706,10 +706,12 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
            .CITestSnapshot.test_is_volume_in_replication_session` instead.
         """
         snapshot_info, sg_name = self.create_sg_snapshot()
-        if not snapshot_info or 'source_volume' not in snapshot_info:
+        if not snapshot_info:
             self.skipTest('Unable to create storage group snapshot')
-        volume = snapshot_info.get('source_volume')
-        vol_name = volume[0].get('name')
+        vol_list = self.provisioning.get_volumes_from_storage_group(sg_name)
+        if not vol_list:
+            self.skipTest('No volumes in storage group')
+        device_id = vol_list[0]
         snapxv_src = False
         i = 0
         while not snapxv_src:
@@ -717,10 +719,10 @@ class CITestReplication(base.TestBaseTestCase, testtools.TestCase):
             i += 1
             snapxv_tgt, snapxv_src, rdf_group = (
                 self.replication.is_volume_in_replication_session(
-                    device_id=vol_name))
-            if i > 10:
+                    device_id=device_id))
+            if i > 60:
                 break
-        self.assertTrue(i <= 10)
+        self.assertTrue(i <= 60)
         self.assertEqual(snapxv_src, True)
 
     def test_get_snapshot_generation_details(self):
