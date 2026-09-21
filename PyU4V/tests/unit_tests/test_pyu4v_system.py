@@ -95,9 +95,8 @@ class PyU4VSystemTest(testtools.TestCase):
             side_effect=self.common.delete_resource)
         self.system.delete_health_check(health_check_id=1)
         common.CommonFunctions.delete_resource.assert_called_once_with(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=self.conn.array_id, resource_type=HEALTH,
-            resource_type_id=HEALTH_CHECK, object_type=1)
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/symmetrix/"
+            f"{self.conn.array_id}/health/health_check/1")
 
     def test_get_disk_id_list(self):
         """Test get_disk_id_list."""
@@ -111,16 +110,17 @@ class PyU4VSystemTest(testtools.TestCase):
 
     def test_get_tags(self):
         """Test get_tags."""
-        common.CommonFunctions.get_resource = MagicMock(
-            side_effect=self.common.get_resource)
+        common.CommonFunctions.get_request = MagicMock(
+            side_effect=self.common.get_request)
 
         tag_list = self.system.get_tags(
             array_id=self.conn.array_id, tag_name='UNIT-TEST',
             storage_group_id='TEST-SG', num_of_storage_groups=1,
             num_of_arrays=3)
 
-        common.CommonFunctions.get_resource.assert_called_once_with(
-            category=SYSTEM, resource_level=TAG, params={
+        common.CommonFunctions.get_request.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/tag",
+            resource_type=None, params={
                 ARRAY_ID: self.conn.array_id, TAG_NAME: 'UNIT-TEST',
                 SG_ID: 'TEST-SG', SG_NUM: '1', ARRAY_NUM: '3'})
         self.assertEqual(self.data.tag_list, tag_list)
@@ -155,15 +155,16 @@ class PyU4VSystemTest(testtools.TestCase):
         ref_payload = {'editAlertActionParam': {'acknowledgeAlertParam': {}}}
         self.system.acknowledge_alert(alert_id=ALERT_ID)
         mck_modify.assert_called_once_with(
-            category=SYSTEM, resource_level=ALERT,
-            resource_level_id=ALERT_ID, payload=ref_payload)
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/alert/"
+            f"{ALERT_ID}", resource_type=None, payload=ref_payload)
 
     @mock.patch.object(common.CommonFunctions, 'delete_resource')
     def test_delete_alert(self, mck_delete):
         """Test delete_alert."""
         self.system.delete_alert(alert_id=ALERT_ID)
         mck_delete.assert_called_once_with(
-            category=SYSTEM, resource_level=ALERT, resource_level_id=ALERT_ID)
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/alert/"
+            f"{ALERT_ID}", resource_type=None)
 
     @mock.patch.object(
         common.CommonFunctions, 'download_file',
@@ -173,8 +174,8 @@ class PyU4VSystemTest(testtools.TestCase):
         response = self.system._download_settings(request_body=dict(),
                                                   return_binary=True)
         mck_dl.assert_called_once_with(
-            category=constants.SYSTEM, resource_level=constants.SETTINGS,
-            resource_type=constants.EXPORT_FILE, payload=dict())
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"exportfile", payload=dict())
         self.assertTrue(response['success'])
         self.assertIn('binary_data', response.keys())
         self.assertEqual(b'test_binary_data', response['binary_data'])
@@ -187,8 +188,8 @@ class PyU4VSystemTest(testtools.TestCase):
         """Test _download_settings success"""
         response = self.system._download_settings(request_body=dict())
         mck_dl.assert_called_once_with(
-            category=constants.SYSTEM, resource_level=constants.SETTINGS,
-            resource_type=constants.EXPORT_FILE, payload=dict())
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"exportfile", payload=dict())
         mck_open.assert_called_once()
         self.assertTrue(response['success'])
         self.assertIn(str(Path.cwd()), str(response['settings_path']))
@@ -205,8 +206,8 @@ class PyU4VSystemTest(testtools.TestCase):
         response = self.system._download_settings(
             request_body=dict(), file_name='test', dir_path=Path.home())
         mck_dl.assert_called_once_with(
-            category=constants.SYSTEM, resource_level=constants.SETTINGS,
-            resource_type=constants.EXPORT_FILE, payload=dict())
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"exportfile", payload=dict())
         mck_open.assert_called_once()
         self.assertTrue(response['success'])
         self.assertIn(str(Path.home()), str(response['settings_path']))
@@ -218,8 +219,8 @@ class PyU4VSystemTest(testtools.TestCase):
         """Test _download_settings fail no response from API."""
         response = self.system._download_settings(request_body=dict())
         mck_dl.assert_called_once_with(
-            category=constants.SYSTEM, resource_level=constants.SETTINGS,
-            resource_type=constants.EXPORT_FILE, payload=dict())
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"exportfile", payload=dict())
         self.assertEqual({'success': False}, response)
 
     @mock.patch.object(
@@ -232,8 +233,8 @@ class PyU4VSystemTest(testtools.TestCase):
             self.system._download_settings,
             request_body=dict(), dir_path='fake')
         mck_dl.assert_called_once_with(
-            category=constants.SYSTEM, resource_level=constants.SETTINGS,
-            resource_type=constants.EXPORT_FILE, payload=dict())
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"exportfile", payload=dict())
 
     def test_download_all_settings(self):
         """Test download_all_settings."""
@@ -358,9 +359,8 @@ class PyU4VSystemTest(testtools.TestCase):
                                     file_path=__file__,
                                     array_id=self.data.remote_array)
         mck_up.assert_called_once_with(
-            category=constants.SYSTEM,
-            resource_level=constants.SETTINGS,
-            resource_type=constants.IMPORT_FILE,
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"importfile",
             form_data=ref_form_data)
 
     @mock.patch.object(common.CommonFunctions, 'upload_file')
@@ -373,9 +373,8 @@ class PyU4VSystemTest(testtools.TestCase):
         self.system.upload_settings(file_password='test_password',
                                     binary_data=b'test_binary_data')
         mck_up.assert_called_once_with(
-            category=constants.SYSTEM,
-            resource_level=constants.SETTINGS,
-            resource_type=constants.IMPORT_FILE,
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
+            f"importfile",
             form_data=ref_form_data)
 
     def test_upload_settings_path_exception(self):
@@ -434,9 +433,8 @@ class PyU4VSystemTest(testtools.TestCase):
         response = self.system.download_audit_log_record(
             file_name='test', return_binary=True)
         mck_dl.assert_called_once_with(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=self.system.array_id,
-            resource_type=AUDIT_LOG_RECORD, resource=EXPORT_FILE,
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/symmetrix/"
+            f"{self.system.array_id}/audit_log_record/exportfile",
             payload=ref_req_body, timeout=None)
         self.assertTrue(response[SUCCESS])
         self.assertIn(BINARY_DATA, response.keys())
@@ -455,9 +453,9 @@ class PyU4VSystemTest(testtools.TestCase):
             response = self.system.download_audit_log_record(
                 file_name='test', dir_path='test')
             mck_dl.assert_called_once_with(
-                category=SYSTEM, resource_level=SYMMETRIX,
-                resource_level_id=self.system.array_id,
-                resource_type=AUDIT_LOG_RECORD, resource=EXPORT_FILE,
+                target_uri=f"/{self.system.common.UNI_VERSION}/system/"
+                f"symmetrix/{self.system.array_id}/audit_log_record/"
+                f"exportfile",
                 payload=ref_req_body, timeout=None)
             mck_write.assert_called_once_with(
                 data=ref_response, file_extension=constants.PDF_SUFFIX,
@@ -548,7 +546,8 @@ class PyU4VSystemTest(testtools.TestCase):
             }
         }
         mck_modify.assert_called_once_with(
-            category=SYSTEM, resource_level=LOCAL_USER, payload=payload)
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/local_user",
+            resource_type=None, payload=payload)
 
     def test_get_director_port_list(self):
         """Test get_director_port_list."""
@@ -674,10 +673,9 @@ class PyU4VSystemTest(testtools.TestCase):
             }
         }
         mck_modify.assert_called_once_with(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=self.data.array,
-            resource_type=DIRECTOR, resource_type_id=self.data.or_director_id,
-            resource=PORT, resource_id=self.data.port_id1, payload=payload)
+            target_uri=f"/{self.system.common.UNI_VERSION}/system/symmetrix/"
+            f"{self.data.array}/director/{self.data.or_director_id}/port/"
+            f"{self.data.port_id1}", resource_type=None, payload=payload)
 
     def test_get_management_server_resources(self):
         with mock.patch.object(self.system,

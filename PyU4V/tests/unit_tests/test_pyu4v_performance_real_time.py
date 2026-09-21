@@ -86,8 +86,12 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_get_categories_empty(self):
         """Test get_categories no response empty list."""
         with mock.patch.object(
-                self.rt, 'get_request', return_value=dict()):
+                self.rt.common, 'get_request',
+                return_value=dict()) as mck_get:
             response = self.rt.get_categories()
+            mck_get.assert_called_once_with(
+                target_uri="/performance/realtime/help/categories",
+                resource_type=None)
             self.assertIsInstance(response, list)
             self.assertEqual(list(), response)
 
@@ -101,14 +105,25 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_get_category_metrics_empty(self):
         """Test get_category_metrics no response empty list."""
         with mock.patch.object(
-                self.rt, 'get_request', return_value=dict()):
-            response = self.rt.get_categories()
+                self.rt.common, 'get_request',
+                return_value=dict()) as mck_get:
+            response = self.rt.get_category_metrics(pc.ARRAY)
+            mck_get.assert_called_once_with(
+                target_uri=f"/performance/realtime/help/{self.rt.array_id}/"
+                f"{pc.ARRAY}/metrics",
+                resource_type=None)
             self.assertIsInstance(response, list)
             self.assertEqual(list(), response)
 
     def test_get_timestamps(self):
         """Test get_timestamps no array_id set."""
-        response = self.rt.get_timestamps()
+        with mock.patch.object(
+                self.rt.common, 'get_request',
+                wraps=self.rt.common.get_request) as mck_get:
+            response = self.rt.get_timestamps()
+            mck_get.assert_called_once_with(
+                target_uri="/performance/realtime/help/times",
+                resource_type=None)
         self.assertIsInstance(response, list)
         self.assertEqual(2, len(response))
 
@@ -129,8 +144,13 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_get_category_keys_empty(self):
         """Test get_category_keys no response empty list."""
         with mock.patch.object(
-                self.rt, 'post_request', return_value=dict()):
+                self.rt.common, 'create_resource',
+                return_value=dict()) as mck_post:
             response = self.rt.get_category_keys(category=pc.ARRAY)
+            mck_post.assert_called_once_with(
+                target_uri="/performance/realtime/keys",
+                payload={pc.SYMM_ID: self.rt.array_id,
+                         pc.CATEGORY: pc.ARRAY})
             self.assertIsInstance(response, list)
             self.assertEqual(list(), response)
 
@@ -247,15 +267,14 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
         with mock.patch.object(self.rt, '_validate_real_time_input'):
             with mock.patch.object(
-                    self.rt, 'post_request',
+                    self.rt.common, 'create_resource',
                     return_value=self.p_data.rt_perf_metrics) as mck_post:
                 response = self.rt.get_performance_data(
                     start_date=start, end_date=self.time_now,
                     category=category, metrics=metrics,
                     array_id=self.rt.array_id, instance_id=instance_id)
                 mck_post.assert_called_once_with(
-                    no_version=True, category=pc.PERFORMANCE,
-                    resource_level=pc.REAL_TIME, resource_type=pc.METRICS,
+                    target_uri="/performance/realtime/metrics",
                     payload=ref_params)
                 self.assertEqual(ref_response, response)
 

@@ -2,6 +2,12 @@
 
 ## Code Quality
 
+- **Modernized endpoint construction** (`system.py`, `performance.py`,
+  `real_time.py`): Replaced legacy decomposed URL-builder arguments with
+  explicit `target_uri` values, consistent with the provisioning and enhanced
+  API modules. System paths remain version-aware while performance paths remain
+  versionless as required by the Unisphere API.
+
 - **Added comprehensive type hints to PyU4V modules**:
   Added complete type hints using modern Python 3.9+ syntax (`list[str]`, `dict[str, Any]`, `X | None`)
   to the following modules:

@@ -68,11 +68,9 @@ class RealTimeFunctions(object):
         :param array_id: array serial number -- str
         :returns: categories -- list
         """
-        array_id = array_id if array_id else self.array_id
-        response = self.get_request(
-            no_version=True, category=pc.PERFORMANCE,
-            resource_level=pc.REAL_TIME, resource_type=pc.HELP,
-            resoruce=array_id, object_type=pc.CATEGORIES)
+        response = self.common.get_request(
+            target_uri="/performance/realtime/help/categories",
+            resource_type=None)
         return response.get(pc.CATEGORY_NAME, list()) if response else list()
 
     def get_category_metrics(self, category, array_id=None):
@@ -83,11 +81,10 @@ class RealTimeFunctions(object):
         :returns: metrics -- list
         """
         array_id = array_id if array_id else self.array_id
-        response = self.get_request(
-            no_version=True, category=pc.PERFORMANCE,
-            resource_level=pc.REAL_TIME, resource_type=pc.HELP,
-            resource_type_id=array_id, resource=category,
-            object_type=pc.METRICS)
+        response = self.common.get_request(
+            target_uri=f"/performance/realtime/help/{array_id}/{category}/"
+            f"metrics",
+            resource_type=None)
         return response.get(pc.METRIC_NAME, list()) if response else list()
 
     def get_timestamps(self, array_id=None):
@@ -97,10 +94,9 @@ class RealTimeFunctions(object):
         :returns: array timestamp info -- list
         """
         try:
-            response = self.get_request(
-                no_version=True, category=pc.PERFORMANCE,
-                resource_level=pc.REAL_TIME, resource_type=pc.HELP,
-                resource=pc.TIMES)
+            response = self.common.get_request(
+                target_uri="/performance/realtime/help/times",
+                resource_type=None)
         except exception.VolumeBackendAPIException:
             return list()
         timestamps = response.get(
@@ -123,9 +119,8 @@ class RealTimeFunctions(object):
         array_id = self.array_id if not array_id else array_id
         request_params = {pc.SYMM_ID: array_id, pc.CATEGORY: category}
         try:
-            response = self.post_request(
-                no_version=True, category=pc.PERFORMANCE,
-                resource_level=pc.REAL_TIME, resource_type=pc.KEYS,
+            response = self.common.create_resource(
+                target_uri="/performance/realtime/keys",
                 payload=request_params)
         except Exception as e:
             logging.error(f"Error in get_category_keys: {e}")
@@ -252,9 +247,8 @@ class RealTimeFunctions(object):
         if instance_id:
             request_params[pc.INSTANCE_ID] = instance_id
 
-        response = self.post_request(
-            no_version=True, category=pc.PERFORMANCE,
-            resource_level=pc.REAL_TIME, resource_type=pc.METRICS,
+        response = self.common.create_resource(
+            target_uri="/performance/realtime/metrics",
             payload=request_params)
         if not response:
             return None

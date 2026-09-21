@@ -22,7 +22,6 @@ from typing import Any
 from PyU4V import common
 from PyU4V import real_time
 from PyU4V.utils import exception
-from PyU4V.utils import file_handler
 from PyU4V.utils import performance_constants as pc
 from PyU4V.utils.decorators import performance_enhanced_recommendation
 
@@ -67,16 +66,17 @@ class PerformanceFunctions(object):
         self.recency = minutes
 
     @performance_enhanced_recommendation('PerformanceFunctions')
-    def is_array_diagnostic_performance_registered(self, array_id: str | None = None) -> bool:
+    def is_array_diagnostic_performance_registered(
+            self, array_id: str | None = None) -> bool:
         """Check if an array is registered for diagnostic performance data.
 
         :param array_id: array id -- str
         :returns: is diagnostic registered -- bool
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.REG, resource_type_id=array_id)
+        response = self.common.get_request(
+            target_uri=f"/performance/Array/registration/{array_id}",
+            resource_type=None)
         return response.get('isRegistered', False) if response else False
 
     @performance_enhanced_recommendation('PerformanceFunctions')
@@ -106,9 +106,9 @@ class PerformanceFunctions(object):
         :returns: array performance registration details -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.REG_DETAILS, resource_type_id=array_id)
+        response = self.common.get_request(
+            target_uri=f"/performance/Array/registrationdetails/{array_id}",
+            resource_type=None)
         reg_details = response.get(pc.REG_DETAILS_INFO)
         return reg_details[0] if len(reg_details) > 0 else dict()
 
@@ -122,11 +122,11 @@ class PerformanceFunctions(object):
         array_id = self.array_id if not array_id else array_id
 
         if not self.is_array_diagnostic_performance_registered(array_id):
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
-                                                    pc.REG_DIAGNOSTIC: True,
-                                                    pc.REAL_TIME: False})
+            response = self.common.create_resource(
+                target_uri="/performance/Array/register",
+                payload={pc.SYMM_ID: array_id,
+                         pc.REG_DIAGNOSTIC: True,
+                         pc.REAL_TIME: False})
 
             response_message = response.get('message', list())
             if response_message:
@@ -163,11 +163,11 @@ class PerformanceFunctions(object):
             LOG.warning('Disabling diagnostic performance data collection '
                         'will also disable real-time data collection, if '
                         'enabled.')
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
-                                                    pc.REG_DIAGNOSTIC: False,
-                                                    pc.REAL_TIME: False})
+            response = self.common.create_resource(
+                target_uri="/performance/Array/register",
+                payload={pc.SYMM_ID: array_id,
+                         pc.REG_DIAGNOSTIC: False,
+                         pc.REAL_TIME: False})
 
             response_message = response.get('message', list())
             if response_message:
@@ -213,9 +213,8 @@ class PerformanceFunctions(object):
         if storage_group_list:
             payload.update({'selectedSGs': storage_group_list})
 
-        response = self.post_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.REGISTER, payload=payload)
+        response = self.common.create_resource(
+            target_uri="/performance/Array/register", payload=payload)
 
         return response
 
@@ -233,9 +232,8 @@ class PerformanceFunctions(object):
             diag_reg = self.is_array_diagnostic_performance_registered(
                 array_id)
 
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+            response = self.common.create_resource(
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: array_id, pc.REG_DIAGNOSTIC: diag_reg,
                     pc.REAL_TIME: False})
 
@@ -298,9 +296,8 @@ class PerformanceFunctions(object):
             filename = '{prefix}-{host}'.format(prefix=pc.FILENAME_PREFIX,
                                                 host=socket.gethostname())
         try:
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.BACKUP, payload={
+            response = self.common.create_resource(
+                target_uri="/performance/Array/backup", payload={
                     pc.SYMM_ID: array_id, pc.FILENAME: filename,
                     pc.NAMED_RT_TRACES: last_day_of_diagnostic,
                     pc.LAST_DAY_DIAG: named_real_time_traces})
@@ -320,9 +317,8 @@ class PerformanceFunctions(object):
         array_id = self.array_id if not array_id else array_id
         timestamp = None
 
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.KEYS)
+        response = self.common.get_request(
+            target_uri="/performance/Array/keys", resource_type=None)
         if response:
             for key in response.get(pc.ARRAY_INFO):
                 if key and key.get(pc.SYMM_ID) == array_id:
@@ -423,9 +419,9 @@ class PerformanceFunctions(object):
         elif 'Server' in category:
             rt = pc.SERVER
 
-        return self.post_request(
-            category=pc.PERFORMANCE, resource_level=pc.FILE,
-            resource_type=rt, object_type=pc.KEYS if keys else pc.METRICS,
+        return self.common.create_resource(
+            target_uri=f"/performance/file/{rt}/"
+            f"{pc.KEYS if keys else pc.METRICS}",
             payload=request_body)
 
     @performance_enhanced_recommendation('PerformanceFunctions')
@@ -467,11 +463,14 @@ class PerformanceFunctions(object):
                 response = self._run_v4_filesystem_request(
                     category, request_body, keys=True)
             else:
-                request = self.get_request if pc.ARRAY in category else (
-                    self.post_request)
-                response = request(
-                    category=pc.PERFORMANCE, resource_level=category,
-                    resource_type=pc.KEYS, payload=request_body)
+                if pc.ARRAY in category:
+                    response = self.common.get_request(
+                        target_uri=f"/performance/{category}/keys",
+                        resource_type=None)
+                else:
+                    response = self.common.create_resource(
+                        target_uri=f"/performance/{category}/keys",
+                        payload=request_body)
 
             if response:
                 return response
@@ -494,10 +493,9 @@ class PerformanceFunctions(object):
         :returns: categories -- list
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.HELP, resource_type_id=array_id,
-            resource=pc.CATEGORIES)
+        response = self.common.get_request(
+            target_uri=f"/performance/Array/help/{array_id}/categories",
+            resource_type=None)
 
         return response.get('categoryName', list()) if response else list()
 
@@ -530,11 +528,10 @@ class PerformanceFunctions(object):
         category_list = self.get_performance_categories_list(array_id)
         if category in category_list:
             mode = 'Kpi' if kpi_only else 'All'
-            response = self.get_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.HELP, resource_type_id=array_id,
-                resource=category, object_type=pc.METRICS,
-                object_type_id=mode)
+            response = self.common.get_request(
+                target_uri=f"/performance/Array/help/{array_id}/{category}/"
+                f"metrics/{mode}",
+                resource_type=None)
             return response.get('metricName', list()) if response else list()
         else:
             raise exception.InvalidInputException(
@@ -775,9 +772,9 @@ class PerformanceFunctions(object):
             perf_response = self._run_v4_filesystem_request(
                 category, request_body, metrics=True)
         else:
-            perf_response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=category,
-                resource_type=pc.METRICS, payload=request_body)
+            perf_response = self.common.create_resource(
+                target_uri=f"/performance/{category}/metrics",
+                payload=request_body)
 
         # 8 Format results response
         performance_details.update(
@@ -820,9 +817,8 @@ class PerformanceFunctions(object):
                 'to True in perf.get_days_to_full().')
 
         request_body = {pc.SYMM_ID: array_id, pc.CATEGORY: category}
-        response = self.post_request(
-            category=pc.PERFORMANCE, resource_level=pc.DAYS_TO_FULL,
-            payload=request_body)
+        response = self.common.create_resource(
+            target_uri="/performance/daystofull", payload=request_body)
         return response.get(
             pc.DAYS_TO_FULL_RESULT, list()) if response else list()
 
@@ -834,9 +830,9 @@ class PerformanceFunctions(object):
         :returns: performance threshold categories -- list
         """
         array_id = array_id if array_id else self.array_id
-        categories = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=array_id, resource=pc.CATEGORIES)
+        categories = self.common.get_request(
+            target_uri=f"/performance/threshold/{array_id}/categories",
+            resource_type=None)
         return categories.get(pc.THRESH_CAT, list()) if categories else list()
 
     @performance_enhanced_recommendation('PerformanceFunctions')
@@ -848,10 +844,9 @@ class PerformanceFunctions(object):
         :returns: category settings --  dict
         """
         array_id = array_id if array_id else self.array_id
-        return self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=pc.LIST, resource_type_id=array_id,
-            resource=category)
+        return self.common.get_request(
+            target_uri=f"/performance/threshold/list/{array_id}/{category}",
+            resource_type=None)
 
     @performance_enhanced_recommendation('PerformanceFunctions')
     def update_threshold_settings(
@@ -897,10 +892,9 @@ class PerformanceFunctions(object):
             "includeRealTimeTraceOnCritical": include_realtime_trace
         }
 
-        return self.put_request(
-            category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=pc.UPDATE, resource_type_id=category,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/performance/threshold/update/{category}",
+            resource_type=None, payload=payload)
 
     @performance_enhanced_recommendation('PerformanceFunctions')
     def get_array_keys(self):

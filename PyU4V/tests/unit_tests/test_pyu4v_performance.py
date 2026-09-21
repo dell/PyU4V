@@ -24,7 +24,6 @@ from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V.tests.unit_tests import pyu4v_performance_data as pd
 from PyU4V import univmax_conn
 from PyU4V.utils import exception
-from PyU4V.utils import file_handler
 from PyU4V.utils import performance_constants as pc
 
 
@@ -72,12 +71,20 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_is_array_diagnostic_performance_registered_true(self):
         """Test is_array_diagnostic_performance_registered True."""
-        self.assertTrue(self.perf.is_array_diagnostic_performance_registered())
+        with mock.patch.object(
+                self.perf.common, 'get_request',
+                wraps=self.perf.common.get_request) as mck_get:
+            self.assertTrue(
+                self.perf.is_array_diagnostic_performance_registered())
+            mck_get.assert_called_once_with(
+                target_uri=f"/performance/Array/registration/"
+                f"{self.perf.array_id}",
+                resource_type=None)
 
     def testis_array_diagnostic_performance_registered_false(self):
         """Test is_array_diagnostic_performance_registered False."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_is_registered_false):
             self.assertFalse(
                 self.perf.is_array_diagnostic_performance_registered())
@@ -89,28 +96,35 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_is_array_real_time_performance_registered_false(self):
         """Test is_array_real_time_performance_registered False."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_reg_details_disabled):
             self.assertFalse(
                 self.perf.is_array_real_time_performance_registered())
 
     def test_is_array_real_time_performance_registered_exception_catch(self):
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 side_effect=exception.VolumeBackendAPIException):
             self.assertFalse(
                 self.perf.is_array_real_time_performance_registered())
 
     def test_get_array_registration_details(self):
         """Test get_array_registration_details."""
-        response = self.perf.get_array_registration_details()
+        with mock.patch.object(
+                self.perf.common, 'get_request',
+                wraps=self.perf.common.get_request) as mck_get:
+            response = self.perf.get_array_registration_details()
+            mck_get.assert_called_once_with(
+                target_uri=f"/performance/Array/registrationdetails/"
+                f"{self.perf.array_id}",
+                resource_type=None)
         self.assertIsNotNone(response)
         self.assertIsInstance(response, dict)
 
     def test_get_array_registration_details_empty(self):
         """Test get_array_registration_details."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value={'registrationDetailsInfo': list()}):
             response = self.perf.get_array_registration_details()
             self.assertFalse(response)
@@ -119,118 +133,113 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_enable_diagnostic_data_collection_success(self):
         """Test enable_diagnostic_data_collection success scenario."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_is_registered_false):
             with mock.patch.object(
-                    self.perf, 'post_request',
-                    side_effect=self.perf.post_request) as mck_p:
+                    self.perf.common, 'create_resource',
+                    side_effect=self.perf.common.create_resource) as mck_p:
                 self.perf.enable_diagnostic_data_collection()
                 mck_p.assert_called_once_with(
-                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                    resource_type=pc.REGISTER, payload={
+                    target_uri="/performance/Array/register", payload={
                         pc.SYMM_ID: self.perf.array_id,
                         pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
 
     def test_enable_diagnostic_data_collection_fail_already_enabled(self):
         """Test enable_diagnostic_data_collection fail - already enabled."""
         with mock.patch.object(
-                self.perf, 'post_request',
-                side_effect=self.perf.post_request) as mck_p:
+                self.perf.common, 'create_resource',
+                side_effect=self.perf.common.create_resource) as mck_p:
             self.perf.enable_diagnostic_data_collection()
             mck_p.assert_not_called()
 
     def test_enable_diagnostic_data_collection_fail_not_applied(self):
         """Test enable_diagnostic_data_collection fail - change not applied."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_is_registered_false):
             with mock.patch.object(
-                    self.perf, 'post_request',
+                    self.perf.common, 'create_resource',
                     return_value=self.p_data.array_register_fail) as mck_p:
                 self.assertRaises(exception.VolumeBackendAPIException,
                                   self.perf.enable_diagnostic_data_collection)
                 mck_p.assert_called_once_with(
-                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                    resource_type=pc.REGISTER, payload={
+                    target_uri="/performance/Array/register", payload={
                         pc.SYMM_ID: self.perf.array_id,
                         pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
 
     def test_enable_diagnostic_data_collection_fail_no_msg(self):
         """Test enable_diagnostic_data_collection fail - no response msg."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_is_registered_false):
             with mock.patch.object(
-                    self.perf, 'post_request', return_value=dict()) as mck_p:
+                    self.perf.common, 'create_resource',
+                    return_value=dict()) as mck_p:
                 self.assertRaises(exception.VolumeBackendAPIException,
                                   self.perf.enable_diagnostic_data_collection)
                 mck_p.assert_called_once_with(
-                    category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                    resource_type=pc.REGISTER, payload={
+                    target_uri="/performance/Array/register", payload={
                         pc.SYMM_ID: self.perf.array_id,
                         pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
 
     def test_disable_diagnostic_data_collection_success(self):
         """Test disable_diagnostic_data_collection success."""
         with mock.patch.object(
-                self.perf, 'post_request',
-                side_effect=self.perf.post_request) as mck_p:
+                self.perf.common, 'create_resource',
+                side_effect=self.perf.common.create_resource) as mck_p:
             self.perf.disable_diagnostic_data_collection()
             mck_p.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
                     pc.REG_DIAGNOSTIC: False, pc.REAL_TIME: False})
 
     def test_disable_diagnostic_data_collection_fail_already_disabled(self):
         """Test disable_diagnostic_data_collection fail - already disabled."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_is_registered_false):
             with mock.patch.object(
-                    self.perf, 'post_request',
-                    side_effect=self.perf.post_request) as mck_p:
+                    self.perf.common, 'create_resource',
+                    side_effect=self.perf.common.create_resource) as mck_p:
                 self.perf.disable_diagnostic_data_collection()
                 mck_p.assert_not_called()
 
     def test_disable_diagnostic_data_collection_fail_not_applied(self):
         """Test disable_diagnostic_data_collection failure - not applied."""
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 return_value=self.p_data.array_register_fail) as mck_p:
             self.assertRaises(exception.VolumeBackendAPIException,
                               self.perf.disable_diagnostic_data_collection)
             mck_p.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
                     pc.REG_DIAGNOSTIC: False, pc.REAL_TIME: False})
 
     def test_disable_diagnostic_data_collection_fail_no_msg(self):
         """Test disable_diagnostic_data_collection failure - no response."""
         with mock.patch.object(
-                self.perf, 'post_request', return_value=dict()) as mck_p:
+                self.perf.common, 'create_resource',
+                return_value=dict()) as mck_p:
             self.assertRaises(exception.VolumeBackendAPIException,
                               self.perf.disable_diagnostic_data_collection)
             mck_p.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
                     pc.REG_DIAGNOSTIC: False, pc.REAL_TIME: False})
 
     def test_enable_real_time_data_collection_success(self):
         """Test enable_real_time_data_collection success."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_reg_details_disabled):
             with mock.patch.object(
-                    self.perf, 'post_request',
-                    side_effect=self.perf.post_request) as mck_p:
+                    self.perf.common, 'create_resource',
+                    side_effect=self.perf.common.create_resource) as mck_p:
                 self.perf.enable_real_time_data_collection(
                     storage_group_list='test')
                 mck_p.assert_called_once_with(
-                    category='performance', resource_level='Array',
-                    resource_type='register',
+                    target_uri="/performance/Array/register",
                     payload={'symmetrixId': '000197800123',
                              'diagnostic': True,
                              'realtime': True,
@@ -244,23 +253,22 @@ class PyU4VPerformanceTest(testtools.TestCase):
         object returns True by default for array diagnostic perf registration.
         """
         with mock.patch.object(
-                self.perf, 'post_request',
-                side_effect=self.perf.post_request) as mck_p:
+                self.perf.common, 'create_resource',
+                side_effect=self.perf.common.create_resource) as mck_p:
             self.perf.disable_real_time_data_collection()
             mck_p.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
                     pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
 
     def test_disable_real_time_data_collection_fail_already_disabled(self):
         """Test disable_real_time_data_collection fail - already disabled."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 return_value=self.p_data.array_reg_details_disabled):
             with mock.patch.object(
-                    self.perf, 'post_request',
-                    side_effect=self.perf.post_request) as mck_p:
+                    self.perf.common, 'create_resource',
+                    side_effect=self.perf.common.create_resource) as mck_p:
                 self.perf.disable_real_time_data_collection()
                 mck_p.assert_not_called()
 
@@ -271,25 +279,24 @@ class PyU4VPerformanceTest(testtools.TestCase):
         object returns True by default for array diagnostic perf registration.
         """
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 return_value=self.p_data.array_register_fail) as mck_p:
             self.assertRaises(exception.VolumeBackendAPIException,
                               self.perf.disable_real_time_data_collection)
             mck_p.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
                     pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
 
     def test_disable_real_time_data_collection_fail_no_msg(self):
         """Test disable_real_time_data_collection fail - no response msg."""
         with mock.patch.object(
-                self.perf, 'post_request', return_value=dict()) as mck_p:
+                self.perf.common, 'create_resource',
+                return_value=dict()) as mck_p:
             self.assertRaises(exception.VolumeBackendAPIException,
                               self.perf.disable_real_time_data_collection)
             mck_p.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
                     pc.REG_DIAGNOSTIC: True, pc.REAL_TIME: False})
 
@@ -298,19 +305,18 @@ class PyU4VPerformanceTest(testtools.TestCase):
         filename = '{prefix}-{host}'.format(prefix=pc.FILENAME_PREFIX,
                                             host=socket.gethostname())
         with mock.patch.object(
-                self.perf, 'post_request') as mck_bu:
+                self.perf.common, 'create_resource') as mck_bu:
             self.perf.backup_performance_database(last_day_of_diagnostic=True,
                                                   named_real_time_traces=True)
             mck_bu.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.BACKUP, payload={
+                target_uri="/performance/Array/backup", payload={
                     pc.SYMM_ID: self.conn.array_id, pc.FILENAME: filename,
                     pc.NAMED_RT_TRACES: True, pc.LAST_DAY_DIAG: True})
 
     def test_backup_performance_database_exception(self):
         """Test backup_performance_database exception."""
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 side_effect=exception.VolumeBackendAPIException,
                 return_value=self.p_data.array_backup_fail):
             self.assertRaises(exception.VolumeBackendAPIException,
@@ -326,7 +332,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_last_available_timestamp_exception(self):
         """Test get_last_available_timestamp exception case."""
-        with mock.patch.object(self.perf, 'get_request',
+        with mock.patch.object(self.perf.common, 'get_request',
                                return_value=self.p_data.array_keys_empty):
             self.assertRaises(exception.ResourceNotFoundException,
                               self.perf.get_last_available_timestamp)
@@ -387,45 +393,41 @@ class PyU4VPerformanceTest(testtools.TestCase):
         """Test _run_v4_filesystem_request for filesystem."""
         rt = 'filesystem'
         with mock.patch.object(
-                self.perf, 'post_request') as mck_request:
+                self.perf.common, 'create_resource') as mck_request:
             self.perf._run_v4_filesystem_request(
                 category='FileSystem', request_body={}, keys=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.FILE,
-                resource_type=rt, object_type=pc.KEYS, payload={})
+                target_uri=f"/performance/file/{rt}/keys", payload={})
 
     def test_run_v4_filesystem_request_interface(self):
         """Test _run_v4_filesystem_request for interface."""
         rt = 'Interface'
         with mock.patch.object(
-                self.perf, 'post_request') as mck_request:
+                self.perf.common, 'create_resource') as mck_request:
             self.perf._run_v4_filesystem_request(
                 category='Interface', request_body={}, keys=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.FILE,
-                resource_type=rt, object_type=pc.KEYS, payload={})
+                target_uri=f"/performance/file/{rt}/keys", payload={})
 
     def test_run_v4_filesystem_request_node(self):
         """Test _run_v4_filesystem_request for node."""
         rt = 'node'
         with mock.patch.object(
-                self.perf, 'post_request') as mck_request:
+                self.perf.common, 'create_resource') as mck_request:
             self.perf._run_v4_filesystem_request(
                 category='Node', request_body={}, metrics=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.FILE,
-                resource_type=rt, object_type=pc.METRICS, payload={})
+                target_uri=f"/performance/file/{rt}/metrics", payload={})
 
     def test_run_v4_filesystem_request_server(self):
         """Test _run_v4_filesystem_request for server."""
         rt = 'server'
         with mock.patch.object(
-                self.perf, 'post_request') as mck_request:
+                self.perf.common, 'create_resource') as mck_request:
             self.perf._run_v4_filesystem_request(
                 category='Server', request_body={}, metrics=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.FILE,
-                resource_type=rt, object_type=pc.METRICS, payload={})
+                target_uri=f"/performance/file/{rt}/metrics", payload={})
 
     def test_get_performance_key_list_post_with_inputs(self):
         """Test get_performance_key_list post with all inputs set."""
@@ -438,7 +440,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
             'storageResourceId': self.p_data.storage_resource_id,
             'startDate': time_now, 'endDate': time_now}
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 return_value=self.p_data.fe_dir_keys) as mck_request:
             key_response = self.perf.get_performance_key_list(
                 category=pc.FE_DIR, array_id=self.p_data.array,
@@ -449,8 +451,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
                 start_time=time_now, end_time=time_now)
 
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.FE_DIR,
-                resource_type=pc.KEYS, payload=ref_request_body)
+                target_uri=f"/performance/{pc.FE_DIR}/keys",
+                payload=ref_request_body)
 
             self.assertEqual(key_response, self.p_data.fe_dir_keys)
 
@@ -461,7 +463,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
                           self.perf.get_performance_key_list, 'FAKECAT')
         # No keys returned
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 side_effect=[self.p_data.perf_cats, None]):
             self.assertRaises(exception.ResourceNotFoundException,
                               self.perf.get_performance_key_list, 'Array')
@@ -469,13 +471,21 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_get_performance_key_list_array_get(self):
         """Test get_performance_key_list get with Array category."""
         with mock.patch.object(
-                self.perf, 'get_request',
+                self.perf.common, 'get_request',
                 side_effect=[
                     self.p_data.perf_cats,
                     self.p_data.array_keys]) as mck_request:
             key_response = self.perf.get_performance_key_list(
                 category=pc.ARRAY)
             self.assertEqual(2, mck_request.call_count)
+            mck_request.assert_has_calls([
+                mock.call(
+                    target_uri=f"/performance/Array/help/"
+                    f"{self.perf.array_id}/categories",
+                    resource_type=None),
+                mock.call(
+                    target_uri="/performance/Array/keys",
+                    resource_type=None)])
             self.assertEqual(key_response, self.p_data.array_keys)
 
     def test_get_performance_key_list_exception(self):
@@ -494,7 +504,14 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_performance_categories_list(self):
         """Test get_performance_categories_list."""
-        cat_list = self.perf.get_performance_categories_list()
+        with mock.patch.object(
+                self.perf.common, 'get_request',
+                wraps=self.perf.common.get_request) as mck_get:
+            cat_list = self.perf.get_performance_categories_list()
+            mck_get.assert_called_once_with(
+                target_uri=f"/performance/Array/help/{self.perf.array_id}/"
+                f"categories",
+                resource_type=None)
         self.assertTrue(cat_list)
 
     def test_validate_category(self):
@@ -508,8 +525,20 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_performance_metrics_list(self):
         """Test get_performance_metrics_list success."""
-        array_metrics = self.perf.get_performance_metrics_list(
-            pc.ARRAY, kpi_only=False)
+        with mock.patch.object(
+                self.perf.common, 'get_request',
+                wraps=self.perf.common.get_request) as mck_get:
+            array_metrics = self.perf.get_performance_metrics_list(
+                pc.ARRAY, kpi_only=False)
+            mck_get.assert_has_calls([
+                mock.call(
+                    target_uri=f"/performance/Array/help/"
+                    f"{self.perf.array_id}/categories",
+                    resource_type=None),
+                mock.call(
+                    target_uri=f"/performance/Array/help/"
+                    f"{self.perf.array_id}/{pc.ARRAY}/metrics/All",
+                    resource_type=None)])
         self.assertIsInstance(array_metrics, list)
         self.assertNotEqual(array_metrics, list())
 
@@ -665,15 +694,15 @@ class PyU4VPerformanceTest(testtools.TestCase):
             'result': self.p_data.perf_metrics_resp[
                 'resultList']['result'], 'timestamp': str(self.time_now)}
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 return_value=self.p_data.perf_metrics_resp) as mck_request:
             response = self.perf.get_performance_stats(
                 category=pc.ARRAY, metrics='PercentBusy',
                 array_id=self.p_data.array, start_time=self.time_now,
                 end_time=self.time_now, recency=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.METRICS, payload=ref_payload)
+                target_uri=f"/performance/{pc.ARRAY}/metrics",
+                payload=ref_payload)
             self.assertTrue(response)
             self.assertEqual(response, ref_response)
 
@@ -689,7 +718,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
             'directorId': self.p_data.fe_dir_id,
             'diskTechnology': self.p_data.disk_technology}
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 return_value=self.p_data.perf_metrics_resp) as mck_request:
             self.perf.get_performance_stats(
                 category=pc.ARRAY, metrics=pc.KPI,
@@ -698,8 +727,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
                 request_body={'directorId': self.p_data.fe_dir_id,
                               'diskTechnology': self.p_data.disk_technology})
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.METRICS, payload=ref_payload)
+                target_uri=f"/performance/{pc.ARRAY}/metrics",
+                payload=ref_payload)
 
     def test_get_performance_stats_request_body_other_tgt_id(self):
         """Test get_performance_stats with request body variant 2."""
@@ -712,7 +741,7 @@ class PyU4VPerformanceTest(testtools.TestCase):
             'directorId': self.p_data.fe_dir_id,
             'portId': self.p_data.fe_port_id}
         with mock.patch.object(
-                self.perf, 'post_request',
+                self.perf.common, 'create_resource',
                 return_value=self.p_data.perf_metrics_resp) as mck_request:
             self.perf.get_performance_stats(
                 category=pc.ARRAY, metrics=pc.ALL,
@@ -721,8 +750,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
                 request_body={'directorId': self.p_data.fe_dir_id,
                               'portId': self.p_data.fe_port_id})
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.METRICS, payload=ref_payload)
+                target_uri=f"/performance/{pc.ARRAY}/metrics",
+                payload=ref_payload)
 
     def test_get_performance_stats_filesystem_call(self):
         """Test get_performance_stats with filesystem call."""
@@ -767,11 +796,12 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_get_days_to_full_srp(self):
         """Test get_days_to_full srp info."""
         with mock.patch.object(
-                self.perf, 'post_request', return_value=dict()) as mck_request:
+                self.perf.common, 'create_resource',
+                return_value=dict()) as mck_request:
             response = self.perf.get_days_to_full(
                 array_id=self.p_data.array, srp_to_full=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.DAYS_TO_FULL,
+                target_uri="/performance/daystofull",
                 payload={'symmetrixId': self.p_data.array,
                          'category': pc.SRP})
             self.assertFalse(response)
@@ -779,11 +809,12 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_get_days_to_full_thin_pool(self):
         """Test get_days_to_full thin pool info."""
         with mock.patch.object(
-                self.perf, 'post_request', return_value=dict()) as mck_request:
+                self.perf.common, 'create_resource',
+                return_value=dict()) as mck_request:
             response = self.perf.get_days_to_full(
                 array_id=self.p_data.array, thin_pool_to_full=True)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.DAYS_TO_FULL,
+                target_uri="/performance/daystofull",
                 payload={'symmetrixId': self.p_data.array,
                          'category': pc.THIN_POOL})
             self.assertFalse(response)
@@ -795,14 +826,28 @@ class PyU4VPerformanceTest(testtools.TestCase):
 
     def test_get_threshold_categories(self):
         """Test get_threshold_categories."""
-        response = self.perf.get_threshold_categories()
+        with mock.patch.object(
+                self.perf.common, 'get_request',
+                wraps=self.perf.common.get_request) as mck_get:
+            response = self.perf.get_threshold_categories()
+            mck_get.assert_called_once_with(
+                target_uri=f"/performance/threshold/{self.perf.array_id}/"
+                f"categories",
+                resource_type=None)
         self.assertIsInstance(response, list)
         self.assertTrue(response)
 
     def test_get_threshold_category_settings(self):
         """Test get_threshold_category_settings."""
-        response = self.perf.get_threshold_category_settings(
-            category=pc.ARRAY)
+        with mock.patch.object(
+                self.perf.common, 'get_request',
+                wraps=self.perf.common.get_request) as mck_get:
+            response = self.perf.get_threshold_category_settings(
+                category=pc.ARRAY)
+            mck_get.assert_called_once_with(
+                target_uri=f"/performance/threshold/list/"
+                f"{self.perf.array_id}/{pc.ARRAY}",
+                resource_type=None)
         self.assertIsInstance(response, dict)
         self.assertIsNotNone(response)
         self.assertEqual(response.get(pc.CATEGORY), pc.ARRAY)
@@ -830,16 +875,16 @@ class PyU4VPerformanceTest(testtools.TestCase):
             pc.SEC_THRESH_SEV: second_threshold_severity,
             "includeRealTimeTraceOnCritical": False}
 
-        with mock.patch.object(self.perf, 'put_request') as mck_request:
+        with mock.patch.object(
+                self.perf.common, 'modify_resource') as mck_request:
             self.perf.update_threshold_settings(
                 category, metric, first_threshold, second_threshold, alert,
                 first_threshold_occurrences, first_threshold_samples,
                 first_threshold_severity, second_threshold_occurrences,
                 second_threshold_samples, second_threshold_severity)
             mck_request.assert_called_once_with(
-                category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-                resource_type=pc.UPDATE, resource_type_id=category,
-                payload=ref_payload)
+                target_uri=f"/performance/threshold/update/{category}",
+                resource_type=None, payload=ref_payload)
 
     def test_get_array_keys(self):
         """Test get_array_keys."""
