@@ -263,9 +263,9 @@ Version 10.5 Changes Summary
   force-refresh request per second; HTTP 429 responses include ``retry_after_ms``
   and propagate through the existing backend exception without automatic retry.
 - **``get_category_metrics`` enhanced**: new ``all_metrics`` keyword argument (default
-  ``False``). When ``True``, appends ``metric_type eq All`` to the filter query so all
-  available metrics are returned instead of KPI metrics only. Fully backward-compatible —
-  existing call-sites require no changes.
+  ``False``). When ``True``, appends the ``metric_type=All`` query parameter so all
+  available metrics are returned instead of KPI metrics only. Fully backward-compatible
+  — existing call-sites require no changes.
 - **New modules**: ``PyU4V.snapshot`` (``SnapshotFunctions``) and ``PyU4V.srdf``
   (``SRDFFunctions``) split from ``replication.py``. Access via ``conn.snapshot``
   and ``conn.srdf`` respectively.

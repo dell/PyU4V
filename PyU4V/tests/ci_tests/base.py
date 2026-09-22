@@ -937,11 +937,3 @@ class TestBaseTestCase(testtools.TestCase):
         files = [x for x in p if x.is_file()]
         for file in files:
             file.unlink()
-
-    def cleanup_snmp_config(self):
-        snmp_ids = self.system.get_snmp_trap_configuration()
-        for id in snmp_ids['snmp_traps']:
-            try:
-                self.system.delete_snmp_trap_destination(snmp_id=id['id'])
-            except exception.ResourceNotFoundException:
-                pass

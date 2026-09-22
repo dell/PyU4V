@@ -483,6 +483,20 @@ class PyU4VCommonTest(testtools.TestCase):
                 form_data={'test_req': True})
             self.assertEqual(ref_response, response)
 
+    def test_upload_file_empty_success_response(self):
+        """Test an accepted upload with an empty response body."""
+        response = mock.MagicMock()
+        response.text = ''
+        response.reason = 'Accepted'
+        with mock.patch.object(
+                self.conn.rest_client, 'file_transfer_request',
+                return_value=(response, constants.STATUS_202)):
+            upload_response = self.common.upload_file(
+                target_uri='/105/system/settings/importfile',
+                form_data={'test_req': True})
+
+        self.assertEqual({'success': True}, upload_response)
+
     def test_upload_file_fail_backend_exception(self):
         """Test upload_file fail with volume backend API exception."""
         with mock.patch.object(

@@ -26,8 +26,6 @@ from PyU4V.tests.ci_tests import base
 from PyU4V.utils import constants
 from PyU4V.utils import exception
 
-ARRAY_ID = constants.ARRAY_ID
-ARRAY_NUM = constants.ARRAY_NUM
 CAPACITY = constants.CAPACITY
 DISK_IDS = constants.DISK_IDS
 HEALTH_CHECK_ID = constants.HEALTH_CHECK_ID
@@ -35,13 +33,9 @@ HEALTH_SCORE = constants.HEALTH_SCORE
 JOB_ID = constants.JOB_ID
 NAME = constants.NAME
 RES_LINK = constants.RES_LINK
-SG_ID = constants.SG_ID
-SG_NUM = constants.SG_NUM
 SPINDLE_ID = constants.SPINDLE_ID
 STATUS = constants.STATUS
-SYSTEM = constants.SYSTEM
 LOCAL_USER = constants.LOCAL_USER
-TAG = constants.TAG
 TAG_NAME = constants.TAG_NAME
 TEST_RES = constants.TEST_RES
 TYPE = constants.TYPE
@@ -87,6 +81,8 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         self.assertIsInstance(health, dict)
         self.assertIn(HEALTH_SCORE, health.keys())
 
+    @testtools.skip(
+        'Run manually: this test creates and deletes a system health check')
     def test_health_check(self):
         """Test health check functionality complete.
 
@@ -195,21 +191,17 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
     def test_get_tags_filtered(self):
         """Test get_tags_filtered."""
-        common.CommonFunctions.get_resource = MagicMock(
-            side_effect=self.common.get_resource)
+        array_tags = self.system.get_tags(array_id=self.conn.array_id)
+        tag_names = array_tags.get(TAG_NAME, list()) if array_tags else list()
+        if not tag_names:
+            self.skipTest('No tags are associated with the test array')
 
+        tag_name = tag_names[0]
         response = self.system.get_tags(
-            array_id=self.conn.array_id, tag_name='CI-TEST-NO-RESULT',
-            storage_group_id='XX', num_of_storage_groups=1, num_of_arrays=3)
+            array_id=self.conn.array_id, tag_name=tag_name)
 
-        common.CommonFunctions.get_resource.assert_called_once_with(
-            category=SYSTEM, resource_level=TAG, params={
-                ARRAY_ID: self.conn.array_id, TAG_NAME: 'CI-TEST-NO-RESULT',
-                SG_ID: 'XX', SG_NUM: '1', ARRAY_NUM: '3'})
-
-        self.assertTrue(response)
         self.assertIsInstance(response, dict)
-        self.assertIn(TAG_NAME, response.keys())
+        self.assertIn(tag_name, response.get(TAG_NAME, list()))
 
     def test_get_tagged_objects(self):
         """Test get_tagged_objects."""
@@ -244,15 +236,27 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
 
     def test_acknowledge_alert(self):
         """Test acknowledge_alert."""
-        alert_ids = self.system.get_alert_ids(acknowledged=False)
-        if len(alert_ids) == 0:
-            self.skipTest('Skip Acknowledge alert - there are no'
-                          ' unacknowledged alerts')
+        alert_ids = self.system.get_alert_ids(
+            array=self.conn.array_id, state='NEW')
+        if not alert_ids:
+            self.skipTest('Skip acknowledge alert - there are no new alerts '
+                          'for the test array')
 
         alert_id = alert_ids[0]
         self.system.acknowledge_alert(alert_id=alert_id)
-        acknowledged_alert_ids = self.system.get_alert_ids(acknowledged=True)
-        self.assertIn(alert_id, acknowledged_alert_ids)
+
+        alert_details = dict()
+        for _ in range(30):
+            alert_details = self.system.get_alert_details(alert_id=alert_id)
+            if (alert_details.get('acknowledged') is True
+                    or alert_details.get('state') == 'ACKNOWLEDGED'):
+                break
+            time.sleep(1)
+
+        self.assertTrue(
+            alert_details.get('acknowledged') is True
+            or alert_details.get('state') == 'ACKNOWLEDGED',
+            f'Alert {alert_id} was not acknowledged within 30 seconds')
 
     def test_delete_alert(self):
         """Test delete_alert."""
@@ -634,8 +638,10 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
         if not found_ip:
             self.skipTest('No IP interfaces available in CI environment.')
 
+    @testtools.skip(
+        'Run manually: this test changes a local user password')
     def test_change_local_user_password(self):
-        """Test change_local_user_password, if success return is None"""
+        """Test change_local_user_password, if success return is None."""
         try:
             change_password = self.system.change_local_user_password(
                 username='testchange', current_password='manuallyset',
@@ -985,34 +991,3 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
                          changed_log_level['server_logging_level'])
         reset = self.system.set_server_logging_level()
         self.assertEqual(initial_log_level, reset)
-
-    def test_get_snmp_trap_configuration(self):
-        snmp_config = self.system.get_snmp_trap_configuration()
-        self.assertIn('engine_id', snmp_config)
-        self.assertIn('snmp_traps', snmp_config)
-
-    def test_set_snmp_trap_destination(self):
-        self.skipTest(reason="Test Run manually")
-        new_config = self.system.set_snmp_trap_destination(
-            name='pyu4vunilinux2.crk.lab.emc.com', port=52)
-        self.assertEquals('pyu4vunilinux2.crk.lab.emc.com', new_config['name'])
-        self.system.delete_snmp_trap_destination(snmp_id=new_config['id'])
-
-    def test_delete_snmp_trap_destination(self):
-
-        snmp_id = self.system.set_snmp_trap_destination(
-            name='10.60.156.28', port=52)['id']
-        self.system.delete_snmp_trap_destination(snmp_id=snmp_id)
-        config_after_delete = self.system.get_snmp_trap_configuration()
-        self.assertNotIn(snmp_id, config_after_delete['snmp_traps'])
-
-    def test_update_snmp_trap_destination(self):
-        snmp_details = self.system.set_snmp_trap_destination(
-            name='10.60.156.28', port=52)
-        snmp_id = snmp_details['id']
-        updated_snmp_destination = self.system.update_snmp_trap_destination(
-            snmp_id=snmp_id, port=234)
-        updated_port = updated_snmp_destination['port']
-        updated_snmp_id = updated_snmp_destination['id']
-        self.assertIs(234, updated_port)
-        self.system.delete_snmp_trap_destination(snmp_id=updated_snmp_id)

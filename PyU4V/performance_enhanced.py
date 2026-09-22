@@ -33,7 +33,7 @@ class EnhancedPerformanceFunctions:
         self.enhanced_api_version = constants.ENHANCED_API_VERSION
 
     @staticmethod
-    def _build_filter_query(filters: list[str]) -> str:
+    def _build_filter_query(filters: list[str] | None) -> str:
         """Build the optional filter query string.
 
         :param filters: list of filter expressions -- list
@@ -42,6 +42,19 @@ class EnhancedPerformanceFunctions:
         if filters:
             return '?filter=' + ','.join(filters)
         return ''
+
+    def _build_metrics_query(self, filters: list[str] | None,
+                             all_metrics: bool) -> str:
+        """Build category metric query parameters.
+
+        :param filters: list of filter expressions -- list
+        :param all_metrics: include all available metrics -- bool
+        :returns: category metric query string or empty string -- str
+        """
+        query = self._build_filter_query(filters)
+        if all_metrics:
+            query += ('&' if query else '?') + 'metric_type=All'
+        return query
 
     def _perf_uri(self, array_id: str, category: str | None = None) -> str:
         """Construct the performance-categories URI.
@@ -139,23 +152,18 @@ class EnhancedPerformanceFunctions:
                         realtime statistics - filters =['id in (SG1;SG2;SG3)'] — returns data only
                         for the listed component IDs.`filter=['id notin (SG1;SG2)`] — returns data for all instances
                         except those listed-- list
-        :param all_metrics: when True adds 'metric_type eq All' filter to
-                            return all available metrics instead of KPI
-                            metrics only, default is False -- bool
+        :param all_metrics: when True adds the 'metric_type=All' query
+                            parameter to return all available metrics instead
+                            of KPI metrics only, default is False -- bool
         :returns: full list of all KPI metrics for latest diagnostic
                  timestamp for the specified array and performance category --
                  dict
         """
         array_id = array_id if array_id else self.array_id
-        effective_filters = list(filters) if filters else []
-        if all_metrics:
-            effective_filters.append('metric_type eq All')
-        # Build the optional filter part – empty string when no filters.
-        filter_part = self._build_filter_query(
-            effective_filters if effective_filters else None)
+        query_part = self._build_metrics_query(filters, all_metrics)
         response = self.common.get_request(
             target_uri=(self._perf_uri(array_id, category)
-                        + filter_part),
+                        + query_part),
             resource_type=None)
         return response
 
@@ -194,20 +202,16 @@ class EnhancedPerformanceFunctions:
                         e.g. filters=['time_range eq 5', 'id eq OR-1C']
                         valid values for time_range are 1, 5, 10, 15, 30,
                         60 in minutes -- list
-        :param all_metrics: when True adds 'metric_type eq All' filter to
-                            return all available metrics instead of KPI
-                            metrics only, default is False -- bool
+        :param all_metrics: when True adds the 'metric_type=All' query
+                            parameter to return all available metrics instead
+                            of KPI metrics only, default is False -- bool
         :returns: real-time performance data for the specified category --
                  dict
         """
         array_id = array_id if array_id else self.array_id
-        effective_filters = list(filters) if filters else []
-        if all_metrics:
-            effective_filters.append('metric_type eq All')
-        filter_part = self._build_filter_query(
-            effective_filters if effective_filters else None)
+        query_part = self._build_metrics_query(filters, all_metrics)
         response = self.common.get_request(
             target_uri=(self._realtime_uri(array_id, category)
-                        + filter_part),
+                        + query_part),
             resource_type=None)
         return response

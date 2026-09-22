@@ -348,20 +348,31 @@ class PyU4VSystemTest(testtools.TestCase):
             exclude_performance_threshold_settings=True)
 
     @mock.patch.object(common.CommonFunctions, 'upload_file')
-    @mock.patch('builtins.open', return_value=__file__)
-    def test_upload_settings(self, mck_open, mck_up):
+    def test_upload_settings(self, mck_up):
         """Test upload_settings success."""
-        ref_form_data = {
-            constants.ZIP_FILE: __file__,
-            constants.TGT_ARRAYS: self.data.remote_array,
-            constants.FILE_PASSWORD: 'test_password'}
+        uploaded_file = None
+
+        def validate_upload(**kwargs):
+            nonlocal uploaded_file
+            uploaded_file = kwargs['form_data'][constants.ZIP_FILE]
+            self.assertFalse(uploaded_file.closed)
+            return {'success': True}
+
+        mck_up.side_effect = validate_upload
         self.system.upload_settings(file_password='test_password',
                                     file_path=__file__,
                                     array_id=self.data.remote_array)
-        mck_up.assert_called_once_with(
-            target_uri=f"/{self.system.common.UNI_VERSION}/system/settings/"
-            f"importfile",
-            form_data=ref_form_data)
+        self.assertTrue(uploaded_file.closed)
+        upload_args = mck_up.call_args.kwargs
+        self.assertEqual(
+            f"/{self.system.common.UNI_VERSION}/system/settings/importfile",
+            upload_args['target_uri'])
+        self.assertEqual(
+            self.data.remote_array,
+            upload_args['form_data'][constants.TGT_ARRAYS])
+        self.assertEqual(
+            'test_password',
+            upload_args['form_data'][constants.FILE_PASSWORD])
 
     @mock.patch.object(common.CommonFunctions, 'upload_file')
     def test_upload_settings_binary_data(self, mck_up):
@@ -706,47 +717,3 @@ class PyU4VSystemTest(testtools.TestCase):
             log_level = self.system.set_server_logging_level(
                 server_log_level='Info', restapi_logging_enabled=True)
         self.assertEqual(self.data.server_log_level, log_level)
-
-    def test_get_snmp_trap_configuration(self):
-        with mock.patch.object(
-                self.system, 'get_snmp_trap_configuration',
-                return_value=self.data.snmp):
-            snmp_config = self.system.get_snmp_trap_configuration()
-        self.assertIn('engine_id', snmp_config)
-        self.assertIn('snmp_traps', snmp_config)
-
-    def test_set_snmp_trap_destination(self):
-        with mock.patch.object(
-                self.system, 'set_snmp_trap_destination',
-                return_value=self.data.snmp):
-            new_config = self.system.set_snmp_trap_destination(
-                name='10.60.1.1', port=162)
-        self.assertEqual('10.60.1.1', new_config['snmp_traps'][0]['name'])
-
-    def test_delete_snmp_trap_destination(self):
-        with mock.patch.object(
-                self.system, 'delete_snmp_trap_destination') as mock_delete:
-            self.system.delete_snmp_trap_destination(
-                snmp_id="56910fe4-9c69-3100-a493-ff9455acc02d")
-            mock_delete.assert_called_once()
-
-    def test_update_snmp_trap_destination(self):
-        with mock.patch.object(
-                self.system, 'update_snmp_trap_destination') as mock_update:
-            self.system.update_snmp_trap_destination(
-                snmp_id="56910fe4-9c69-3100-a493-ff9455acc02d", port=431)
-            mock_update.assert_called_once()
-
-    def test_get_ldap_configuration(self):
-        with mock.patch.object(
-                self.system, 'get_ldap_configuration') as mock_get:
-            self.system.get_ldap_configuration()
-            mock_get.assert_called_once()
-
-    def test_configure_ldap_authentication(self):
-        with (
-            mock.patch.object(
-                self.system, 'configure_ldap_authentication') as
-                mock_configure):
-            self.system.configure_ldap_authentication(enabled=True)
-            mock_configure.assert_called_once()

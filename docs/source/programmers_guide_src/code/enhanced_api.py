@@ -47,7 +47,7 @@ print(conn.performance_enhanced.get_category_metrics(
 print(conn.performance_enhanced.get_category_metrics(
     category='Array', all_metrics=True))
 
-# combine all_metrics with additional filters
+# combine filters with the separate metric_type=All query parameter
 print(conn.performance_enhanced.get_category_metrics(
     category='StorageGroup', filters=['id eq Aaron', 'time_range eq 2'],
     all_metrics=True))

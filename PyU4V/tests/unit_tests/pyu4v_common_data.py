@@ -2484,15 +2484,6 @@ class CommonData(object):
     server_log_level = {
         "server_logging_level": "WARN",
         "restapi_logging_enabled": False}
-    snmp = {
-        "engine_id": "0x800004730193b22ab2000000",
-        "snmp_traps": [
-            {
-                "id": "56910fe4-9c69-3100-a493-ff9455acc02d",
-                "name": "10.60.1.1",
-                "port": 162,
-                "snmp_version": "v1"
-            }]}
     # Serviceability Data
     serviceability_symmetrix = {'symmetrixId': ['000197800128']}
     ntp_server = {'ntp_server': '10.10.10.10'}

@@ -625,26 +625,32 @@ class SystemFunctions(object):
                        'Unisphere can proceed.')
                 LOG.error(msg)
                 raise exception.InvalidInputException(msg) from error
-        else:
-            try:
-                f_path = Path(file_path)
-                assert f_path.is_file() is True
-                LOG.info('Uploading settings from {p}'.format(p=f_path))
-                data = open(f_path, FILE_READ_MODE)
-            except (TypeError, AssertionError) as error:
-                msg = (
-                    'Invalid file path supplied for settings upload '
-                    'location: {f}'.format(f=file_path))
-                LOG.error(msg)
-                raise exception.InvalidInputException(msg) from error
 
-        form_data = {ZIP_FILE: data, TGT_ARRAYS: array_id,
-                     FILE_PASSWORD: file_password}
+            form_data = {ZIP_FILE: data, TGT_ARRAYS: array_id,
+                         FILE_PASSWORD: file_password}
+            return self.common.upload_file(
+                target_uri=f"/{self.common.UNI_VERSION}/system/settings/"
+                f"importfile",
+                form_data=form_data)
 
-        return self.common.upload_file(
-            target_uri=f"/{self.common.UNI_VERSION}/system/settings/"
-            f"importfile",
-            form_data=form_data)
+        try:
+            f_path = Path(file_path)
+            assert f_path.is_file() is True
+        except (TypeError, AssertionError) as error:
+            msg = (
+                'Invalid file path supplied for settings upload '
+                'location: {f}'.format(f=file_path))
+            LOG.error(msg)
+            raise exception.InvalidInputException(msg) from error
+
+        LOG.info('Uploading settings from {p}'.format(p=f_path))
+        with open(f_path, FILE_READ_MODE) as data:
+            form_data = {ZIP_FILE: data, TGT_ARRAYS: array_id,
+                         FILE_PASSWORD: file_password}
+            return self.common.upload_file(
+                target_uri=f"/{self.common.UNI_VERSION}/system/settings/"
+                f"importfile",
+                form_data=form_data)
 
     def get_audit_log_list(
             self, start_time, end_time, array_id=None, user_name=None,
@@ -1302,154 +1308,4 @@ class SystemFunctions(object):
 
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/system/logging",
-            resource_type=None, payload=payload)
-
-    def get_snmp_trap_configuration(self):
-        """Returns the details of SNMP Trap Receivers.
-
-        :returns SNMP configuration information--dict
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-        return self.common.get_request(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp",
-            resource_type=None)
-
-    def set_snmp_trap_destination(
-            self, name, port, username=None, password=None,
-            passphrase=None):
-        """Add new SNMP trap receiver to configuration.
-
-        :param name: Ipdaddress or DNS Name -- str
-        :param port: port SNMP server recieves trap on --int
-        :param username: Username for SNMP v3Username for SNMP v3 --str
-        :param password: Password for SNMP v3 --str
-        :param passphrase: Passphrase for SNMP v3 --str
-        :returns:
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-        payload = {
-            'name': name,
-            'port': port,
-            'username': username,
-            'password': password,
-            'passphrase': passphrase
-        }
-        return self.common.create_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp",
-            resource_type=None, payload=payload)
-
-    def delete_snmp_trap_destination(self, snmp_id):
-        """Deletes specified SNMP trap receiver from configuration.
-
-        :param snmp_id unique identifier for snmp trap destination - str
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-        return self.common.delete_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp/{snmp_id}",
-            resource_type=None)
-
-    def update_snmp_trap_destination(
-            self, snmp_id, name=None, port=None, username=None,
-            password=None, passphrase=None):
-        """Update existing SNMP configuration item.
-
-        :param snmp_id: an id generated for a specific SNMP trap, use
-                        get_snmp_trap_configuration to find values -- str
-        :param name: New IP address/hostname for the SNMP trap -- str
-        :param port: New port number for the SNMP trap  --str
-        :param username: Updated username for the SNMP trap  --str
-        :param password: Updated password for SNMP trap  --str
-        :param passphrase:  Updated passphrase for SNMP trap  --str
-        :returns: dict
-        """
-        payload = {
-            'name': name,
-            'port': port,
-            'username': username,
-            'password': password,
-            'passphrase': passphrase
-        }
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module.")
-        return self.common.modify_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp/{snmp_id}",
-            resource_type=None, payload=payload)
-
-    def get_ldap_configuration(self):
-        """Get Current LDAP configuration for Unisphere Server.
-
-        :returns: dict
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-        return self.common.get_request(
-            target_uri=f"/{self.common.UNI_VERSION}/system/authorization/ldap",
-            resource_type=None)
-
-    def configure_ldap_authentication(
-            self, action, ldap_server, ldap_port, bind_dn, bind_password,
-            user_search_path, group_name_attribute, group_member_attribute,
-            group_object_class, ssl_certificate,
-            limit_authentication_to_ldap_group_members, user_object_class,
-            user_id_attribute, ldap_group_names=None):
-        """Enable or disable LDAP authentication.
-
-        :param action: Enable or Disable, Enable requires additional payload
-                       parameters -- Bool
-        :param ldap_server: LDAP Server IP address or DNS Name -- str
-        :param ldap_port: TCP port number -- int
-        :param bind_dn: Distinguished name of the privileged account used to
-                        perform operations, such as searching users and
-                        groups, on the LDAP directory -- str
-        :param bind_password: Password of the privileged account -- str
-        :param user_search_path: name of the node at which to begin user
-                                 searches -- str
-        :param group_name_attribute: group name attribute -- str
-        :param group_member_attribute: group member attribute -- str
-        :param group_object_class: group object class -- str
-        :param ssl_certificate: base64 encoded SSL certificate, obtained
-                                from server or contents of .cer file.
-                                All text in file required including begin
-                                and end markers for file -- str
-        :param limit_authentication_to_ldap_group_members: limit auth to
-                                                           LDAP group
-                                                           members -- bool
-        :param ldap_group_names: LDAP groups separated by commas -- str
-        :param user_object_class: user object class -- str
-        :param user_id_attribute: user id attribute -- str
-        :returns: dict
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-
-        payload = {"action": action}
-        if action:
-            payload["enable_ldap_authority"] = {
-                "server": ldap_server,
-                "port": ldap_port,
-                "bind_dn": bind_dn,
-                "bind_password": bind_password,
-                "user_search_path": user_search_path,
-                "user_object_class": user_object_class,
-                "user_id_attribute": user_id_attribute,
-                "group_search_path": user_search_path,
-                "group_name_attribute": group_name_attribute,
-                "group_member_attribute": group_member_attribute,
-                "group_object_class": group_object_class,
-                "ssl_certificate": ssl_certificate,
-                "limit_authentication_to_ldap_group_members":
-                    limit_authentication_to_ldap_group_members,
-                "ldap_group_names": ldap_group_names
-            }
-        return self.common.modify_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/authorization/ldap",
             resource_type=None, payload=payload)

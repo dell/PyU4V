@@ -29,6 +29,37 @@
 
 ## Bug Fixes
 
+- **Fixed enhanced performance all-metrics queries**
+  (`performance_enhanced.py`): Send `metric_type=All` as a separate query
+  parameter after any `filter` expression, matching the Unisphere API format.
+
+- **Hardened utility CI configuration checks**
+  (`test_pyu4v_ci_utils.py`): Skip tests that require a home-directory
+  `PyU4V.conf` when that optional file is empty or incomplete.
+
+- **Fixed settings uploads** (`common.py`, `rest_requests.py`, `system.py`):
+  Allow the HTTP client to generate the boundary-bearing multipart content
+  type, treat successful empty upload responses as accepted, and close
+  path-based upload files after transfer. The mutating system-health CI
+  workflow is now manual.
+
+- **Fixed filtered-tags CI coverage** (`test_pyu4v_ci_system.py`): Reworked
+  `test_get_tags_filtered` to validate filtering against an existing tag on
+  the configured array instead of asserting the removed URL-builder call.
+
+- **Removed System APIs deprecated for removal in 10.4** (`system.py`):
+  Removed the legacy SNMP destination and LDAP configuration methods and their
+  dedicated unit/CI tests. Use the settings alert-notification APIs for SNMP
+  configuration.
+
+- **Skipped password-changing CI test by default** (`test_pyu4v_ci_system.py`):
+  Marked `test_change_local_user_password` as a manual-only test because it
+  changes credentials in the target Unisphere environment.
+
+- **Improved alert acknowledgement CI coverage**
+  (`test_pyu4v_ci_system.py`): Select an unacknowledged alert from the
+  configured test array and wait for its state change after acknowledgement.
+
 - **Fixed `test_is_volume_in_replication_session` CI test** (`test_pyu4v_ci_snapshot.py`):
   The test was failing because it relied on `source_volume` from the snapshot creation
   response, which is unreliable on V4 arrays. The test now retrieves the device ID
@@ -232,10 +263,10 @@ new PyU4V method or code change required.
 ### Performance Enhanced – `get_category_metrics` all_metrics parameter
 
 - **`get_category_metrics` gains an `all_metrics` keyword argument** (default `False`).
-  When set to `True` the filter `metric_type eq All` is automatically appended to any
-  caller-supplied filters, causing the API to return every available metric for the
-  category rather than KPI metrics only. Existing call-sites are unaffected (non-breaking
-  change).
+  When set to `True`, the `metric_type=All` query parameter is automatically appended
+  after any caller-supplied filter query, causing the API to return every available
+  metric for the category rather than KPI metrics only. Existing call-sites are
+  unaffected (non-breaking change).
 - Unit tests added: `test_get_category_metrics_all_metrics_true`,
   `test_get_category_metrics_all_metrics_with_existing_filters`, and
   `test_get_category_metrics_all_metrics_false`.

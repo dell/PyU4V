@@ -528,11 +528,22 @@ class CommonFunctions(object):
         response, status_code = self.rest_client.file_transfer_request(
             method=POST, upload=True, uri=target_uri,
             form_data=kwargs.get('form_data'))
+        operation = ('upload {resource_type} resource'.format(
+            resource_type=kwargs.get('resource_level')))
+        response_text = response.text or ''
+        response_reason = getattr(response, 'reason', None)
+        if not response_reason:
+            response_reason = getattr(response.raw, 'reason', None)
+
+        if not response_text.strip():
+            self.check_status_code_success(
+                operation, status_code, response_reason)
+            LOG.info('The settings upload request was accepted.')
+            return {'success': True}
+
         try:
-            response_content = json.loads(response.text)
+            response_content = json.loads(response_text)
             msg = response_content.get('message')
-            operation = ('upload {resource_type} resource'.format(
-                resource_type=kwargs.get('resource_level')))
             self.check_status_code_success(operation, status_code, msg)
             # Workaround until failed responses do not return 200
             if not response_content.get('success', False):
