@@ -87,6 +87,15 @@
 
 ## New Features
 
+- **OpenTelemetry metrics export management** (`system.py`): Added
+  `get_otel_endpoint_settings()`, `register_otel_endpoint()`,
+  `update_otel_endpoint()`, and `delete_otel_endpoint()` to manage the
+  Unisphere OTel collector endpoint. Added `get_otel_registration()` and
+  `update_otel_registration()` to inspect and control metrics export for each
+  registered array. Unit tests cover every REST call and payload; read-only CI
+  coverage runs by default, while the configuration-changing lifecycle test is
+  explicitly manual.
+
 - **Real-time performance metrics** (`performance_enhanced.py`):
   Added `get_realtime_categories_list()` and `get_realtime_category_metrics()`
   methods to `EnhancedPerformanceFunctions`. These wrap the new

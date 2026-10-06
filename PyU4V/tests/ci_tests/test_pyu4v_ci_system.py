@@ -991,3 +991,43 @@ class CITestSystem(base.TestBaseTestCase, testtools.TestCase):
                          changed_log_level['server_logging_level'])
         reset = self.system.set_server_logging_level()
         self.assertEqual(initial_log_level, reset)
+
+    def test_get_otel_settings(self):
+        """Test read-only OpenTelemetry settings calls."""
+        endpoint_settings = self.system.get_otel_endpoint_settings()
+        registration = self.system.get_otel_registration()
+
+        self.assertIsInstance(endpoint_settings, dict)
+        self.assertIsInstance(registration, dict)
+
+    @testtools.skip(
+        'Run manually: this test changes the OpenTelemetry endpoint and '
+        'metrics registration')
+    def test_manage_otel_settings(self):
+        """Test the OpenTelemetry endpoint and registration lifecycle."""
+        address = 'otel-collector.example.com'
+        port = 4317
+        self.system.register_otel_endpoint(
+            address=address, port=port, protocol='gRPC',
+            enable_compression=False)
+        try:
+            endpoint_settings = self.system.get_otel_endpoint_settings()
+            self.assertEqual(address, endpoint_settings.get('address'))
+            self.assertEqual(port, endpoint_settings.get('port'))
+
+            self.system.update_otel_endpoint(
+                address=address, port=port, protocol='gRPC',
+                enable_compression=True)
+            endpoint_settings = self.system.get_otel_endpoint_settings()
+            self.assertTrue(endpoint_settings.get('enable_compression'))
+
+            registration_details = [{
+                'system_id': self.conn.array_id,
+                'export_metrics': True
+            }]
+            self.system.update_otel_registration(
+                registration_details=registration_details)
+            registration = self.system.get_otel_registration()
+            self.assertIsInstance(registration, dict)
+        finally:
+            self.system.delete_otel_endpoint()

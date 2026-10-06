@@ -227,6 +227,24 @@ Note
     per-module update is required. ``conn.common.UNI_VERSION`` remains both
     readable and writable, but a write now applies globally to the connection.
 
+OpenTelemetry Metrics Export
+----------------------------
+
+PyU4V 10.5 can manage the Unisphere OpenTelemetry collector endpoint through
+``conn.system``. The public API includes endpoint registration, inspection,
+update, and deletion, together with per-array metrics-export registration::
+
+    conn.system.register_otel_endpoint(
+        address='otel-collector.example.com', port=4317,
+        protocol='gRPC', enable_compression=True)
+    conn.system.update_otel_registration(registration_details=[
+        {'system_id': conn.array_id, 'export_metrics': True}
+    ])
+
+Use ``get_otel_endpoint_settings()`` and ``get_otel_registration()`` to inspect
+the current configuration. See the System section of the programmers guide for
+the complete update and cleanup workflow.
+
 Initialise PyU4V Connection
 ---------------------------
 

@@ -5,6 +5,7 @@ This section gives examples of the following system functionality:
 - `Health Checks`_
 - `Audit Logs`_
 - `Download & Upload Settings`_
+- `OpenTelemetry Metrics Export`_
 
 Health Checks
 -------------
@@ -90,3 +91,19 @@ of Unisphere.
     :linenos:
     :language: python
     :lines: 14-39
+
+OpenTelemetry Metrics Export
+----------------------------
+Unisphere can export array metrics to an OpenTelemetry (OTel) collector over
+gRPC. PyU4V can register, inspect, update, and delete the collector endpoint,
+and can control metrics export independently for each registered array.
+
+Endpoint and registration updates change the Unisphere configuration. The
+example below demonstrates the complete lifecycle, including disabling export
+and deleting the endpoint when it is no longer required. Replace the collector
+address and array IDs with values for your environment.
+
+.. literalinclude:: code/system-otel_management.py
+    :linenos:
+    :language: python
+    :lines: 14-56

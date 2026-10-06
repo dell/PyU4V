@@ -1309,3 +1309,94 @@ class SystemFunctions(object):
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/system/logging",
             resource_type=None, payload=payload)
+
+    def get_otel_endpoint_settings(self) -> dict[str, Any]:
+        """List the OpenTelemetry collector endpoint settings.
+
+        :returns: OTel endpoint registration and connection settings -- dict
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint",
+            resource_type=None)
+
+    def register_otel_endpoint(
+            self, address: str, port: int, protocol: str = 'gRPC',
+            enable_compression: bool = False) -> None:
+        """Register an OpenTelemetry collector endpoint.
+
+        :param address: hostname or IP address of the OTel collector -- str
+        :param port: TCP port of the OTel collector -- int
+        :param protocol: transport protocol; currently ``gRPC`` -- str
+        :param enable_compression: enable gzip payload compression -- bool
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        payload = {
+            'address': address,
+            'port': port,
+            'protocol': protocol,
+            'enable_compression': enable_compression
+        }
+        self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint",
+            resource_type=None, payload=payload)
+
+    def update_otel_endpoint(
+            self, address: str, port: int, protocol: str = 'gRPC',
+            enable_compression: bool = False) -> None:
+        """Update the registered OpenTelemetry collector endpoint.
+
+        :param address: hostname or IP address of the OTel collector -- str
+        :param port: TCP port of the OTel collector -- int
+        :param protocol: transport protocol; currently ``gRPC`` -- str
+        :param enable_compression: enable gzip payload compression -- bool
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        payload = {
+            'address': address,
+            'port': port,
+            'protocol': protocol,
+            'enable_compression': enable_compression
+        }
+        self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint",
+            resource_type=None, payload=payload)
+
+    def delete_otel_endpoint(self) -> None:
+        """Delete the registered OpenTelemetry collector endpoint.
+
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint")
+
+    def get_otel_registration(self) -> dict[str, Any]:
+        """List OpenTelemetry metrics-export registration for all arrays.
+
+        :returns: per-array OTel metrics-export registration details -- dict
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/"
+            f"registration",
+            resource_type=None)
+
+    def update_otel_registration(
+            self, registration_details: list[dict[str, str | bool]]) -> None:
+        """Update which arrays export metrics to the OTel collector.
+
+        Each registration entry must contain ``system_id`` and
+        ``export_metrics`` keys.
+
+        :param registration_details: per-array export settings -- list
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        payload = {'registration_details': registration_details}
+        self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/"
+            f"registration",
+            resource_type=None, payload=payload)

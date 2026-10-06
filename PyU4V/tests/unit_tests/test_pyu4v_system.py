@@ -717,3 +717,93 @@ class PyU4VSystemTest(testtools.TestCase):
             log_level = self.system.set_server_logging_level(
                 server_log_level='Info', restapi_logging_enabled=True)
         self.assertEqual(self.data.server_log_level, log_level)
+
+    @mock.patch.object(common.CommonFunctions, 'get_request')
+    def test_get_otel_endpoint_settings(self, mck_get):
+        """Test get_otel_endpoint_settings."""
+        endpoint_settings = {
+            'address': 'otel.example.com',
+            'port': 4317,
+            'protocol': 'gRPC',
+            'enable_compression': True
+        }
+        mck_get.return_value = endpoint_settings
+
+        result = self.system.get_otel_endpoint_settings()
+
+        self.assertEqual(endpoint_settings, result)
+        mck_get.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/settings/otel/"
+            f"endpoint", resource_type=None)
+
+    @mock.patch.object(common.CommonFunctions, 'create_resource')
+    def test_register_otel_endpoint(self, mck_create):
+        """Test register_otel_endpoint."""
+        self.system.register_otel_endpoint(
+            address='otel.example.com', port=4317, protocol='gRPC',
+            enable_compression=True)
+
+        mck_create.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/settings/otel/"
+            f"endpoint", resource_type=None, payload={
+                'address': 'otel.example.com',
+                'port': 4317,
+                'protocol': 'gRPC',
+                'enable_compression': True
+            })
+
+    @mock.patch.object(common.CommonFunctions, 'modify_resource')
+    def test_update_otel_endpoint_defaults(self, mck_modify):
+        """Test update_otel_endpoint with optional parameter defaults."""
+        self.system.update_otel_endpoint(
+            address='otel.example.com', port=4317)
+
+        mck_modify.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/settings/otel/"
+            f"endpoint", resource_type=None, payload={
+                'address': 'otel.example.com',
+                'port': 4317,
+                'protocol': 'gRPC',
+                'enable_compression': False
+            })
+
+    @mock.patch.object(common.CommonFunctions, 'delete_resource')
+    def test_delete_otel_endpoint(self, mck_delete):
+        """Test delete_otel_endpoint."""
+        self.system.delete_otel_endpoint()
+
+        mck_delete.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/settings/otel/"
+            f"endpoint")
+
+    @mock.patch.object(common.CommonFunctions, 'get_request')
+    def test_get_otel_registration(self, mck_get):
+        """Test get_otel_registration."""
+        registration = {'registration_details': [{
+            'system_id': self.data.array,
+            'export_metrics': True
+        }]}
+        mck_get.return_value = registration
+
+        result = self.system.get_otel_registration()
+
+        self.assertEqual(registration, result)
+        mck_get.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/settings/otel/"
+            f"registration", resource_type=None)
+
+    @mock.patch.object(common.CommonFunctions, 'modify_resource')
+    def test_update_otel_registration(self, mck_modify):
+        """Test update_otel_registration."""
+        registration_details = [{
+            'system_id': self.data.array,
+            'export_metrics': True
+        }]
+
+        self.system.update_otel_registration(
+            registration_details=registration_details)
+
+        mck_modify.assert_called_once_with(
+            target_uri=f"/{self.system.common.UNI_VERSION}/settings/otel/"
+            f"registration", resource_type=None,
+            payload={'registration_details': registration_details})
