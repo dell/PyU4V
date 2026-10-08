@@ -1,5 +1,18 @@
 # PyU4V Change Log
 
+## Enhanced performance filter verification
+
+- Corrected the malformed `notin` docstring example and clarified quoted
+  filter expressions, semicolon-separated membership values, and comma-separated
+  clauses in the enhanced performance API documentation and programmer's guide.
+- Added request-construction regression tests for `in` and `notin` across
+  single-category, all-category, and real-time wrappers, including combined
+  filters and the separate `metric_type=All` parameter. Runtime behavior is
+  unchanged; tests verify passthrough rather than live server acceptance.
+- Recorded the limits of the supplied `14406-10.5.0.json` schema: it defines
+  diagnostic `filter` as a string without operator grammar and omits real-time
+  endpoints, so it cannot confirm membership or device-range support.
+
 ## Code Quality
 
 - **Modernized endpoint construction** (`system.py`, `performance.py`,

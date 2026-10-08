@@ -13,6 +13,47 @@ below shows how to use the new enhanced API calls.
     :language: python
     :lines: 14-34
 
+Performance membership filters
+------------------------------
+
+The diagnostic performance examples in this SDK use ``in`` and ``notin``
+with semicolon-separated IDs inside parentheses. Pass the whole expression
+as a quoted string inside the ``filters`` list:
+
+.. code-block:: python
+
+    # Include these storage groups and request all metrics for the last hour.
+    included = conn.performance_enhanced.get_category_metrics(
+        category='StorageGroup',
+        filters=['id in (SG1;SG2)', 'time_range eq 1'],
+        all_metrics=True)
+
+    # Exclude these storage groups.
+    excluded = conn.performance_enhanced.get_category_metrics(
+        category='StorageGroup',
+        filters=['id notin (SG1;SG2)', 'time_range eq 1'])
+
+The first call sends
+``?filter=id in (SG1;SG2),time_range eq 1&metric_type=All``. Commas separate
+filter clauses; semicolons separate membership values. ``metric_type`` is
+a separate query parameter. Do not write ``filters=id in 'SG1;SG2'``:
+Python evaluates that expression before PyU4V receives it.
+
+``get_all_performance_metrics_for_system()`` forwards the same filters to
+every discovered category, so choose IDs appropriate to the categories being
+queried. Use ``get_category_metrics()`` when targeting one category.
+
+PyU4V preserves filter expressions and does not validate operators or expand
+device ranges. The supplied ``14406-10.5.0.json`` OpenAPI export defines the
+diagnostic ``filter`` query parameter only as a string ("the Defined Filter
+Attributes"). It does not specify membership operators, separators, or range
+syntax, and it does not include the real-time endpoints. These examples
+reflect the SDK's existing diagnostic documentation; the export alone cannot
+confirm server acceptance. Check the documentation for the installed
+Unisphere endpoint or validate with a read-only request. In particular,
+real-time filter passthrough does not establish server support for ``in``
+or ``notin``.
+
 Force-refreshing storage details
 --------------------------------
 

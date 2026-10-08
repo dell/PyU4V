@@ -34,7 +34,10 @@ class EnhancedPerformanceFunctions:
 
     @staticmethod
     def _build_filter_query(filters: list[str] | None) -> str:
-        """Build the optional filter query string.
+        """Join filter clauses without interpreting their expressions.
+
+        Commas separate clauses; semicolons within membership expressions
+        are preserved. Unisphere validates operators and values.
 
         :param filters: list of filter expressions -- list
         :returns: filter query string or empty string -- str
@@ -82,7 +85,8 @@ class EnhancedPerformanceFunctions:
             return f"{base}/{category}"
         return base
 
-    def get_performance_categories_list(self, array_id: str | None = None) -> dict[str, Any]:
+    def get_performance_categories_list(
+            self, array_id: str | None = None) -> dict[str, Any]:
         """Get a list of performance categories and metrics that will be
         returned for each category.
 
@@ -115,7 +119,11 @@ class EnhancedPerformanceFunctions:
                         24 in hours, you can also specify data_format to
                         return Average or Maximum values, note for max
                         values to be retuned you must be registered for
-                        realtime statistics -- list
+                        realtime statistics. Membership examples:
+                        filters=['id in (SG1;SG2)'] includes listed IDs;
+                        filters=['id notin (SG1;SG2)'] excludes listed IDs.
+                        Each expression must be a string in the list.
+                        The same filters are sent to every category -- list
         :returns: data for all available categories for the specified PowerMax
                  Array diagnostic level metrics only, 5 min interval -- dict
         """
@@ -136,7 +144,7 @@ class EnhancedPerformanceFunctions:
 
     def get_category_metrics(self, category: str, array_id=None, filters=None,
                              all_metrics=False):
-        """Get latest data for KPI metrics for specificied performance
+        """Get latest data for KPI metrics for specified performance
         category.
 
         :param category: performance category name -- str
@@ -149,9 +157,14 @@ class EnhancedPerformanceFunctions:
                         24 in hours, you can also specify data_format to
                         return Average or Maximum values, note for max
                         values to be retuned you must be registered for
-                        realtime statistics - filters =['id in (SG1;SG2;SG3)'] — returns data only
-                        for the listed component IDs.`filter=['id notin (SG1;SG2)`] — returns data for all instances
-                        except those listed-- list
+                        realtime statistics. Membership examples:
+                        filters=['id in (SG1;SG2;SG3)'] includes listed IDs;
+                        filters=['id notin (SG1;SG2)'] excludes listed IDs.
+                        Values are semicolon-separated inside parentheses.
+                        Each expression must be a string in the list;
+                        separate clauses are joined with commas.  Note for
+                        in notin filters the id is a list of storage groups
+                          -- list
         :param all_metrics: when True adds the 'metric_type=All' query
                             parameter to return all available metrics instead
                             of KPI metrics only, default is False -- bool
@@ -201,7 +214,11 @@ class EnhancedPerformanceFunctions:
                         these can be combined in a single query,
                         e.g. filters=['time_range eq 5', 'id eq OR-1C']
                         valid values for time_range are 1, 5, 10, 15, 30,
-                        60 in minutes -- list
+                        60 in minutes. Expressions are passed unchanged to
+                        Unisphere, which determines supported operators.
+                        See get_category_metrics for membership syntax;
+                        support must be checked for the real-time endpoint
+                        on the installed Unisphere version -- list
         :param all_metrics: when True adds the 'metric_type=All' query
                             parameter to return all available metrics instead
                             of KPI metrics only, default is False -- bool
