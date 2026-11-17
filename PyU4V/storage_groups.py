@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
 """storage_groups.py."""
 
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
+from PyU4V.utils.enhanced_api_utils import _build_select_clause
 
 LOG = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ LOG = logging.getLogger(__name__)
 class StorageGroupsFunctions(object):
     """Enhanced Functions for retrieving Array Configuration Data."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.get_resource = self.common.get_resource
@@ -34,7 +36,7 @@ class StorageGroupsFunctions(object):
         self.array_id = array_id
         self.enhanced_api_version = constants.ENHANCED_API_VERSION
 
-    def get_storage_groups_meta_data(self):
+    def get_storage_groups_meta_data(self) -> dict[str, Any]:
         """Get details on available meta data for storage group objects.
 
         returns: dictionary with list of attributes and descriptions of
@@ -44,8 +46,8 @@ class StorageGroupsFunctions(object):
         return response
 
     def get_storage_groups_details(
-            self, array_id=None, filters=None, select=None,
-            exclude=None):
+            self, array_id: str | None = None, filters: list[str] | None = None, select: list[str] | None = None,
+            exclude: list[str] | None = None) -> dict[str, Any]:
         """Get list of storage_groups from array with selected parameters.
 
         :param array_id: The storage array ID -- string
@@ -75,21 +77,14 @@ class StorageGroupsFunctions(object):
                         ignored -- list
         """
         array_id = array_id if array_id else self.array_id
-        if not exclude:
-            exclude = ['rdf_infos', 'snapshots']
-        if not select:
-            select = []
-            storage_groups_metadata = (self.get_storage_groups_meta_data())
-            for attribute in storage_groups_metadata:
-                if attribute['name'] not in exclude:
-                    select.append(attribute['name'])
-        select = ','.join(select)
+        metadata = self.get_storage_groups_meta_data() if not select else []
+        select = _build_select_clause(metadata, select, exclude)
         if filters:
             filters = '&filter=' + ','.join(filters)
         else:
             filters = ''
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{array_id}/storage-groups?select={select}{filters}",
+            f"/{array_id}/storage-groups?select={select}{filters}",
             resource_type=None)
         return response

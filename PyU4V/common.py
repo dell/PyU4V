@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ import json
 import logging
 import math
 import re
-import six
 import socket
 import time
 from PyU4V.utils import constants
@@ -56,26 +55,76 @@ WLP = constants.WLP
 HEADROOM = constants.HEADROOM
 
 
+def normalize_u4v_version(version):
+    """Normalize a Unisphere API version to the compact integer-string form.
+
+    Only the major and minor components are significant to the REST API, so
+    they are concatenated and any patch component is dropped. Both the dotted
+    form and the already-compact form are accepted, e.g.::
+
+        '10.5'   -> '105'
+        '10.3'   -> '103'
+        '11.0'   -> '110'
+        '10.5.1' -> '105'
+        '105'    -> '105'
+        105      -> '105'
+
+    :param version: version value -- str, int, or float
+    :returns: normalized version string -- str
+    """
+    parts = str(version).strip().split('.')
+    if len(parts) >= 2:
+        return parts[0] + parts[1]
+    return parts[0]
+
+
 class CommonFunctions(object):
     """CommonFunctions."""
 
     def __init__(self, rest_client, u4v_version=None):
         """__init__.
-        Honors explicit u4v_version, otherwise falls back to
-        rest_client.u4v_version if set, else constants.UNISPHERE_VERSION.
+
+        The active Unisphere REST API version is stored once on the shared
+        ``rest_client`` and exposed via the :pyattr:`UNI_VERSION` property,
+        giving a single source of truth across all feature modules. If an
+        explicit ``u4v_version`` is supplied it is stamped onto the shared
+        client; otherwise the property falls back to
+        ``rest_client.u4v_version`` and finally
+        ``constants.UNISPHERE_VERSION``.
         """
         self.rest_client = rest_client
         self.request = self.rest_client.rest_request
         self.interval = self.rest_client.interval
         self.retries = self.rest_client.retries
 
+        # Stamp an explicit version onto the shared client so every module
+        # sharing this client resolves the same version (single source).
         if u4v_version is not None:
-            self.UNI_VERSION = str(u4v_version)
-        elif (hasattr(self.rest_client, 'u4v_version') and (
-              self.rest_client.u4v_version)):
-            self.UNI_VERSION = str(self.rest_client.u4v_version)
-        else:
-            self.UNI_VERSION = constants.UNISPHERE_VERSION
+            self.rest_client.u4v_version = normalize_u4v_version(
+                u4v_version)
+
+    @property
+    def UNI_VERSION(self):
+        """Active Unisphere REST API version (single source of truth).
+
+        Resolved live from the shared ``rest_client`` so a version change via
+        ``U4VConn.set_u4v_version`` propagates to every feature module without
+        per-module updates.
+
+        :returns: Unisphere REST API version -- str
+        """
+        version = getattr(self.rest_client, 'u4v_version', None)
+        return str(version) if version else constants.UNISPHERE_VERSION
+
+    @UNI_VERSION.setter
+    def UNI_VERSION(self, value):
+        """Set the active version on the shared client (back-compat write).
+
+        :param value: Unisphere REST API version, or falsy to reset to the
+                      packaged default -- str
+        """
+        self.rest_client.u4v_version = (
+            normalize_u4v_version(value) if value else None)
 
     def wait_for_job_complete(self, job):
         """Given the job wait for it to complete.
@@ -134,8 +183,9 @@ class CommonFunctions(object):
         :param job_id: job id -- str
         :returns: job details -- dict
         """
-        return self.get_resource(category=SYSTEM, resource_level=JOB,
-                                 resource_level_id=job_id)
+        return self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/system/job/{job_id}",
+            resource_type=None)
 
     def _is_job_finished(self, job_id):
         """Check if the job is finished.
@@ -167,7 +217,7 @@ class CommonFunctions(object):
         :param message: server response -- str
         :raises: VolumeBackendAPIException
         """
-        if status_code == None:
+        if status_code is None:
             raise exception.VolumeBackendAPIException(
                 data="Server unavailable or IP incorrect")
         if status_code not in [STATUS_200, STATUS_201,
@@ -198,7 +248,7 @@ class CommonFunctions(object):
                 exception_message = (
                     'Error {op}. Status code: {sc}. Error: {err}. '
                     'Status: {st}.'.format(
-                        op=operation, sc=rc, err=six.text_type(result),
+                        op=operation, sc=rc, err=str(result),
                         st=status))
                 LOG.error(exception_message)
                 raise exception.VolumeBackendAPIException(
@@ -478,11 +528,22 @@ class CommonFunctions(object):
         response, status_code = self.rest_client.file_transfer_request(
             method=POST, upload=True, uri=target_uri,
             form_data=kwargs.get('form_data'))
+        operation = ('upload {resource_type} resource'.format(
+            resource_type=kwargs.get('resource_level')))
+        response_text = response.text or ''
+        response_reason = getattr(response, 'reason', None)
+        if not response_reason:
+            response_reason = getattr(response.raw, 'reason', None)
+
+        if not response_text.strip():
+            self.check_status_code_success(
+                operation, status_code, response_reason)
+            LOG.info('The settings upload request was accepted.')
+            return {'success': True}
+
         try:
-            response_content = json.loads(response.text)
+            response_content = json.loads(response_text)
             msg = response_content.get('message')
-            operation = ('upload {resource_type} resource'.format(
-                resource_type=kwargs.get('resource_level')))
             self.check_status_code_success(operation, status_code, msg)
             # Workaround until failed responses do not return 200
             if not response_content.get('success', False):
@@ -502,7 +563,8 @@ class CommonFunctions(object):
         :returns: version and major_version e.g. "V10.0.0.0", "100" -- str, str
         """
         version, major_version = None, None
-        response = self.get_resource(category=VERSION, no_version=True)
+        response = self.get_request(
+            target_uri="/version", resource_type=None)
         if response and response.get('version'):
             version = response['version']
             version_list = version.split('.')
@@ -514,7 +576,8 @@ class CommonFunctions(object):
         :returns: {'version': 'T10.1.0.468', 'api_version': '101',
         'supported_api_versions': ['101', '100', '92']} -- dict
         """
-        response = self.get_resource(category=VERSION, no_version=True)
+        response = self.get_request(
+            target_uri="/version", resource_type=None)
         return response
 
     def get_array_list(self, filters=None):
@@ -522,8 +585,9 @@ class CommonFunctions(object):
         :param filters: optional filters -- dict
         :returns: arrays ids -- list
         """
-        response = self.get_resource(
-            category=SYSTEM, resource_level=SYMMETRIX, params=filters)
+        response = self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/system/symmetrix",
+            resource_type=None, params=filters)
         return response.get('symmetrixId', list()) if response else list()
 
     def get_v3_or_newer_array_list(self, filters=None):
@@ -531,8 +595,9 @@ class CommonFunctions(object):
         :param filters: optional filters -- dict
         :returns: arrays ids -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING, resource_level=SYMMETRIX, params=filters)
+        response = self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/sloprovisioning/symmetrix",
+            resource_type=None, params=filters)
         return response.get('symmetrixId', list()) if response else list()
 
     def get_array(self, array_id):
@@ -540,8 +605,9 @@ class CommonFunctions(object):
         :param array_id: array id -- str
         :returns: array details -- dict
         """
-        return self.get_resource(category=SYSTEM, resource_level=SYMMETRIX,
-                                 resource_level_id=array_id)
+        return self.get_request(
+            target_uri=f"/{self.UNI_VERSION}/system/symmetrix/{array_id}",
+            resource_type=None)
 
     def get_iterator_page_list(self, iterator_id, start, end):
         """Get a page of results from an iterator instance.
@@ -550,9 +616,9 @@ class CommonFunctions(object):
         :param end: the end number -- int
         :returns: iterator page results -- dict
         """
-        response = self.get_resource(
-            no_version=True, category=COMMON, resource_level=ITERATOR,
-            resource_level_id=iterator_id, resource_type=PAGE,
+        response = self.get_request(
+            target_uri=f"/common/Iterator/{iterator_id}/page",
+            resource_type=None,
             params={'from': start, 'to': end})
         return response.get('result', list()) if response else list()
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 
 import testtools
 
+from pathlib import Path
 from unittest import mock
 
 from PyU4V import rest_requests
@@ -22,6 +23,7 @@ from PyU4V.tests.unit_tests import pyu4v_common_data as pcd
 from PyU4V.tests.unit_tests import pyu4v_fakes as pf
 from PyU4V import univmax_conn
 from PyU4V.utils import constants
+from PyU4V.utils import exception
 from PyU4V import common
 
 ARRAY_ID = constants.ARRAY_ID
@@ -129,6 +131,22 @@ class PyU4VServiceabilityTest(testtools.TestCase):
         response = self.serviceability.get_symavoid_settings()
         self.assertTrue(response)
 
+    def test_get_symavoid_settings_honors_array_override(self):
+        """An explicit array ID is used without changing connection state."""
+        original_array = self.serviceability.array_id
+        with mock.patch.object(
+                self.serviceability.common, 'get_request',
+                return_value={}) as mock_get:
+            self.serviceability.get_symavoid_settings(
+                array_id='000123456789')
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.serviceability.common.UNI_VERSION}/"
+                       f"serviceability/symmetrix/000123456789/"
+                       f"application/unisphere/system",
+            resource_type=None)
+        self.assertEqual(original_array, self.serviceability.array_id)
+
     def test_update_symavoid_settings(self):
         """Test update_symavoid_settings."""
         result = self.serviceability.update_symavoid_settings(
@@ -153,12 +171,53 @@ class PyU4VServiceabilityTest(testtools.TestCase):
         self.assertTrue(result)
 
     def test_modify_nethosts(self):
-        result = self.serviceability.modify_nethosts(
-            action='add', host_name='10.60.156.63', user='rawstorage')
-        remove = self.serviceability.modify_nethosts(
-            action='remove', host_name='10.60.156.63', user='rawstorage')
-        self.assertTrue(result)
-        self.assertTrue(remove)
+        """Mixed-case valid actions retain their exact REST payloads."""
+        responses = [{'action': 'add'}, {'action': 'remove'}]
+        with mock.patch.object(
+                self.serviceability.common, 'modify_resource',
+                side_effect=responses) as mock_modify:
+            add_result = self.serviceability.modify_nethosts(
+                action='AdD', host_name='10.60.156.63', user='rawstorage')
+            remove_result = self.serviceability.modify_nethosts(
+                action='ReMoVe', host_name='10.60.156.63', user='rawstorage')
+
+        target_uri = (
+            f"/{self.serviceability.common.UNI_VERSION}/serviceability/"
+            f"symmetrix/{self.data.array}/application/solutions_enabler")
+        self.assertEqual(
+            [mock.call(
+                target_uri=target_uri, resource_type=None,
+                payload={
+                    'action': 'AddNethost',
+                    'add_nethost': {
+                        'node_name': '10.60.156.63',
+                        'user': 'rawstorage'}}),
+             mock.call(
+                 target_uri=target_uri, resource_type=None,
+                 payload={
+                     'action': 'DeleteNethost',
+                     'delete_nethost': {
+                         'node_name': '10.60.156.63',
+                         'user': 'rawstorage'}})],
+            mock_modify.call_args_list)
+        self.assertEqual(responses[0], add_result)
+        self.assertEqual(responses[1], remove_result)
+
+    def test_modify_nethosts_rejects_invalid_actions(self):
+        """Invalid actions raise an SDK exception before any REST call."""
+        with mock.patch.object(
+                self.serviceability.common,
+                'modify_resource') as mock_modify:
+            for invalid_action in ('change', None, 123):
+                with self.subTest(action=invalid_action):
+                    exc = self.assertRaises(
+                            exception.InvalidInputException,
+                            self.serviceability.modify_nethosts,
+                            action=invalid_action, host_name='host', user='user')
+                    self.assertIn(
+                        str(invalid_action), str(exc))
+
+        mock_modify.assert_not_called()
 
     def test_get_solutions_enabler_configuration(self):
         """Test get_solutions_enabler_configuration"""
@@ -172,25 +231,73 @@ class PyU4VServiceabilityTest(testtools.TestCase):
         self.assertEqual(self.data.self_signed_cert_response, result)
 
     def test_import_custom_certificate(self):
-        """Test import custom certificate"""
+        """Certificate handles remain open for upload and close afterward."""
+        expected_response = self.data.import_certs_response
+
+        def validate_upload(**kwargs):
+            form_data = kwargs['form_data']
+            self.assertEqual(
+                ['node_name', 'keyfile', 'trustfile', 'certfile'],
+                list(form_data))
+            self.assertEqual('Semgmt0', form_data['node_name'])
+            for field_name in ('keyfile', 'trustfile', 'certfile'):
+                self.assertFalse(form_data[field_name].closed)
+            return expected_response
+
         with mock.patch.object(
-                self.serviceability,
-                'import_custom_certificate') as mock_upload:
-            node_name = 'Unisphere'
-            keyfile = __file__
-            certfile = __file__
-            trustfile = __file__
+                self.serviceability.common, 'upload_file',
+                side_effect=validate_upload) as mock_upload:
+            result = self.serviceability.import_custom_certificate(
+                array_id='000123456789', node_name='Semgmt0',
+                keyfile=__file__, certfile=__file__, trustfile=__file__)
 
-            self.serviceability.import_custom_certificate(
-                node_name=node_name,
-                keyfile=keyfile,
-                certfile=certfile,
-                trustfile=trustfile
-            )
+        self.assertEqual(expected_response, result)
+        mock_upload.assert_called_once()
+        upload_args = mock_upload.call_args.kwargs
+        self.assertEqual(
+            f"/{self.serviceability.common.UNI_VERSION}/serviceability/"
+            f"symmetrix/000123456789/application/solutions_enabler/"
+            f"custom_certificate/import",
+            upload_args['target_uri'])
+        for field_name in ('keyfile', 'trustfile', 'certfile'):
+            self.assertTrue(upload_args['form_data'][field_name].closed)
 
-            mock_upload.assert_called_with(
-                node_name=node_name,
-                keyfile=keyfile,
-                certfile=certfile,
-                trustfile=trustfile
-            )
+    def test_import_custom_certificate_closes_files_on_upload_error(self):
+        """Upload exceptions propagate unchanged after handles are closed."""
+        upload_error = exception.VolumeBackendAPIException(data='failure')
+        with mock.patch.object(
+                self.serviceability.common, 'upload_file',
+                side_effect=upload_error) as mock_upload:
+            exc = self.assertRaises(
+                    exception.VolumeBackendAPIException,
+                    self.serviceability.import_custom_certificate,
+                    node_name='Semgmt0', keyfile=__file__,
+                    certfile=__file__, trustfile=__file__)
+
+        self.assertIs(upload_error, exc)
+        form_data = mock_upload.call_args.kwargs['form_data']
+        for field_name in ('keyfile', 'trustfile', 'certfile'):
+            self.assertTrue(form_data[field_name].closed)
+
+    def test_import_custom_certificate_rejects_each_invalid_path(self):
+        """Every certificate input reports its own invalid path."""
+        valid_path = __file__
+        for field_name in ('keyfile', 'trustfile', 'certfile'):
+            missing_path = Path(self.conf_dir) / f'missing-{field_name}.pem'
+            file_args = {
+                'keyfile': valid_path,
+                'trustfile': valid_path,
+                'certfile': valid_path}
+            file_args[field_name] = missing_path
+
+            with self.subTest(field=field_name):
+                with mock.patch.object(
+                        self.serviceability.common,
+                        'upload_file') as mock_upload:
+                    exc = self.assertRaises(
+                            exception.InvalidInputException,
+                            self.serviceability.import_custom_certificate,
+                            node_name='Semgmt0', **file_args)
+
+                self.assertIn(str(missing_path), str(exc))
+                mock_upload.assert_not_called()

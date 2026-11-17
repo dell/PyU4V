@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ import logging
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
+from PyU4V.utils.enhanced_api_utils import _build_select_clause
 
 LOG = logging.getLogger(__name__)
 
@@ -42,22 +43,28 @@ class EnhancedAPIFunctions(object):
                 rdf-groups, storage-groups, volumes -- string
         :returns: dictionary with list of attributes and descriptions of
                  attribute types used for filtering and selection -- dict
+        :raises: InvalidInputException if fpins is passed as storage_object
         """
+        if storage_object == 'fpins':
+            from PyU4V.utils import exception
+            msg = ('Metadata endpoint is not available for fpins storage '
+                   'object. Use get_storage_object_details() directly.')
+            raise exception.InvalidInputException(msg)
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{storage_object}/metadata",
-                       resource_type=None)
+            f"/{storage_object}/metadata",
+            resource_type=None)
         return response
 
     def get_storage_object_details(
             self, storage_object, array_id=None, filters=None, select=None,
-            exclude=None):
+            exclude=None, force_refresh=False):
         """Get list of volumes from array with selected parameters.
 
         :param: storage_object, the storage object to get metadata for,
                 valid values are directors, hosts, initiators,
                 ip-interfaces, ip-routes, masking-views, port-groups, ports,
-                rdf-groups, storage-groups, volumes -- string
+                rdf-groups, storage-groups, volumes, fpins -- string
         :param array_id: The storage array ID -- string
         :param filters: filter parameters, used to narrow down the result
                         list, filters can be any of the volume attributes,
@@ -86,27 +93,27 @@ class EnhancedAPIFunctions(object):
                         attribute names that you want to exclude from the
                         return, if values are passed in by select exclude is
                         ignored -- list
+        :param force_refresh: force Unisphere to return the most up-to-date
+                              information available. Limited to one request
+                              per second by the API. More frequent requests
+                              return HTTP 429 with retry_after_ms -- bool
         :returns: dict
+        :raises: VolumeBackendAPIException for API errors, including HTTP 429
         """
         array_id = array_id if array_id else self.array_id
-        if not exclude:
-            exclude = ['rdf_infos', 'snapshots']
-        if not select:
-            select = []
-            volume_metadata = self.get_storage_object_meta_data(
+        metadata = []
+        if not select and storage_object != 'fpins':
+            metadata = self.get_storage_object_meta_data(
                 storage_object=storage_object)
-            for attribute in volume_metadata:
-                if attribute['name'] not in exclude:
-                    select.append(attribute['name'])
-                select.append(attribute['name'])
-        select = ','.join(select)
+        select = _build_select_clause(metadata, select, exclude)
         if filters:
             filters = '&filter=' + ','.join(filters)
         else:
             filters = ''
+        force_refresh = '&force_refresh=true' if force_refresh else ''
         response = self.common.get_request(
             target_uri=f"/{self.enhanced_api_version}/systems"
-                       f"/{array_id}/{storage_object}"
-                       f"?select={select}{filters}",
-                       resource_type=None)
+            f"/{array_id}/{storage_object}"
+            f"?select={select}{filters}{force_refresh}",
+            resource_type=None)
         return response

@@ -11,6 +11,13 @@ array=00012345678
 verify=/path-to-file/server_hostname.pem
 ;overrides default timeout on REST calls for specificed value in seconds
 ;timeout=500
+; specify a custom Unisphere API version (e.g., '100', '101', '104') for backward compatibility
+; if not specified, the default version for this PyU4V release will be used
+;u4v_version=104
+; skip the minimum Unisphere version check and accept any u4v_version without
+; failing validation. API calls use u4v_version if set, otherwise the packaged
+; default. Unsupported requests may return server errors (e.g. 404) to handle.
+;skip_version_check=False
 ; log configuration
 [loggers]
 keys=root,PyU4V

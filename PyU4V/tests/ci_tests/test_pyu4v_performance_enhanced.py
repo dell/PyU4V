@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,3 +49,17 @@ class CITestPerformanceEnhanced(base.TestBaseTestCase, testtools.TestCase):
             'metrics'][0])
         self.assertGreater(len(category_metrics['metric_instances'][0][
             'metrics']), 1)
+
+    def test_get_category_metrics_all_metrics(self):
+        category_metrics = self.performance_enhanced.get_category_metrics(
+            category='Array', all_metrics=True)
+        self.assertIsNotNone(category_metrics)
+        self.assertIn('metric_instances', category_metrics)
+        self.assertGreater(len(category_metrics['metric_instances'][0][
+            'metrics']), 0)
+
+    def test_get_category_metrics_all_metrics_with_filters(self):
+        category_metrics = self.performance_enhanced.get_category_metrics(
+            category='Array', filters=['time_range eq 1'], all_metrics=True)
+        self.assertIsNotNone(category_metrics)
+        self.assertIn('metric_instances', category_metrics)

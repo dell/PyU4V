@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,13 +72,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
     def test_create_host_name_only(self):
         """Test create_host name only."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_host(
                 self.data.initiatorgroup_name_i)
             new_ig_data2 = {'hostId': self.data.initiatorgroup_name_i}
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array, resource_type='host',
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host",
                 payload=new_ig_data2)
 
     def test_create_host_host_flags_initiator_list_async(self):
@@ -86,7 +87,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         host_flags = {'consistent_lun': 'true'}
         data = [self.data.wwnn1, self.data.wwpn2]
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_host(
                 self.data.initiatorgroup_name_i, host_flags=host_flags,
                 initiator_list=data, _async=True)
@@ -95,15 +96,16 @@ class PyU4VProvisioningTest(testtools.TestCase):
                            'hostFlags': host_flags,
                            'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array, resource_type='host',
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host",
                 payload=new_ig_data)
 
     def test_create_host_initiator_file(self):
         """Test create_host."""
         host_flags = {'consistent_lun': 'true'}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             with tempfile.TemporaryDirectory() as td:
                 file_name = os.path.join(td, 'temp_ut_file')
                 with open(file_name, 'w') as f:
@@ -116,8 +118,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
                             'hostFlags': host_flags,
                             'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array, resource_type='host',
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host",
                 payload=new_ig_data3)
 
     def test_modify_host_change_host_flag(self):
@@ -127,16 +130,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = ({'editHostActionParam': {
             'setHostFlagsParam': {'hostFlags': host_flag_dict}}})
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host(host_name,
                                           host_flag_dict=host_flag_dict)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOST,
-                resource_type_id=host_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host/{host_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_remove_initiator(self):
         """Test modify_host remove initiator."""
@@ -145,16 +146,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = ({'editHostActionParam': {
             'removeInitiatorParam': {'initiator': remove_init_list}}})
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host(host_name,
                                           remove_init_list=remove_init_list)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOST,
-                resource_type_id=host_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host/{host_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_add_initiator(self):
         """Test modify_host add initiator."""
@@ -163,16 +162,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = ({'editHostActionParam': {
             'addInitiatorParam': {'initiator': add_init_list}}})
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host(host_name,
                                           add_init_list=add_init_list)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOST,
-                resource_type_id=host_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host/{host_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_change_name(self):
         """Test modify_host change name."""
@@ -181,35 +178,31 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = ({'editHostActionParam': {
             'renameHostParam': {'new_host_name': new_name}}})
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host(host_name, new_name=new_name)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOST,
-                resource_type_id=host_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host/{host_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_exception(self):
         host_name = self.data.initiatorgroup_name_i
         with mock.patch.object(
-                self.provisioning, 'modify_resource'):
+                self.provisioning.common, 'modify_resource'):
             self.assertRaises(exception.InvalidInputException,
                               self.provisioning.modify_host, host_name)
 
     def test_delete_host(self):
         """Test delete_host."""
         with mock.patch.object(
-                self.provisioning, 'delete_resource') as mock_delete:
+                self.provisioning.common, 'delete_resource') as mock_delete:
             host_id = self.data.initiatorgroup_name_i
             self.provisioning.delete_host(host_id)
             mock_delete.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOST,
-                resource_type_id=host_id)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/host/{host_id}")
 
     def test_get_masking_views_from_host(self):
         """Test get_masking_views_from_host."""
@@ -233,7 +226,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         hg_list = self.provisioning.get_host_group_list()
         self.assertEqual(self.data.hostgroup_list['hostGroupId'], hg_list)
         with mock.patch.object(
-                self.provisioning, 'get_resource',
+                self.provisioning.common, 'get_request',
                 return_value={'some_key': 'some_value'}):
             hg_list = self.provisioning.get_host_group_list()
             self.assertEqual(list(), hg_list)
@@ -244,14 +237,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         host_list = [self.data.initiatorgroup_name_f]
         payload = {'hostId': host_list, 'hostGroupId': host_group_id}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_host_group(
                 self.data.hostgroup_id, [self.data.initiatorgroup_name_f])
             mock_create.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup",
                 payload=payload)
 
     def test_create_host_group_host_flags_async(self):
@@ -262,14 +254,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'hostId': host_list, 'hostGroupId': host_group_id,
                    'hostFlags': host_flags, 'executionOption': 'ASYNCHRONOUS'}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_host_group(
                 host_group_id, host_list, host_flags, _async=True)
             mock_create.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup",
                 payload=payload)
 
     def test_modify_host_group_change_host_flags(self):
@@ -279,16 +270,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editHostGroupActionParam': {
             'setHostGroupFlagsParam': {'hostFlags': host_flag_dict}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host_group(
                 host_group_id, host_flag_dict=host_flag_dict)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
-                resource_type_id=host_group_id,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup"
+                           f"/{host_group_id}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_group_remove_host(self):
         """Test modify_host_group remove host."""
@@ -297,16 +287,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editHostGroupActionParam': {
             'removeHostParam': {'host': remove_host_list}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host_group(
                 host_group_id, remove_host_list=remove_host_list)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
-                resource_type_id=host_group_id,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup"
+                           f"/{host_group_id}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_group_add_host(self):
         """Test modify_host_group add host."""
@@ -315,16 +304,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editHostGroupActionParam': {
             'addHostParam': {'host': add_host_list}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host_group(
                 host_group_id, add_host_list=add_host_list)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
-                resource_type_id=host_group_id,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup"
+                           f"/{host_group_id}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_group_change_name(self):
         """Test modify_host_group change name."""
@@ -333,22 +321,21 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editHostGroupActionParam': {
             'renameHostGroupParam': {'new_host_group_name': new_name}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_host_group(
                 host_group_id, new_name=new_name)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
-                resource_type_id=host_group_id,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup"
+                           f"/{host_group_id}",
+                resource_type=None, payload=payload)
 
     def test_modify_host_group_exception(self):
         """Test modify_host_group exception."""
         hostgroup_name = self.data.hostgroup_id
         with mock.patch.object(
-                self.provisioning, 'modify_resource'):
+                self.provisioning.common, 'modify_resource'):
             self.assertRaises(exception.InvalidInputException,
                               self.provisioning.modify_host_group,
                               hostgroup_name)
@@ -356,15 +343,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
     def test_delete_host_group(self):
         """Test delete_host_group."""
         with mock.patch.object(
-                self.provisioning, 'delete_resource') as mock_delete:
+                self.provisioning.common, 'delete_resource') as mock_delete:
             host_group_id = self.data.hostgroup_id
             self.provisioning.delete_host_group(host_group_id)
             mock_delete.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.HOSTGROUP,
-                resource_type_id=host_group_id)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/hostgroup"
+                           f"/{host_group_id}")
 
     def test_get_initiator(self):
         """Test get_initiator."""
@@ -383,16 +369,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editInitiatorActionParam': {
             'removeMaskingEntry': 'true'}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_initiator(
                 initiator_name, remove_masking_entry='true')
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.INITIATOR,
-                resource_type_id=initiator_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/initiator"
+                           f"/{initiator_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_initiator_replace_initiator(self):
         """Test modify_initiator replace initiator."""
@@ -401,16 +386,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editInitiatorActionParam': {
             'replaceInitiatorParam': {'new_initiator': new_initiator}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_initiator(
                 initiator_name, replace_init=new_initiator)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.INITIATOR,
-                resource_type_id=initiator_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/initiator"
+                           f"/{initiator_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_initiator_rename_alias(self):
         """Test modify_initiator rename alias."""
@@ -421,16 +405,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                        'node_name': rename_alias[0],
                        'port_name': rename_alias[1]}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_initiator(
                 initiator_name, rename_alias=rename_alias)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.INITIATOR,
-                resource_type_id=initiator_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/initiator"
+                           f"/{initiator_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_initiator_set_fcid(self):
         """Test modify_initiator set fcid."""
@@ -439,16 +422,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'editInitiatorActionParam': {
             'initiatorSetAttributesParam': {'fcidValue': new_fcid}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_initiator(
                 initiator_name, set_fcid=new_fcid)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.INITIATOR,
-                resource_type_id=initiator_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/initiator"
+                           f"/{initiator_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_initiator_change_initiator_flags(self):
         """Test modify_initiator change initiator flags."""
@@ -458,22 +440,21 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'initiatorSetFlagsParam': {
                 'initiatorFlags': initiator_flags}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_initiator(
                 initiator_name, initiator_flags=initiator_flags)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.INITIATOR,
-                resource_type_id=initiator_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/initiator"
+                           f"/{initiator_name}",
+                resource_type=None, payload=payload)
 
     def test_modify_initiator_exception(self):
         """Test modify_initiator exception."""
         initiator_name = self.data.wwpn1
         with mock.patch.object(
-                self.provisioning, 'modify_resource'):
+                self.provisioning.common, 'modify_resource'):
             self.assertRaises(
                 exception.InvalidInputException,
                 self.provisioning.modify_initiator, initiator_name)
@@ -522,15 +503,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 'useExistingStorageGroupParam': {
                     'storageGroupId': storage_group_name}}}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_masking_view_existing_components(
                 port_group_name, masking_view, storage_group_name,
                 host_name=host_name)
             mock_create.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.MASKINGVIEW,
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/maskingview",
                 payload=payload)
 
     def test_create_masking_view_existing_components_host_group(self):
@@ -552,15 +532,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
                 'useExistingStorageGroupParam': {
                     'storageGroupId': storage_group_name}}}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_masking_view_existing_components(
                 port_group_name, masking_view, storage_group_name,
                 host_group_name=host_group_name, _async=True)
             mock_create.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.MASKINGVIEW,
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/maskingview",
                 payload=payload)
 
     def test_create_masking_view_existing_components_exception(self):
@@ -648,14 +627,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test delete_masking_view."""
         masking_view_name = self.data.masking_view_name_f
         with mock.patch.object(
-                self.provisioning, 'delete_resource') as mock_delete:
+                self.provisioning.common, 'delete_resource') as mock_delete:
             self.provisioning.delete_masking_view(masking_view_name)
             mock_delete.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.MASKINGVIEW,
-                resource_type_id=masking_view_name)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/maskingview"
+                           f"/{masking_view_name}")
 
     def test_rename_masking_view(self):
         """Test rename_masking_view."""
@@ -665,15 +643,14 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'renameMaskingViewParam': {
                 'new_masking_view_name': new_name}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.rename_masking_view(masking_view_name, new_name)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.MASKINGVIEW,
-                resource_type_id=masking_view_name,
-                payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/maskingview"
+                           f"/{masking_view_name}",
+                resource_type=None, payload=payload)
 
     def test_get_host_from_masking_view(self):
         """Test get_host_from_masking_view."""
@@ -752,14 +729,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         port_group_id = self.data.port_group_name_f
         payload = ({'portGroupId': port_group_id})
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_empty_port_group(
                 port_group_id)
         mock_create.assert_called_once_with(
-            category=constants.SLOPROVISIONING,
-            resource_level=constants.SYMMETRIX,
-            resource_level_id=self.data.array,
-            resource_type=constants.PORTGROUP,
+            target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                       f"/sloprovisioning/symmetrix"
+                       f"/{self.data.array}/portgroup",
             payload=payload)
 
     def test_get_child_storage_group_from_parent(self):
@@ -785,14 +761,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         payload = {'portGroupId': port_group_id,
                    'symmetrixPortKey': port_dict_list}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_new_port_group(
                 port_group_id, port_dict_list)
         mock_create.assert_called_once_with(
-            category=constants.SLOPROVISIONING,
-            resource_level=constants.SYMMETRIX,
-            resource_level_id=self.data.array,
-            resource_type=constants.PORTGROUP,
+            target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                       f"/sloprovisioning/symmetrix"
+                       f"/{self.data.array}/portgroup",
             payload=payload)
         mck_update.assert_called_once()
 
@@ -813,14 +788,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
                    'symmetrixPortKey': port_dict_list,
                    'port_group_protocol': 'SCSI_FC'}
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_new_port_group(
                 port_group_id, port_dict_list, port_group_protocol)
         mock_create.assert_called_once_with(
-            category=constants.SLOPROVISIONING,
-            resource_level=constants.SYMMETRIX,
-            resource_level_id=self.data.array,
-            resource_type=constants.PORTGROUP,
+            target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                       f"/sloprovisioning/symmetrix"
+                       f"/{self.data.array}/portgroup",
             payload=payload)
         mck_update.assert_called_once()
 
@@ -872,16 +846,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'directorId': dirport[0],
                     'portId': dirport[1]}]}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_port_group(
                 port_group_name, remove_port=dirport)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.PORTGROUP,
-                resource_type_id=port_group_name,
-                payload=ref_payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/portgroup"
+                           f"/{port_group_name}",
+                resource_type=None, payload=ref_payload)
         mck_update.assert_called_once()
 
     def test_modify_port_group_rename_port_group(self):
@@ -896,16 +869,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         ref_result = self.data.job_list[0]
         self.assertEqual(ref_result, act_result)
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_port_group(
                 port_group_name, rename_port_group=new_port_group_name)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.PORTGROUP,
-                resource_type_id=port_group_name,
-                payload=ref_payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/portgroup"
+                           f"/{port_group_name}",
+                resource_type=None, payload=ref_payload)
 
     @mock.patch.object(
         provisioning.ProvisioningFunctions, '_update_port_group_port_ids')
@@ -919,16 +891,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                     'directorId': dirport[0],
                     'portId': dirport[1]}]}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_port_group(
                 port_group_name, add_port=dirport)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.PORTGROUP,
-                resource_type_id=port_group_name,
-                payload=ref_payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/portgroup"
+                           f"/{port_group_name}",
+                resource_type=None, payload=ref_payload)
         mck_update.assert_called_once()
 
     def test_modify_port_group_exception(self):
@@ -942,15 +913,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test delete_port_group."""
         port_group = self.data.port_group_name_f
         with mock.patch.object(
-                self.provisioning, 'delete_resource') as mock_del:
+                self.provisioning.common, 'delete_resource') as mock_del:
             self.provisioning.delete_port_group(port_group)
             mock_del.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.PORTGROUP,
-                resource_type_id=port_group
-            )
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/portgroup"
+                           f"/{port_group}")
 
     def test_get_service_level_list(self):
         """Test get_service_level_list."""
@@ -970,15 +939,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
             'renameSloParam': {
                 'sloId': new_name}}}
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_service_level(current_name, new_name)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.SLO,
-                resource_type_id=current_name,
-                payload=ref_payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/slo/{current_name}",
+                resource_type=None, payload=ref_payload)
         ref_result = self.data.job_list[0]
         act_result = self.provisioning.modify_service_level(
             current_name, new_name)
@@ -1044,7 +1011,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
     def test_create_storage_group_no_slo(self):
         """Test create_storage_group no slo set."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
                 srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None)
 
@@ -1057,14 +1024,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                           'num_of_vols': 0}]}]}
 
             mock_create.assert_called_once_with(
-                category='sloprovisioning',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload)
 
     def test_create_storage_group_ckd_no_slo(self):
         """Test create_storage_group ckd no slo set."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
                 srp_id=self.data.srp, sg_id='new-sg', slo=None, workload=None,
                 cap_unit='CYL', emulation_type='CKD-3390')
@@ -1078,14 +1046,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                           'num_of_vols': 0}]}]}
 
             mock_create.assert_called_once_with(
-                category='sloprovisioning',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload)
 
     def test_create_storage_group_slo_async(self):
         """Test create_storage_group no slo set."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', self.data.slo, 'None', _async=True)
             payload = {
@@ -1100,15 +1069,16 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                            'capacityUnit': 'GB'}]}],
                 'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
-                category='sloprovisioning',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload)
 
     def test_create_storage_group_no_slo_no_compression_name_full_allocate(
             self):
         """Test create_storage_group no slo set."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', self.data.slo, 'None',
                 do_disable_compression=True, vol_name=self.data.device_id,
@@ -1132,9 +1102,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
                              'identifier_name': self.data.device_id,
                              'volumeIdentifierChoice': 'identifier_name'}}]}]}
             mock_create.assert_called_once_with(
-                category='sloprovisioning',
-                resource_level='symmetrix', resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload)
 
     def test_get_volume_effective_wwn_details(self):
         """Test get_volume_effective_wwn_details."""
@@ -1252,7 +1223,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test create_storage_group no slo set."""
         ppctroc = 'persist_preallocated_capacity_through_reclaim_or_copy'
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', None, None, allocate_full=True)
 
@@ -1271,15 +1242,16 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                            'num_of_vols': 0}]}]}
 
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload)
 
     def test_create_storage_group_full_allocated_slo_async(self):
         """Test create_storage_group slo set, async."""
         ppctroc = 'persist_preallocated_capacity_through_reclaim_or_copy'
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             mock_create.reset_mock()
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', self.data.slo, 'None',
@@ -1299,14 +1271,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                                            'num_of_vols': 0, }]}],
                 'executionOption': 'ASYNCHRONOUS'}
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload)
 
     def test_create_storage_group_vol_name(self):
         """Test create_storage_group."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', slo='Diamond', workload=None,
@@ -1328,14 +1301,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                          'volumeIdentifier': volume_identifier}]}]}
 
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload1)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload1)
 
     def test_create_storage_group_vol_name_append_vol_id(self):
         """Test create_storage_group."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
                 self.data.srp, 'new-sg', slo='Diamond', workload=None,
@@ -1358,14 +1332,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
                          'volumeIdentifier': volume_identifier}]}]}
 
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload1)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload1)
 
     def test_create_storage_group_ckd(self):
         """Test create_storage_group with ckd emulation."""
         with mock.patch.object(
-                self.provisioning, 'create_resource') as mock_create:
+                self.provisioning.common, 'create_resource') as mock_create:
             # 1 - no slo, not async
             self.provisioning.create_storage_group(
                 self.data.srp, 'LCU01', slo='Diamond', workload=None,
@@ -1388,9 +1363,10 @@ class PyU4VProvisioningTest(testtools.TestCase):
                          'volumeIdentifier': volume_identifier}]}]}
 
             mock_create.assert_called_once_with(
-                category='sloprovisioning', resource_level='symmetrix',
-                resource_level_id=self.data.array,
-                resource_type='storagegroup', payload=payload1)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup",
+                payload=payload1)
 
     def test_create_non_empty_storage_group(self):
         """Test create_non_empty_storage_group."""
@@ -1442,16 +1418,15 @@ class PyU4VProvisioningTest(testtools.TestCase):
         storage_group_id = self.data.storagegroup_name
         ref_payload = dict()
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning.modify_storage_group(
                 storage_group_id, ref_payload)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.STORAGEGROUP,
-                resource_type_id=storage_group_id,
-                payload=ref_payload
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup"
+                           f"/{storage_group_id}",
+                resource_type=None, payload=ref_payload
             )
         ref_result = self.data.job_list[0]
         act_result = self.provisioning.modify_storage_group(
@@ -1885,15 +1860,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test delete_storage_group."""
         storage_group_id = self.data.storagegroup_name
         with mock.patch.object(
-                self.provisioning, 'delete_resource') as mock_delete:
+                self.provisioning.common, 'delete_resource') as mock_delete:
             self.provisioning.delete_storage_group(storage_group_id)
             mock_delete.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.STORAGEGROUP,
-                resource_type_id=storage_group_id
-            )
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/storagegroup"
+                           f"/{storage_group_id}")
 
     def test_get_volume(self):
         """Test get_volume."""
@@ -1919,7 +1892,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         page_list = [[{'volumeId': self.data.device_id},
                       {'volumeId': self.data.device_id2}],
                      [{'volumeId': self.data.device_id3}]]
-        with mock.patch.object(self.provisioning, 'get_resource',
+        with mock.patch.object(self.provisioning.common, 'get_request',
                                return_value=return_value):
             with mock.patch.object(self.provisioning.common,
                                    'get_iterator_page_list',
@@ -2006,15 +1979,13 @@ class PyU4VProvisioningTest(testtools.TestCase):
         device_id = self.data.device_id
         ref_payload = dict()
         with mock.patch.object(
-                self.provisioning, 'modify_resource') as mock_mod:
+                self.provisioning.common, 'modify_resource') as mock_mod:
             self.provisioning._modify_volume(device_id, ref_payload)
             mock_mod.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.VOLUME,
-                resource_type_id=device_id,
-                payload=ref_payload
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/volume/{device_id}",
+                resource_type=None, payload=ref_payload
             )
         ref_result = self.data.job_list[0]
         act_result = self.provisioning._modify_volume(device_id, ref_payload)
@@ -2136,14 +2107,12 @@ class PyU4VProvisioningTest(testtools.TestCase):
         """Test delete_volume."""
         device_id = self.data.device_id
         with mock.patch.object(
-                self.provisioning, 'delete_resource') as mock_delete:
+                self.provisioning.common, 'delete_resource') as mock_delete:
             self.provisioning.delete_volume(self.data.device_id)
             mock_delete.assert_called_once_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.VOLUME,
-                resource_type_id=device_id)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/volume/{device_id}")
 
     def test_get_workload_settings(self):
         """Test get_workload_settings."""
@@ -2253,7 +2222,7 @@ class PyU4VProvisioningTest(testtools.TestCase):
         device_id = self.data.device_id
         excep = exception.VolumeBackendAPIException
         with mock.patch.object(
-                self.provisioning, 'delete_resource', side_effect=[
+                self.provisioning.common, 'delete_resource', side_effect=[
                     excep('random exception 1'), excep('random exception 2'),
                     None]
         ) as mock_delete:
@@ -2261,11 +2230,9 @@ class PyU4VProvisioningTest(testtools.TestCase):
             call_count = mock_delete.call_count
             self.assertEqual(3, call_count)
             mock_delete.assert_called_with(
-                category=constants.SLOPROVISIONING,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.data.array,
-                resource_type=constants.VOLUME,
-                resource_type_id=device_id)
+                target_uri=f"/{self.provisioning.common.UNI_VERSION}"
+                           f"/sloprovisioning/symmetrix"
+                           f"/{self.data.array}/volume/{device_id}")
 
     @mock.patch.object(
         provisioning.ProvisioningFunctions, 'get_split_list',

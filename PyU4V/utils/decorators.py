@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ def deprecation_notice(func_class, start_version, end_version):
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             LOG.warning(
                 '{func_class}.{func} will be deprecated in version {end}. For '
@@ -49,20 +50,24 @@ def refactoring_notice(func_class, path, start_version, end_version):
     """Notify the user of function refactoring elsewhere in PyU4V.
 
     :param func_class: the class name for deprecated function -- str
-    :param path: path to the new function -- str
-    :param start_version: the start Unisphere version -- float
-    :param end_version: the end Unisphere version -- float
+    :param path: path to the new function, may contain ``{func}``
+                 placeholder which is replaced with the function name
+                 at runtime -- str
+    :param start_version: the start PyU4V version -- str
+    :param end_version: the end PyU4V version -- str
     :returns: decorated function -- decorator
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
+            resolved_path = path.format(func=func.__name__)
             LOG.warning(
-                '{func_class}.{func} will be deprecated in version {end} in '
+                '{func_class}.{func} will be deprecated in {end} in '
                 'favour of function {path}. For further information please '
                 'consult PyU4V {start} release notes.'.format(
                     func_class=func_class, func=func.__name__, end=end_version,
-                    path=path, start=start_version))
+                    path=resolved_path, start=start_version))
             return func(*args, **kwargs)
 
         return wrapper
@@ -97,3 +102,30 @@ def retry(exceptions, total_attempts=3, delay=3, backoff=2):
             return f(*args, **kwargs)
         return f_retry
     return deco_retry
+
+
+def performance_enhanced_recommendation(func_class):
+    """Notify the user to consider using performance_enhanced.py functions.
+
+    This decorator displays a recommendation to use performance_enhanced.py
+    functions for improved usability and code efficiency by reducing the
+    number of API calls.
+
+    :param func_class: the class name for the function -- str
+    :returns: decorated function -- decorator
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            LOG.info(
+                'For improved usability and code efficiency by reducing the '
+                'number of API calls, consider using performance_enhanced.py '
+                'functions instead of {func_class}.{func}. For further '
+                'information please consult the PyU4V documentation.'.format(
+                    func_class=func_class, func=func.__name__))
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

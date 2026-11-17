@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,17 +33,14 @@ ua_details = (
         pv=__pyu4v_version__, platform=__platform__,
         release=__platform_release__, python=__python_version__))
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 LOG = logging.getLogger(__name__)
 
 CONTENT_TYPE = constants.CONTENT_TYPE
 ACCEPT = constants.ACCEPT
-ACCEPT_ENC = constants.ACCEPT_ENC
 USER_AGENT = constants.USER_AGENT
 APP_TYPE = constants.APP_TYPE
 APP_JSON = constants.APP_JSON
 APP_OCT = constants.APP_OCT
-APP_MPART = constants.APP_MPART
 
 
 class RestRequests(object):
@@ -67,6 +64,8 @@ class RestRequests(object):
         self.token = token  # <-- New
 
         self.verify_ssl = verify
+        if not verify:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.base_url = base_url
         self.headers = {
             CONTENT_TYPE: APP_JSON,
@@ -110,12 +109,10 @@ class RestRequests(object):
 
         session = requests.session()
 
-        # Start with a copy of default headers which may contain Authorization
-        session_headers = dict(self.headers)
-
-        # Merge in any per-call headers e.g., file transfer Accept/Content-Type
-        if headers:
-            session_headers.update(headers)
+        # File transfers require their own content negotiation headers. Do not
+        # inherit the default JSON Content-Type for multipart uploads because
+        # requests must generate the boundary-bearing Content-Type itself.
+        session_headers = dict(headers) if headers else dict(self.headers)
 
         # Ensure Authorization is present if using token auth
         self._apply_auth_to_headers(session_headers)
@@ -214,7 +211,9 @@ class RestRequests(object):
     def file_transfer_request(self, method, uri, timeout=None, download=False,
                               r_obj=None, upload=False, form_data=None):
         """Send a file transfer request via REST to the target API.
+
         Valid methods are 'POST' and 'PUT'.
+
         :param method: request method -- str
         :param uri: target uri -- str
         :param timeout: optional timeout override -- int
@@ -224,7 +223,7 @@ class RestRequests(object):
         :param form_data: upload multipart form data -- dict
         :returns: server response, status code -- dict, int
         :raises: InvalidInputException, VolumeBackendAPIException,
-                 Timeout, SSLError, ConnectionError, HTTPError
+            Timeout, SSLError, ConnectionError, HTTPError
         """
         if download and not upload:
             headers = {
@@ -234,7 +233,7 @@ class RestRequests(object):
                 APP_TYPE: self.headers.get('application-type')}
         elif upload and not download:
             headers = {
-                ACCEPT_ENC: APP_MPART,
+                ACCEPT: APP_JSON,
                 USER_AGENT: ua_details,
                 APP_TYPE: self.headers.get('application-type')}
         else:

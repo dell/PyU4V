@@ -97,7 +97,7 @@ key/values expected are the same as those specified in ``PyU4V.conf``.
             server_ip='10.0.0.75', port='8443', verify=True,
             array_id='00012345678')
     >>> conn.common.get_unisphere_version()
-    {'version': 'V9.1.0.5'}
+    {'version': 'V10.5.0.0'}
 
 If you pass configuration into ``U4VConn()`` directly in the code, these
 settings will override any that are defined in ``PyU4V.conf`` at any location.

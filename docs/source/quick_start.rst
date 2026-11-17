@@ -25,7 +25,7 @@ queries to validate the successful connection.
 .. code-block:: python
 
     conn.common.get_unisphere_version()
-    ('V10.2.0.0', '101')
+    ('V10.5.0.0', '105')
     conn.common.get_array_list()
     ["000197900123", "000197900124", "000197900125", "000197900126"]
 
@@ -49,6 +49,7 @@ provide the path to the certificate file, not the file contents this should
 be in base64 encoded string.
 
 .. code-block:: python
+
     # Sample function for encoding certificate to base64, the encoded file
     # can be used with any function requiring it.
     import os
@@ -100,6 +101,26 @@ the various categories provided by the Unisphere REST API:
 There are plans to further increase the coverage of Unisphere REST calls in
 future releases. All changes are reflected in the PyU4V change log (link_).
 
+Workload Planner Quick Example
+-------------------------------
+
+PyU4V provides direct wrappers for workload planner resources, including
+system details, storage-group planning details, headroom, utilization,
+compliance history, provisioning template management, and performance
+impact analysis.
+
+.. code-block:: python
+
+    import PyU4V
+
+    conn = PyU4V.U4VConn()
+    systems = conn.wlp.get_system_list()
+    details = conn.wlp.get_system(array_id=conn.array_id)
+    headroom = conn.wlp.get_headroom(
+        array_id=conn.array_id, srp='SRP_1', slo='Diamond', emulation='FBA')
+    templates = conn.wlp.get_provisioning_template_list()
+    conn.close_session()
+
 Perform a Custom REST Call in PyU4V
 -----------------------------------
 
@@ -124,8 +145,8 @@ which use the above functions to make use of that functionality. For
 information on the Unisphere REST API please consult its related documentation.
 
 The Unisphere for PowerMax REST documentation is accessible directly from the
-help menu in Unipshere or you can Navigate to
-``https://developer.dell.com/apis/4458/versions/10.2/``
+help menu in Unisphere or you can Navigate to
+``https://developer.dell.com/apis/4458/versions/10.5/``
 
 .. literalinclude:: programmers_guide_src/code/custom_call.py
     :linenos:
@@ -140,4 +161,4 @@ functions using PyU4V.
 
 .. Links
 
-.. _link: https://github.com/dell/PyU4V/blob/master/ChangeLog
+.. _link: https://github.com/dell/PyU4V/blob/master/CHANGELOG.md

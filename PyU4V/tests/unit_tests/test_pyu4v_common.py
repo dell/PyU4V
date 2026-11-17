@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,6 +56,29 @@ class PyU4VCommonTest(testtools.TestCase):
         super(PyU4VCommonTest, self).tearDown()
         pf.FakeConfigFile.delete_fake_config_file(
             self.conf_file, self.conf_dir)
+
+    def test_normalize_u4v_version_dotted_string(self):
+        """normalize_u4v_version converts dotted major.minor to compact."""
+        self.assertEqual('105', common.normalize_u4v_version('10.5'))
+        self.assertEqual('103', common.normalize_u4v_version('10.3'))
+        self.assertEqual('110', common.normalize_u4v_version('11.0'))
+
+    def test_normalize_u4v_version_drops_patch(self):
+        """normalize_u4v_version drops the patch component."""
+        self.assertEqual('105', common.normalize_u4v_version('10.5.1'))
+
+    def test_normalize_u4v_version_compact_string(self):
+        """normalize_u4v_version leaves '105' unchanged."""
+        self.assertEqual('105', common.normalize_u4v_version('105'))
+
+    def test_normalize_u4v_version_integer(self):
+        """normalize_u4v_version converts int 105 to '105'."""
+        self.assertEqual('105', common.normalize_u4v_version(105))
+
+    def test_normalize_u4v_version_float(self):
+        """normalize_u4v_version converts float major.minor to compact."""
+        self.assertEqual('105', common.normalize_u4v_version(10.5))
+        self.assertEqual('110', common.normalize_u4v_version(11.0))
 
     def test_wait_for_job_complete(self):
         """Test wait_for_job_complete."""
@@ -459,6 +482,20 @@ class PyU4VCommonTest(testtools.TestCase):
                 resource_type=constants.IMPORT_FILE,
                 form_data={'test_req': True})
             self.assertEqual(ref_response, response)
+
+    def test_upload_file_empty_success_response(self):
+        """Test an accepted upload with an empty response body."""
+        response = mock.MagicMock()
+        response.text = ''
+        response.reason = 'Accepted'
+        with mock.patch.object(
+                self.conn.rest_client, 'file_transfer_request',
+                return_value=(response, constants.STATUS_202)):
+            upload_response = self.common.upload_file(
+                target_uri='/105/system/settings/importfile',
+                form_data={'test_req': True})
+
+        self.assertEqual({'success': True}, upload_response)
 
     def test_upload_file_fail_backend_exception(self):
         """Test upload_file fail with volume backend API exception."""

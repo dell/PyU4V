@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 """exception.py"""
 
 import logging
-import six
 
 LOG = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class PyU4VException(Exception):
 
         for k, v in self.kwargs.items():
             if isinstance(v, Exception):
-                self.kwargs[k] = six.text_type(v)
+                self.kwargs[k] = str(v)
 
         if self._should_format():
             try:
@@ -46,7 +45,7 @@ class PyU4VException(Exception):
                 self._log_exception()
                 message = self.message
         elif isinstance(message, Exception):
-            message = six.text_type(message)
+            message = str(message)
 
         self.msg = message
         super().__init__(message)

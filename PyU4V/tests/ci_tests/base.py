@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ class TestBaseTestCase(testtools.TestCase):
             snap_name = self.generate_name(object_type='ss')
             if vol and 'storage_group' in vol:
                 sg_name = vol['storage_group']
-            sg_ss = self.replication.create_storage_group_snapshot(
+            sg_ss = self.snapshot.create_storage_group_snapshot(
                 sg_name, snap_name, ttl=1, hours=True)
             self.addCleanup(
                 self.delete_sg_snapshot, sg_name, snap_name)
@@ -136,7 +136,7 @@ class TestBaseTestCase(testtools.TestCase):
         :param sg_name: storage group name - - str
         :returns: snapvx name -- str
         """
-        return self.replication.get_storage_group_snapshot_list(
+        return self.snapshot.get_storage_group_snapshot_list(
             sg_name)[0]
 
     def delete_sg_snapshot(self, sg_name, snap_name):
@@ -145,18 +145,18 @@ class TestBaseTestCase(testtools.TestCase):
         :param sg_name: storage group name - - str
         :param snap_name: snapvx name - - str
         """
-        snap_id = self.replication.get_storage_group_snapshot_snap_id_list(
+        snap_id = self.snapshot.get_storage_group_snapshot_snap_id_list(
             sg_name, snap_name)[0]
-        snap_details = self.replication.get_snapshot_snap_id_details(
+        snap_details = self.snapshot.get_snapshot_snap_id_details(
             sg_name, snap_name, snap_id)
         if 'Restored' in snap_details.get('state'):
             try:
-                self.replication.delete_storage_group_snapshot_by_snap_id(
+                self.snapshot.delete_storage_group_snapshot_by_snap_id(
                     storage_group_id=sg_name, snap_name=snap_name,
                     snap_id=snap_id, force=True)
             except Exception:
                 pass
-        self.replication.delete_storage_group_snapshot_by_snap_id(
+        self.snapshot.delete_storage_group_snapshot_by_snap_id(
             storage_group_id=sg_name, snap_name=snap_name,
             snap_id=snap_id, force=True)
 
@@ -199,7 +199,7 @@ class TestBaseTestCase(testtools.TestCase):
             while not srdf_pair_create_success and srdf_pair_create_cnt <= 3:
                 try:
                     srdf_pair_create_cnt += 1
-                    job = self.replication.create_storage_group_srdf_pairings(
+                    job = self.srdf.create_storage_group_srdf_pairings(
                         storage_group_id=sg_name,
                         remote_sid=self.conn.remote_array,
                         srdf_mode='Synchronous', establish=True,
@@ -225,12 +225,12 @@ class TestBaseTestCase(testtools.TestCase):
 
             # Get the SRDF group number associated with our SG
             srdf_group_list = (
-                self.replication.get_storage_group_srdf_group_list(sg_name))
+                self.srdf.get_storage_group_srdf_group_list(sg_name))
             assert len(srdf_group_list) == 1
             srdf_group_number = srdf_group_list[0]
 
             # Get details of the remote volume
-            remote_volume_details = self.replication.get_rdf_group_volume(
+            remote_volume_details = self.srdf.get_rdf_group_volume(
                 rdf_number=srdf_group_number, device_id=local_volume)
             assert remote_volume_details
             remote_vol_id = remote_volume_details.get('remoteVolumeName')
@@ -250,17 +250,17 @@ class TestBaseTestCase(testtools.TestCase):
     def cleanup_rdfg(self, sg_name, srdf_group_number):
         if srdf_group_number:
             current_rdf_state_list = (
-                self.replication.get_storage_group_srdf_details(
+                self.srdf.get_storage_group_srdf_details(
                     storage_group_id=sg_name, rdfg_num=srdf_group_number).get(
                     'states'))
             if (current_rdf_state_list and (
                     'Synchronized' in current_rdf_state_list or (
                     'Consistent' in current_rdf_state_list))):
-                self.replication.suspend_storage_group_srdf(
+                self.srdf.suspend_storage_group_srdf(
                     storage_group_id=sg_name,
                     srdf_group_number=srdf_group_number)
 
-            self.replication.delete_storage_group_srdf(
+            self.srdf.delete_storage_group_srdf(
                 storage_group_id=sg_name, srdf_group_number=srdf_group_number)
         if sg_name:
             local_volume_list = self.provision.get_volumes_from_storage_group(
@@ -273,7 +273,7 @@ class TestBaseTestCase(testtools.TestCase):
             for remote_volume in remote_volume_list:
                 self.delete_volume(sg_name, device_id=remote_volume)
         if srdf_group_number:
-            self.replication.delete_rdf_group(
+            self.srdf.delete_rdf_group(
                 srdf_group_number=srdf_group_number)
 
     def get_online_rdf_ports(self):
@@ -281,23 +281,23 @@ class TestBaseTestCase(testtools.TestCase):
 
         :returns: list of online ports rdf ports
         """
-        local_rdf_director_list = self.replication.get_rdf_director_list(
+        local_rdf_director_list = self.srdf.get_rdf_director_list(
             filters={'online': True})
         local_online_rdf_ports = list()
         remote_online_rdf_ports = list()
         for director in local_rdf_director_list:
             local_rdf_director_port_list = (
-                self.replication.get_rdf_director_port_list(
+                self.srdf.get_rdf_director_port_list(
                     director_id=director, filters={'online': True}))
             for director_port in local_rdf_director_port_list:
                 online_port = (director + ':' + director_port)
                 local_online_rdf_ports.append(online_port)
         self.conn.set_array_id(self.conn.remote_array)
-        remote_rdf_director_list = self.replication.get_rdf_director_list(
+        remote_rdf_director_list = self.srdf.get_rdf_director_list(
             filters={'online': True})
         for director in remote_rdf_director_list:
             remote_rdf_director_port_list = (
-                self.replication.get_rdf_director_port_list(
+                self.srdf.get_rdf_director_port_list(
                     director_id=director, array_id=self.conn.remote_array,
                     filters={'online': True}))
             for director_port in remote_rdf_director_port_list:
@@ -310,9 +310,9 @@ class TestBaseTestCase(testtools.TestCase):
 
         :returns: next RDF group number on local and remote array
         """
-        local_in_use_rdfg_list = self.replication.get_rdf_group_list(
+        local_in_use_rdfg_list = self.srdf.get_rdf_group_list(
             array_id=self.conn.array_id)
-        remote_in_use_rdfg_list = self.replication.get_rdf_group_list(
+        remote_in_use_rdfg_list = self.srdf.get_rdf_group_list(
             array_id=self.conn.remote_array)
 
         new_rdfg = 100
@@ -342,7 +342,7 @@ class TestBaseTestCase(testtools.TestCase):
             return None, list(), list()
         srdf_group = self.get_next_free_srdf_group()
         self.conn.set_array_id(local_array)
-        self.replication.create_rdf_group(
+        self.srdf.create_rdf_group(
             local_director_port_list=local_port_list,
             remote_array_id=self.conn.remote_array,
             remote_director_port_list=remote_port_list,
@@ -937,11 +937,3 @@ class TestBaseTestCase(testtools.TestCase):
         files = [x for x in p if x.is_file()]
         for file in files:
             file.unlink()
-
-    def cleanup_snmp_config(self):
-        snmp_ids = self.system.get_snmp_trap_configuration()
-        for id in snmp_ids['snmp_traps']:
-            try:
-                self.system.delete_snmp_trap_destination(snmp_id=id['id'])
-            except exception.ResourceNotFoundException:
-                pass

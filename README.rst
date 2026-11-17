@@ -1,4 +1,4 @@
-Welcome to PyU4V 10.4
+Welcome to PyU4V 10.5
 =====================
 
 | |Maintenance| |OpenSource| |AskUs| |License| |Test| |Build| |Docs|
@@ -20,15 +20,15 @@ Note
    where ``{ip-address}`` is the IP address of your Unisphere server and
    ``{port}`` is the port it is listening on.
 
-PyU4V Version 10.4
+PyU4V Version 10.5
 ------------------
 
 +-------------------------------+----------------------------+
 | **Author**                    | Dell EMC                   |
 +-------------------------------+----------------------------+
-| **PyU4V Version**             | 10.4.0.0                   |
+| **PyU4V Version**             | 10.5.0.0                   |
 +-------------------------------+----------------------------+
-| **Minimum Unisphere Version** | 10.4.0                     |
+| **Minimum Unisphere Version** | 10.5.0                     |
 +-------------------------------+----------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax |
 +-------------------------------+----------------------------+
@@ -36,9 +36,9 @@ PyU4V Version 10.4
 +-------------------------------+----------------------------+
 | **Platforms**                 | Linux, Windows             |
 +-------------------------------+----------------------------+
-| **Python**                    | 3.6 - 3.12                 |
+| **Python**                    | 3.9 - 3.13                 |
 +-------------------------------+----------------------------+
-| **Requires**                  | Requests_, Six_, urllib3_  |
+| **Requires**                  | Requests_, urllib3_       |
 +-------------------------------+----------------------------+
 
 Note
@@ -47,7 +47,7 @@ Note
     version of Unisphere older than 9.1.x
 
 Note
-    PyU4V version 10.4 is compatible with scripts written for PyU4V versions
+    PyU4V version 10.5 is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
@@ -150,6 +150,101 @@ directly in ``PyU4V.conf``::
     [setup]
     verify=/path/to/file/{cert_name}.pem
 
+API Version Configuration
+-------------------------
+
+PyU4V uses the latest Unisphere API version by default for the current release.
+If you need to connect to an older Unisphere server that does not support the
+latest API version, you can specify a custom API version using the ``u4v_version``
+parameter.
+
+This is useful for backward compatibility when using PyU4V with older Unisphere
+versions. The specified version will be validated against the server's supported
+API versions on connection.
+
+Configure in ``PyU4V.conf``:
+
+.. code-block:: ini
+
+    [setup]
+    u4v_version=100
+
+Or pass it on initialisation:
+
+.. code-block:: python
+
+    import PyU4V
+
+    # Connect using API version 100 (Unisphere 10.0)
+    conn = PyU4V.U4VConn(u4v_version='100')
+
+    # Or dynamically update the version
+    conn.set_u4v_version('101')
+
+Note
+    The ``u4v_version`` parameter accepts string values like ``'100'``, ``'101'``,
+    ``'104'``, etc. These correspond to the Unisphere API version numbers. If the
+    specified version is not supported by the server, PyU4V will exit with an error
+    listing the supported versions.
+
+Skipping the Version Check
+--------------------------
+
+If you need maximum flexibility - for example to talk to a Unisphere server
+whose version is below the SDK minimum, or to force a specific ``u4v_version``
+that the server does not advertise as supported - set ``skip_version_check``.
+When enabled, PyU4V logs a warning instead of exiting, and API calls use the
+supplied ``u4v_version`` if set, otherwise the packaged default for the
+release. Requests that are unsupported at the resolved version simply return
+the server's error (for example a 404), which your code can handle.
+
+Configure in ``PyU4V.conf``:
+
+.. code-block:: ini
+
+    [setup]
+    skip_version_check=True
+
+Or pass it on initialisation:
+
+.. code-block:: python
+
+    import PyU4V
+
+    # Force API version 92 without failing the version check
+    conn = PyU4V.U4VConn(u4v_version='92', skip_version_check=True)
+
+Note
+    ``skip_version_check`` defaults to ``False``, preserving the existing
+    strict validation behaviour. Enable it only if you are prepared to handle
+    unsupported-endpoint errors in your own code.
+
+Note
+    As of 10.5 the active API version is held in a single place (the shared REST
+    client) and exposed live via ``conn.common.UNI_VERSION``. Calling
+    ``conn.set_u4v_version('101')`` updates every feature module
+    (``conn.snapshot``, ``conn.srdf``, ``conn.provisioning``, etc.) at once — no
+    per-module update is required. ``conn.common.UNI_VERSION`` remains both
+    readable and writable, but a write now applies globally to the connection.
+
+OpenTelemetry Metrics Export
+----------------------------
+
+PyU4V 10.5 can manage the Unisphere OpenTelemetry collector endpoint through
+``conn.system``. The public API includes endpoint registration, inspection,
+update, and deletion, together with per-array metrics-export registration::
+
+    conn.system.register_otel_endpoint(
+        address='otel-collector.example.com', port=4317,
+        protocol='gRPC', enable_compression=True)
+    conn.system.update_otel_registration(registration_details=[
+        {'system_id': conn.array_id, 'export_metrics': True}
+    ])
+
+Use ``get_otel_endpoint_settings()`` and ``get_otel_registration()`` to inspect
+the current configuration. See the System section of the programmers guide for
+the complete update and cleanup workflow.
+
 Initialise PyU4V Connection
 ---------------------------
 
@@ -176,6 +271,36 @@ The various types of functionality provided by PyU4V is separated into logical
 sections such as ``replication``, ``provisioning``, and ``performance``. For a
 full API breakdown by section and some usage example please refer to the
 PyU4V ReadTheDocs_.
+
+Version 10.5 Changes Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Enhanced API force refresh**: ``get_storage_object_details()`` accepts a new
+  ``force_refresh`` keyword argument (default ``False``). When ``True``, Unisphere
+  refreshes the requested information before returning it. The API permits one
+  force-refresh request per second; HTTP 429 responses include ``retry_after_ms``
+  and propagate through the existing backend exception without automatic retry.
+- **``get_category_metrics`` enhanced**: new ``all_metrics`` keyword argument (default
+  ``False``). When ``True``, appends the ``metric_type=All`` query parameter so all
+  available metrics are returned instead of KPI metrics only. Fully backward-compatible
+  — existing call-sites require no changes.
+- **Expired SnapVX discovery**: Scans replication storage groups without the
+  ``hasSnapshots`` filter to support arrays that reject that filter with HTTP
+  500. Groups without snapshots are skipped; discovery can make more requests.
+- **New modules**: ``PyU4V.snapshot`` (``SnapshotFunctions``) and ``PyU4V.srdf``
+  (``SRDFFunctions``) split from ``replication.py``. Access via ``conn.snapshot``
+  and ``conn.srdf`` respectively.
+- **Backward compatibility**: All existing ``conn.replication.*`` calls continue to work
+  via thin delegation wrappers decorated with ``@refactoring_notice``.
+- **New CI test files**: ``test_pyu4v_ci_snapshot.py`` (``CITestSnapshot``) and
+  ``test_pyu4v_ci_srdf.py`` (``CITestSRDF``) added to ``PyU4V/tests/ci_tests/``.
+  These test ``conn.snapshot`` and ``conn.srdf`` directly.
+- **Legacy CI tests**: ``CITestReplication`` in ``test_pyu4v_ci_replication.py`` is
+  retained for regression; snapshot/SRDF methods marked deprecated pointing to new files.
+- **Post-split fixes**: ``set_array_id()`` now reaches the snapshot/SRDF instances used by
+  the deprecated ``conn.replication.*`` calls (shared single instances); deprecation
+  decorators preserve docstrings/signatures via ``functools.wraps``; and
+  ``ReplicationFunctions.version`` now reflects the live ``common.UNI_VERSION``.
 
 Support, Bugs, Issues
 ---------------------
@@ -206,12 +331,6 @@ with the upstream PyU4V repo.
 For a full breakdown of contribution requirements, coding standards, submitting
 and everything else in between please refer to PyU4V ReadTheDocs_.
 
-Tools
------
-
-Please refer to the Tools section of ReadTheDocs_ for OpenStack functionality
-to migrate volumes to the new REST masking view structure.
-
 Disclaimer
 ----------
 
@@ -236,7 +355,7 @@ the License.
 .. |Docs| image:: https://img.shields.io/badge/Docs-Passing-blue
 .. |Language| image:: https://img.shields.io/badge/Language-Python%20-blue
    :target: https://www.python.org/
-.. |PyVersions| image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue
+.. |PyVersions| image:: https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue
    :target: https://github.com/dell/PyU4V/blob/master/README.rst
 .. |Platform| image:: https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue
    :target: https://github.com/dell/PyU4V/blob/master/README.rst
@@ -252,7 +371,6 @@ the License.
 .. README URL Links
 
 .. _Requests: https://realpython.com/python-requests/
-.. _Six: https://six.readthedocs.io/
 .. _urllib3: https://urllib3.readthedocs.io/en/latest/
 .. _ReadTheDocs: https://pyu4v.readthedocs.io/en/latest/
 .. _GitHub-Issues: https://github.com/dell/PyU4V/issues

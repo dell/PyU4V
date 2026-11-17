@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@ import logging
 import re
 import socket
 import time
+from typing import Any
 from PyU4V import common
 from PyU4V import real_time
 from PyU4V.utils import exception
-from PyU4V.utils import file_handler
 from PyU4V.utils import performance_constants as pc
+from PyU4V.utils.decorators import performance_enhanced_recommendation
 
 
 LOG = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ LOG = logging.getLogger(__name__)
 class PerformanceFunctions(object):
     """PerformanceFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = common.CommonFunctions(rest_client)
         self.real_time = real_time.RealTimeFunctions(array_id, rest_client)
@@ -43,39 +44,42 @@ class PerformanceFunctions(object):
         self.timestamp = None
         self.recency = 7
 
-    def set_array_id(self, array_id):
+    def set_array_id(self, array_id: str) -> None:
         """Set the array id.
 
         :param array_id: array id -- str
         """
         self.array_id = array_id
 
-    def set_timestamp(self, timestamp):
+    def set_timestamp(self, timestamp: str) -> None:
         """Set the performance timestamp.
 
         :param timestamp: the performance timestamp -- str
         """
         self.timestamp = timestamp
 
-    def set_recency(self, minutes):
+    def set_recency(self, minutes: int) -> None:
         """Set the recency value in minutes.
 
         :param minutes: recency minutes -- int
         """
         self.recency = minutes
 
-    def is_array_diagnostic_performance_registered(self, array_id=None):
+    @performance_enhanced_recommendation('PerformanceFunctions')
+    def is_array_diagnostic_performance_registered(
+            self, array_id: str | None = None) -> bool:
         """Check if an array is registered for diagnostic performance data.
 
         :param array_id: array id -- str
         :returns: is diagnostic registered -- bool
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.REG, resource_type_id=array_id)
+        response = self.common.get_request(
+            target_uri=f"/performance/Array/registration/{array_id}",
+            resource_type=None)
         return response.get('isRegistered', False) if response else False
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def is_array_real_time_performance_registered(self, array_id=None):
         """Check if an array is registered for real-time performance data.
 
@@ -90,6 +94,7 @@ class PerformanceFunctions(object):
             LOG.error(e)
             return False
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_array_registration_details(self, array_id=None):
         """Get array performance registration details.
 
@@ -101,12 +106,13 @@ class PerformanceFunctions(object):
         :returns: array performance registration details -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.REG_DETAILS, resource_type_id=array_id)
+        response = self.common.get_request(
+            target_uri=f"/performance/Array/registrationdetails/{array_id}",
+            resource_type=None)
         reg_details = response.get(pc.REG_DETAILS_INFO)
         return reg_details[0] if len(reg_details) > 0 else dict()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def enable_diagnostic_data_collection(self, array_id=None):
         """Register an array for diagnostic performance data gathering.
 
@@ -116,11 +122,11 @@ class PerformanceFunctions(object):
         array_id = self.array_id if not array_id else array_id
 
         if not self.is_array_diagnostic_performance_registered(array_id):
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
-                                                    pc.REG_DIAGNOSTIC: True,
-                                                    pc.REAL_TIME: False})
+            response = self.common.create_resource(
+                target_uri="/performance/Array/register",
+                payload={pc.SYMM_ID: array_id,
+                         pc.REG_DIAGNOSTIC: True,
+                         pc.REAL_TIME: False})
 
             response_message = response.get('message', list())
             if response_message:
@@ -134,13 +140,15 @@ class PerformanceFunctions(object):
                 msg = ('There has been an issue registering array {arr} for '
                        'diagnostic performance data. It was not possible '
                        'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
+                       'error, please check Unisphere Logs.'.format(
+                           arr=array_id))
                 LOG.error(msg)
                 raise exception.VolumeBackendAPIException(message=msg)
         else:
             LOG.info('Array {arr} is already registered for diagnostic '
                      'performance data.'.format(arr=array_id))
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def disable_diagnostic_data_collection(self, array_id=None):
         """Disable an array from diagnostic performance data gathering.
 
@@ -156,11 +164,11 @@ class PerformanceFunctions(object):
             LOG.warning('Disabling diagnostic performance data collection '
                         'will also disable real-time data collection, if '
                         'enabled.')
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={pc.SYMM_ID: array_id,
-                                                    pc.REG_DIAGNOSTIC: False,
-                                                    pc.REAL_TIME: False})
+            response = self.common.create_resource(
+                target_uri="/performance/Array/register",
+                payload={pc.SYMM_ID: array_id,
+                         pc.REG_DIAGNOSTIC: False,
+                         pc.REAL_TIME: False})
 
             response_message = response.get('message', list())
             if response_message:
@@ -171,16 +179,18 @@ class PerformanceFunctions(object):
                     LOG.error(msg)
                     raise exception.VolumeBackendAPIException(message=msg)
             else:
-                msg = ('There has been an issue disabled array {arr} '
+                msg = ('There has been an issue disabling array {arr} for '
                        'diagnostic performance data. It was not possible '
                        'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
+                       'error, please check Unisphere Logs.'.format(
+                           arr=array_id))
                 LOG.error(msg)
                 raise exception.VolumeBackendAPIException(message=msg)
         else:
             LOG.info('Array {arr} is already disabled for diagnostic '
                      'performance data.'.format(arr=array_id))
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def enable_real_time_data_collection(
             self, array_id=None, storage_group_list=None, file=False):
         """Register an array for real-time performance data gathering.
@@ -205,12 +215,12 @@ class PerformanceFunctions(object):
         if storage_group_list:
             payload.update({'selectedSGs': storage_group_list})
 
-        response = self.post_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.REGISTER, payload=payload)
+        response = self.common.create_resource(
+            target_uri="/performance/Array/register", payload=payload)
 
         return response
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def disable_real_time_data_collection(self, array_id=None):
         """Disable an array from real-time performance data gathering.
 
@@ -224,9 +234,8 @@ class PerformanceFunctions(object):
             diag_reg = self.is_array_diagnostic_performance_registered(
                 array_id)
 
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.REGISTER, payload={
+            response = self.common.create_resource(
+                target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: array_id, pc.REG_DIAGNOSTIC: diag_reg,
                     pc.REAL_TIME: False})
 
@@ -242,13 +251,15 @@ class PerformanceFunctions(object):
                 msg = ('There has been an issue disabling array {arr} '
                        'real-time performance data. It was not possible '
                        'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
+                       'error, please check Unisphere Logs.'.format(
+                           arr=array_id))
                 LOG.error(msg)
                 raise exception.VolumeBackendAPIException(message=msg)
         else:
             LOG.info('Array {arr} is already disabled for real-time '
                      'performance data.'.format(arr=array_id))
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def backup_performance_database(
             self, array_id=None, filename=str(), last_day_of_diagnostic=False,
             named_real_time_traces=False):
@@ -288,9 +299,8 @@ class PerformanceFunctions(object):
             filename = '{prefix}-{host}'.format(prefix=pc.FILENAME_PREFIX,
                                                 host=socket.gethostname())
         try:
-            response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.BACKUP, payload={
+            response = self.common.create_resource(
+                target_uri="/performance/Array/backup", payload={
                     pc.SYMM_ID: array_id, pc.FILENAME: filename,
                     pc.NAMED_RT_TRACES: last_day_of_diagnostic,
                     pc.LAST_DAY_DIAG: named_real_time_traces})
@@ -299,6 +309,7 @@ class PerformanceFunctions(object):
             LOG.error(e)
             raise exception.VolumeBackendAPIException(e)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_last_available_timestamp(self, array_id=None):
         """Get the last recorded performance timestamp.
 
@@ -309,9 +320,8 @@ class PerformanceFunctions(object):
         array_id = self.array_id if not array_id else array_id
         timestamp = None
 
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.KEYS)
+        response = self.common.get_request(
+            target_uri="/performance/Array/keys", resource_type=None)
         if response:
             for key in response.get(pc.ARRAY_INFO):
                 if key and key.get(pc.SYMM_ID) == array_id:
@@ -412,11 +422,12 @@ class PerformanceFunctions(object):
         elif 'Server' in category:
             rt = pc.SERVER
 
-        return self.post_request(
-            category=pc.PERFORMANCE, resource_level=pc.FILE,
-            resource_type=rt, object_type=pc.KEYS if keys else pc.METRICS,
+        return self.common.create_resource(
+            target_uri=f"/performance/file/{rt}/"
+            f"{pc.KEYS if keys else pc.METRICS}",
             payload=request_body)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_performance_key_list(
             self, category, array_id=None, director_id=None,
             storage_group_id=None, storage_container_id=None,
@@ -455,11 +466,14 @@ class PerformanceFunctions(object):
                 response = self._run_v4_filesystem_request(
                     category, request_body, keys=True)
             else:
-                request = self.get_request if pc.ARRAY in category else (
-                    self.post_request)
-                response = request(
-                    category=pc.PERFORMANCE, resource_level=category,
-                    resource_type=pc.KEYS, payload=request_body)
+                if pc.ARRAY in category:
+                    response = self.common.get_request(
+                        target_uri=f"/performance/{category}/keys",
+                        resource_type=None)
+                else:
+                    response = self.common.create_resource(
+                        target_uri=f"/performance/{category}/keys",
+                        payload=request_body)
 
             if response:
                 return response
@@ -474,6 +488,7 @@ class PerformanceFunctions(object):
                 'please correct the category name before trying '
                 'again.'.format(cat=category))
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_performance_categories_list(self, array_id=None):
         """Get the list of supported performance categories.
 
@@ -481,13 +496,13 @@ class PerformanceFunctions(object):
         :returns: categories -- list
         """
         array_id = self.array_id if not array_id else array_id
-        response = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-            resource_type=pc.HELP, resource_type_id=array_id,
-            resource=pc.CATEGORIES)
+        response = self.common.get_request(
+            target_uri=f"/performance/Array/help/{array_id}/categories",
+            resource_type=None)
 
         return response.get('categoryName', list()) if response else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def validate_category(self, category, array_id=None):
         """Check that a supplied category is valid.
 
@@ -502,6 +517,7 @@ class PerformanceFunctions(object):
                 'Invalid category "{cat}" supplied, please correct the '
                 'supplied category and try again.'.format(cat=category))
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_performance_metrics_list(self, category, kpi_only=False,
                                      array_id=None):
         """For a given category, return the list of valid metrics.
@@ -515,11 +531,10 @@ class PerformanceFunctions(object):
         category_list = self.get_performance_categories_list(array_id)
         if category in category_list:
             mode = 'Kpi' if kpi_only else 'All'
-            response = self.get_request(
-                category=pc.PERFORMANCE, resource_level=pc.ARRAY,
-                resource_type=pc.HELP, resource_type_id=array_id,
-                resource=category, object_type=pc.METRICS,
-                object_type_id=mode)
+            response = self.common.get_request(
+                target_uri=f"/performance/Array/help/{array_id}/{category}/"
+                f"metrics/{mode}",
+                resource_type=None)
             return response.get('metricName', list()) if response else list()
         else:
             raise exception.InvalidInputException(
@@ -656,6 +671,7 @@ class PerformanceFunctions(object):
 
         return str(start_time), str(end_time)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_performance_stats(
             self, category, metrics, data_format=pc.AVERAGE, array_id=None,
             request_body=None, start_time=None, end_time=None, recency=None):
@@ -759,9 +775,9 @@ class PerformanceFunctions(object):
             perf_response = self._run_v4_filesystem_request(
                 category, request_body, metrics=True)
         else:
-            perf_response = self.post_request(
-                category=pc.PERFORMANCE, resource_level=category,
-                resource_type=pc.METRICS, payload=request_body)
+            perf_response = self.common.create_resource(
+                target_uri=f"/performance/{category}/metrics",
+                payload=request_body)
 
         # 8 Format results response
         performance_details.update(
@@ -774,6 +790,7 @@ class PerformanceFunctions(object):
 
         return performance_details
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_days_to_full(self, array_id=None, array_to_full=False,
                          srp_to_full=False, thin_pool_to_full=False):
         """Get days to full information.
@@ -803,12 +820,12 @@ class PerformanceFunctions(object):
                 'to True in perf.get_days_to_full().')
 
         request_body = {pc.SYMM_ID: array_id, pc.CATEGORY: category}
-        response = self.post_request(
-            category=pc.PERFORMANCE, resource_level=pc.DAYS_TO_FULL,
-            payload=request_body)
+        response = self.common.create_resource(
+            target_uri="/performance/daystofull", payload=request_body)
         return response.get(
             pc.DAYS_TO_FULL_RESULT, list()) if response else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_threshold_categories(self, array_id=None):
         """Get a list of performance threshold categories.
 
@@ -816,11 +833,12 @@ class PerformanceFunctions(object):
         :returns: performance threshold categories -- list
         """
         array_id = array_id if array_id else self.array_id
-        categories = self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=array_id, resource=pc.CATEGORIES)
+        categories = self.common.get_request(
+            target_uri=f"/performance/threshold/{array_id}/categories",
+            resource_type=None)
         return categories.get(pc.THRESH_CAT, list()) if categories else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_threshold_category_settings(self, category, array_id=None):
         """Get performance threshold category settings.
 
@@ -829,11 +847,11 @@ class PerformanceFunctions(object):
         :returns: category settings --  dict
         """
         array_id = array_id if array_id else self.array_id
-        return self.get_request(
-            category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=pc.LIST, resource_type_id=array_id,
-            resource=category)
+        return self.common.get_request(
+            target_uri=f"/performance/threshold/list/{array_id}/{category}",
+            resource_type=None)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def update_threshold_settings(
             self, category, metric, first_threshold, second_threshold,
             alert=True, first_threshold_occurrences=3,
@@ -877,11 +895,11 @@ class PerformanceFunctions(object):
             "includeRealTimeTraceOnCritical": include_realtime_trace
         }
 
-        return self.put_request(
-            category=pc.PERFORMANCE, resource_level=pc.THRESHOLD,
-            resource_type=pc.UPDATE, resource_type_id=category,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/performance/threshold/update/{category}",
+            resource_type=None, payload=payload)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_array_keys(self):
         """List Arrays registered for performance data collection.
 
@@ -890,6 +908,7 @@ class PerformanceFunctions(object):
         key_list = self.get_performance_key_list(category=pc.ARRAY)
         return key_list.get(pc.ARRAY_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_array_stats(
             self, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -909,6 +928,7 @@ class PerformanceFunctions(object):
             data_format=data_format, start_time=start_time, end_time=end_time,
             recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_backend_director_keys(self, array_id=None):
         """List BE directors for the given array.
 
@@ -920,6 +940,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.BE_DIR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_backend_director_stats(
             self, director_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -941,6 +962,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_backend_emulation_keys(self, array_id=None):
         """List BE emulations for the given array.
 
@@ -952,6 +974,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.BE_EMU_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_backend_emulation_stats(
             self, emulation_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -973,6 +996,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_backend_port_keys(self, director_id, array_id=None):
         """List BE ports for the given array.
 
@@ -985,6 +1009,7 @@ class PerformanceFunctions(object):
             category=pc.BE_PORT, array_id=array_id, director_id=director_id)
         return key_list.get(pc.BE_PORT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_backend_port_stats(
             self, director_id, port_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1008,6 +1033,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_board_keys(self, array_id=None):
         """List boards for the given array.
 
@@ -1019,6 +1045,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.BOARD_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_board_stats(
             self, board_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1041,6 +1068,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_cache_partition_keys(self, array_id=None):
         """List cache partitions for the given array.
 
@@ -1054,6 +1082,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.CACHE_PART_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_cache_partition_perf_stats(
             self, cache_partition_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1087,6 +1116,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.DEV_GRP_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_device_group_stats(
             self, device_group_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1109,6 +1139,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_disk_group_keys(self, array_id=None):
         """List disk groups for the given array.
 
@@ -1120,6 +1151,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.DISK_GRP_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_disk_group_stats(
             self, disk_group_id, metrics, array_id=None,
             data_format=pc.AVERAGE,
@@ -1142,6 +1174,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_eds_director_keys(self, array_id=None):
         """List EDS directors for the given array.
 
@@ -1153,6 +1186,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.EDS_DIR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_eds_director_stats(
             self, director_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1209,6 +1243,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_em_director_keys(self, array_id=None):
         """List EM directors for the given array.
 
@@ -1220,6 +1255,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.EM_DIR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_em_director_stats(
             self, director_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1242,6 +1278,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_external_disk_keys(self, array_id=None):
         """List external disks for the given array.
 
@@ -1253,6 +1290,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.EXT_DISK_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_external_disk_stats(
             self, disk_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1274,6 +1312,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_frontend_director_keys(self, array_id=None):
         """List FE directors for the given array.
 
@@ -1285,6 +1324,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.FE_DIR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_frontend_director_stats(
             self, director_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1306,6 +1346,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_frontend_emulation_keys(self, array_id=None):
         """List FE emulations for the given array.
 
@@ -1317,6 +1358,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.FE_EMU_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_frontend_emulation_stats(
             self, emulation_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1338,6 +1380,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_frontend_port_keys(self, director_id, array_id=None):
         """List FE ports for the given array.
 
@@ -1350,6 +1393,7 @@ class PerformanceFunctions(object):
             category=pc.FE_PORT, array_id=array_id, director_id=director_id)
         return key_list.get(pc.FE_PORT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_frontend_port_stats(
             self, director_id, port_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1373,6 +1417,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ficon_emulation_keys(self, array_id=None):
         """List FICON emulations for the given array.
 
@@ -1385,6 +1430,7 @@ class PerformanceFunctions(object):
             category=pc.FICON_EMU, array_id=array_id)
         return key_list.get(pc.FICON_EMU_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ficon_emulation_stats(
             self, ficon_emulation_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1407,6 +1453,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ficon_emulation_thread_keys(self, array_id=None):
         """List FICON emulation threads for the given array.
 
@@ -1420,6 +1467,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.FICON_EMU_THR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ficon_emulation_thread_stats(
             self, ficon_emulation_thread_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1443,6 +1491,7 @@ class PerformanceFunctions(object):
             request_body=request_body, start_time=start_time,
             end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ficon_port_thread_keys(self, array_id=None):
         """List FICON port threads for the given array.
 
@@ -1455,6 +1504,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.FICON_PORT_THR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ficon_port_thread_stats(
             self, ficon_port_thread_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1477,6 +1527,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_host_keys(self, array_id=None, start_time=None, end_time=None):
         """List active hosts for the given array by time range.
 
@@ -1498,6 +1549,7 @@ class PerformanceFunctions(object):
             end_time=end_time)
         return key_list.get(pc.HOST_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_host_stats(
             self, host_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1526,6 +1578,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_im_director_keys(self, array_id=None):
         """List IM directors for the given array.
 
@@ -1537,6 +1590,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.IM_DIR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_im_director_stats(
             self, director_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1558,6 +1612,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_im_emulation_keys(self, array_id=None):
         """List IM emulations for the given array.
 
@@ -1569,6 +1624,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.IM_EMU_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_im_emulation_stats(
             self, emulation_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1590,6 +1646,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_initiator_perf_keys(self, array_id=None, start_time=None,
                                 end_time=None):
         """List active initiators for the given array by time range
@@ -1612,6 +1669,7 @@ class PerformanceFunctions(object):
             end_time=end_time)
         return key_list.get(pc.INIT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_initiator_stats(
             self, initiator_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -1640,6 +1698,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ip_interface_keys(self, array_id=None):
         """List IP interfaces for the given array.
 
@@ -1652,6 +1711,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.ISCSI_CLIENT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_ip_interface_stats(
             self, ip_interface_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1674,6 +1734,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_endpoint_keys(self, array_id=None):
         """List endpoints for the given array.
 
@@ -1686,6 +1747,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.ENDPOINT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_endpoint_stats(
             self, endpoint_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1708,6 +1770,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_masking_view_keys(self, array_id=None):
         """List masking views for the given array.
 
@@ -1719,6 +1782,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.MV_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_masking_view_stats(
             self, masking_view_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1741,6 +1805,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_port_group_keys(self, array_id=None):
         """List port group for the given array.
 
@@ -1752,6 +1817,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.PG_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_port_group_stats(
             self, port_group_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1774,6 +1840,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdfa_keys(self, array_id=None):
         """List RDFA groups for the given array.
 
@@ -1785,6 +1852,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.RDFA_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdfa_stats(
             self, rdfa_group_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1807,6 +1875,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdfs_keys(self, array_id=None):
         """List RDFS groups for the given array.
 
@@ -1818,6 +1887,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.RDFS_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdfs_stats(
             self, rdfs_group_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1840,6 +1910,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdf_director_keys(self, array_id=None):
         """List RDF directors for the given array.
 
@@ -1851,6 +1922,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.RDF_DIR_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdf_director_stats(
             self, director_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1873,6 +1945,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdf_emulation_keys(self, array_id=None):
         """List RDF emulations for the given array.
 
@@ -1885,6 +1958,7 @@ class PerformanceFunctions(object):
                                                  array_id=array_id)
         return key_list.get(pc.RDF_EMU_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdf_emulation_stats(
             self, emulation_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1907,6 +1981,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdf_port_keys(self, director_id, array_id=None):
         """List RDF ports for the given array.
 
@@ -1920,6 +1995,7 @@ class PerformanceFunctions(object):
             director_id=director_id)
         return key_list.get(pc.RDF_PORT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_rdf_port_stats(
             self, director_id, port_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1943,6 +2019,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_filesystem_keys(self, array_id=None):
         """List SDNAS Filesystems for the given array.
 
@@ -1956,6 +2033,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.SDNAS_FS_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_filesystem_stats(
             self, sdnas_filesystem_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -1978,6 +2056,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_interface_keys(self, array_id=None):
         """List SDNAS Interfaces for the given array.
 
@@ -1991,6 +2070,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.SDNAS_INTERFACE_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_interface_stats(
             self, sdnas_interface_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -2013,6 +2093,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_node_keys(self, array_id=None):
         """List SDNAS Nodes for the given array.
 
@@ -2026,6 +2107,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.SDNAS_NODE_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_node_stats(
             self, sdnas_node_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -2048,6 +2130,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_server_keys(self, array_id=None):
         """List SDNAS Servers for the given array.
 
@@ -2061,6 +2144,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.SDNAS_SERVER_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_sdnas_server_stats(
             self, sdnas_server_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -2083,6 +2167,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_container_keys(self, array_id=None):
         """List storage containers for the given array.
 
@@ -2096,6 +2181,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.STORAGE_CONT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_container_stats(
             self, storage_container_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -2118,6 +2204,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_group_keys(self, array_id=None):
         """List storage groups for the given array.
 
@@ -2130,6 +2217,7 @@ class PerformanceFunctions(object):
             category=pc.SG, array_id=array_id)
         return key_list.get(pc.SG_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_group_stats(
             self, storage_group_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,
@@ -2152,6 +2240,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_resource_pool_keys(self, array_id=None):
         """List storage resource pools for the given array.
 
@@ -2164,6 +2253,7 @@ class PerformanceFunctions(object):
             category=pc.SRP, array_id=array_id)
         return key_list.get(pc.SRP_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_resource_pool_stats(
             self, srp_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -2185,6 +2275,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_resource_keys(self, array_id=None):
         """List storage resources for the given array.
 
@@ -2198,6 +2289,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.STORAGE_RES_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_storage_resource_stats(
             self, storage_container_id, storage_resource_id, metrics,
             array_id=None, data_format=pc.AVERAGE,
@@ -2222,6 +2314,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_thin_pool_keys(self, array_id=None):
         """List thin pools for the given array.
 
@@ -2233,6 +2326,7 @@ class PerformanceFunctions(object):
             category=pc.THIN_POOL, array_id=array_id)
         return key_list.get(pc.POOL_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_thin_pool_stats(
             self, thin_pool_id, metrics, array_id=None, data_format=pc.AVERAGE,
             start_time=None, end_time=None, recency=None):
@@ -2254,6 +2348,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_volume_stats(
             self, array_id=None, volume_range_start=None,
             volume_range_end=None, storage_group_list=None,
@@ -2307,6 +2402,7 @@ class PerformanceFunctions(object):
             data_format=data_format, request_body=request_body,
             start_time=start_time, end_time=end_time, recency=recency)
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_zhyperlink_port_keys(self, array_id=None):
         """List zHyperLink Ports for the given array.
 
@@ -2319,6 +2415,7 @@ class PerformanceFunctions(object):
         return key_list.get(
             pc.ZHYPER_LINK_PORT_INFO, list()) if key_list else list()
 
+    @performance_enhanced_recommendation('PerformanceFunctions')
     def get_zhyperlink_port_stats(
             self, zhyperlink_port_id, metrics, array_id=None,
             data_format=pc.AVERAGE, start_time=None, end_time=None,

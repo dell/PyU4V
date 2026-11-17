@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ import logging
 import math
 import random
 import re
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -57,40 +58,45 @@ CU_IMAGE = constants.CU_IMAGE
 class ProvisioningFunctions(object):
     """ProvisioningFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.array_id = array_id
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
-        self.version = constants.UNISPHERE_VERSION
 
-    def get_array(self, array_id=None):
+    @property
+    def version(self) -> str:
+        """Unisphere version used for requests (live ``common.UNI_VERSION``).
+
+        :returns: Unisphere REST API version -- str
+        """
+        return getattr(
+            self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
+
+    def get_array(self, array_id: str | None = None) -> dict[str, Any]:
         """Query for details of an array from SLOPROVISIONING endpoint.
 
         :param array_id: array serial number -- str
         :returns: array details -- dict
         """
         array_id = array_id if array_id else self.array_id
-        response = self.get_resource(
-            category=SLOPROVISIONING, resource_level=SYMMETRIX,
-            resource_level_id=array_id)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{array_id}",
+            resource_type=None)
         return response if response else dict()
 
-    def get_host(self, host_id):
+    def get_host(self, host_id: str) -> dict[str, Any]:
         """Get details on a host on the array.
 
         :param host_id: the name of the host -- str
         :returns: host details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOST, resource_type_id=host_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/host/{host_id}",
+            resource_type=None)
 
-    def get_host_list(self, filters=None):
+    def get_host_list(self, filters: dict[str, Any] | None = None) -> list[str]:
         """Get list of the hosts on the array.
 
         See documentation for applicable filters.
@@ -98,14 +104,14 @@ class ProvisioningFunctions(object):
         :param filters: optional list of filters -- dict
         :returns: hosts -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOST, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/host",
+            resource_type=None, params=filters)
         return response.get('hostId', list()) if response else list()
 
-    def create_host(self, host_name, initiator_list=None,
-                    host_flags=None, init_file=None, _async=False):
+    def create_host(self, host_name: str, initiator_list: list[str] | None = None,
+                    host_flags: dict[str, Any] | None = None, init_file: str | None = None, _async: bool = False) -> dict[str, Any]:
         """Create a host with the given initiators.
 
         Accepts either initiator_list, e.g.
@@ -129,13 +135,13 @@ class ProvisioningFunctions(object):
             new_ig_data.update({'hostFlags': host_flags})
         if _async:
             new_ig_data.update(ASYNC_UPDATE)
-        return self.create_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOST, payload=new_ig_data)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/host",
+            payload=new_ig_data)
 
-    def modify_host(self, host_id, host_flag_dict=None,
-                    remove_init_list=None, add_init_list=None, new_name=None):
+    def modify_host(self, host_id: str, host_flag_dict: dict[str, Any] | None = None,
+                    remove_init_list: list[str] | None = None, add_init_list: list[str] | None = None, new_name: str | None = None) -> dict[str, Any]:
         """Modify an existing host.
 
         Only one parameter can be modified at a time.
@@ -164,25 +170,23 @@ class ProvisioningFunctions(object):
                    'of the following: host_flag_dict, remove_init_list, '
                    'add_init_list, or new_name.')
             raise exception.InvalidInputException(data=msg)
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOST, resource_type_id=host_id,
-            payload=edit_host_data)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/host/{host_id}",
+            resource_type=None, payload=edit_host_data)
 
-    def delete_host(self, host_id):
+    def delete_host(self, host_id: str) -> None:
         """Delete a given host.
 
         Cannot delete if associated with a masking view.
 
         :param host_id: name of the host -- str
         """
-        self.delete_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOST, resource_type_id=host_id)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/host/{host_id}")
 
-    def get_masking_views_from_host(self, host_id):
+    def get_masking_views_from_host(self, host_id: str) -> list[str]:
         """Retrieve masking view information for a specified host.
 
         :param host_id: name of the host -- str
@@ -191,7 +195,7 @@ class ProvisioningFunctions(object):
         host = self.get_host(host_id)
         return host.get('maskingview', list()) if host else list()
 
-    def get_masking_views_from_host_group(self, host_group_id):
+    def get_masking_views_from_host_group(self, host_group_id: str) -> list[str]:
         """Retrieve masking view information for a specified host group.
 
         :param host_group_id: name of the host -- str
@@ -200,7 +204,7 @@ class ProvisioningFunctions(object):
         host_group = self.get_host_group(host_group_id)
         return host_group.get('maskingview', list()) if host_group else list()
 
-    def get_initiator_ids_from_host(self, host_id):
+    def get_initiator_ids_from_host(self, host_id: str) -> list[str]:
         """Get initiator details from a host.
 
         :param host_id: name of the host -- str
@@ -209,18 +213,19 @@ class ProvisioningFunctions(object):
         host = self.get_host(host_id)
         return host.get('initiator', list()) if host else list()
 
-    def get_host_group(self, host_group_id):
+    def get_host_group(self, host_group_id: str) -> dict[str, Any]:
         """Get details on a host group on the array.
 
         :param host_group_id: name of the host group -- str
         :returns: host group details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOSTGROUP, resource_type_id=host_group_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/hostgroup"
+            f"/{host_group_id}",
+            resource_type=None)
 
-    def get_host_group_list(self, filters=None):
+    def get_host_group_list(self, filters: dict[str, Any] | None = None) -> list[str]:
         """Get list of host group(s) on the array.
 
         See unisphere documentation for applicable filters.
@@ -228,14 +233,14 @@ class ProvisioningFunctions(object):
         :param filters: optional list of filters -- dict
         :returns: host group list -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOSTGROUP, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/hostgroup",
+            resource_type=None, params=filters)
         return response.get('hostGroupId', list()) if response else list()
 
-    def create_host_group(self, host_group_id, host_list,
-                          host_flags=None, _async=False):
+    def create_host_group(self, host_group_id: str, host_list: list[str],
+                          host_flags: dict[str, Any] | None = None, _async: bool = False) -> dict[str, Any]:
         """Create a host group containing the given hosts.
 
         :param host_group_id: name of the new host group -- str
@@ -249,10 +254,10 @@ class ProvisioningFunctions(object):
             new_ig_data.update({'hostFlags': host_flags})
         if _async:
             new_ig_data.update(ASYNC_UPDATE)
-        return self.create_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOSTGROUP, payload=new_ig_data)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/hostgroup",
+            payload=new_ig_data)
 
     def modify_host_group(self, host_group_id, host_flag_dict=None,
                           remove_host_list=None, add_host_list=None,
@@ -285,11 +290,11 @@ class ProvisioningFunctions(object):
                    'one of the following: host_flag_dict, '
                    'remove_host_list, add_host_list, or new_name.')
             raise exception.InvalidInputException(data=msg)
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOSTGROUP, resource_type_id=host_group_id,
-            payload=edit_host_data)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/hostgroup"
+            f"/{host_group_id}",
+            resource_type=None, payload=edit_host_data)
 
     def delete_host_group(self, host_group_id):
         """Delete a given host group.
@@ -298,10 +303,10 @@ class ProvisioningFunctions(object):
 
         :param host_group_id: name of the hostgroup -- str
         """
-        self.delete_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=HOSTGROUP, resource_type_id=host_group_id)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/hostgroup"
+            f"/{host_group_id}")
 
     def get_initiator(self, initiator_id):
         """Get details of an initiator.
@@ -309,10 +314,11 @@ class ProvisioningFunctions(object):
         :param initiator_id: initiator id -- str
         :returns: initiator details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=INITIATOR, resource_type_id=initiator_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/initiator"
+            f"/{initiator_id}",
+            resource_type=None)
 
     def get_initiator_list(self, params=None):
         """Retrieve initiator list from the array.
@@ -320,10 +326,10 @@ class ProvisioningFunctions(object):
         :param params: optional params -- dict
         :returns: initiators -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=INITIATOR, params=params)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/initiator",
+            resource_type=None, params=params)
         return response.get('initiatorId', list()) if response else list()
 
     def modify_initiator(self, initiator_id, remove_masking_entry=None,
@@ -364,11 +370,11 @@ class ProvisioningFunctions(object):
                    'replace_init, rename_alias, set_fcid, '
                    'initiator_flags.')
             raise exception.InvalidInputException(data=msg)
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=INITIATOR, resource_type_id=initiator_id,
-            payload=edit_init_data)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/initiator"
+            f"/{initiator_id}",
+            resource_type=None, payload=edit_init_data)
 
     def is_initiator_in_host(self, initiator):
         """Check to see if a given initiator is already assigned to a host.
@@ -409,10 +415,10 @@ class ProvisioningFunctions(object):
         :param filters: filters -- dict
         :returns: masking views -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=MASKINGVIEW, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/maskingview",
+            resource_type=None, params=filters)
         return response.get('maskingViewId', list()) if response else list()
 
     def get_masking_view(self, masking_view_name):
@@ -421,10 +427,11 @@ class ProvisioningFunctions(object):
         :param masking_view_name: the masking view name -- str
         :returns: masking view details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=MASKINGVIEW, resource_type_id=masking_view_name)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/maskingview"
+            f"/{masking_view_name}",
+            resource_type=None)
 
     def create_masking_view_existing_components(
             self, port_group_name, masking_view_name,
@@ -468,10 +475,10 @@ class ProvisioningFunctions(object):
         if starting_lun_address:
             payload.update({'starting_lun_address': starting_lun_address})
 
-        return self.create_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=MASKINGVIEW, payload=payload)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/maskingview",
+            payload=payload)
 
     def get_masking_views_from_storage_group(self, storagegroup):
         """Return any masking views associated with a storage group.
@@ -541,10 +548,10 @@ class ProvisioningFunctions(object):
 
         :param maskingview_name: masking view name -- str
         """
-        self.delete_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=MASKINGVIEW, resource_type_id=maskingview_name)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/maskingview"
+            f"/{maskingview_name}")
 
     def rename_masking_view(self, masking_view_id, new_name):
         """Rename an existing masking view.
@@ -557,11 +564,11 @@ class ProvisioningFunctions(object):
         """
         mv_payload = {'editMaskingViewActionParam': {
             'renameMaskingViewParam': {'new_masking_view_name': new_name}}}
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=MASKINGVIEW, resource_type_id=masking_view_id,
-            payload=mv_payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/maskingview"
+            f"/{masking_view_id}",
+            resource_type=None, payload=mv_payload)
 
     def get_host_from_masking_view(self, masking_view_id):
         """Given a masking view, get the associated host or host group.
@@ -597,11 +604,11 @@ class ProvisioningFunctions(object):
         :param filters: optional filter parameters -- dict
         :returns: masking view connection dicts -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=MASKINGVIEW, resource_type_id=masking_view_id,
-            resource=CONNECTIONS, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/maskingview"
+            f"/{masking_view_id}/connections",
+            resource_type=None, params=filters)
         return response.get(
             'maskingViewConnection', list()) if response else list()
 
@@ -640,10 +647,10 @@ class ProvisioningFunctions(object):
         :param filters: optional filters e.g. {'vnx_attached': 'true'} -- dict
         :returns: port key dicts -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=PORT, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/port",
+            resource_type=None, params=filters)
         return response.get('symmetrixPortKey', list()) if response else list()
 
     def get_port_group(self, port_group_id):
@@ -652,10 +659,11 @@ class ProvisioningFunctions(object):
         :param port_group_id: name of the portgroup -- str
         :returns: port group details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=PORTGROUP, resource_type_id=port_group_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/portgroup"
+            f"/{port_group_id}",
+            resource_type=None)
 
     def get_port_group_list(self, filters=None):
         """Get port group details.
@@ -663,10 +671,10 @@ class ProvisioningFunctions(object):
         :param filters: optional filters -- dict
         :returns: port groups -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=PORTGROUP, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/portgroup",
+            resource_type=None, params=filters)
         return response.get('portGroupId', list()) if response else list()
 
     def get_ports_from_port_group(self, port_group):
@@ -705,10 +713,10 @@ class ProvisioningFunctions(object):
             payload['port_group_protocol'] = port_group_protocol
         if _async:
             payload.update(ASYNC_UPDATE)
-        result = self.create_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=PORTGROUP, payload=payload)
+        result = self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/portgroup",
+            payload=payload)
         return result
 
     def create_new_port_group(self, port_group_id, dir_port_list,
@@ -733,10 +741,10 @@ class ProvisioningFunctions(object):
                         'symmetrixPortKey': dir_port_list})
             if port_group_protocol:
                 payload['port_group_protocol'] = port_group_protocol
-            result = self.create_resource(
-                category=SLOPROVISIONING,
-                resource_level=SYMMETRIX, resource_level_id=self.array_id,
-                resource_type=PORTGROUP, payload=payload)
+            result = self.common.create_resource(
+                target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+                f"/symmetrix/{self.array_id}/portgroup",
+                payload=payload)
             result = self._update_port_group_port_ids(result)
             return result
         else:
@@ -799,11 +807,11 @@ class ProvisioningFunctions(object):
                        'of the following: remove_port, add_port, or '
                        'rename_portgroup.')
             raise exception.InvalidInputException(data=message)
-        result = self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=PORTGROUP, resource_type_id=port_group_id,
-            payload=edit_pg_data)
+        result = self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/portgroup"
+            f"/{port_group_id}",
+            resource_type=None, payload=edit_pg_data)
         if add_port or remove_port:
             result = self._update_port_group_port_ids(result)
         return result
@@ -813,10 +821,10 @@ class ProvisioningFunctions(object):
 
         :param port_group_id: name of the port group -- str
         """
-        self.delete_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=PORTGROUP, resource_type_id=port_group_id)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/portgroup"
+            f"/{port_group_id}")
 
     def get_service_level_list(self, filters=None):
         """Retrieve the list of service levels from the array.
@@ -824,10 +832,10 @@ class ProvisioningFunctions(object):
         :param filters: optional filters -- dict
         :returns: service level names -- list
         """
-        slo_dict = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SLO, params=filters)
+        slo_dict = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/slo",
+            resource_type=None, params=filters)
         return slo_dict.get('sloId', list()) if slo_dict else list()
 
     def get_service_level(self, service_level_id):
@@ -836,10 +844,11 @@ class ProvisioningFunctions(object):
         :param service_level_id: service level agreement -- str
         :returns: service level details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SLO, resource_type_id=service_level_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/slo"
+            f"/{service_level_id}",
+            resource_type=None)
 
     def modify_service_level(self, service_level_id, new_name):
         """Modify an SLO.
@@ -852,11 +861,11 @@ class ProvisioningFunctions(object):
         """
         edit_slo_data = ({'editSloActionParam': {
             'renameSloParam': {'sloId': new_name}}})
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SLO, resource_type_id=service_level_id,
-            payload=edit_slo_data)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/slo"
+            f"/{service_level_id}",
+            resource_type=None, payload=edit_slo_data)
 
     def get_srp(self, srp):
         """Get details on a specific SRP.
@@ -864,10 +873,10 @@ class ProvisioningFunctions(object):
         :param srp: storage resource pool id -- str
         :returns: srp details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SRP, resource_type_id=srp)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/srp/{srp}",
+            resource_type=None)
 
     def get_srp_list(self, filters=None):
         """Get a list of available SRPs on a given array.
@@ -875,10 +884,10 @@ class ProvisioningFunctions(object):
         :param filters: filter parameters -- dict
         :returns: SRPs -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SRP, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/srp",
+            resource_type=None, params=filters)
         return response.get('srpId', list()) if response else list()
 
     def get_compressibility_report(self, srp_id):
@@ -887,11 +896,11 @@ class ProvisioningFunctions(object):
         :param srp_id: srp id -- str
         :returns: compressibility reports -- list
         """
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SRP, resource_type_id=srp_id,
-            resource=COMPRESSIBILITY_REPORT)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/srp/{srp_id}"
+            f"/compressibility_report",
+            resource_type=None)
         return response.get(
             'storageGroupCompressibility', list()) if response else list()
 
@@ -910,10 +919,11 @@ class ProvisioningFunctions(object):
         :param storage_group_name: name of the storage group -- str
         :returns: storage group details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_name)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
+            resource_type=None)
 
     def get_storage_group_demand_report(self, srp_id=None):
         """Get the storage group demand report.
@@ -925,11 +935,11 @@ class ProvisioningFunctions(object):
         """
         if not srp_id:
             srp_id = 'SRP_1'
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=SRP, resource_type_id=srp_id,
-            resource=SG_DEMAND_REPORT)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/srp/{srp_id}"
+            f"/storage_group_demand_report",
+            resource_type=None)
 
     def get_storage_group_list(self, filters=None):
         """Return a list of storage groups.
@@ -939,10 +949,10 @@ class ProvisioningFunctions(object):
                         for full list of available filters-- dict
         :returns: storage groups -- list
         """
-        sg = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, params=filters)
+        sg = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/storagegroup",
+            resource_type=None, params=filters)
         return sg.get('storageGroupId', list()) if sg else list()
 
     def get_masking_view_from_storage_group(self, storage_group):
@@ -1061,10 +1071,10 @@ class ProvisioningFunctions(object):
         if enable_mobility_id:
             slo_param.update({'enable_mobility_id': enable_mobility_id})
 
-        return self.create_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, payload=payload)
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/storagegroup",
+            payload=payload)
 
     def create_non_empty_storage_group(
             self, srp_id, storage_group_id, service_level, workload, num_vols,
@@ -1137,11 +1147,11 @@ class ProvisioningFunctions(object):
         :param payload: request payload -- dict
         :returns: modified storage group details -- dict
         """
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_id}",
+            resource_type=None, payload=payload)
 
     def add_existing_volume_to_storage_group(
             self, storage_group_id, vol_ids, _async=False,
@@ -1538,10 +1548,10 @@ class ProvisioningFunctions(object):
 
         :param storage_group_id: storage group id -- str
         """
-        self.delete_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_id)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_id}")
 
     def get_volume(self, device_id):
         """Get a volume from array.
@@ -1549,10 +1559,10 @@ class ProvisioningFunctions(object):
         :param device_id: device id -- str
         :returns: volume details -- dict
         """
-        return self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=VOLUME, resource_type_id=device_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/volume/{device_id}",
+            resource_type=None)
 
     def get_volume_list(self, filters=None):
         """Get list of volumes from array.
@@ -1561,10 +1571,10 @@ class ProvisioningFunctions(object):
         :returns: device ids -- list
         """
         vol_id_list = list()
-        response = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=VOLUME, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/volume",
+            resource_type=None, params=filters)
         if (response and response.get('count') and (
                 int(response.get('count')) > 0)):
             count = response['count']
@@ -1713,11 +1723,10 @@ class ProvisioningFunctions(object):
                             "reset_wwn": "true"}}} -- dict
         :returns: volume details -- dict
         """
-        return self.modify_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=VOLUME, resource_type_id=device_id,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/volume/{device_id}",
+            resource_type=None, payload=payload)
 
     def extend_volume(self, device_id, new_size, _async=False,
                       rdf_group_num=None):
@@ -1783,7 +1792,7 @@ class ProvisioningFunctions(object):
         try:
             return self.common.modify_resource(
                 target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning/"
-                           f"symmetrix/{array_id}/volume/{device_id}",
+                f"symmetrix/{array_id}/volume/{device_id}",
                 resource_type=None, payload=payload)
         except Exception as e:
             error_message = f"Failed to reset volume WWN: {str(e)}"
@@ -1810,10 +1819,9 @@ class ProvisioningFunctions(object):
 
         :param device_id: device id -- str
         """
-        self.delete_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=VOLUME, resource_type_id=device_id)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/volume/{device_id}")
 
     def find_low_volume_utilization(self, low_utilization_percentage, csvname):
         """Find volumes under a certain utilization threshold.
@@ -1854,10 +1862,10 @@ class ProvisioningFunctions(object):
 
         :returns: workload settings -- list
         """
-        wl_details = self.get_resource(
-            category=SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=WORKLOADTYPE)
+        wl_details = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning"
+            f"/symmetrix/{self.array_id}/workloadtype",
+            resource_type=None)
         return wl_details.get('workloadId', list()) if wl_details else list()
 
     @decorators.refactoring_notice(
@@ -2017,10 +2025,10 @@ class ProvisioningFunctions(object):
         :returns: split ids -- list
         """
         split_id_list = list()
-        response = self.common.get_resource(category=MAINFRAME,
-                                            resource_level=SYMMETRIX,
-                                            resource_level_id=self.array_id,
-                                            resource_type=FICON_SPLIT)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+            f"/symmetrix/{self.array_id}/split",
+            resource_type=None)
         if response and response.get('splitId'):
             split_id_list = response['splitId']
         return split_id_list
@@ -2030,11 +2038,10 @@ class ProvisioningFunctions(object):
         :param split_id: split id -- str
         :returns: split details -- dict
         """
-        return self.common.get_resource(category=MAINFRAME,
-                                        resource_level=SYMMETRIX,
-                                        resource_level_id=self.array_id,
-                                        resource_type=FICON_SPLIT,
-                                        resource_type_id=split_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+            f"/symmetrix/{self.array_id}/split/{split_id}",
+            resource_type=None)
 
     def get_cu_image_list(self, split_id: str):
         """Get list of CU Image SSIDs within a specific FICON Split.
@@ -2042,12 +2049,11 @@ class ProvisioningFunctions(object):
         :returns: CU Image ssids -- list
         """
         cu_image_ssid_list = list()
-        response = self.common.get_resource(category=MAINFRAME,
-                                            resource_level=SYMMETRIX,
-                                            resource_level_id=self.array_id,
-                                            resource_type=FICON_SPLIT,
-                                            resource_type_id=split_id,
-                                            resource=CU_IMAGE)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+            f"/symmetrix/{self.array_id}/split/{split_id}"
+            f"/cuimage",
+            resource_type=None)
         if response and response.get('cuImageSSID'):
             cu_image_ssid_list = response['cuImageSSID']
         return cu_image_ssid_list
@@ -2058,13 +2064,11 @@ class ProvisioningFunctions(object):
         :param cu_ssid: cu image ssid -- str
         :returns: CU Image details -- dict
         """
-        return self.common.get_resource(category=MAINFRAME,
-                                        resource_level=SYMMETRIX,
-                                        resource_level_id=self.array_id,
-                                        resource_type=FICON_SPLIT,
-                                        resource_type_id=split_id,
-                                        resource=CU_IMAGE,
-                                        resource_id=cu_ssid)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+            f"/symmetrix/{self.array_id}/split/{split_id}"
+            f"/cuimage/{cu_ssid}",
+            resource_type=None)
 
     def create_cu_image(self, split_id: str,
                         cu_number: str, cu_ssid: str, cu_base_address: str,
@@ -2086,13 +2090,11 @@ class ProvisioningFunctions(object):
         new_cu_data.update(ASYNC_UPDATE)
 
         create_cu_async_job = (
-            self.common.create_resource(category=MAINFRAME,
-                                        resource_level=SYMMETRIX,
-                                        resource_level_id=self.array_id,
-                                        resource_type=FICON_SPLIT,
-                                        resource_type_id=split_id,
-                                        resource=CU_IMAGE,
-                                        payload=new_cu_data))
+            self.common.create_resource(
+                target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+                f"/symmetrix/{self.array_id}/split/{split_id}"
+                f"/cuimage",
+                payload=new_cu_data))
         return self.common.wait_for_job(
             operation='Create CU Image with volume',
             status_code=constants.STATUS_202,
@@ -2105,14 +2107,11 @@ class ProvisioningFunctions(object):
         :returns: Volume ids -- list
         """
         volume_id_list = list()
-        response = self.common.get_resource(category=MAINFRAME,
-                                            resource_level=SYMMETRIX,
-                                            resource_level_id=self.array_id,
-                                            resource_type=FICON_SPLIT,
-                                            resource_type_id=split_id,
-                                            resource=CU_IMAGE,
-                                            resource_id=cu_ssid,
-                                            object_type=VOLUME)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+            f"/symmetrix/{self.array_id}/split/{split_id}"
+            f"/cuimage/{cu_ssid}/volume",
+            resource_type=None)
         if response and response.get('volumeId'):
             volume_id_list = response['volumeId']
         return volume_id_list
@@ -2124,15 +2123,11 @@ class ProvisioningFunctions(object):
         :pamam vol_id volume device id to be mapped to the cu -- str
         :returns: volume details -- dict
         """
-        return self.common.get_resource(category=MAINFRAME,
-                                        resource_level=SYMMETRIX,
-                                        resource_level_id=self.array_id,
-                                        resource_type=FICON_SPLIT,
-                                        resource_type_id=split_id,
-                                        resource=CU_IMAGE,
-                                        resource_id=cu_ssid,
-                                        object_type=VOLUME,
-                                        object_type_id=vol_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+            f"/symmetrix/{self.array_id}/split/{split_id}"
+            f"/cuimage/{cu_ssid}/volume/{vol_id}",
+            resource_type=None)
 
     def modify_cu_image(self, split_id: str, cu_ssid: str,
                         assign_alias_dict=None,
@@ -2191,14 +2186,11 @@ class ProvisioningFunctions(object):
         edit_cu_data.update(ASYNC_UPDATE)
 
         edit_cu_async_job = (
-            self.common.modify_resource(category=MAINFRAME,
-                                        resource_level=SYMMETRIX,
-                                        resource_level_id=self.array_id,
-                                        resource_type=FICON_SPLIT,
-                                        resource_type_id=split_id,
-                                        resource=CU_IMAGE,
-                                        resource_id=cu_ssid,
-                                        payload=edit_cu_data))
+            self.common.modify_resource(
+                target_uri=f"/{self.common.UNI_VERSION}/mainframe"
+                f"/symmetrix/{self.array_id}/split/{split_id}"
+                f"/cuimage/{cu_ssid}",
+                resource_type=None, payload=edit_cu_data))
         return self.common.wait_for_job(
             operation=operation, status_code=constants.STATUS_202,
             job=edit_cu_async_job)

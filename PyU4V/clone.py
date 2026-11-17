@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,10 +41,6 @@ class CloneFunctions(object):
         """__init__."""
         self.provisioning = ProvisioningFunctions(array_id, rest_client)
         self.common = CommonFunctions(rest_client)
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
         self.array_id = array_id
 
     def get_clone_target_storage_group_list(
@@ -105,8 +101,8 @@ class CloneFunctions(object):
         array_id = array_id if array_id else self.array_id
         response = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
-                       f"{array_id}/storagegroup/{storage_group_id}"
-                       f"/clone/storagegroup",
+            f"{array_id}/storagegroup/{storage_group_id}"
+            f"/clone/storagegroup",
             resource_type=None, params=query_params)
         if response and response.get('clone_target_sg_names'):
             target_sg_names_list = response.get('clone_target_sg_names')
@@ -123,8 +119,8 @@ class CloneFunctions(object):
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix"
-                       f"/{array_id}/storagegroup/{storage_group_id}"
-                       f"/clone/volume",
+            f"/{array_id}/storagegroup/{storage_group_id}"
+            f"/clone/volume",
             resource_type=None)
 
     def get_clone_storage_group_pair_details(
@@ -140,8 +136,8 @@ class CloneFunctions(object):
         array_id = array_id if array_id else self.array_id
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
-                       f"{array_id}/storagegroup/{storage_group_id}/clone"
-                       f"/storagegroup/{target_storage_group_id}",
+            f"{array_id}/storagegroup/{storage_group_id}/clone"
+            f"/storagegroup/{target_storage_group_id}",
             resource_type=None, params=query_params)
 
     def create_clone(
@@ -299,8 +295,8 @@ class CloneFunctions(object):
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
-                       f"{array_id}/storagegroup/{storage_group_id}/clone/"
-                       f"storagegroup/{target_storage_group_id}",
+            f"{array_id}/storagegroup/{storage_group_id}/clone/"
+            f"storagegroup/{target_storage_group_id}",
             resource_type=None, payload=payload)
 
     def restore_clone(
@@ -333,6 +329,6 @@ class CloneFunctions(object):
 
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/replication/symmetrix/"
-                       f"{array_id}/storagegroup/{storage_group_id}/clone/"
-                       f"storagegroup/{target_storage_group_id}",
+            f"{array_id}/storagegroup/{storage_group_id}/clone/"
+            f"storagegroup/{target_storage_group_id}",
             resource_type=None, payload=payload)

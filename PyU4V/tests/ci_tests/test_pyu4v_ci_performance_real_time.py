@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +38,10 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
                 self.conn.array_id):
             self.skipTest(
                 'Array {arr} is not real-time performance registered, '
+                'skipping performance tests.'.format(arr=self.conn.array_id))
+        if not self.rt.get_timestamps():
+            self.skipTest(
+                'Array {arr} has no real-time timestamp data available, '
                 'skipping performance tests.'.format(arr=self.conn.array_id))
 
     def test_set_array_id(self):
@@ -323,11 +327,11 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
         for metric in metrics:
             if inst_req:
                 response = stats_func(
-                    start_date=start, end_date=self.time_now, metrics=metric,
+                    start_date=start, end_date=last_available_date, metrics=metric,
                     instance_id=instance_id)
             else:
                 response = stats_func(
-                    start_date=start, end_date=self.time_now, metrics=metric)
+                    start_date=start, end_date=last_available_date, metrics=metric)
 
             self.assertTrue(response.get(pc.RESULT))
             perf_data = response.get(pc.RESULT)[0]
@@ -335,11 +339,11 @@ class CITestRealTimePerformance(base.TestBaseTestCase, testtools.TestCase):
 
         if inst_req:
             response = stats_func(
-                start_date=start, end_date=self.time_now, metrics=metrics,
+                start_date=start, end_date=last_available_date, metrics=metrics,
                 instance_id=instance_id)
         else:
             response = stats_func(
-                start_date=start, end_date=self.time_now, metrics=metrics)
+                start_date=start, end_date=last_available_date, metrics=metrics)
         self.assertTrue(response.get(pc.RESULT))
         perf_data = response.get(pc.RESULT)[0]
         for metric in metrics:

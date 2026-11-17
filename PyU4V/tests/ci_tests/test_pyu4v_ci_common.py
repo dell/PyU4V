@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         common.CommonFunctions._build_uri.assert_called()
         common.CommonFunctions.get_request.assert_called()
         common.CommonFunctions._build_uri_get_version.assert_called()
-        common.CommonFunctions.get_resource.assert_called()
+        common.CommonFunctions.get_resource.assert_not_called()
 
     def test_common_for_modify_host(self):
         """"Test methods used by create host operation.
@@ -84,13 +84,13 @@ class CITestCommon(base.TestBaseTestCase, testtools.TestCase):
         Test create_resource is called
         Test modify_resource is called
         """
-        self.conn.provisioning.create_resource = MagicMock(
+        common.CommonFunctions.create_resource = MagicMock(
             side_effect=self.common.create_resource)
-        self.conn.provisioning.modify_resource = MagicMock(
+        common.CommonFunctions.modify_resource = MagicMock(
             side_effect=self.common.modify_resource)
         self.modify_host()
-        self.conn.provisioning.create_resource.assert_called()
-        self.conn.provisioning.modify_resource.assert_called()
+        common.CommonFunctions.create_resource.assert_called()
+        common.CommonFunctions.modify_resource.assert_called()
 
     def test_get_uni_version(self):
         """Test get_uni_version."""

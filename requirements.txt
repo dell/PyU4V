@@ -1,6 +1,5 @@
-#Requirements.txt added for sphinx in version 10.2
-six
-requests
-urllib3
-prettytable
-sphinx_rtd_theme
+# Runtime and test dependencies.
+# sphinx_rtd_theme is a docs-only dep — see docs/requirements.txt
+requests>=2.28
+prettytable>=3.0
+testtools

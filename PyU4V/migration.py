@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,10 +36,6 @@ class MigrationFunctions(object):
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
-        self.get_resource = self.common.get_resource
-        self.create_resource = self.common.create_resource
-        self.modify_resource = self.common.modify_resource
-        self.delete_resource = self.common.delete_resource
 
     def get_migration_info(self, array_id=None):
         """Return migration information for an array.
@@ -47,9 +43,10 @@ class MigrationFunctions(object):
         :returns: migration info -- dict
         """
         array_id = array_id if array_id else self.array_id
-        return self.get_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=array_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{array_id}",
+            resource_type=None)
 
     def create_migration_environment(self, target_array_id):
         """Create a new migration environment between two arrays.
@@ -60,9 +57,9 @@ class MigrationFunctions(object):
         :param target_array_id: target array id -- str
         :returns: migration environment info -- dict
         """
-        return self.create_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}",
             payload={'otherArrayId': target_array_id})
 
     def delete_migration_environment(self, target_array_id):
@@ -73,10 +70,10 @@ class MigrationFunctions(object):
 
         :param target_array_id: target array id -- str
         """
-        self.delete_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=ENVIRONMENT, resource_type_id=target_array_id)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/environment"
+            f"/{target_array_id}")
 
     def get_array_migration_capabilities(self, array_id=None):
         """Check what migration facilities are available.
@@ -84,9 +81,10 @@ class MigrationFunctions(object):
         :returns: array capabilities -- dict
         """
         array_id = array_id if array_id else self.array_id
-        capabilities = self.get_resource(
-            category=MIGRATION, resource_level=CAPABILITIES,
-            resource_type=SYMMETRIX)
+        capabilities = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/capabilities/symmetrix",
+            resource_type=None)
         symm_list = (
             capabilities.get(
                 'storageArrayCapability', list()) if capabilities else list())
@@ -103,10 +101,10 @@ class MigrationFunctions(object):
 
         :returns: environments -- list
         """
-        response = self.get_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=ENVIRONMENT)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/environment",
+            resource_type=None)
         return response.get('arrayId', list()) if response else list()
 
     def get_environment(self, target_array_id):
@@ -115,10 +113,11 @@ class MigrationFunctions(object):
         :param target_array_id: target array id -- str
         :returns: environment details -- dict
         """
-        return self.get_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=ENVIRONMENT, resource_type_id=target_array_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/environment"
+            f"/{target_array_id}",
+            resource_type=None)
 
     def get_storage_group_list(self, include_migrations=False):
         """Get list of all storage groups or migrating storage groups.
@@ -127,10 +126,10 @@ class MigrationFunctions(object):
                                    sessions -- bool
         :returns: storage groups or migrating storage groups -- list
         """
-        response = self.get_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/storagegroup",
+            resource_type=None)
         return response.get('migratingName') if include_migrations else (
             response.get('name'))
 
@@ -139,10 +138,10 @@ class MigrationFunctions(object):
 
         :returns: storage groups and migrating storage groups -- dict
         """
-        response = self.get_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/storagegroup",
+            resource_type=None)
         return response
 
     def get_storage_group(self, storage_group_name):
@@ -151,10 +150,11 @@ class MigrationFunctions(object):
         :param storage_group_name: storage group id -- str
         :returns: storage group details -- dict
         """
-        return self.get_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_name)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
+            resource_type=None)
 
     def create_storage_group_migration(
             self, storage_group_name, target_array_id, srp_id=None,
@@ -183,10 +183,10 @@ class MigrationFunctions(object):
         if validate:
             payload.update({'validate': validate})
 
-        return self.create_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_name,
+        return self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
             payload=payload)
 
     def modify_storage_group_migration(
@@ -208,18 +208,18 @@ class MigrationFunctions(object):
             payload.update(options)
         if _async:
             payload.update(ASYNC_UPDATE)
-        return self.modify_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_name,
-            payload=payload)
+        return self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}",
+            resource_type=None, payload=payload)
 
     def delete_storage_group_migration(self, storage_group_name):
         """Given a name, delete the storage group migration session.
 
         :param storage_group_name: storage group id -- str
         """
-        self.delete_resource(
-            category=MIGRATION,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=STORAGEGROUP, resource_type_id=storage_group_name)
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/mobility"
+            f"/symmetrix/{self.array_id}/storagegroup"
+            f"/{storage_group_name}")

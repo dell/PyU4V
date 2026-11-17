@@ -21,6 +21,19 @@ and confirming the registration has been successful.
     :lines: 14-38
 
 
+If a registration change returns no message, PyU4V raises
+``VolumeBackendAPIException`` with the affected array ID and a suggestion to
+check Unisphere logs. Handle the error before continuing with collection::
+
+    from PyU4V.utils.exception import VolumeBackendAPIException
+
+    try:
+        conn.performance.enable_diagnostic_data_collection()
+    except VolumeBackendAPIException as error:
+        print(f"Performance registration failed: {error}")
+        raise
+
+
 Diagnostic Metrics Gathering
 ----------------------------
 

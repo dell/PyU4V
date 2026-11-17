@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Editor backup files
+*~
+
 # C extensions
 *.so
 
@@ -127,9 +130,13 @@ dmypy.json
 
 # IDE
 .idea/
+.windsurf/
 
 PyU4V.conf
 PyU4V/tests/ci_tests/PyU4V.conf
 PyU4V/tests/ci_tests/PyU4V.log
 
 .qodo
+outputs/
+/docs/source/pyu4v-10.5-architecture.png
+/docs/blog/

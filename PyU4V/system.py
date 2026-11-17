@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 """system.py."""
 
 import logging
+from typing import Any
 import re
 import time
 
@@ -87,37 +88,49 @@ ASYNC_UPDATE = constants.ASYNC_UPDATE
 class SystemFunctions(object):
     """SystemFunctions."""
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.is_v4 = self.common.is_array_v4(array_id)
         self.array_id = array_id
-        self.version = constants.UNISPHERE_VERSION
 
-    def get_system_health(self, array_id=None):
+    @property
+    def version(self) -> str:
+        """Unisphere version used for requests (live ``common.UNI_VERSION``).
+
+        :returns: Unisphere REST API version -- str
+        """
+        return getattr(
+            self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
+
+    def get_system_health(self, array_id: str | None = None) -> dict[str, Any]:
         """Query for system health information.
 
         :param array_id: array id -- str
         :returns: system health -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.common.get_resource(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=array_id, object_type=HEALTH)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/health",
+            resource_type=None)
 
-    def list_system_health_check(self, array_id=None):
+    def list_system_health_check(
+            self, array_id: str | None = None) -> list[dict[str, Any]]:
         """List previously run system health checks.
 
         :param array_id: array id -- str
         :returns: system health checks -- list
         """
         array_id = self.array_id if not array_id else array_id
-        return self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            object_type=HEALTH, object_type_id=HEALTH_CHECK)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/health/health_check",
+            resource_type=None)
 
-    def get_health_check_details(self, health_check_id, array_id=None):
+    def get_health_check_details(
+            self, health_check_id: str,
+            array_id: str | None = None) -> dict[str, Any]:
         """Gets details of individual health check.
 
         :param health_check_id: health check id -- str
@@ -125,11 +138,10 @@ class SystemFunctions(object):
         :returns: health check details -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=HEALTH, resource_type_id=HEALTH_CHECK,
-            object_type=health_check_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/health/health_check/{health_check_id}",
+            resource_type=None)
 
     def perform_health_check(self, array_id=None, description=None):
         """Initiate a environmental health check.
@@ -146,9 +158,8 @@ class SystemFunctions(object):
             description = 'PyU4V-{arr}-{date}-{time}'.format(
                 arr=array_id, date=date_now, time=time_now)
         return self.common.create_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            object_type=HEALTH, object_type_id=HEALTH_CHECK,
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/health/health_check",
             payload={DESCRIPTION: description})
 
     def delete_health_check(self, health_check_id, array_id=None):
@@ -159,10 +170,8 @@ class SystemFunctions(object):
         """
         array_id = self.array_id if not array_id else array_id
         self.common.delete_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=HEALTH, resource_type_id=HEALTH_CHECK,
-            object_type=health_check_id)
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/health/health_check/{health_check_id}")
 
     def get_disk_id_list(self, array_id=None, failed=False):
         """Get a list of disks ids installed.
@@ -172,10 +181,10 @@ class SystemFunctions(object):
         :returns: disk ids -- list
         """
         array_id = self.array_id if not array_id else array_id
-        return self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=DISK, params={FAILED: failed})
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/disk",
+            resource_type=None, params={FAILED: failed})
 
     def get_disk_details(self, disk_id, array_id=None):
         """Get details for specified disk id.
@@ -185,10 +194,10 @@ class SystemFunctions(object):
         :returns: disk details -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        return self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=DISK, resource_type_id=disk_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/disk/{disk_id}",
+            resource_type=None)
 
     def get_tags(self, array_id=None, tag_name=None, storage_group_id=None,
                  num_of_storage_groups=None, num_of_arrays=None):
@@ -219,8 +228,9 @@ class SystemFunctions(object):
         if num_of_arrays:
             filters[ARRAY_NUM] = str(num_of_arrays)
 
-        return self.common.get_resource(
-            category=SYSTEM, resource_level=TAG, params=filters)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/tag",
+            resource_type=None, params=filters)
 
     def get_tagged_objects(self, tag_name):
         """Get a list of objects with specified tag.
@@ -228,16 +238,18 @@ class SystemFunctions(object):
         :param tag_name: tag name -- str
         :returns: tags -- list
         """
-        return self.common.get_resource(
-            category=SYSTEM, resource_level=TAG, resource_level_id=tag_name)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/tag/{tag_name}",
+            resource_type=None)
 
     def get_alert_summary(self):
         """Gets Alert Summary information.
 
         :returns: summary of alerts on system - dict
         """
-        return self.common.get_resource(
-            category=SYSTEM, resource_level=ALERT_SUMMARY)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/alert_summary",
+            resource_type=None)
 
     def get_alert_ids(self, array=None, _type=None, severity=None, state=None,
                       created_date=None, _object=None, object_type=None,
@@ -293,8 +305,9 @@ class SystemFunctions(object):
             filters['object_type'] = object_type
         if description:
             filters['description'] = description
-        response = self.common.get_resource(
-            category=SYSTEM, resource_level=ALERT, params=filters)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/alert",
+            resource_type=None, params=filters)
         return response.get('alertId') if response else list()
 
     def get_alert_details(self, alert_id):
@@ -304,9 +317,9 @@ class SystemFunctions(object):
                          system -- str
         :returns: alert details -- dict
         """
-        return self.common.get_resource(
-            category=SYSTEM, resource_level=ALERT,
-            resource_level_id=alert_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/alert/{alert_id}",
+            resource_type=None)
 
     def acknowledge_alert(self, alert_id):
         """Acknowledges an alert.
@@ -315,11 +328,11 @@ class SystemFunctions(object):
                          system --str
         :returns: alert details -- dict
         """
-        payload = {'editAlertActionParam': 'ACKNOWLEDGE'}
+        payload = {'editAlertActionParam': {'acknowledgeAlertParam': {}}}
 
         return self.common.modify_resource(
-            category=SYSTEM, resource_level=ALERT,
-            resource_level_id=alert_id, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/system/alert/{alert_id}",
+            resource_type=None, payload=payload)
 
     def delete_alert(self, alert_id):
         """Deletes Specified Alert.
@@ -328,8 +341,8 @@ class SystemFunctions(object):
                          system --str
         """
         return self.common.delete_resource(
-            category=SYSTEM, resource_level=ALERT,
-            resource_level_id=alert_id)
+            target_uri=f"/{self.common.UNI_VERSION}/system/alert/{alert_id}",
+            resource_type=None)
 
     def _download_settings(
             self, request_body, file_name=None, dir_path=None,
@@ -351,8 +364,9 @@ class SystemFunctions(object):
                 e=ZIP_SUFFIX)
 
         response = self.common.download_file(
-            category=SYSTEM, resource_level=SETTINGS,
-            resource_type=EXPORT_FILE, payload=request_body)
+            target_uri=f"/{self.common.UNI_VERSION}/system/settings/"
+            f"exportfile",
+            payload=request_body)
 
         return_dict = {'success': False}
 
@@ -611,25 +625,32 @@ class SystemFunctions(object):
                        'Unisphere can proceed.')
                 LOG.error(msg)
                 raise exception.InvalidInputException(msg) from error
-        else:
-            try:
-                f_path = Path(file_path)
-                assert f_path.is_file() is True
-                LOG.info('Uploading settings from {p}'.format(p=f_path))
-                data = open(f_path, FILE_READ_MODE)
-            except (TypeError, AssertionError) as error:
-                msg = (
-                    'Invalid file path supplied for settings upload '
-                    'location: {f}'.format(f=file_path))
-                LOG.error(msg)
-                raise exception.InvalidInputException(msg) from error
 
-        form_data = {ZIP_FILE: data, TGT_ARRAYS: array_id,
-                     FILE_PASSWORD: file_password}
+            form_data = {ZIP_FILE: data, TGT_ARRAYS: array_id,
+                         FILE_PASSWORD: file_password}
+            return self.common.upload_file(
+                target_uri=f"/{self.common.UNI_VERSION}/system/settings/"
+                f"importfile",
+                form_data=form_data)
 
-        return self.common.upload_file(
-            category=SYSTEM, resource_level=SETTINGS,
-            resource_type=IMPORT_FILE, form_data=form_data)
+        try:
+            f_path = Path(file_path)
+            assert f_path.is_file() is True
+        except (TypeError, AssertionError) as error:
+            msg = (
+                'Invalid file path supplied for settings upload '
+                'location: {f}'.format(f=file_path))
+            LOG.error(msg)
+            raise exception.InvalidInputException(msg) from error
+
+        LOG.info('Uploading settings from {p}'.format(p=f_path))
+        with open(f_path, FILE_READ_MODE) as data:
+            form_data = {ZIP_FILE: data, TGT_ARRAYS: array_id,
+                         FILE_PASSWORD: file_password}
+            return self.common.upload_file(
+                target_uri=f"/{self.common.UNI_VERSION}/system/settings/"
+                f"importfile",
+                form_data=form_data)
 
     def get_audit_log_list(
             self, start_time, end_time, array_id=None, user_name=None,
@@ -718,9 +739,9 @@ class SystemFunctions(object):
                 'refining your search. If large time ranges are required, '
                 'please use sparingly and not in frequently run scripts.')
 
-        target_uri = self.common.build_target_uri(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=AUDIT_LOG_RECORD)
+        target_uri = (
+            f"/{self.common.UNI_VERSION}/system/symmetrix/{array_id}/"
+            f"audit_log_record")
 
         # Form query params manually until audit log endpoint is updated to
         # accept a dict of filter params - limited due to requirement of more
@@ -790,10 +811,9 @@ class SystemFunctions(object):
         :returns: audit log record details -- dict
         """
         array_id = self.array_id if not array_id else array_id
-        target_uri = self.common.build_target_uri(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=array_id, resource_type=AUDIT_LOG_RECORD,
-            resource_type_id=record_id)
+        target_uri = (
+            f"/{self.common.UNI_VERSION}/system/symmetrix/{array_id}/"
+            f"audit_log_record/{record_id}")
 
         response = self.common.get_request(
             target_uri=target_uri, resource_type=AUDIT_LOG_RECORD)
@@ -824,10 +844,9 @@ class SystemFunctions(object):
         req_body = {AUDIT_LOG_FILENAME: file_name}
 
         response = self.common.download_file(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=AUDIT_LOG_RECORD,
-            resource=EXPORT_FILE, payload=req_body, timeout=timeout)
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/audit_log_record/exportfile",
+            payload=req_body, timeout=timeout)
 
         return_dict = dict()
 
@@ -856,10 +875,10 @@ class SystemFunctions(object):
         """
         array_id = array_id if array_id else self.array_id
 
-        response = self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=DIRECTOR)
+        response = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/director",
+            resource_type=None)
         dir_list = response.get('directorId', list()) if response else list()
         response_dir_list = list()
         if not self.is_v4:
@@ -892,11 +911,10 @@ class SystemFunctions(object):
         if not filters:
             filters = dict()
 
-        port_list = self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=DIRECTOR, resource_type_id=director_id,
-            resource=PORT, params=filters)
+        port_list = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/director/{director_id}/port",
+            resource_type=None, params=filters)
         return port_list.get(
             'symmetrixPortKey', list()) if port_list else list()
 
@@ -931,11 +949,10 @@ class SystemFunctions(object):
         :returns: IP interfaces -- list
         """
         array_id = array_id if array_id else self.array_id
-        ip_list = self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=DIRECTOR, resource_type_id=director_id,
-            resource=PORT, resource_id=port_id, object_type=IP_INTERFACE)
+        ip_list = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/director/{director_id}/port/{port_id}/ipinterface",
+            resource_type=None)
 
         return ip_list.get(IP_INTERFACE_ID, list()) if ip_list else list()
 
@@ -950,12 +967,11 @@ class SystemFunctions(object):
         :returns: IP interface details -- dict
         """
         array_id = array_id if array_id else self.array_id
-        interface = self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=array_id,
-            resource_type=DIRECTOR, resource_type_id=director_id,
-            resource=PORT, resource_id=port_id,
-            object_type=IP_INTERFACE, object_type_id=interface_id)
+        interface = self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{array_id}/director/{director_id}/port/{port_id}/"
+            f"ipinterface/{interface_id}",
+            resource_type=None)
 
         return interface if interface else dict()
 
@@ -980,7 +996,8 @@ class SystemFunctions(object):
         }
 
         return self.common.modify_resource(
-            category=SYSTEM, resource_level=LOCAL_USER, payload=request_body)
+            target_uri=f"/{self.common.UNI_VERSION}/system/local_user",
+            resource_type=None, payload=request_body)
 
     def get_director(self, director):
         """Query for details of a director for a symmetrix.
@@ -988,10 +1005,10 @@ class SystemFunctions(object):
         :param director: the director ID e.g. FA-1D -- str
         :returns: director details -- dict
         """
-        return self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=DIRECTOR, resource_type_id=director)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{self.array_id}/director/{director}",
+            resource_type=None)
 
     def get_director_port(self, director, port_no):
         """Get details of the symmetrix director port.
@@ -1000,11 +1017,10 @@ class SystemFunctions(object):
         :param port_no: the port number e.g. 1 -- str
         :returns: director port details -- dict
         """
-        return self.common.get_resource(
-            category=SYSTEM,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=DIRECTOR, resource_type_id=director,
-            resource=PORT, resource_id=port_no)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{self.array_id}/director/{director}/port/{port_no}",
+            resource_type=None)
 
     def get_port_identifier(self, director, port_no):
         """Get the identifier (wwn) of the physical port.
@@ -1086,10 +1102,10 @@ class SystemFunctions(object):
         :param port_group_id: name of the portgroup -- str
         :returns: port group details -- dict
         """
-        return self.common.get_resource(
-            category=constants.SLOPROVISIONING,
-            resource_level=SYMMETRIX, resource_level_id=self.array_id,
-            resource_type=constants.PORTGROUP, resource_type_id=port_group_id)
+        return self.common.get_request(
+            target_uri=f"/{self.common.UNI_VERSION}/sloprovisioning/"
+            f"symmetrix/{self.array_id}/portgroup/{port_group_id}",
+            resource_type=None)
 
     def get_any_director_port(self, director, filters=None):
         """Get a non-GuestOS port from a director.
@@ -1211,10 +1227,9 @@ class SystemFunctions(object):
                 'onlineOfflineParamType': {'port_online': port_online}}}
 
         return self.common.modify_resource(
-            category=SYSTEM, resource_level=SYMMETRIX,
-            resource_level_id=self.array_id, resource_type=DIRECTOR,
-            resource_type_id=director, resource=PORT,
-            resource_id=port_no, payload=payload)
+            target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
+            f"{self.array_id}/director/{director}/port/{port_no}",
+            resource_type=None, payload=payload)
 
     def set_port_protocol(self, director, port_number, protocol, enable=True,
                           array_id=None, _async=None):
@@ -1240,7 +1255,7 @@ class SystemFunctions(object):
             payload.update(ASYNC_UPDATE)
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
-                       f"{array_id}/director/{director}/port/{port_number}",
+            f"{array_id}/director/{director}/port/{port_number}",
             resource_type=None, payload=payload)
 
     def get_management_server_resources(self):
@@ -1250,7 +1265,7 @@ class SystemFunctions(object):
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/system/"
-                       f"management_server_resources", resource_type=None)
+            f"management_server_resources", resource_type=None)
 
     def refresh_array_details(self, array_id=None):
         """Refresh Unisphere object model for specified array with latest
@@ -1269,7 +1284,7 @@ class SystemFunctions(object):
         array_id = array_id if array_id else self.array_id
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/system/symmetrix/"
-                       f"{array_id}/refresh")
+            f"{array_id}/refresh")
 
     def get_server_logging_level(self):
         """Get Server logging level for Unisphere Server.
@@ -1295,151 +1310,93 @@ class SystemFunctions(object):
             target_uri=f"/{self.common.UNI_VERSION}/system/logging",
             resource_type=None, payload=payload)
 
-    def get_snmp_trap_configuration(self):
-        """Returns the details of SNMP Trap Receivers.
+    def get_otel_endpoint_settings(self) -> dict[str, Any]:
+        """List the OpenTelemetry collector endpoint settings.
 
-        :returns SNMP configuration information--dict
+        :returns: OTel endpoint registration and connection settings -- dict
+        :raises exception.PyU4VException: if the REST request fails
         """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
         return self.common.get_request(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp",
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint",
             resource_type=None)
 
-    def set_snmp_trap_destination(
-            self, name, port, username=None, password=None,
-            passphrase=None):
-        """Add new SNMP trap receiver to configuration.
+    def register_otel_endpoint(
+            self, address: str, port: int, protocol: str = 'gRPC',
+            enable_compression: bool = False) -> None:
+        """Register an OpenTelemetry collector endpoint.
 
-        :param name: Ipdaddress or DNS Name -- str
-        :param port: port SNMP server recieves trap on --int
-        :param username: Username for SNMP v3Username for SNMP v3 --str
-        :param password: Password for SNMP v3 --str
-        :param passphrase: Passphrase for SNMP v3 --str
-        :returns:
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-        payload = {
-            'name': name,
-            'port': port,
-            'username': username,
-            'password': password,
-            'passphrase': passphrase
-        }
-        return self.common.create_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp",
-            resource_type=None, payload=payload)
-
-    def delete_snmp_trap_destination(self, snmp_id):
-        """Deletes specified SNMP trap receiver from configuration.
-
-        :param snmp_id unique identifier for snmp trap destination - str
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
-        return self.common.delete_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp/{snmp_id}",
-            resource_type=None)
-
-    def update_snmp_trap_destination(
-            self, snmp_id, name=None, port=None, username=None,
-            password=None, passphrase=None):
-        """Update existing SNMP configuration item.
-
-        :param snmp_id: an id generated for a specific SNMP trap, use
-                        get_snmp_trap_configuration to find values -- str
-        :param name: New IP address/hostname for the SNMP trap -- str
-        :param port: New port number for the SNMP trap  --str
-        :param username: Updated username for the SNMP trap  --str
-        :param password: Updated password for SNMP trap  --str
-        :param passphrase:  Updated passphrase for SNMP trap  --str
-        :returns: dict
+        :param address: hostname or IP address of the OTel collector -- str
+        :param port: TCP port of the OTel collector -- int
+        :param protocol: transport protocol; currently ``gRPC`` -- str
+        :param enable_compression: enable gzip payload compression -- bool
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
         """
         payload = {
-            'name': name,
+            'address': address,
             'port': port,
-            'username': username,
-            'password': password,
-            'passphrase': passphrase
+            'protocol': protocol,
+            'enable_compression': enable_compression
         }
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module.")
-        return self.common.modify_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/snmp/{snmp_id}",
+        self.common.create_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint",
             resource_type=None, payload=payload)
 
-    def get_ldap_configuration(self):
-        """Get Current LDAP configuration for Unisphere Server.
+    def update_otel_endpoint(
+            self, address: str, port: int, protocol: str = 'gRPC',
+            enable_compression: bool = False) -> None:
+        """Update the registered OpenTelemetry collector endpoint.
 
-        :returns: dict
+        :param address: hostname or IP address of the OTel collector -- str
+        :param port: TCP port of the OTel collector -- int
+        :param protocol: transport protocol; currently ``gRPC`` -- str
+        :param enable_compression: enable gzip payload compression -- bool
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
         """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
+        payload = {
+            'address': address,
+            'port': port,
+            'protocol': protocol,
+            'enable_compression': enable_compression
+        }
+        self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint",
+            resource_type=None, payload=payload)
+
+    def delete_otel_endpoint(self) -> None:
+        """Delete the registered OpenTelemetry collector endpoint.
+
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        self.common.delete_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/endpoint")
+
+    def get_otel_registration(self) -> dict[str, Any]:
+        """List OpenTelemetry metrics-export registration for all arrays.
+
+        :returns: per-array OTel metrics-export registration details -- dict
+        :raises exception.PyU4VException: if the REST request fails
+        """
         return self.common.get_request(
-            target_uri=f"/{self.common.UNI_VERSION}/system/authorization/ldap",
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/"
+            f"registration",
             resource_type=None)
 
-    def configure_ldap_authentication(
-            self, action, ldap_server, ldap_port, bind_dn, bind_password,
-            user_search_path, group_name_attribute, group_member_attribute,
-            group_object_class, ssl_certificate,
-            limit_authentication_to_ldap_group_members, user_object_class,
-            user_id_attribute, ldap_group_names=None):
-        """Enable or disable LDAP authentication.
-        :param action: Enable or Disable, Enable requires additional payload
-                       parameters  -- Bool
-        :param ldap_server: LDAP Server IP address or DNS Name --str
-        :param ldap_port: TCP port number --int
-        :param bind_dn: Distinguished name of the privileged account used to
-                        perform operations, such as searching users and
-                        groups, on the LDAP directory --str
-        :param bind_password: Password of the privileged account --str
-        :param user_search_path: name of the node at which to begin user
-                                 searches --str
-        :param group_name_attribute: --str
-        :param group_member_attribute: --str
-        :param group_object_class: --str
-        :param ssl_certificate -- base64 encoded SSL certificate, obtained
-                                  from server or contents of .cer file
-                                  All text in file required including begin
-                                  and end markers for file
-                                  -----BEGIN CERTIFICATE----- to
-                                  -----END CERTIFICATE----- --str
-        :param limit_authentication_to_ldap_group_members --bool
-        :param ldap_group_names: LDAP groups separated by commas --str
-        :param user_object_class --str
-        :param user_id_attribute --str
-        :returns: dict
-        """
-        LOG.warning("Warning: This function is deprecated and will be removed "
-                    "in future version 10.4. Please explore API Calls in new "
-                    "settings module")
+    def update_otel_registration(
+            self, registration_details: list[dict[str, str | bool]]) -> None:
+        """Update which arrays export metrics to the OTel collector.
 
-        payload = {"action": action}
-        if action:
-            payload["enable_ldap_authority"] = {
-                "server": ldap_server,
-                "port": ldap_port,
-                "bind_dn": bind_dn,
-                "bind_password": bind_password,
-                "user_search_path": user_search_path,
-                "user_object_class": user_object_class,
-                "user_id_attribute": user_id_attribute,
-                "group_search_path": user_search_path,
-                "group_name_attribute": group_name_attribute,
-                "group_member_attribute": group_member_attribute,
-                "group_object_class": group_object_class,
-                "ssl_certificate": ssl_certificate,
-                "limit_authentication_to_ldap_group_members":
-                    limit_authentication_to_ldap_group_members,
-                "ldap_group_names": ldap_group_names
-            }
-        return self.common.modify_resource(
-            target_uri=f"/{self.common.UNI_VERSION}/system/authorization/ldap",
+        Each registration entry must contain ``system_id`` and
+        ``export_metrics`` keys.
+
+        :param registration_details: per-array export settings -- list
+        :returns: None
+        :raises exception.PyU4VException: if the REST request fails
+        """
+        payload = {'registration_details': registration_details}
+        self.common.modify_resource(
+            target_uri=f"/{self.common.UNI_VERSION}/settings/otel/"
+            f"registration",
             resource_type=None, payload=payload)

@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -86,7 +86,9 @@ class PyU4VRestRequestsTest(testtools.TestCase):
         """Test establish_rest_session with headers."""
         ref_headers = {'test_headers': True}
         session = self.rest.establish_rest_session(headers=ref_headers)
-        self.assertEqual(ref_headers, session.headers)
+        self.assertIn('test_headers', session.headers)
+        self.assertEqual(session.headers['test_headers'], True)
+        self.assertNotIn(constants.CONTENT_TYPE, session.headers)
 
     def test_rest_request(self):
         """Test REST request success."""
@@ -210,7 +212,7 @@ class PyU4VRestRequestsTest(testtools.TestCase):
             self.assertEqual('OK', response.raw.reason)
 
     def test_file_transfer_request_upload(self):
-        """Test file_transfer_request download request."""
+        """Test file_transfer_request upload request."""
         with mock.patch.object(
                 self.rest, 'establish_rest_session',
                 return_value=pf.FakeRequestsSession()) as mck_est:
@@ -222,12 +224,29 @@ class PyU4VRestRequestsTest(testtools.TestCase):
                 form_data={'test_req': True})
 
             mck_est.assert_called_once_with(headers={
-                constants.ACCEPT_ENC: constants.APP_MPART,
+                constants.ACCEPT: constants.APP_JSON,
                 constants.USER_AGENT: rest_requests.ua_details,
                 constants.APP_TYPE: self.rest.headers.get(
                     'application-type')})
             self.assertEqual(200, sc)
             self.assertEqual('OK', response.raw.reason)
+
+    def test_upload_session_generates_multipart_content_type(self):
+        """Test upload session lets requests set the multipart boundary."""
+        session = self.rest.establish_rest_session(headers={
+            constants.ACCEPT: constants.APP_JSON,
+            constants.USER_AGENT: rest_requests.ua_details,
+            constants.APP_TYPE: self.rest.headers.get('application-type')})
+        request = requests.Request(
+            method=constants.POST,
+            url='http://10.10.10.10:8443/univmax/restapi/upload',
+            files={constants.ZIP_FILE: b'test_binary_data'})
+
+        prepared_request = session.prepare_request(request)
+
+        content_type = prepared_request.headers[constants.CONTENT_TYPE]
+        self.assertTrue(content_type.startswith(constants.APP_MPART))
+        self.assertIn('boundary=', content_type)
 
     def test_file_transfer_request_download_upload_exception(self):
         """Test file_transfer_request exc download and upload both set."""

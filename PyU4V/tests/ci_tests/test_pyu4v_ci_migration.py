@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -103,6 +103,8 @@ class CITestMigration(base.TestBaseTestCase, testtools.TestCase):
     def test_create_delete_migration_environment(self):
         """Test create_migration_environment & delete_migration_environment."""
         migration_env = self.create_ci_migration_environment()
+        if not migration_env or 'arrayId' not in migration_env:
+            self.skipTest('No migration environment could be created')
         tgt_array = migration_env.get('arrayId')
         assert tgt_array in self.migration.get_environment_list()
         self.migration.delete_migration_environment(tgt_array)

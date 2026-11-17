@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,3 +48,35 @@ class PyU4VvolumesTest(testtools.TestCase):
                 self.common, 'get_request') as mock_get:
             self.volumes.get_volumes_details()
         mock_get.assert_called()
+
+    def test_get_volumes_details_default_exclusions(self):
+        """Default selection excludes snapshots and RDF information."""
+        metadata = [
+            {'name': 'id'}, {'name': 'snapshots'},
+            {'name': 'rdf_infos'}, {'name': 'identifier'}]
+        with mock.patch.object(
+                self.volumes, 'get_volumes_meta_data',
+                return_value=metadata), mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+            self.volumes.get_volumes_details()
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.volumes.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes?select=id,identifier",
+            resource_type=None)
+
+    def test_get_volumes_details_empty_exclusions(self):
+        """An empty exclusion list explicitly includes every attribute."""
+        metadata = [
+            {'name': 'id'}, {'name': 'snapshots'}, {'name': 'rdf_infos'}]
+        with mock.patch.object(
+                self.volumes, 'get_volumes_meta_data',
+                return_value=metadata), mock.patch.object(
+                    self.common, 'get_request') as mock_get:
+            self.volumes.get_volumes_details(exclude=[])
+
+        mock_get.assert_called_once_with(
+            target_uri=f"/{self.volumes.enhanced_api_version}/systems/"
+                       f"{self.data.array}/volumes"
+                       f"?select=id,snapshots,rdf_infos",
+            resource_type=None)

@@ -53,3 +53,27 @@ PyU4V\.utils\.time\_handler
     :members:
     :undoc-members:
     :show-inheritance:
+
+PyU4V\.utils\.utils
+--------------------
+
+.. automodule:: PyU4V.utils.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.utils\.performance\_constants
+-------------------------------------
+
+.. automodule:: PyU4V.utils.performance_constants
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PyU4V\.utils\.performance\_category\_map
+-----------------------------------------
+
+.. automodule:: PyU4V.utils.performance_category_map
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         snapshot_policy_name = 'new_local_sp'
         snapshot_policy_interval = '10 Minutes'
         with mock.patch.object(
-                self.snapshot_policy, 'create_resource') as mock_create:
+                self.snapshot_policy.common, 'create_resource') as mock_create:
             self.snapshot_policy.create_snapshot_policy(
                 snapshot_policy_name, snapshot_policy_interval,
                 local_snapshot_policy_snapshot_count=10)
@@ -75,7 +75,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         snapshot_policy_name = 'new_local_sp'
         snapshot_policy_interval = '10 Minutes'
         with mock.patch.object(
-                self.snapshot_policy, 'create_resource') as mock_create:
+                self.snapshot_policy.common, 'create_resource') as mock_create:
             self.snapshot_policy.create_snapshot_policy(
                 snapshot_policy_name, snapshot_policy_interval,
                 local_snapshot_policy_snapshot_count=10,
@@ -102,7 +102,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         snapshot_policy_name = 'new_cloud_sp'
         snapshot_policy_interval = '1 Day'
         with mock.patch.object(
-                self.snapshot_policy, 'create_resource') as mock_create:
+                self.snapshot_policy.common, 'create_resource') as mock_create:
             self.snapshot_policy.create_snapshot_policy(
                 snapshot_policy_name, snapshot_policy_interval,
                 cloud_provider_name='my_cloud_provider',
@@ -180,7 +180,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         snapshot_policy_name = 'existing_sp_name'
         new_snapshot_policy_name = 'new_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'modify_resource') as mock_modify:
+                self.snapshot_policy.common, 'modify_resource') as mock_modify:
             self.snapshot_policy.modify_snapshot_policy_properties(
                 snapshot_policy_name,
                 new_snapshot_policy_name=new_snapshot_policy_name)
@@ -191,7 +191,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         snapshot_policy_name = 'existing_sp_name'
         new_snapshot_policy_name = 'new_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'modify_resource') as mock_modify:
+                self.snapshot_policy.common, 'modify_resource') as mock_modify:
             self.snapshot_policy.modify_snapshot_policy_properties(
                 snapshot_policy_name,
                 new_snapshot_policy_name=new_snapshot_policy_name,
@@ -261,7 +261,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         """Test modify_snapshot_policy associate with storage group."""
         snapshot_policy_name = 'existing_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'modify_resource') as mock_modify:
+                self.snapshot_policy.common, 'modify_resource') as mock_modify:
             self.snapshot_policy.associate_to_storage_groups(
                 snapshot_policy_name,
                 storage_group_names=self.data.snapshot_policy_sg_list)
@@ -283,7 +283,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         """Test disassociate_from_storage_groups success."""
         snapshot_policy_name = 'existing_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'modify_resource') as mock_modify:
+                self.snapshot_policy.common, 'modify_resource') as mock_modify:
             self.snapshot_policy.disassociate_from_storage_groups(
                 snapshot_policy_name,
                 storage_group_names=self.data.snapshot_policy_sg_list)
@@ -305,7 +305,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         """Test suspend_snapshot_policy."""
         snapshot_policy_name = 'existing_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'modify_resource') as mock_modify:
+                self.snapshot_policy.common, 'modify_resource') as mock_modify:
             self.snapshot_policy.suspend_snapshot_policy(
                 snapshot_policy_name)
             mock_modify.assert_called_once()
@@ -314,7 +314,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         """Test resume_snapshot_policy."""
         snapshot_policy_name = 'existing_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'modify_resource') as mock_modify:
+                self.snapshot_policy.common, 'modify_resource') as mock_modify:
             self.snapshot_policy.resume_snapshot_policy(
                 snapshot_policy_name)
             mock_modify.assert_called_once()
@@ -323,7 +323,7 @@ class PyU4VSnapshotPolicyTest(testtools.TestCase):
         """Test delete_snapshot_policy."""
         snapshot_policy_name = 'existing_sp_name'
         with mock.patch.object(
-                self.snapshot_policy, 'delete_resource') as mock_delete:
+                self.snapshot_policy.common, 'delete_resource') as mock_delete:
             self.snapshot_policy.delete_snapshot_policy(
                 snapshot_policy_name)
             mock_delete.assert_called_once()

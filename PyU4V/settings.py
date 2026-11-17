@@ -13,6 +13,7 @@
 # limitations under the License.
 """settings.py."""
 import logging
+from typing import Any
 
 from PyU4V.common import CommonFunctions
 from PyU4V.utils import constants
@@ -22,19 +23,27 @@ LOG = logging.getLogger(__name__)
 
 class SettingsFunctions(object):
 
-    def __init__(self, array_id, rest_client):
+    def __init__(self, array_id: str, rest_client: Any) -> None:
         """__init__."""
         self.common = CommonFunctions(rest_client)
         self.array_id = array_id
-        self.version = constants.UNISPHERE_VERSION
 
-    def get_performance_registration_settings(self) -> dict:
+    @property
+    def version(self) -> str:
+        """Unisphere version used for requests (live ``common.UNI_VERSION``).
+
+        :returns: Unisphere REST API version -- str
+        """
+        return getattr(
+            self.common, 'UNI_VERSION', constants.UNISPHERE_VERSION)
+
+    def get_performance_registration_settings(self) -> dict[str, Any]:
         """List Array Performance Registration Settings.
         returns: Array Performance Registration Settings -- dict
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/settings/registration/"
-                       f"performance", resource_type=None)
+            f"performance", resource_type=None)
 
     # Unipshere registration functions
 
@@ -43,18 +52,19 @@ class SettingsFunctions(object):
             True, file: bool = False, real_time_storage_groups: list[str] =
             None):
         """Update Array Performance Registration Settings.
+
         :param array_id: The storage array ID -- string
         :param diagnostic: enable/disable diagnostic performance data
                            collection at 5 minute intervals -- bool
         :param real_time: enable/disable real-time performance data
-                         collection at 5 second intervals, note enabling
-                         this parameter also enables max values to be
-                         returned on diagnostic metrics -- bool
+                          collection at 5 second intervals, note enabling
+                          this parameter also enables max values to be
+                          returned on diagnostic metrics -- bool
         :param file: enable/disable file performance data collection -- bool
-        :param real_time_storage_groups: Comma separated list of Storage Groups
-                                         to collect realtime data on, requires
-                                         realtime=True -- string
-        returns: Array Performance Registration Settings -- dict
+        :param real_time_storage_groups: Comma separated list of Storage
+                                         Groups to collect realtime data on,
+                                         requires realtime=True -- string
+        :returns: Array Performance Registration Settings -- dict
         """
         payload = {
             "registration_details": [{
@@ -68,7 +78,7 @@ class SettingsFunctions(object):
 
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/settings/registration/"
-                       f"performance", resource_type=None, payload=payload)
+            f"performance", resource_type=None, payload=payload)
 
     def get_scg_configuration_details(self) -> dict:
         """List SCG Configuration Details.
@@ -143,8 +153,8 @@ class SettingsFunctions(object):
 
         return self.common.create_resource(
             target_uri=f"/"
-                       f"{self.common.UNI_VERSION}/settings/registration/scg/"
-                       f"connection", resource_type=None, payload=payload)
+            f"{self.common.UNI_VERSION}/settings/registration/scg/"
+            f"connection", resource_type=None, payload=payload)
 
     def get_cloudiq_data_collection_configuration(self) -> dict:
         """List CloudIQ Data Collection Configuration.
@@ -154,7 +164,7 @@ class SettingsFunctions(object):
         query_params = {}
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/settings/"
-                       f"registration/cloudiq", resource_type=None,
+            f"registration/cloudiq", resource_type=None,
             params=query_params)
 
     def register_cloudiq_data_collection(
@@ -170,7 +180,7 @@ class SettingsFunctions(object):
         }
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/settings/registration/"
-                       f"cloudiq", resource_type=None, payload=payload)
+            f"cloudiq", resource_type=None, payload=payload)
 
     # Functions for alert configurations
     def update_performance_thresholds_and_alerts(self, payload: dict) -> dict:
@@ -178,25 +188,27 @@ class SettingsFunctions(object):
 
         :param payload: Global Thresholds and Alerts, can be a subset of the
                         overall payload from
-                        get_performance_thresholds_and_alerts-- dict
-        :sample payload:
-                        {"global_performance_thresholds": [
-                              {
-                                "category": "Array",
-                                "metric": "BEUtilization",
-                                "kpi": 'true',
-                                "alert_error": 'true',
-                                "first_lower_threshold": "50",
-                                "second_lower_threshold": "40",
-                                "first_upper_threshold": "65",
-                                "second_upper_threshold": "80"
-                              }]
+                        get_performance_thresholds_and_alerts -- dict
 
+        Sample payload::
+
+            {"global_performance_thresholds": [
+                {
+                    "category": "Array",
+                    "metric": "BEUtilization",
+                    "kpi": "true",
+                    "alert_error": "true",
+                    "first_lower_threshold": "50",
+                    "second_lower_threshold": "40",
+                    "first_upper_threshold": "65",
+                    "second_upper_threshold": "80"
+                }]
+            }
         """
         payload = payload
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
-                       f"performance_threshold", resource_type=None,
+            f"performance_threshold", resource_type=None,
             payload=payload)
 
     def get_performance_thresholds_and_alerts(self,
@@ -215,7 +227,7 @@ class SettingsFunctions(object):
         # Fetch all alerts
         all_alerts = self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
-                       f"performance_threshold", resource_type=None
+            f"performance_threshold", resource_type=None
         )
 
         filtered_alerts = {'global_performance_thresholds': []}
@@ -236,7 +248,7 @@ class SettingsFunctions(object):
         """
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
-                       f"notification", resource_type=None)
+            f"notification", resource_type=None)
 
     def update_alert_notification_targets(
             self, payload: dict = None, enable_email: bool = None,
@@ -292,80 +304,72 @@ class SettingsFunctions(object):
         email, SNMP, and/or syslog.
         """
 
-        if not payload:
-            payload = {}
+        # Build a new top-level payload so partial updates do not modify a
+        # dictionary owned by the caller.
+        payload = dict(payload) if payload is not None else {}
 
         # Handle email settings
-        if enable_email:
-            email_payload = {
-                "email": {
-                    "enabled": enable_email,
+        if enable_email is not None:
+            if enable_email:
+                if not all([email_server, sender_address, email_port]):
+                    raise ValueError(
+                        "enable_email is True but email server, sender "
+                        "address, or email port is missing.")
+                email_payload = {
+                    "enabled": True,
                     "email_server": email_server,
                     "sender_address": sender_address,
                     "email_port": email_port
                 }
-            }
-            if not all([email_server, sender_address, email_port]):
-                raise ValueError(
-                    "enable_email is True but email server, sender address, "
-                    "or email port is missing.")
-
-        else:
-            email_payload = {"email": {
-                "enabled": enable_email
-            }}
-        payload.update(email_payload)
+            else:
+                email_payload = {"enabled": False}
+            payload["email"] = email_payload
 
         # Handle SNMP settings
-        if enable_snmp:
-            snmp_payload = {
-                "snmp": {
-                    "enabled": enable_snmp,
-                    "snmp_trap_targets": [
-                        {
-                            "host": snmp_host,
-                            "port": snmp_port,
-                            "version": snmp_version
+        if enable_snmp is not None:
+            if enable_snmp:
+                snmp_target = {
+                    "host": snmp_host,
+                    "port": snmp_port,
+                    "version": snmp_version
+                }
+
+                # SNMPv3 specific fields. Accept both the documented integer
+                # value and the equivalent string used by existing scripts.
+                if str(snmp_version) == "3":
+                    snmp_target["security_model"] = snmp_security_model
+                    snmp_target["authorization"] = {
+                        "username": snmp_username,
+                        "password": snmp_password,
+                        "passphrase": snmp_passphrase
+                    }
+
+                    if tls_security_name and certificate_authority_pem:
+                        snmp_target["tls"] = {
+                            "security_name": tls_security_name,
+                            "certificate_authority_pem":
+                                certificate_authority_pem
                         }
-                    ]
-                }
-            }
 
-            # SNMPv3 specific fields
-            if snmp_version == "3":
-                snmp_target = snmp_payload["snmp"]["snmp_trap_targets"][0]
-                snmp_target["security_model"] = snmp_security_model
-                snmp_target["authorization"] = {
-                    "username": snmp_username,
-                    "password": snmp_password,
-                    "passphrase": snmp_passphrase
-                }
-
-                if tls_security_name and certificate_authority_pem:
-                    snmp_target["tls"] = {
-                        "security_name": tls_security_name,
-                        "certificate_authority_pem": certificate_authority_pem
-                    }
-            else:
                 snmp_payload = {
-                    "snmp": {
-                        "enabled": enable_snmp
-                    }
+                    "enabled": True,
+                    "snmp_trap_targets": [snmp_target]
                 }
-
-            payload.update(snmp_payload)
+            else:
+                snmp_payload = {"enabled": False}
+            payload["snmp"] = snmp_payload
 
         # Handle syslog settings
-        if enable_syslog:
-            if not all([syslog_host, syslog_protocol, syslog_text_format,
-                        tls is not None, syslog_port]):
-                raise ValueError(
-                    "enable_syslog is True but one or more required syslog "
-                    "fields are missing.")
+        if enable_syslog is not None:
+            if enable_syslog:
+                if not all([syslog_host, syslog_protocol, syslog_text_format,
+                            tls is not None, syslog_port]):
+                    raise ValueError(
+                        "enable_syslog is True but one or more required "
+                        "syslog fields are missing.")
 
-            syslog_payload = {
-                "syslog": {
-                    "enabled": enable_syslog,
+                syslog_payload = {
+                    "enabled": True,
                     "syslog_target": {
                         "host": syslog_host,
                         "protocol": syslog_protocol,
@@ -374,12 +378,13 @@ class SettingsFunctions(object):
                         "port": syslog_port
                     }
                 }
-            }
-            payload.update(syslog_payload)
+            else:
+                syslog_payload = {"enabled": False}
+            payload["syslog"] = syslog_payload
 
         return self.common.create_resource(
             target_uri=f"/{self.common.UNI_VERSION}/settings/alert/"
-                       f"notification", resource_type=None, payload=payload)
+            f"notification", resource_type=None, payload=payload)
 
     def get_alert_policies(
             self, array_id: str = None, name: str = None, type: str = None,
@@ -411,7 +416,7 @@ class SettingsFunctions(object):
         :param syslog_notifications: Optional value that filters returned list
                                      to display Alert Policies that have
                                      syslog notifications enabled
-                                    (true/false) -- bool
+                                     (true/false) -- bool
         :param array_id: The storage array ID -- string
         """
         array_id = array_id if array_id else self.array_id
@@ -422,7 +427,7 @@ class SettingsFunctions(object):
                         "syslog_notifications": syslog_notifications}
         return self.common.get_request(
             target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
-                       f"{array_id}/alert/alert_policy",
+            f"{array_id}/alert/alert_policy",
             resource_type=None, params=query_params)
 
     def update_alert_policies(self, payload: dict,
@@ -431,14 +436,15 @@ class SettingsFunctions(object):
 
         :param array_id: The storage array ID -- string
         :param payload: Optional payload, can be user supplied or generated
-        from get_alert_policies, users can use a subset of payload if they
-        are only wishing to do partial update -- dict
+                        from get_alert_policies, users can use a subset of
+                        payload if they are only wishing to do partial
+                        update -- dict
 
         """
         array_id = array_id if array_id else self.array_id
         return self.common.modify_resource(
             target_uri=f"/{self.common.UNI_VERSION}/settings/symmetrix/"
-                       f"{array_id}/alert/alert_policy",
+            f"{array_id}/alert/alert_policy",
             resource_type=None, payload=payload)
 
     def get_host_access_control_configuration(self,
@@ -688,27 +694,29 @@ class SettingsFunctions(object):
     def update_alert_notifications(self, payload: dict, array_id: str = None) \
             -> dict:
         """Set/update Alert Notification Settings.
+
         Defines what alert severity is sent for System and Performance
-        Alerts, per array.  Also sets subsciption of Alert Notification for
+        Alerts, per array.  Also sets subscription of Alert Notification for
         email subscribers.
 
-        :payload: payload, user built or generated from
-                  get_alert_notification_settings
-                  sample_payload = {'alert_severity': {
-                  'system': {'fatal': True,
-                       'critical': True,
-                       'warning': True,
-                       'normal': False,
-                       'info': False},
-                  'performance': {'critical': True,
-                            'warning': True,
-                            'info': False}},
-                  'subscriptions': {'system': ['random.person@dell.com'],
-                              'performance': ['random.person@dell.com'],
-                              'jobs': [],
-                              'reports': ['random.person@dell.com'],
-                              'none': []}} -- dict
-        :array_id: The storage array ID -- string
+        :param payload: payload, user built or generated from
+                        get_alert_notification_settings -- dict
+        :param array_id: The storage array ID -- string
+
+        Sample payload::
+
+            {'alert_severity': {
+                'system': {'fatal': True, 'critical': True,
+                           'warning': True, 'normal': False,
+                           'info': False},
+                'performance': {'critical': True, 'warning': True,
+                                'info': False}},
+             'subscriptions': {
+                'system': ['random.person@dell.com'],
+                'performance': ['random.person@dell.com'],
+                'jobs': [],
+                'reports': ['random.person@dell.com'],
+                'none': []}}
         """
         array_id = array_id if array_id else self.array_id
         payload = payload

@@ -9,7 +9,6 @@
     contribute
     support
     programmers_guide
-    tools
     api
     genindex
 
@@ -24,7 +23,7 @@ PowerMax REST API.  It wraps REST calls with simple APIs that abstract the HTTP
 request and response handling.
 
 .. note::
-   All official documentation for Unipshere for PowerMax API
+   All official documentation for Unisphere for PowerMax API
    is available at https://developer.dell.com/apis/4458. An OpenApi.json file
    can be download from this site for use with tools like PostMan or for
    interfacing with PyU4V custom API call mechanism.  Please refer to this
@@ -35,9 +34,9 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.4.0.0                               |
+| **PyU4V Version**             | 10.5.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version*  | 10.4.0                                 |
+| **Minimum Unisphere Version** | 10.5.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -45,21 +44,20 @@ Supported PyU4V Versions
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    |  3.6 -3.12                             |
+| **Python**                    | 3.9 - 3.13                             |
 +-------------------------------+----------------------------------------+
-| **Requirements**              | Requests_, Six_, urllib3_,             |
-|                               | prettytable_                           |
+| **Requirements**              | Requests_, urllib3_                    |
 +-------------------------------+----------------------------------------+
 | **Test Requirements**         | TestTools_, Tox_                       |
 +-------------------------------+----------------------------------------+
 
 
 .. note::
-    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
-    has been dropped since January 1st 2020.
+    PyU4V officially supports Python 3.9, 3.10, 3.11, 3.12 & 3.13.
+    Python 2.x support was dropped in January 2020.
 
 .. note::
-    PyU4V version 10.4.0.0 is compatible with scripts written for PyU4V versions
+    PyU4V version 10.5.0.0 is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
@@ -83,9 +81,6 @@ Getting Started
 
 :doc:`programmers_guide`
     A range of examples demonstrating various PyU4V module usage.
-
-:doc:`tools`
-  The tools guide for PyU4V
 
 :doc:`api`
     A glossary of all available functions.
@@ -116,7 +111,7 @@ PyU4V docs offline.
 Disclaimer
 ----------
 
-PyU4V 10.4 is distributed under the Apache 2.0 License. Unless
+PyU4V 10.5 is distributed under the Apache 2.0 License. Unless
 required by
 applicable law or agreed to in writing, software distributed under the Apache
 2.0 License is distributed on an **"as is" basis, without warranties or**
@@ -126,7 +121,6 @@ specific language governing permissions and limitations under the License.
 .. URL LINKS
 
 .. _Requests: https://realpython.com/python-requests/
-.. _Six: https://six.readthedocs.io/
 .. _urllib3: https://urllib3.readthedocs.io/en/latest/
 .. _retired: https://pythonclock.org/
 .. _TestTools: https://pypi.org/project/testtools/

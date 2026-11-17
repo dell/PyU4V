@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class PyU4VMigrationTest(testtools.TestCase):
     def test_create_migration_environment(self):
         """Test create_migration_environment."""
         with mock.patch.object(
-                self.migration, 'create_resource') as mock_create:
+                self.migration.common, 'create_resource') as mock_create:
             self.migration.create_migration_environment(
                 target_array_id=self.data.remote_array)
             self.assertEqual(1, mock_create.call_count)
@@ -64,15 +64,14 @@ class PyU4VMigrationTest(testtools.TestCase):
     def test_delete_migration_environment(self):
         """Test delete_migration_environment."""
         with mock.patch.object(
-                self.migration, 'delete_resource') as mock_delete:
+                self.migration.common, 'delete_resource') as mock_delete:
             self.migration.delete_migration_environment(
                 self.data.remote_array)
             mock_delete.assert_called_once_with(
-                category=constants.MIGRATION,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.conn.array_id,
-                resource_type=constants.ENVIRONMENT,
-                resource_type_id=self.data.remote_array)
+                target_uri=f"/{self.migration.common.UNI_VERSION}"
+                           f"/mobility/symmetrix"
+                           f"/{self.migration.array_id}/environment"
+                           f"/{self.data.remote_array}")
 
     def test_get_array_migration_capabilities(self):
         """Test get_array_migration_capabilities."""
@@ -124,14 +123,14 @@ class PyU4VMigrationTest(testtools.TestCase):
     def test_create_storage_group_migration(self):
         """Test create_storage_group_migration."""
         with mock.patch.object(
-                self.migration, 'create_resource') as mock_create:
+                self.migration.common, 'create_resource') as mock_create:
             self.migration.create_storage_group_migration(
                 self.data.storagegroup_name, self.data.remote_array)
             self.assertEqual(1, mock_create.call_count)
 
     def test_modify_storage_group_migration(self):
         """Test modify_storage_group_migration."""
-        with mock.patch.object(self.migration, 'modify_resource') as mock_mod:
+        with mock.patch.object(self.migration.common, 'modify_resource') as mock_mod:
             self.migration.modify_storage_group_migration(
                 self.data.storagegroup_name, 'Recover')
             mock_mod.assert_called_once()
@@ -139,20 +138,19 @@ class PyU4VMigrationTest(testtools.TestCase):
     def test_delete_storage_group_migration(self):
         """Test delete_storage_group_migration."""
         with mock.patch.object(
-                self.migration, 'delete_resource') as mock_delete:
+                self.migration.common, 'delete_resource') as mock_delete:
             self.migration.delete_storage_group_migration(
                 self.data.storagegroup_name)
             mock_delete.assert_called_once_with(
-                category=constants.MIGRATION,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.conn.array_id,
-                resource_type=constants.STORAGEGROUP,
-                resource_type_id=self.data.storagegroup_name)
+                target_uri=f"/{self.migration.common.UNI_VERSION}"
+                           f"/mobility/symmetrix"
+                           f"/{self.migration.array_id}/storagegroup"
+                           f"/{self.data.storagegroup_name}")
 
     def test_create_storage_group_migration_params(self):
         """Test create_storage_group_migration."""
         with mock.patch.object(
-                self.migration, 'create_resource') as mock_create:
+                self.migration.common, 'create_resource') as mock_create:
             ref_params = dict()
             ref_params['otherArrayId'] = self.data.remote_array
             ref_params['srpId'] = self.data.srp
@@ -167,16 +165,15 @@ class PyU4VMigrationTest(testtools.TestCase):
                 port_group_id=self.data.port_group_name_f, no_compression=True,
                 pre_copy=True, validate=True)
             mock_create.assert_called_once_with(
-                category=constants.MIGRATION,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.conn.array_id,
-                resource_type=constants.STORAGEGROUP,
-                resource_type_id=self.data.storagegroup_name,
+                target_uri=f"/{self.migration.common.UNI_VERSION}"
+                           f"/mobility/symmetrix"
+                           f"/{self.migration.array_id}/storagegroup"
+                           f"/{self.data.storagegroup_name}",
                 payload=ref_params)
 
     def test_modify_storage_group_migration_params(self):
         """Test modify_storage_group_migration."""
-        with mock.patch.object(self.migration, 'modify_resource') as mock_mod:
+        with mock.patch.object(self.migration.common, 'modify_resource') as mock_mod:
             ref_options = dict()
             ref_options['action'] = 'LINK'
             ref_options['option'] = 'dummy_option'
@@ -186,9 +183,8 @@ class PyU4VMigrationTest(testtools.TestCase):
                 storage_group_name=self.data.storagegroup_name,
                 action='LINK', options={'option': 'dummy_option'}, _async=True)
             mock_mod.assert_called_once_with(
-                category=constants.MIGRATION,
-                resource_level=constants.SYMMETRIX,
-                resource_level_id=self.conn.array_id,
-                resource_type=constants.STORAGEGROUP,
-                resource_type_id=self.data.storagegroup_name,
-                payload=ref_options)
+                target_uri=f"/{self.migration.common.UNI_VERSION}"
+                           f"/mobility/symmetrix"
+                           f"/{self.migration.array_id}/storagegroup"
+                           f"/{self.data.storagegroup_name}",
+                resource_type=None, payload=ref_options)

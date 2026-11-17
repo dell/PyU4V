@@ -5,9 +5,9 @@ Requirements
 ------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.4.0.0                               |
+| **PyU4V Version**             | 10.5.0.0                               |
 +-------------------------------+----------------------------------------+
-| **Minimum Unisphere Version** | 10.4.0                                 |
+| **Minimum Unisphere Version** | 10.5.0                                 |
 +-------------------------------+----------------------------------------+
 | **Array Model**               | VMAX-3, VMAX AFA, PowerMax             |
 +-------------------------------+----------------------------------------+
@@ -15,10 +15,9 @@ Requirements
 +-------------------------------+----------------------------------------+
 | **Platforms**                 | Linux, Windows                         |
 +-------------------------------+----------------------------------------+
-| **Python**                    |  3.6 -3.12                             |
+| **Python**                    |  3.9 - 3.13                            |
 +-------------------------------+----------------------------------------+
-| **Requirements**              | Requests_, Six_, urllib3_,             |
-|                               | prettytable_                           |
+| **Requirements**              | Requests_, urllib3_                    |
 +-------------------------------+----------------------------------------+
 | **Test Requirements**         | TestTools_, Tox_                       |
 +-------------------------------+----------------------------------------+
@@ -29,13 +28,13 @@ Requirements
     version of Unisphere older than 9.1.x
 
 .. note::
-    PyU4V officially supports Python 3.6, 3.7, 3.8, 3.9 & 3.10 Python 2.x support
-    has been dropped since January 1st 2020.
+    PyU4V officially supports Python 3.9, 3.10, 3.11, 3.12 & 3.13.
+    Python 2.x support was dropped in January 2020.
 
 PyU4V Version Compatibility
 ---------------------------
 
-PyU4V version 10.4.0.0 is compatible with scripts written for PyU4V versions
+PyU4V version 10.5.0.0 is compatible with scripts written for PyU4V versions
 >= 9.x, there is **zero** support or compatibility for PyU4V 2.x or earlier
 scripts in later versions of PyU4V.
 
@@ -60,12 +59,11 @@ specifying ``PyU4V`` as the install package for ``pip``:
 
     $ pip install PyU4V
     # Install a specific version
-    $ pip install PyU4V==10.4.0.0
+    $ pip install PyU4V==10.5.0.0
 
 .. URL LINKS
 
 .. _Requests: https://realpython.com/python-requests/
-.. _Six: https://six.readthedocs.io/
 .. _urllib3: https://urllib3.readthedocs.io/en/latest/
 .. _retired: https://pythonclock.org/
 .. _TestTools: https://pypi.org/project/testtools/

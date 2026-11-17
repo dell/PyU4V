@@ -66,7 +66,10 @@ guide you with all the docstring conventions.
                   be specified, in this case it is a boolean -- bool
         :raises: Exceptions raised, omit if none
         """
-        return True if input_1 or input_2 else raise Exception
+        return True if input_1 or input_2 else False
+
+4. Imports should be ordered: standard library, third-party, local. Group
+each section with a blank line separator.
 
 5. Class names are mixed case with no underscores ``_``.
 

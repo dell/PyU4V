@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Dell Inc. or its subsidiaries.
+# Copyright (c) 2026 Dell Inc. or its subsidiaries.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,15 +47,25 @@ class CITestUtils(base.TestBaseTestCase, testtools.TestCase):
         global_path = os.path.normpath('{home_path}/.PyU4V/PyU4V.conf'.format(
             home_path=os.path.expanduser('~')))
         # If PyU4V.conf exists in the current user's home directory, set config
-        # defaults for paths and parse configuration
+        # defaults for paths and parse configuration.
         if os.path.isfile(global_path):
             self.conf_file = global_path
             self.conf_dir = os.path.dirname(os.path.realpath(self.conf_file))
             self.cfg = configparser.ConfigParser()
             self.cfg.read(self.conf_file)
-            self.skip_config_ci = False
-        # Else PyU4V.conf is not in user's home directory, skip CI tests for
-        # PyU4V.conf placement in multiple locations
+            required_options = (
+                (constants.SETUP, constants.ARRAY),
+                (constants.SETUP, constants.USERNAME),
+                (constants.SETUP, constants.PASSWORD),
+                (constants.SETUP, constants.SERVER_IP),
+                (constants.SETUP, constants.PORT),
+                ('logger_PyU4V', 'level'),
+                ('handler_fileHandler', 'args'))
+            self.skip_config_ci = not all(
+                self.cfg.get(section, option, fallback='').strip()
+                for section, option in required_options)
+        # If PyU4V.conf is absent or incomplete, skip CI tests that require a
+        # usable home-directory configuration.
         else:
             self.skip_config_ci = True
 
