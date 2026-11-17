@@ -140,7 +140,8 @@ class PerformanceFunctions(object):
                 msg = ('There has been an issue registering array {arr} for '
                        'diagnostic performance data. It was not possible '
                        'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
+                       'error, please check Unisphere Logs.'.format(
+                           arr=array_id))
                 LOG.error(msg)
                 raise exception.VolumeBackendAPIException(message=msg)
         else:
@@ -178,10 +179,11 @@ class PerformanceFunctions(object):
                     LOG.error(msg)
                     raise exception.VolumeBackendAPIException(message=msg)
             else:
-                msg = ('There has been an issue disabled array {arr} '
+                msg = ('There has been an issue disabling array {arr} for '
                        'diagnostic performance data. It was not possible '
                        'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
+                       'error, please check Unisphere Logs.'.format(
+                           arr=array_id))
                 LOG.error(msg)
                 raise exception.VolumeBackendAPIException(message=msg)
         else:
@@ -249,7 +251,8 @@ class PerformanceFunctions(object):
                 msg = ('There has been an issue disabling array {arr} '
                        'real-time performance data. It was not possible '
                        'to retrieve a message from the REST API detailing the '
-                       'error, please check Unisphere Logs.')
+                       'error, please check Unisphere Logs.'.format(
+                           arr=array_id))
                 LOG.error(msg)
                 raise exception.VolumeBackendAPIException(message=msg)
         else:

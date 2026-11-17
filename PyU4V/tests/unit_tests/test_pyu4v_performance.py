@@ -104,7 +104,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
     def test_is_array_real_time_performance_registered_exception_catch(self):
         with mock.patch.object(
                 self.perf.common, 'get_request',
-                side_effect=exception.VolumeBackendAPIException):
+                side_effect=exception.VolumeBackendAPIException(
+                    data='Simulated backend failure')):
             self.assertFalse(
                 self.perf.is_array_real_time_performance_registered())
 
@@ -175,8 +176,11 @@ class PyU4VPerformanceTest(testtools.TestCase):
             with mock.patch.object(
                     self.perf.common, 'create_resource',
                     return_value=dict()) as mck_p:
-                self.assertRaises(exception.VolumeBackendAPIException,
-                                  self.perf.enable_diagnostic_data_collection)
+                error = self.assertRaises(
+                    exception.VolumeBackendAPIException,
+                    self.perf.enable_diagnostic_data_collection)
+                self.assertIn(self.perf.array_id, str(error))
+                self.assertNotIn('{arr}', str(error))
                 mck_p.assert_called_once_with(
                     target_uri="/performance/Array/register", payload={
                         pc.SYMM_ID: self.perf.array_id,
@@ -221,8 +225,11 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(
                 self.perf.common, 'create_resource',
                 return_value=dict()) as mck_p:
-            self.assertRaises(exception.VolumeBackendAPIException,
-                              self.perf.disable_diagnostic_data_collection)
+            error = self.assertRaises(
+                exception.VolumeBackendAPIException,
+                self.perf.disable_diagnostic_data_collection)
+            self.assertIn(self.perf.array_id, str(error))
+            self.assertNotIn('{arr}', str(error))
             mck_p.assert_called_once_with(
                 target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
@@ -293,8 +300,11 @@ class PyU4VPerformanceTest(testtools.TestCase):
         with mock.patch.object(
                 self.perf.common, 'create_resource',
                 return_value=dict()) as mck_p:
-            self.assertRaises(exception.VolumeBackendAPIException,
-                              self.perf.disable_real_time_data_collection)
+            error = self.assertRaises(
+                exception.VolumeBackendAPIException,
+                self.perf.disable_real_time_data_collection)
+            self.assertIn(self.perf.array_id, str(error))
+            self.assertNotIn('{arr}', str(error))
             mck_p.assert_called_once_with(
                 target_uri="/performance/Array/register", payload={
                     pc.SYMM_ID: self.perf.array_id,
@@ -317,7 +327,8 @@ class PyU4VPerformanceTest(testtools.TestCase):
         """Test backup_performance_database exception."""
         with mock.patch.object(
                 self.perf.common, 'create_resource',
-                side_effect=exception.VolumeBackendAPIException,
+                side_effect=exception.VolumeBackendAPIException(
+                    data='Simulated backend failure'),
                 return_value=self.p_data.array_backup_fail):
             self.assertRaises(exception.VolumeBackendAPIException,
                               self.perf.backup_performance_database)

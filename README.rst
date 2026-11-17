@@ -284,6 +284,9 @@ Version 10.5 Changes Summary
   ``False``). When ``True``, appends the ``metric_type=All`` query parameter so all
   available metrics are returned instead of KPI metrics only. Fully backward-compatible
   — existing call-sites require no changes.
+- **Expired SnapVX discovery**: Scans replication storage groups without the
+  ``hasSnapshots`` filter to support arrays that reject that filter with HTTP
+  500. Groups without snapshots are skipped; discovery can make more requests.
 - **New modules**: ``PyU4V.snapshot`` (``SnapshotFunctions``) and ``PyU4V.srdf``
   (``SRDFFunctions``) split from ``replication.py``. Access via ``conn.snapshot``
   and ``conn.srdf`` respectively.

@@ -172,3 +172,42 @@ class PyU4VSnapshotTest(testtools.TestCase):
                 return_value={'name': ['snap1']}):
             result = replication.get_storage_group_snapshot_list('test_sg')
             self.assertEqual(['snap1'], result)
+
+    def test_expired_snapshot_discovery_without_server_filter(self):
+        """Scan mixed replication groups through both API entry points."""
+        for api in (self.snapshot, self.conn.replication):
+            for by_id in (False, True):
+                with self.subTest(api=type(api).__name__, by_id=by_id):
+                    responses = [
+                        {'name': ['no_snaps', 'empty', 'null', 'with_snaps']},
+                        {}, {'snapVXSnapshots': []}, {'snapVXSnapshots': None},
+                        {'snapVXSnapshots': ['snap']},
+                        {'snapids': [123]} if by_id else {'generations': [0]},
+                        {'isExpired': True, 'timestamp': 456,
+                         'linked_storage_group' if by_id else
+                         'linkedStorageGroup': [{'name': 'target'}]}]
+                    method = (api.find_expired_snapvx_snapshots_by_snap_ids
+                              if by_id else api.find_expired_snapvx_snapshots)
+                    with mock.patch.object(
+                            self.snapshot.common, 'get_request',
+                            side_effect=responses) as get_request:
+                        result = method()
+                    self.assertEqual([{
+                        'storagegroup_name': 'with_snaps',
+                        'snapshot_name': 'snap',
+                        'snap_id' if by_id else 'generation_number':
+                            123 if by_id else 0,
+                        'linked_sg_name': 'target',
+                        'snap_creation_time': 456}], result)
+                    self.assertEqual(
+                        {'hasSnapshots': None},
+                        get_request.call_args_list[0].kwargs['params'])
+                    self.assertEqual(7, get_request.call_count)
+
+    @mock.patch.object(common.CommonFunctions, 'get_request',
+                       return_value={'name': []})
+    def test_expired_snapshot_discovery_without_groups(self, mck_get):
+        """Return an empty list when no replication groups exist."""
+        self.assertEqual(
+            [], self.snapshot.find_expired_snapvx_snapshots_by_snap_ids())
+        self.assertEqual([], self.snapshot.find_expired_snapvx_snapshots())

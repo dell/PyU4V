@@ -164,7 +164,7 @@ class EnhancedPerformanceFunctions:
                         Each expression must be a string in the list;
                         separate clauses are joined with commas.  Note for
                         in notin filters the id is a list of storage groups
-                          -- list
+                        -- list
         :param all_metrics: when True adds the 'metric_type=All' query
                             parameter to return all available metrics instead
                             of KPI metrics only, default is False -- bool

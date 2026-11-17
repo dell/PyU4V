@@ -201,11 +201,12 @@ class SnapshotFunctions(object):
         :returns: expired snapshot details -- list
         """
         expired_snap_list = list()
-        sg_list = self._get_replication_enabled_storage_groups(
-            has_snapshots=True)
+        # Some arrays reject the hasSnapshots filter with HTTP 500.
+        # Inspect replication details instead so those arrays can be scanned.
+        sg_list = self._get_replication_enabled_storage_groups()
         for sg in sg_list:
             snap_list = self._get_storage_group_replication_details(sg)
-            for snapshot_name in snap_list['snapVXSnapshots']:
+            for snapshot_name in snap_list.get('snapVXSnapshots') or []:
                 snap_gen_list = (
                     self.get_storage_group_snapshot_generation_list(
                         sg, snapshot_name))
@@ -248,8 +249,9 @@ class SnapshotFunctions(object):
         :returns: expired snapshot details -- list
         """
         expired_snap_list = list()
-        sg_list = self._get_replication_enabled_storage_groups(
-            has_snapshots=True)
+        # Some arrays reject the hasSnapshots filter with HTTP 500.
+        # Inspect replication details instead so those arrays can be scanned.
+        sg_list = self._get_replication_enabled_storage_groups()
         for sg in sg_list:
             sg_snap_info = self._get_storage_group_replication_details(sg)
             if not sg_snap_info.get('snapVXSnapshots'):

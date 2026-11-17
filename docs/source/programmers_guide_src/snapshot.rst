@@ -21,3 +21,19 @@ snapshots, and deleting.
     :linenos:
     :language: python
     :lines: 15-92
+
+Finding expired snapshots
+-------------------------
+Expired-snapshot discovery lists replication storage groups without the
+``hasSnapshots`` server filter, which some arrays reject with HTTP 500.
+It then reads each group's replication details and skips groups without
+snapshots. This may require more requests on arrays with many replication
+groups. The legacy ``conn.replication`` methods use the same discovery path.
+
+With an existing connection, this read-only call reports expired linked
+snapshots without deleting them::
+
+    expired = conn.snapshot.find_expired_snapvx_snapshots_by_snap_ids()
+    for snapshot in expired:
+        print(snapshot['storagegroup_name'], snapshot['snapshot_name'],
+              snapshot['snap_id'], snapshot['linked_sg_name'])
