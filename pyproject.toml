@@ -13,7 +13,7 @@ build-backend = "setuptools.build_meta"
 name = "pyu4v"
 dynamic = ["version"]
 description = "A Python library for use with Dell EMC's Unisphere for PowerMax REST API."
-readme = {file = "README.rst", content-type = "text/x-rst"}
+readme = {file = "README.rst", content-type = "text/markdown"}
 license = {text = "Apache-2.0"}
 authors = [
     {name = "Dell Inc. or its subsidiaries", email = "paule.martin@dell.com"},
