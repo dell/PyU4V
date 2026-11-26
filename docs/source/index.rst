@@ -34,7 +34,7 @@ Supported PyU4V Versions
 ------------------------
 
 +-------------------------------+----------------------------------------+
-| **PyU4V Version**             | 10.5.0.0                               |
+| **PyU4V Version**             | 10.5.0.1                               |
 +-------------------------------+----------------------------------------+
 | **Minimum Unisphere Version** | 10.5.0                                 |
 +-------------------------------+----------------------------------------+
@@ -57,7 +57,7 @@ Supported PyU4V Versions
     Python 2.x support was dropped in January 2020.
 
 .. note::
-    PyU4V version 10.5.0.0 is compatible with scripts written for PyU4V versions
+    PyU4V version 10.5.0.1 is compatible with scripts written for PyU4V versions
     >= 9.2. Please ensure to check change log to ensure that you are not
     using functions that have been marked as depreciated.
 
