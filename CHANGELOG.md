@@ -1,5 +1,18 @@
 # PyU4V Change Log
 
+## Version 10.5.0.1
+
+### Bug Fixes
+
+- **`create_storage_group_srdf_pairings` custom remote storage group name**
+  (`srdf.py`, and the deprecated `replication.py` wrapper that forwards to it):
+  passing `remote_storage_group_id` overwrote the local storage group name, so
+  the request was sent for the remote name on the local array and failed or
+  targeted the wrong storage group. The request now always uses the local
+  storage group, and `remoteStorageGroupName` is the supplied remote name or,
+  when omitted, the local name. Calls without `remote_storage_group_id` are
+  unchanged.
+
 ## Enhanced performance filter verification
 
 - Corrected the malformed `notin` docstring example and clarified quoted

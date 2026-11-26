@@ -3,7 +3,7 @@
 
 # --- PyU4V package version (PyPI / __version__) ---
 MAJOR_VERSION = '10.5'   # marketing / major SDK version
-VERSION = '10.5.0.0'     # full PyU4V package version
+VERSION = '10.5.0.1'     # full PyU4V package version
 
 # --- Unisphere REST API version ---
 # API_VERSION is the value placed in REST URL paths. It is exposed as

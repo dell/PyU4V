@@ -107,6 +107,39 @@ class PyU4VSRDFTest(testtools.TestCase):
             'test_sg', '000297900111', 'Synchronous', establish=True)
         self.assertIsNotNone(result)
 
+    @mock.patch.object(common.CommonFunctions, 'create_resource',
+                       return_value={'success': True})
+    def test_create_storage_group_srdf_pairings_default_remote_name(
+            self, mck_create):
+        """Remote storage group name defaults to the local name."""
+        self.srdf.create_storage_group_srdf_pairings(
+            'local_sg', '000297900111', 'Synchronous', establish=True)
+        mck_create.assert_called_once_with(
+            target_uri=f"/{self.srdf.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.data.array}/storagegroup"
+                       f"/local_sg/rdf_group",
+            payload={'replicationMode': 'Synchronous',
+                     'remoteSymmId': '000297900111',
+                     'remoteStorageGroupName': 'local_sg',
+                     'establish': 'True'})
+
+    @mock.patch.object(common.CommonFunctions, 'create_resource',
+                       return_value={'success': True})
+    def test_create_storage_group_srdf_pairings_custom_remote_name(
+            self, mck_create):
+        """Custom remote name goes in the payload, local name in the URI."""
+        self.srdf.create_storage_group_srdf_pairings(
+            'local_sg', '000297900111', 'Asynchronous',
+            remote_storage_group_id='remote_sg')
+        mck_create.assert_called_once_with(
+            target_uri=f"/{self.srdf.common.UNI_VERSION}/replication"
+                       f"/symmetrix/{self.data.array}/storagegroup"
+                       f"/local_sg/rdf_group",
+            payload={'replicationMode': 'Asynchronous',
+                     'remoteSymmId': '000297900111',
+                     'remoteStorageGroupName': 'remote_sg',
+                     'establish': 'False'})
+
     @mock.patch.object(common.CommonFunctions, 'modify_resource',
                        return_value={'success': True})
     def test_modify_storage_group_srdf(self, mck_modify):
