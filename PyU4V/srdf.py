@@ -229,11 +229,10 @@ class SRDFFunctions(object):
         :returns: storage group rdf details -- dict
         """
         establish_sg = 'True' if establish else 'False'
-        if remote_storage_group_id:
-            storage_group_id = remote_storage_group_id
         rdf_payload = {'replicationMode': srdf_mode,
                        'remoteSymmId': remote_sid,
-                       'remoteStorageGroupName': storage_group_id,
+                       'remoteStorageGroupName': (
+                           remote_storage_group_id or storage_group_id),
                        'establish': establish_sg}
         if rdfg_number is not None:
             rdf_payload['rdfgNumber'] = rdfg_number
